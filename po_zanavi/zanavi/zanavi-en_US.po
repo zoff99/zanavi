@@ -1,0 +1,325 @@
+# English translation for zanavi
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the zanavi package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: zanavi\n"
+"Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
+"POT-Creation-Date: 2011-10-06 22:20+0200\n"
+"PO-Revision-Date: 2011-10-10 16:21+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
+"Language-Team: zoff99 <zoff@zanavi.cc>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
+"X-Generator: Launchpad (build 14124)\n"
+
+msgid "map download"
+msgstr "map download"
+
+msgid "Welcome to ZANavi"
+msgstr "Welcome to ZANavi"
+
+msgid "More info"
+msgstr "More info"
+
+msgid "zoom in"
+msgstr "Zoom in"
+
+msgid "zoom out"
+msgstr "Zoom out"
+
+#. TRANSLATORS: text to translate is: exit ZANavi
+msgid "exit navit"
+msgstr "Exit ZANavi"
+
+msgid "toggle POI"
+msgstr "toggle POI"
+
+msgid "address search (offline)"
+msgstr "address search (offline)"
+
+msgid "address search (online)"
+msgstr "address search (online)"
+
+msgid "Mapdownload"
+msgstr "Mapdownload"
+
+msgid "downloading"
+msgstr "downloading"
+
+msgid "ETA"
+msgstr "ETA"
+
+msgid "Error downloading map!"
+msgstr "Error downloading map!"
+
+msgid "Error downloading map, resuming"
+msgstr "Error downloading map\\nresuming ..."
+
+msgid "ready"
+msgstr "ready"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "No address found"
+msgstr "No address found"
+
+msgid "Enter: City and Street"
+msgstr "Enter: City and Street"
+
+msgid "No search string entered"
+msgstr "No search string entered"
+
+msgid "setting destination to"
+msgstr "setting destination to"
+
+msgid "getting search results"
+msgstr "getting search results"
+
+msgid "searching ..."
+msgstr "searching ..."
+
+msgid "No Results found!"
+msgstr "No Results found!"
+
+#. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+
+msgid "partial match"
+msgstr "partial match"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "drive here"
+msgstr "drive here"
+
+msgid "loading search results"
+msgstr "loading search results"
+
+msgid "towns"
+msgstr "towns"
+
+msgid "delete maps"
+msgstr "delete maps"
+
+msgid "download maps"
+msgstr "download maps"
+
+msgid "Map already up to date"
+msgstr "Map already up to date"
+
+msgid "search full mapfile [BETA]"
+msgstr "search full mapfile [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_fast_provider"
+msgstr "GSM/3g/Wireless"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_fast_provider"
+msgstr "Use GSM/3g/Wireless networks for getting position (uses Internet)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__follow_gps"
+msgstr "Follow"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__follow_gps"
+msgstr "Center on GPS. activate this for Compass heading to work"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_vehicle_in_center"
+msgstr "Vehicle in center"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_vehicle_in_center"
+msgstr "show vehicle in screen center, instead of the lower half"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_base"
+msgstr "Compass"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_base"
+msgstr "Get direction from compass. needs lots of CPU!"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_always"
+msgstr "Compass always"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_always"
+msgstr "Get current heading from compass even at higher speeds"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_fast"
+msgstr "fast Compass"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_fast"
+msgstr "turns much smoother, WARNING: WILL EAT ALL your CPU!!"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_imperial"
+msgstr "Imperial"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_imperial"
+msgstr "Use Imperial units instead of metric units"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_3d_map"
+msgstr "3D"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_3d_map"
+msgstr "show map in 3D [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_anti_aliasing"
+msgstr "AntiAlias"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_anti_aliasing"
+msgstr "draw with AntiAlias, map is faster when this is OFF"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__gui_oneway_arrows"
+msgstr "OneWay Arrows"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__gui_oneway_arrows"
+msgstr "show oneway street arrows [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_debug_messages"
+msgstr "Debug Mgs"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_debug_messages"
+msgstr "show Debug Messages [DEBUG]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__navit_lang"
+msgstr "Language"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__navit_lang"
+msgstr "Select Language for messages. needs a RESTART!!"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_lock_on_roads"
+msgstr "lock on Roads"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_lock_on_roads"
+msgstr ""
+"lock Vehicle on nearest Road. turn off if you are walking or driving offroad"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_route_highways"
+msgstr "prefer Highways"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_route_highways"
+msgstr "prefer Highways for routing (switching this off uses more Memory!!)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__save_zoomlevel"
+msgstr "Zoomlevel"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__save_zoomlevel"
+msgstr "save last Zoomlevel"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_sat_status"
+msgstr "Sat Status"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_sat_status"
+msgstr "show Statellite Status"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_agps"
+msgstr "aGPS"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_agps"
+msgstr "use assisted GPS (uses Internet !!)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__INFO_BOX_TITLE__"
+msgstr "Welcome to ZANavi"
+
+#. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
+msgid "__INFO_BOX_TEXT__"
+msgstr ""
+"You are running ZANavi for the first time!\\n\\n To start select \"download "
+"maps\"\\n from the menu, and download a map\\n for your current Area.\\n "
+"This will download a large file, so please\\n make sure you have a flatrate "
+"or similar!\\n\\n Mapdata:\\n CC-BY-SA OpenStreetMap Project\\n\\n For more "
+"information\\n visit our Website\\n http://zanavi.cc\\n\\n       Have fun "
+"using ZANavi."
+
+msgid "Announcer Off"
+msgstr "Announcer Off"
+
+msgid "Announcer On"
+msgstr "Announcer On"
+
+msgid ""
+"Language is not available for TTS! Using your phone's default settings"
+msgstr ""
+"Language is not available for TTS!\\nUsing your phone's default settings"
+
+msgid "Using Voice for:"
+msgstr "Using Voice for:"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Creating outputfile, wait"
+msgstr "Creating outputfile\\nplease wait"
+
+msgid "Creating outputfile, long time"
+msgstr "Creating outputfile\\nthis can take a long time"
+
+msgid "MD5 mismatch"
+msgstr "MD5 mismatch"
+
+msgid "generating MD5 checksum"
+msgstr "generating MD5 checksum"
+
+msgid "Use as destination"
+msgstr "Use as destination"
+
+msgid "back"
+msgstr "back"
+
+msgid "destination"
+msgstr "destination"
+
+msgid "wait ..."
+msgstr "wait ..."
+
+msgid "Enter Destination"
+msgstr "Enter Destination"
+
+msgid "Zoom to Route"
+msgstr "Zoom to Route"
+
+msgid "Stop Navigation"
+msgstr "Stop Navigation"
+
+msgid "Streets"
+msgstr "Streets"
+
+msgid "touch map to zoom"
+msgstr "touch map to zoom"

@@ -1,0 +1,1646 @@
+# Turkish translation for navit
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the navit package.
+# seqizz (gurkanGur) <seqizz@gmail.com> 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: navit 0.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-22 15:11+0100\n"
+"PO-Revision-Date: 2011-08-15 12:46+0000\n"
+"Last-Translator: Bekir DURAK <by.jigs4w@gmail.com>\n"
+"Language-Team: Turkish <tr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
+"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
+
+#, c-format
+msgid "Running from source directory\n"
+msgstr "Kaynak klasörden çalıştırılıyor\n"
+
+#, c-format
+msgid "setting '%s' to '%s'\n"
+msgstr "'%s' , '%s' değerine ayarlanıyor\n"
+
+#. TRANSLATORS: the following counts refer to streets
+msgid "zeroth"
+msgstr "sıfırıncı"
+
+msgid "first"
+msgstr "birinci"
+
+msgid "second"
+msgstr "ikinci"
+
+msgid "third"
+msgstr "üçüncü"
+
+msgid "fourth"
+msgstr "dördüncü"
+
+msgid "fifth"
+msgstr "beşinci"
+
+msgid "sixth"
+msgstr "altıncı"
+
+#. TRANSLATORS: the following counts refer to roundabout exits
+msgid "zeroth exit"
+msgstr "sıfırıncı çıkış"
+
+msgid "first exit"
+msgstr "ilk çıkış"
+
+msgid "second exit"
+msgstr "ikinci çıkış"
+
+msgid "third exit"
+msgstr "üçüncü çıkış"
+
+msgid "fourth exit"
+msgstr "dördüncü çıkış"
+
+msgid "fifth exit"
+msgstr "beşinci çıkış"
+
+msgid "sixth exit"
+msgstr "altıncı çıkış"
+
+#, c-format
+msgid "%d m"
+msgstr "%d m"
+
+#, c-format
+msgid "in %d m"
+msgstr "%d m'de"
+
+#, c-format
+msgid "%d meters"
+msgstr "%d metre"
+
+#, c-format
+msgid "in %d meters"
+msgstr "%d metrede"
+
+#, c-format
+msgid "%d.%d kilometers"
+msgstr "%d.%d kilometre"
+
+#, c-format
+msgid "in %d.%d kilometers"
+msgstr "%d.%d kilometrede"
+
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "%d kilometre"
+
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "%d kilometrede"
+
+msgid "exit"
+msgstr "çıkış"
+
+msgid "into the ramp"
+msgstr "rampada"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#, c-format
+msgid "%sinto the street %s%s%s"
+msgstr "%sCaddesi'ne %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|male form"
+msgstr "%scaddesine %s%s%s|male form"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|female form"
+msgstr "%scaddesine %s%s%s|female form"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|neutral form"
+msgstr "%scaddesine %s%s%s|neutral form"
+
+#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#, c-format
+msgid "%sinto the %s"
+msgstr "%s%s yoluna"
+
+#. TRANSLATORS: right, as in 'Turn right'
+msgid "right"
+msgstr "Sağa"
+
+#. TRANSLATORS: left, as in 'Turn left'
+msgid "left"
+msgstr "Sola"
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "easily "
+msgstr "kolayca "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "strongly "
+msgstr "sertçe "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "really strongly "
+msgstr "gerçekten sertçe "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "unknown "
+msgstr "bilinmeyen "
+
+msgid "When possible, please turn around"
+msgstr "Müsait olduğunda lütfen yönünü değiştir"
+
+#, c-format
+msgid "Enter the roundabout soon and leave it at the %s"
+msgstr "Gelen göbeğe girip %s yönden çık"
+
+#. TRANSLATORS: %s is the distance to the roundabout
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "%s içerisinde kavşağa girin"
+
+#, c-format
+msgid "then leave the roundabout at the %s"
+msgstr "ardından %s'de kavşaktan çıkın"
+
+#, c-format
+msgid "Leave the roundabout at the %s"
+msgstr "%s'de kavşaktan çıkın"
+
+#, c-format
+msgid "Follow the road for the next %s"
+msgstr "Gelecek %s için yolu takip et"
+
+msgid "soon"
+msgstr "yakında"
+
+#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#, c-format
+msgid "Take the %1$s road to the %2$s"
+msgstr "%1$s yolunda  %2$s yönüne dönün"
+
+#, c-format
+msgid "after %i roads"
+msgstr "%i yol sonra"
+
+msgid "now"
+msgstr "şimdi"
+
+#, c-format
+msgid "then take the %1$s road to the %2$s"
+msgstr "ardından %1$s yolunda  %2$s yönüne dönün"
+
+msgid "error"
+msgstr "hata"
+
+#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#, c-format
+msgid "Turn %1$s%2$s %3$s%4$s"
+msgstr "Dönüş %1$s%2$s %3$s%4$s"
+
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "sonra %1$s%2$s %3$s%4$s dönün"
+
+#, c-format
+msgid "You have reached your destination %s"
+msgstr "Hedefinize ulaştınız, %s"
+
+msgid "then you have reached your destination."
+msgstr "ardından hedefinize ulaşacaksınız"
+
+msgid "Position"
+msgstr "Konum"
+
+msgid "Command"
+msgstr "Komut"
+
+msgid "Length"
+msgstr "Uzaklık"
+
+msgid "km"
+msgstr "km"
+
+msgid "m"
+msgstr "m"
+
+msgid "Time"
+msgstr "Zaman"
+
+msgid "Destination Length"
+msgstr "Hedef Uzaklığı"
+
+msgid "Destination Time"
+msgstr "Varış Zamanı"
+
+msgid "Roadbook"
+msgstr "Yol Haritası"
+
+msgid "Set as position"
+msgstr "Pozisyon olarak ayarla"
+
+msgid "Set as destination"
+msgstr "Hedef olarak ayarla"
+
+msgid "Add as bookmark"
+msgstr "Yer imi olarak ayarla"
+
+#, c-format
+msgid "Point 0x%x 0x%x"
+msgstr "Nokta 0x%x 0x%x"
+
+#, c-format
+msgid "Screen coord : %d %d"
+msgstr "Ekran koordinatları :%d %d"
+
+#. 020
+msgid "Andorra"
+msgstr "Andorra"
+
+#. 784
+msgid "United Arab Emirates"
+msgstr "Birleşik Arap Emirlikleri"
+
+#. 004
+msgid "Afghanistan"
+msgstr "Afganistan"
+
+#. 028
+msgid "Antigua and Barbuda"
+msgstr "Antigua ve Barbuda"
+
+#. 660
+msgid "Anguilla"
+msgstr "Angola"
+
+#. 008
+msgid "Albania"
+msgstr "Arnavutluk"
+
+#. 051
+msgid "Armenia"
+msgstr "Ermenistan"
+
+#. 530
+msgid "Netherlands Antilles"
+msgstr "Hollanda Antilleri"
+
+#. 024
+msgid "Angola"
+msgstr "Angola"
+
+#. 010
+msgid "Antarctica"
+msgstr "Antarktika"
+
+#. 032
+msgid "Argentina"
+msgstr "Arjantin"
+
+#. 016
+msgid "American Samoa"
+msgstr "Amerikan Samoa"
+
+#. 040
+msgid "Austria"
+msgstr "Avusturya"
+
+#. 036
+msgid "Australia"
+msgstr "Avustralya"
+
+#. 533
+msgid "Aruba"
+msgstr "Aruba"
+
+#. 248
+msgid "Aland Islands"
+msgstr "Aland Adaları"
+
+#. 031
+msgid "Azerbaijan"
+msgstr "Azerbeycan"
+
+#. 070
+msgid "Bosnia and Herzegovina"
+msgstr "Bosna Hersek"
+
+#. 052
+msgid "Barbados"
+msgstr "Barbados"
+
+#. 050
+msgid "Bangladesh"
+msgstr "Bangladeş"
+
+#. 056
+msgid "Belgium"
+msgstr "Belçika"
+
+#. 854
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+#. 100
+msgid "Bulgaria"
+msgstr "Bulgaristan"
+
+#. 048
+msgid "Bahrain"
+msgstr "Bahreyn"
+
+#. 108
+msgid "Burundi"
+msgstr "Brundi"
+
+#. 204
+msgid "Benin"
+msgstr "Benin"
+
+#. 652
+msgid "Saint Barthelemy"
+msgstr "Saint Barthelemy"
+
+#. 060
+msgid "Bermuda"
+msgstr "Bermuda"
+
+#. 096
+msgid "Brunei Darussalam"
+msgstr "Bruney"
+
+#. 068
+msgid "Bolivia"
+msgstr "Bolivya"
+
+#. 076
+msgid "Brazil"
+msgstr "Brezilya"
+
+#. 044
+msgid "Bahamas"
+msgstr "Bahamalar"
+
+#. 064
+msgid "Bhutan"
+msgstr "Bhutan"
+
+#. 074
+msgid "Bouvet Island"
+msgstr "Bouvet Adası"
+
+#. 072
+msgid "Botswana"
+msgstr "Botswana"
+
+#. 112
+msgid "Belarus"
+msgstr "Beyaz Rusya"
+
+#. 084
+msgid "Belize"
+msgstr "Belize"
+
+#. 124
+msgid "Canada"
+msgstr "Kanada"
+
+#. 166
+msgid "Cocos (Keeling) Islands"
+msgstr "Cocos (Keeling) Adaları"
+
+#. 180
+msgid "Congo, Democratic Republic of the"
+msgstr "Kongo Demokratik Cumhuriyeti"
+
+#. 140
+msgid "Central African Republic"
+msgstr "Merkezi Afrika Cumhuriyeti"
+
+#. 178
+msgid "Congo"
+msgstr "Kongo"
+
+#. 756
+msgid "Switzerland"
+msgstr "İsviçre"
+
+#. 384
+msgid "Cote d'Ivoire"
+msgstr "Cote d'Ivoire"
+
+#. 184
+msgid "Cook Islands"
+msgstr "Cook Adaları"
+
+#. 152
+msgid "Chile"
+msgstr "Şili"
+
+#. 120
+msgid "Cameroon"
+msgstr "Kamerun"
+
+#. 156
+msgid "China"
+msgstr "Çin"
+
+#. 170
+msgid "Colombia"
+msgstr "Kolombiya"
+
+#. 188
+msgid "Costa Rica"
+msgstr "Kosta Rika"
+
+#. 192
+msgid "Cuba"
+msgstr "Küba"
+
+#. 132
+msgid "Cape Verde"
+msgstr "Cape Verde"
+
+#. 162
+msgid "Christmas Island"
+msgstr "Christmas Island"
+
+#. 196
+msgid "Cyprus"
+msgstr "Kıbrıs"
+
+#. 203
+msgid "Czech Republic"
+msgstr "Çek Cumhuriyeti"
+
+#. 276
+msgid "Germany"
+msgstr "Almanya"
+
+#. 262
+msgid "Djibouti"
+msgstr "Cibuti"
+
+#. 208
+msgid "Denmark"
+msgstr "Danimarka"
+
+#. 212
+msgid "Dominica"
+msgstr "Dominik"
+
+#. 214
+msgid "Dominican Republic"
+msgstr "Dominik Cumhuriyeti"
+
+#. 012
+msgid "Algeria"
+msgstr "Cezayir"
+
+#. 218
+msgid "Ecuador"
+msgstr "Ekvator"
+
+#. 233
+msgid "Estonia"
+msgstr "Estonya"
+
+#. 818
+msgid "Egypt"
+msgstr "Mısır"
+
+#. 732
+msgid "Western Sahara"
+msgstr "Batı Sahra"
+
+#. 232
+msgid "Eritrea"
+msgstr "Eritre"
+
+#. 724
+msgid "Spain"
+msgstr "İspanya"
+
+#. 231
+msgid "Ethiopia"
+msgstr "Etyopya"
+
+#. 246
+msgid "Finland"
+msgstr "Finlandiya"
+
+#. 242
+msgid "Fiji"
+msgstr "Fiji"
+
+#. 238
+msgid "Falkland Islands (Malvinas)"
+msgstr "Falkland Adaları (Malvinas)"
+
+#. 583
+msgid "Micronesia, Federated States of"
+msgstr "Mikronezya, Federe Devletleri"
+
+#. 234
+msgid "Faroe Islands"
+msgstr "Faroe Adaları"
+
+#. 250
+msgid "France"
+msgstr "Fransa"
+
+#. 266
+msgid "Gabon"
+msgstr "Gabon"
+
+#. 826
+msgid "United Kingdom"
+msgstr "Birleşik Krallık"
+
+#. 308
+msgid "Grenada"
+msgstr "Granada"
+
+#. 268
+msgid "Georgia"
+msgstr "Gürcistan"
+
+#. 254
+msgid "French Guiana"
+msgstr "Fransız Guyanası"
+
+#. 831
+msgid "Guernsey"
+msgstr "Guernsey"
+
+#. 288
+msgid "Ghana"
+msgstr "Gana"
+
+#. 292
+msgid "Gibraltar"
+msgstr "Cebelitarık"
+
+#. 304
+msgid "Greenland"
+msgstr "Grönland"
+
+#. 270
+msgid "Gambia"
+msgstr "Gambiya"
+
+#. 324
+msgid "Guinea"
+msgstr "Gine"
+
+#. 312
+msgid "Guadeloupe"
+msgstr "Guadalup"
+
+#. 226
+msgid "Equatorial Guinea"
+msgstr "Ekvator Ginesi"
+
+#. 300
+msgid "Greece"
+msgstr "Yunanistan"
+
+#. 239
+msgid "South Georgia and the South Sandwich Islands"
+msgstr "Güney Gürcistan ve Güney Sandoviç Adaları"
+
+#. 320
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#. 316
+msgid "Guam"
+msgstr "Guam"
+
+#. 624
+msgid "Guinea-Bissau"
+msgstr "Gine-Bissau"
+
+#. 328
+msgid "Guyana"
+msgstr "Guyana"
+
+#. 344
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#. 334
+msgid "Heard Island and McDonald Islands"
+msgstr "Heard Adası ve McDonald Adaları"
+
+#. 340
+msgid "Honduras"
+msgstr "Honduras"
+
+#. 191
+msgid "Croatia"
+msgstr "Hırvatistan"
+
+#. 332
+msgid "Haiti"
+msgstr "Haiti"
+
+#. 348
+msgid "Hungary"
+msgstr "Macaristan"
+
+#. 360
+msgid "Indonesia"
+msgstr "Endonezya"
+
+#. 372
+msgid "Ireland"
+msgstr "İrlanda"
+
+#. 376
+msgid "Israel"
+msgstr "İsrail"
+
+#. 833
+msgid "Isle of Man"
+msgstr "Man adası"
+
+#. 356
+msgid "India"
+msgstr "Hindistan"
+
+#. 086
+msgid "British Indian Ocean Territory"
+msgstr "Hint Okyanusu İngiliz Bölgesi"
+
+#. 368
+msgid "Iraq"
+msgstr "Irak"
+
+#. 364
+msgid "Iran, Islamic Republic of"
+msgstr "İran, İslâm Cumhuriyeti"
+
+#. 352
+msgid "Iceland"
+msgstr "İzlanda"
+
+#. 380
+msgid "Italy"
+msgstr "İtalya"
+
+#. 832
+msgid "Jersey"
+msgstr "Jersey"
+
+#. 388
+msgid "Jamaica"
+msgstr "Jamaika"
+
+#. 400
+msgid "Jordan"
+msgstr "Ürdün"
+
+#. 392
+msgid "Japan"
+msgstr "Japonya"
+
+#. 404
+msgid "Kenya"
+msgstr "Kenya"
+
+#. 417
+msgid "Kyrgyzstan"
+msgstr "Kırgızistan"
+
+#. 116
+msgid "Cambodia"
+msgstr "Kamboçya"
+
+#. 296
+msgid "Kiribati"
+msgstr "Kiribati"
+
+#. 174
+msgid "Comoros"
+msgstr "Komoros"
+
+#. 659
+msgid "Saint Kitts and Nevis"
+msgstr "Sen Kitts ve Nevis"
+
+#. 408
+msgid "Korea, Democratic People's Republic of"
+msgstr "Kore, Demokratik Halk Cumhuriyeti"
+
+#. 410
+msgid "Korea, Republic of"
+msgstr "Kore Cumhuriyeti"
+
+#. 414
+msgid "Kuwait"
+msgstr "Kuveyt"
+
+#. 136
+msgid "Cayman Islands"
+msgstr "Seyman Adaları"
+
+#. 398
+msgid "Kazakhstan"
+msgstr "Kazakistan"
+
+#. 418
+msgid "Lao People's Democratic Republic"
+msgstr "Lao, Demokratik Halk Cumhuriyeti"
+
+#. 422
+msgid "Lebanon"
+msgstr "Lübnan"
+
+#. 662
+msgid "Saint Lucia"
+msgstr "Sen Lusia"
+
+#. 438
+msgid "Liechtenstein"
+msgstr "Lihtenştayn"
+
+#. 144
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
+
+#. 430
+msgid "Liberia"
+msgstr "Liberya"
+
+#. 426
+msgid "Lesotho"
+msgstr "Lesoto"
+
+#. 440
+msgid "Lithuania"
+msgstr "Litvanya"
+
+#. 442
+msgid "Luxembourg"
+msgstr "Lüksemburg"
+
+#. 428
+msgid "Latvia"
+msgstr "Letonya"
+
+#. 434
+msgid "Libyan Arab Jamahiriya"
+msgstr "Libya"
+
+#. 504
+msgid "Morocco"
+msgstr "Fas"
+
+#. 492
+msgid "Monaco"
+msgstr "Monako"
+
+#. 498
+msgid "Moldova, Republic of"
+msgstr "Moldova Cumhuriyeti"
+
+#. 499
+msgid "Montenegro"
+msgstr "Karadağ"
+
+#. 663
+msgid "Saint Martin (French part)"
+msgstr "Sen Martin (Fransız kısmı)"
+
+#. 450
+msgid "Madagascar"
+msgstr "Madagaskar"
+
+#. 584
+msgid "Marshall Islands"
+msgstr "Marshall Adaları"
+
+#. 807
+msgid "Macedonia, the former Yugoslav Republic of"
+msgstr "Makedonya"
+
+#. 466
+msgid "Mali"
+msgstr "Mali"
+
+#. 104
+msgid "Myanmar"
+msgstr "Myanmar"
+
+#. 496
+msgid "Mongolia"
+msgstr "Moğolistan"
+
+#. 446
+msgid "Macao"
+msgstr "Macao"
+
+#. 580
+msgid "Northern Mariana Islands"
+msgstr "Northern Mariana Adaları"
+
+#. 474
+msgid "Martinique"
+msgstr "Martinik"
+
+#. 478
+msgid "Mauritania"
+msgstr "Moritanya"
+
+#. 500
+msgid "Montserrat"
+msgstr "Montserrat"
+
+#. 470
+msgid "Malta"
+msgstr "Malta"
+
+#. 480
+msgid "Mauritius"
+msgstr "Mauritius"
+
+#. 462
+msgid "Maldives"
+msgstr "Maldivler"
+
+#. 454
+msgid "Malawi"
+msgstr "Malawi"
+
+#. 484
+msgid "Mexico"
+msgstr "Meksika"
+
+#. 458
+msgid "Malaysia"
+msgstr "Malezya"
+
+#. 508
+msgid "Mozambique"
+msgstr "Mozambik"
+
+#. 516
+msgid "Namibia"
+msgstr "Namibiya"
+
+#. 540
+msgid "New Caledonia"
+msgstr "Yeni Kaledonya"
+
+#. 562
+msgid "Niger"
+msgstr "Nijer"
+
+#. 574
+msgid "Norfolk Island"
+msgstr "Norfolk Adası"
+
+#. 566
+msgid "Nigeria"
+msgstr "Nijerya"
+
+#. 558
+msgid "Nicaragua"
+msgstr "Nikaragua"
+
+#. 528
+msgid "Netherlands"
+msgstr "Hollanda"
+
+#. 578
+msgid "Norway"
+msgstr "Norveç"
+
+#. 524
+msgid "Nepal"
+msgstr "Nepal"
+
+#. 520
+msgid "Nauru"
+msgstr "Nauru"
+
+#. 570
+msgid "Niue"
+msgstr "Niue"
+
+#. 554
+msgid "New Zealand"
+msgstr "Yeni Zelanda"
+
+#. 512
+msgid "Oman"
+msgstr "Umman"
+
+#. 591
+msgid "Panama"
+msgstr "Panama"
+
+#. 604
+msgid "Peru"
+msgstr "Peru"
+
+#. 258
+msgid "French Polynesia"
+msgstr "Fransız Polinezyası"
+
+#. 598
+msgid "Papua New Guinea"
+msgstr "Papua Yeni Gine"
+
+#. 608
+msgid "Philippines"
+msgstr "Filipinler"
+
+#. 586
+msgid "Pakistan"
+msgstr "Pakistan"
+
+#. 616
+msgid "Poland"
+msgstr "Polonya"
+
+#. 666
+msgid "Saint Pierre and Miquelon"
+msgstr "Saint Pierre ve Miquelon"
+
+#. 612
+msgid "Pitcairn"
+msgstr "Pitcairn"
+
+#. 630
+msgid "Puerto Rico"
+msgstr "Porto Riko"
+
+#. 275
+msgid "Palestinian Territory, Occupied"
+msgstr "Filistin Özerk Bölgesi"
+
+#. 620
+msgid "Portugal"
+msgstr "Portekiz"
+
+#. 585
+msgid "Palau"
+msgstr "Palau"
+
+#. 600
+msgid "Paraguay"
+msgstr "Paraguay"
+
+#. 634
+msgid "Qatar"
+msgstr "Katar"
+
+#. 638
+msgid "Reunion"
+msgstr "Reunion"
+
+#. 642
+msgid "Romania"
+msgstr "Romanya"
+
+#. 688
+msgid "Serbia"
+msgstr "Sırbistan"
+
+#. 643
+msgid "Russian Federation"
+msgstr "Rusya Federasyonu"
+
+#. 646
+msgid "Rwanda"
+msgstr "Ruanda"
+
+#. 682
+msgid "Saudi Arabia"
+msgstr "Suudi Arabistan"
+
+#. 090
+msgid "Solomon Islands"
+msgstr "Solomon Adaları"
+
+#. 690
+msgid "Seychelles"
+msgstr "Seyşel Adaları"
+
+#. 736
+msgid "Sudan"
+msgstr "Sudan"
+
+#. 752
+msgid "Sweden"
+msgstr "İsveç"
+
+#. 702
+msgid "Singapore"
+msgstr "Singapur"
+
+#. 654
+msgid "Saint Helena"
+msgstr "Saint Helena"
+
+#. 705
+msgid "Slovenia"
+msgstr "Slovenya"
+
+#. 744
+msgid "Svalbard and Jan Mayen"
+msgstr "Svalbard ve Jan Mayen Adaları"
+
+#. 703
+msgid "Slovakia"
+msgstr "Slovakya"
+
+#. 694
+msgid "Sierra Leone"
+msgstr "Sierra Leone"
+
+#. 674
+msgid "San Marino"
+msgstr "San Marino"
+
+#. 686
+msgid "Senegal"
+msgstr "Senegal"
+
+#. 706
+msgid "Somalia"
+msgstr "Somali"
+
+#. 740
+msgid "Suriname"
+msgstr "Surinam"
+
+#. 678
+msgid "Sao Tome and Principe"
+msgstr "Sao Tome ve Principe"
+
+#. 222
+msgid "El Salvador"
+msgstr "El Salvador"
+
+#. 760
+msgid "Syrian Arab Republic"
+msgstr "Suriye"
+
+#. 748
+msgid "Swaziland"
+msgstr "Swaziland"
+
+#. 796
+msgid "Turks and Caicos Islands"
+msgstr "Turks ve Kaykos Adaları"
+
+#. 148
+msgid "Chad"
+msgstr "Çad"
+
+#. 260
+msgid "French Southern Territories"
+msgstr "Güney Fransa  Bölgeleri"
+
+#. 768
+msgid "Togo"
+msgstr "Togo"
+
+#. 764
+msgid "Thailand"
+msgstr "Tayland"
+
+#. 762
+msgid "Tajikistan"
+msgstr "Tacikistan"
+
+#. 772
+msgid "Tokelau"
+msgstr "Tokelau"
+
+#. 626
+msgid "Timor-Leste"
+msgstr "Timor-Leste"
+
+#. 795
+msgid "Turkmenistan"
+msgstr "Türkmenistan"
+
+#. 788
+msgid "Tunisia"
+msgstr "Tunus"
+
+#. 776
+msgid "Tonga"
+msgstr "Tonga"
+
+#. 792
+msgid "Turkey"
+msgstr "Türkiye"
+
+#. 780
+msgid "Trinidad and Tobago"
+msgstr "Trinidad ve Tobago"
+
+#. 798
+msgid "Tuvalu"
+msgstr "Tuvalu"
+
+#. 158
+msgid "Taiwan, Province of China"
+msgstr "Tayvan, Çin Eyaleti"
+
+#. 834
+msgid "Tanzania, United Republic of"
+msgstr "Tanzanya, Birleşik Cumhuriyeti"
+
+#. 804
+msgid "Ukraine"
+msgstr "Ukrayna"
+
+#. 800
+msgid "Uganda"
+msgstr "Uganda"
+
+#. 581
+msgid "United States Minor Outlying Islands"
+msgstr "Küçük Birleşik Devletler adaları"
+
+#. 840
+msgid "United States"
+msgstr "Birleşik Devletler"
+
+#. 858
+msgid "Uruguay"
+msgstr "Uruguay"
+
+#. 860
+msgid "Uzbekistan"
+msgstr "Özbekistan"
+
+#. 336
+msgid "Holy See (Vatican City State)"
+msgstr "Vatikan"
+
+#. 670
+msgid "Saint Vincent and the Grenadines"
+msgstr "Sen Vinsınt ve Granadalar"
+
+#. 862
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#. 092
+msgid "Virgin Islands, British"
+msgstr "Virgin Adaları, İngiliz"
+
+#. 850
+msgid "Virgin Islands, U.S."
+msgstr "Virgin Adaları, A.B.D."
+
+#. 704
+msgid "Viet Nam"
+msgstr "Vietnam"
+
+#. 548
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+#. 876
+msgid "Wallis and Futuna"
+msgstr "Wallis ve Futuna Adaları"
+
+#. 882
+msgid "Samoa"
+msgstr "Samoa"
+
+#. 887
+msgid "Yemen"
+msgstr "Yemen"
+
+#. 175
+msgid "Mayotte"
+msgstr "Mayotte"
+
+#. 710
+msgid "South Africa"
+msgstr "Güney Afrika"
+
+#. 894
+msgid "Zambia"
+msgstr "Zambiya"
+
+#. 716
+msgid "Zimbabwe"
+msgstr "Zimbabve"
+
+msgid "* Unknown, add is_in tags to those cities"
+msgstr "* tanınmıyor, bu yerleşime bir etiket ekleyin"
+
+msgid "Car"
+msgstr "Araç"
+
+msgid "Iso2"
+msgstr "Iso2"
+
+msgid "Iso3"
+msgstr "Isa3"
+
+msgid "Country"
+msgstr "Ülke"
+
+msgid "Postal"
+msgstr "Posta"
+
+msgid "Town"
+msgstr "Şehir"
+
+msgid "District"
+msgstr "Bölge"
+
+msgid "Street"
+msgstr "Cadde"
+
+msgid "Number"
+msgstr "Numara"
+
+msgid "Enter Destination"
+msgstr "Hedefi Giriniz"
+
+msgid "Zip Code"
+msgstr "Zip Kodu"
+
+msgid "City"
+msgstr "Şehir"
+
+msgid "District/Township"
+msgstr "Bölge/Mahal"
+
+msgid "Map"
+msgstr "Harita"
+
+msgid "Bookmark"
+msgstr "Yer imi"
+
+msgid "Destination"
+msgstr "Hedef"
+
+msgid "Display"
+msgstr "Görüntüle"
+
+msgid "Route"
+msgstr "Rota"
+
+msgid "Former Destinations"
+msgstr "önceki istikamet"
+
+msgid "Bookmarks"
+msgstr "Yer İmleri"
+
+msgid "Layout"
+msgstr "Yerleşim"
+
+msgid "Projection"
+msgstr "İzdüşüm"
+
+msgid "Vehicle"
+msgstr "Araç"
+
+msgid "ZoomOut"
+msgstr "Uzaklaştır"
+
+msgid "Decrease zoom level"
+msgstr "Uzaklaştır"
+
+msgid "ZoomIn"
+msgstr "Yakınlaştır"
+
+msgid "Increase zoom level"
+msgstr "Yakınlaştır"
+
+msgid "Recalculate"
+msgstr "Yeniden hesapla"
+
+msgid "Redraw map"
+msgstr "Haritayı tekrar çiz"
+
+msgid "Info"
+msgstr "Bilgi"
+
+msgid "Set destination"
+msgstr "İstikameti belirle"
+
+msgid "Opens address search dialog"
+msgstr "Adres aramayı açar"
+
+msgid "Stop Navigation"
+msgstr "Dolaşmayı Durdur"
+
+msgid "Test"
+msgstr "Test"
+
+msgid "_Quit"
+msgstr "Çı_kış"
+
+msgid "Quit the application"
+msgstr "Uygulamadan çık"
+
+msgid "Show position cursor"
+msgstr "İmleç pozisyonunu göster"
+
+msgid "Lock on Road"
+msgstr "Kapalı yol"
+
+msgid "Keep orientation to the North"
+msgstr "Yönü Kuzey'e sabitle"
+
+msgid "Switches map orientation to the north or the vehicle"
+msgstr ""
+
+msgid "Show/hide route description"
+msgstr "Rota tanımını Göster/Gizle"
+
+msgid "Autozoom"
+msgstr "Oto-yaklaş"
+
+msgid "Enable/disable automatic zoom level changing"
+msgstr ""
+
+msgid "Fullscreen"
+msgstr "Tam Ekran"
+
+msgid "Data"
+msgstr "Veri"
+
+msgid "N"
+msgstr "K"
+
+msgid "NE"
+msgstr "KD"
+
+msgid "E"
+msgstr "D"
+
+msgid "SE"
+msgstr "GD"
+
+msgid "S"
+msgstr "G"
+
+msgid "SW"
+msgstr "GB"
+
+msgid "W"
+msgstr "B"
+
+msgid "NW"
+msgstr "Kuzey-Batı"
+
+msgid "No"
+msgstr "Hayır"
+
+msgid "2D"
+msgstr "2B"
+
+msgid "3D"
+msgstr "3B"
+
+msgid "OT"
+msgstr "OT"
+
+#, c-format
+msgid "Route %4.0fkm    %02d:%02d ETA"
+msgstr "Rota %4.0fkm %02d:%02d ETA"
+
+msgid "Route 0000km  0+00:00 ETA"
+msgstr "Rota 0000km 0+00:00 ETA"
+
+msgid "Back to map"
+msgstr "Haritaya dön"
+
+msgid "Main Menu"
+msgstr "Ana Menü"
+
+msgid "Help"
+msgstr "Yardım"
+
+msgid "Back"
+msgstr "Geri"
+
+msgid "Add Bookmark"
+msgstr "Yer İmi Ekle"
+
+msgid "Add Bookmark folder"
+msgstr "Yer İmi Klasörünü Ekle"
+
+msgid "Rename"
+msgstr "Yeniden İsimlendir"
+
+msgid "POIs"
+msgstr "İlgi Noktaları"
+
+msgid "View in Browser"
+msgstr "Tarayıcıda Bak"
+
+msgid "Streets"
+msgstr "Sokaklar"
+
+msgid "House numbers"
+msgstr "Ev numaraları"
+
+msgid "View Attributes"
+msgstr "Özniteliklere Bak"
+
+msgid "View on map"
+msgstr "Haritada bak"
+
+msgid "Cut Bookmark"
+msgstr "Yer İmini Kes"
+
+msgid "Copy Bookmark"
+msgstr "Yer İmini Kopyala"
+
+msgid "Rename Bookmark"
+msgstr "Yer İmini Yeniden Adlandır"
+
+msgid "Paste Bookmark"
+msgstr "Yer İmini Yapıştır"
+
+msgid "Delete Bookmark"
+msgstr "Yer İmini Sil"
+
+msgid "Paste bookmark"
+msgstr "Yer imini yapıştır"
+
+#, c-format
+msgid "Bookmark %s"
+msgstr "Yerimi ata %s"
+
+msgid "House number"
+msgstr "Ev no:"
+
+msgid "Maps"
+msgstr "Haritalar"
+
+msgid "Show Satellite Status"
+msgstr "Uydu durumunu göster"
+
+msgid " Elevation "
+msgstr " Yükseklik "
+
+msgid " Azimuth "
+msgstr " Azimut "
+
+msgid "Show NMEA Data"
+msgstr "NMEA verisi göster"
+
+msgid "car"
+msgstr "araba"
+
+msgid "bike"
+msgstr "bisiklet"
+
+msgid "pedestrian"
+msgstr "yaya"
+
+#, c-format
+msgid "Current profile: %s"
+msgstr "Geçerli profil: %s"
+
+#, c-format
+msgid "Change profile to: %s"
+msgstr "Yeni profil: %s"
+
+msgid "Set as active"
+msgstr "Etkin olarak ata"
+
+msgid "Show Satellite status"
+msgstr "Uydu durumunuı göster"
+
+msgid "Show NMEA data"
+msgstr "NMEA verisi göster"
+
+msgid "Rules"
+msgstr "Kurallar"
+
+msgid "Lock on road"
+msgstr "Yola Kilitlen"
+
+msgid "Northing"
+msgstr "Kuzey mesafesi"
+
+msgid "Map follows Vehicle"
+msgstr "Harita aracı takip etsin"
+
+msgid "Message"
+msgstr "Mesaj"
+
+msgid "Route Description"
+msgstr "Rota Açıklaması"
+
+msgid "Height Profile"
+msgstr "Yükseklik Profili"
+
+msgid "Show Locale"
+msgstr "Yerel Ayarlar"
+
+msgid "About Navit"
+msgstr "Navit Hakkında"
+
+#. Authors
+msgid "By"
+msgstr "Yazar"
+
+#. Contributors
+msgid "And all the Navit Team"
+msgstr "Ve tüm Navit takımı"
+
+msgid "members and contributors."
+msgstr "üyeler ve katkıda bulunanlar."
+
+msgid "Map Point"
+msgstr "Harita Noktası"
+
+msgid "Vehicle Position"
+msgstr "Araç Konumu"
+
+msgid "Main menu"
+msgstr "Ana menü"
+
+msgid ""
+"Show\n"
+"Map"
+msgstr "Haritayı Göster"
+
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgid "Tools"
+msgstr "Araçlar"
+
+msgid "About"
+msgstr "Hakkında"
+
+msgid "Actions"
+msgstr "Eylemler"
+
+msgid "Quit"
+msgstr "Çık"
+
+msgid ""
+"Stop\n"
+"Navigation"
+msgstr ""
+"Navigasyonu\n"
+"Durdur"
+
+msgid "Window Mode"
+msgstr "Pencere Modu"
+
+msgid "Description"
+msgstr "Açıklama"
+
+msgid "horse"
+msgstr "at"
+
+#. chr:
+#. flags used for a truck: (first flag number is 0)
+#. 8: SIZE_OR_WEIGHT_LIMIT
+#. 21: TRANSPORT_TRUCK
+#. speed setup:
+#. 'speed' data of the atkaction for a car is
+#. reduced about 10 km/h. When the speed was at
+#. 10 km/h, I reduced it to 5 km/h.
+#. 'route_weight' data has been treated in the same way.
+#. If you want to discourage the use of small roads,
+#. just reduce this value.
+#. size and weight setup:
+#. This is an example, you have to use the data of your truck.
+#. bobshaffer's standard truck:
+#. (1 lb = 453.59237 g, 1 foot = .3048 m)
+#. (data has to be in [cm] and [kg] according to 'atkaction.h')
+#. width=  9    feet,   274 cm
+#. height= 13.5  feet,   411 cm
+#. length= 70    feet,  2134 cm
+#. weight= 80000 lbs,  36287 kg
+#. axle_weight= 34000 lbs,  15422 kg
+#. 
+msgid "truck"
+msgstr "kamyon"

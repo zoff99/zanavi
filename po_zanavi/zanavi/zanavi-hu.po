@@ -1,0 +1,324 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ZANavi 1.0.0\n"
+"Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
+"POT-Creation-Date: 2011-10-06 22:20+0200\n"
+"PO-Revision-Date: 2011-10-07 06:09+0000\n"
+"Last-Translator: Nathalie Oldenburg <Unknown>\n"
+"Language-Team: zoff99 <zoff@zanavi.cc>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
+"X-Generator: Launchpad (build 14124)\n"
+
+msgid "map download"
+msgstr "Térkép letöltése"
+
+msgid "Welcome to ZANavi"
+msgstr "Üdvözöljük a ZANavi-ban!"
+
+msgid "More info"
+msgstr "Több információ"
+
+msgid "zoom in"
+msgstr "nagyítás"
+
+msgid "zoom out"
+msgstr "kicsinyítés"
+
+#. TRANSLATORS: text to translate is: exit ZANavi
+msgid "exit navit"
+msgstr "KIlépés a ZANavi-ból"
+
+msgid "toggle POI"
+msgstr "POI ki/be"
+
+msgid "address search (offline)"
+msgstr "Címkeresés (offline)"
+
+msgid "address search (online)"
+msgstr "Címkeresés (online)"
+
+msgid "Mapdownload"
+msgstr "Térképletöltés"
+
+msgid "downloading"
+msgstr "letöltés"
+
+msgid "ETA"
+msgstr "Becsült hátralévő idő"
+
+msgid "Error downloading map!"
+msgstr "Hiba térképletöltés közben!"
+
+msgid "Error downloading map, resuming"
+msgstr "Hiba térképletöltés közben\\nújrafelvétel"
+
+msgid "ready"
+msgstr "kész"
+
+msgid "Ok"
+msgstr "Rendben"
+
+msgid "No address found"
+msgstr "Cím nem található"
+
+msgid "Enter: City and Street"
+msgstr "Város, utca:"
+
+msgid "No search string entered"
+msgstr "Keresőmező üres"
+
+msgid "setting destination to"
+msgstr "Cél beállítva:"
+
+msgid "getting search results"
+msgstr "Eredmények keresése"
+
+msgid "searching ..."
+msgstr "keresés ..."
+
+msgid "No Results found!"
+msgstr "Nincs találat!"
+
+#. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr "Térképadatok: (c) OpenStreetMap contributors, CC-BY-SA"
+
+msgid "partial match"
+msgstr "Részleges egyezés"
+
+msgid "Search"
+msgstr "Keresés"
+
+msgid "drive here"
+msgstr "Ide menj!"
+
+msgid "loading search results"
+msgstr "eredmények betöltése"
+
+msgid "towns"
+msgstr "városok"
+
+msgid "delete maps"
+msgstr "térképek törlése"
+
+msgid "download maps"
+msgstr "térképek letöltése"
+
+msgid "Map already up to date"
+msgstr "Térkép aktuális!"
+
+msgid "search full mapfile [BETA]"
+msgstr "Teljes adatbázis keresése [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_fast_provider"
+msgstr "GSM/3g/Wireless"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_fast_provider"
+msgstr "GSM/3g/Wireless (Internet!) használata a pozíciómeghatározáshoz"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__follow_gps"
+msgstr "Követés"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__follow_gps"
+msgstr "A térkép követi a helyzetet (sticky)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_vehicle_in_center"
+msgstr "Pozíció a középpontban"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_vehicle_in_center"
+msgstr "A pozíció a térkép közepére rögzül"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_base"
+msgstr "Iránytű"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_base"
+msgstr "Iránytű mutatása; sok CPU-t zabál!"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_always"
+msgstr "Iránytű menet közben"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_always"
+msgstr "Iránytű használata menet közben is"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_fast"
+msgstr "gyors iránytű"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_fast"
+msgstr "Az iránytű gyorsítása, még több CPU-t zabál!"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_imperial"
+msgstr "Mértékegységek angolszászra"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_imperial"
+msgstr "Mérföld, láb stb. km, méter helyett"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_3d_map"
+msgstr "3D térkép"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_3d_map"
+msgstr "3D térkép bekapcsolása 2D helyett [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_anti_aliasing"
+msgstr "Kontúrsimítás"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_anti_aliasing"
+msgstr "Kontúrsimítás bekapcsolása; enélkül a térkép gyorsabb."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__gui_oneway_arrows"
+msgstr "Egyirányú utcák"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__gui_oneway_arrows"
+msgstr "Egyirányú utcák jelzése [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_debug_messages"
+msgstr "Debug"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_debug_messages"
+msgstr "Hibakövetési jelentések (debug) megjelenítése"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__navit_lang"
+msgstr "Nyelv"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__navit_lang"
+msgstr "Írott és hangos nyelv kiválasztása; újraindítás szükséges"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_lock_on_roads"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_lock_on_roads"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_route_highways"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_route_highways"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__save_zoomlevel"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__save_zoomlevel"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_sat_status"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_sat_status"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_agps"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_agps"
+msgstr ""
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__INFO_BOX_TITLE__"
+msgstr "Üdvözöljük a ZANavi-ban!"
+
+#. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
+msgid "__INFO_BOX_TEXT__"
+msgstr ""
+"Először használja a ZANavi-t!\\n\\n Kezdetnek válassza a \"Térképek "
+"letöltése\"\\n menüpontot, és töltsön le egy térképet\\n a kívánt "
+"területről.\\n Ez egy nagy adatállományt fog letölteni, tehat kérjük\\n "
+"bizonyosodjon meg, hogy átalánydíjas letöltéses (flatrate) vagy hasonló "
+"előfizetése van (különben sokba kerülhet)!\\n\\n Térképadatok:\\n CC-BY-SA "
+"OpenStreetMap Project\\n\\n További információkért\\n látogassa meg "
+"weblapunkat:\\n http://zanavi.cc\\n\\n Sok örömet kívánunk a ZANavi "
+"használatával!"
+
+msgid "Announcer Off"
+msgstr "Hangbemondás ki"
+
+msgid "Announcer On"
+msgstr "Hangbemondás be"
+
+msgid ""
+"Language is not available for TTS! Using your phone's default settings"
+msgstr ""
+"A hangbemondás e nyelven nem létezik, a telefon alapértelmezését fogjuk "
+"használni."
+
+msgid "Using Voice for:"
+msgstr "A hangbemondás nyelve:"
+
+msgid "Settings"
+msgstr "Beállitások"
+
+msgid "Creating outputfile, wait"
+msgstr "Kimeneti adatállomány előállítása,\\nkérem, várjon!"
+
+msgid "Creating outputfile, long time"
+msgstr ""
+"Kimeneti adatállomány előállítása,\\nsokáig eltarthat, kérem, várjon!"
+
+msgid "MD5 mismatch"
+msgstr "MD5 checksum hiba"
+
+msgid "generating MD5 checksum"
+msgstr "MD5 checksum kiszámítása"
+
+msgid "Use as destination"
+msgstr "Állítsd be célként"
+
+msgid "back"
+msgstr "vissza"
+
+msgid "destination"
+msgstr "Cél"
+
+msgid "wait ..."
+msgstr "Várj..."
+
+msgid "Enter Destination"
+msgstr "Úticél megadása"
+
+msgid "Zoom to Route"
+msgstr ""
+
+msgid "Stop Navigation"
+msgstr ""
+
+msgid "Streets"
+msgstr ""
+
+msgid "touch map to zoom"
+msgstr ""

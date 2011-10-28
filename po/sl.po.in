@@ -1,0 +1,1651 @@
+# Slovenian translation for navit
+# Copyright (c) 2008 The Navit Team
+# This file is distributed under the same license as the navit package.
+# Štefan Baebler <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: navit 0.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-22 15:11+0100\n"
+"PO-Revision-Date: 2009-07-02 21:39+0000\n"
+"Last-Translator: KaZeR <Unknown>\n"
+"Language-Team: Slovenian <sl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
+"n%100==4 ? 3 : 0);\n"
+"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
+"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
+
+#, c-format
+msgid "Running from source directory\n"
+msgstr "Zagon iz mape z izvorno kodo\n"
+
+#, c-format
+msgid "setting '%s' to '%s'\n"
+msgstr "nastavljam '%s' na '%s'\n"
+
+#. TRANSLATORS: the following counts refer to streets
+msgid "zeroth"
+msgstr "ničt"
+
+msgid "first"
+msgstr "prv"
+
+msgid "second"
+msgstr "drug"
+
+msgid "third"
+msgstr "tretj"
+
+msgid "fourth"
+msgstr "četrt"
+
+msgid "fifth"
+msgstr "pet"
+
+msgid "sixth"
+msgstr "šest"
+
+#. TRANSLATORS: the following counts refer to roundabout exits
+msgid "zeroth exit"
+msgstr ""
+
+msgid "first exit"
+msgstr ""
+
+msgid "second exit"
+msgstr ""
+
+msgid "third exit"
+msgstr ""
+
+msgid "fourth exit"
+msgstr ""
+
+msgid "fifth exit"
+msgstr ""
+
+msgid "sixth exit"
+msgstr ""
+
+#, c-format
+msgid "%d m"
+msgstr "%d m"
+
+#, c-format
+msgid "in %d m"
+msgstr "Čez %d m"
+
+#, c-format
+msgid "%d meters"
+msgstr "%d metrov"
+
+#, c-format
+msgid "in %d meters"
+msgstr "Čez %d metrov"
+
+#, c-format
+msgid "%d.%d kilometers"
+msgstr ""
+
+#, c-format
+msgid "in %d.%d kilometers"
+msgstr "Čez %d.%d kilometov"
+
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "%d kilometrov"
+msgstr[1] "%d kilometer"
+msgstr[2] "%d kilometra"
+msgstr[3] "%d kilometri"
+
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "Čez %d kilometrov"
+msgstr[1] "Čez %d kilometer"
+msgstr[2] "Čez %d kilometra"
+msgstr[3] "Čez %d kilometre"
+
+msgid "exit"
+msgstr "odcep"
+
+msgid "into the ramp"
+msgstr ""
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#, c-format
+msgid "%sinto the street %s%s%s"
+msgstr "%sna %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|male form"
+msgstr "%sna %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|female form"
+msgstr "%sna %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|neutral form"
+msgstr "%sna %s%s%s"
+
+#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#, c-format
+msgid "%sinto the %s"
+msgstr ""
+
+#. TRANSLATORS: right, as in 'Turn right'
+msgid "right"
+msgstr "desno"
+
+#. TRANSLATORS: left, as in 'Turn left'
+msgid "left"
+msgstr "levo"
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "easily "
+msgstr "rahlo "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "strongly "
+msgstr "ostro "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "really strongly "
+msgstr ""
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "unknown "
+msgstr "neznano "
+
+msgid "When possible, please turn around"
+msgstr "Obrnite čim bo to mogoče"
+
+#, c-format
+msgid "Enter the roundabout soon and leave it at the %s"
+msgstr ""
+
+#. TRANSLATORS: %s is the distance to the roundabout
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "Čez %s zapeljite v krožišče"
+
+#, c-format
+msgid "then leave the roundabout at the %s"
+msgstr ""
+
+#, c-format
+msgid "Leave the roundabout at the %s"
+msgstr ""
+
+#, c-format
+msgid "Follow the road for the next %s"
+msgstr "Ostanite na tej cesti naslednjih %s"
+
+msgid "soon"
+msgstr "kmalu"
+
+#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#, c-format
+msgid "Take the %1$s road to the %2$s"
+msgstr "Zavijte na %2$s v %1$so cesto"
+
+#, c-format
+msgid "after %i roads"
+msgstr "čez %i cest"
+
+msgid "now"
+msgstr "sedaj"
+
+#, c-format
+msgid "then take the %1$s road to the %2$s"
+msgstr "nato zavijte na %2$s v %1$so cesto"
+
+msgid "error"
+msgstr "napaka"
+
+#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#, c-format
+msgid "Turn %1$s%2$s %3$s%4$s"
+msgstr "%3$s zavijte %1$s%2$s %4$s"
+
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "nato zavijte %1$s%2$s %3$s%4$s"
+
+#, c-format
+msgid "You have reached your destination %s"
+msgstr "%s ste na cilju"
+
+msgid "then you have reached your destination."
+msgstr "in ste na cilju."
+
+msgid "Position"
+msgstr "Položaj"
+
+msgid "Command"
+msgstr "Navodilo"
+
+msgid "Length"
+msgstr "Razdalja"
+
+msgid "km"
+msgstr "km"
+
+msgid "m"
+msgstr "m"
+
+msgid "Time"
+msgstr "Čas"
+
+msgid "Destination Length"
+msgstr "Razdalja do cilja"
+
+msgid "Destination Time"
+msgstr "Čas do cilja"
+
+msgid "Roadbook"
+msgstr "Načrt poti"
+
+msgid "Set as position"
+msgstr "Nastavi kot položaj"
+
+msgid "Set as destination"
+msgstr "Nastavi kot cilj"
+
+msgid "Add as bookmark"
+msgstr "Dodaj zaznamek"
+
+#, c-format
+msgid "Point 0x%x 0x%x"
+msgstr "Točka 0x%x 0x%x"
+
+#, c-format
+msgid "Screen coord : %d %d"
+msgstr "Koordinate zaslona: %d %d"
+
+#. 020
+msgid "Andorra"
+msgstr "Andora"
+
+#. 784
+msgid "United Arab Emirates"
+msgstr "Združeni arabski emirati"
+
+#. 004
+msgid "Afghanistan"
+msgstr "Afganistan"
+
+#. 028
+msgid "Antigua and Barbuda"
+msgstr "Antigva in Barbuda"
+
+#. 660
+msgid "Anguilla"
+msgstr "Angvila"
+
+#. 008
+msgid "Albania"
+msgstr "Albanija"
+
+#. 051
+msgid "Armenia"
+msgstr "Armenija"
+
+#. 530
+msgid "Netherlands Antilles"
+msgstr "Nizozemski Antili"
+
+#. 024
+msgid "Angola"
+msgstr "Angola"
+
+#. 010
+msgid "Antarctica"
+msgstr "Antarktika"
+
+#. 032
+msgid "Argentina"
+msgstr "Argentina"
+
+#. 016
+msgid "American Samoa"
+msgstr "Ameriška Samoa"
+
+#. 040
+msgid "Austria"
+msgstr "Avstrija"
+
+#. 036
+msgid "Australia"
+msgstr "Avstralija"
+
+#. 533
+msgid "Aruba"
+msgstr "Aruba"
+
+#. 248
+msgid "Aland Islands"
+msgstr "Aland Islands"
+
+#. 031
+msgid "Azerbaijan"
+msgstr "Azerbajdžan"
+
+#. 070
+msgid "Bosnia and Herzegovina"
+msgstr "Bosna in Hercegovina"
+
+#. 052
+msgid "Barbados"
+msgstr "Barbados"
+
+#. 050
+msgid "Bangladesh"
+msgstr "Bangladeš"
+
+#. 056
+msgid "Belgium"
+msgstr "Belgija"
+
+#. 854
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+#. 100
+msgid "Bulgaria"
+msgstr "Bolgarija"
+
+#. 048
+msgid "Bahrain"
+msgstr "Bahrajn"
+
+#. 108
+msgid "Burundi"
+msgstr "Burundi"
+
+#. 204
+msgid "Benin"
+msgstr "Benin"
+
+#. 652
+msgid "Saint Barthelemy"
+msgstr "Saint Barthelemy"
+
+#. 060
+msgid "Bermuda"
+msgstr "Bermudi"
+
+#. 096
+msgid "Brunei Darussalam"
+msgstr "Brunej"
+
+#. 068
+msgid "Bolivia"
+msgstr "Bolivija"
+
+#. 076
+msgid "Brazil"
+msgstr "Brazilija"
+
+#. 044
+msgid "Bahamas"
+msgstr "Bahami"
+
+#. 064
+msgid "Bhutan"
+msgstr "Butan"
+
+#. 074
+msgid "Bouvet Island"
+msgstr "Bouvetov otok"
+
+#. 072
+msgid "Botswana"
+msgstr "Bocvana"
+
+#. 112
+msgid "Belarus"
+msgstr "Belorusija"
+
+#. 084
+msgid "Belize"
+msgstr "Belize"
+
+#. 124
+msgid "Canada"
+msgstr "Kanada"
+
+#. 166
+msgid "Cocos (Keeling) Islands"
+msgstr "Kokosovi otoki"
+
+#. 180
+msgid "Congo, Democratic Republic of the"
+msgstr "Kongo, Demokratična Republika"
+
+#. 140
+msgid "Central African Republic"
+msgstr "Srednjeafriška Republika"
+
+#. 178
+msgid "Congo"
+msgstr "Kongo"
+
+#. 756
+msgid "Switzerland"
+msgstr "Švica"
+
+#. 384
+msgid "Cote d'Ivoire"
+msgstr "Slonokoščena obala"
+
+#. 184
+msgid "Cook Islands"
+msgstr "Cookovi otoki"
+
+#. 152
+msgid "Chile"
+msgstr "Čile"
+
+#. 120
+msgid "Cameroon"
+msgstr "Kamerun"
+
+#. 156
+msgid "China"
+msgstr "Kitajska"
+
+#. 170
+msgid "Colombia"
+msgstr "Kolumbija"
+
+#. 188
+msgid "Costa Rica"
+msgstr "Kostarika"
+
+#. 192
+msgid "Cuba"
+msgstr "Kuba"
+
+#. 132
+msgid "Cape Verde"
+msgstr "Zelenortski otoki"
+
+#. 162
+msgid "Christmas Island"
+msgstr "Božični otok"
+
+#. 196
+msgid "Cyprus"
+msgstr "Ciper"
+
+#. 203
+msgid "Czech Republic"
+msgstr "Češka"
+
+#. 276
+msgid "Germany"
+msgstr "Nemčija"
+
+#. 262
+msgid "Djibouti"
+msgstr "Džibuti"
+
+#. 208
+msgid "Denmark"
+msgstr "Danska"
+
+#. 212
+msgid "Dominica"
+msgstr "Dominika"
+
+#. 214
+msgid "Dominican Republic"
+msgstr "Dominikanska republika"
+
+#. 012
+msgid "Algeria"
+msgstr "Alžirija"
+
+#. 218
+msgid "Ecuador"
+msgstr "Ekvador"
+
+#. 233
+msgid "Estonia"
+msgstr "Estonija"
+
+#. 818
+msgid "Egypt"
+msgstr "Egipt"
+
+#. 732
+msgid "Western Sahara"
+msgstr "Zahodna Sahara"
+
+#. 232
+msgid "Eritrea"
+msgstr "Eritreja"
+
+#. 724
+msgid "Spain"
+msgstr "Španija"
+
+#. 231
+msgid "Ethiopia"
+msgstr "Etiopija"
+
+#. 246
+msgid "Finland"
+msgstr "Finska"
+
+#. 242
+msgid "Fiji"
+msgstr "Fidži"
+
+#. 238
+msgid "Falkland Islands (Malvinas)"
+msgstr "Falklandski otoki"
+
+#. 583
+msgid "Micronesia, Federated States of"
+msgstr "Mikronezija"
+
+#. 234
+msgid "Faroe Islands"
+msgstr "Ferski otoki"
+
+#. 250
+msgid "France"
+msgstr "Francija"
+
+#. 266
+msgid "Gabon"
+msgstr "Gabon"
+
+#. 826
+msgid "United Kingdom"
+msgstr "Združeno kraljestvo"
+
+#. 308
+msgid "Grenada"
+msgstr "Grenada"
+
+#. 268
+msgid "Georgia"
+msgstr "Gruzija"
+
+#. 254
+msgid "French Guiana"
+msgstr "Francoska Gvajana"
+
+#. 831
+msgid "Guernsey"
+msgstr "Guernsey"
+
+#. 288
+msgid "Ghana"
+msgstr "Gana"
+
+#. 292
+msgid "Gibraltar"
+msgstr "Gibraltar"
+
+#. 304
+msgid "Greenland"
+msgstr "Grenlandija"
+
+#. 270
+msgid "Gambia"
+msgstr "Gambija"
+
+#. 324
+msgid "Guinea"
+msgstr "Gvineja"
+
+#. 312
+msgid "Guadeloupe"
+msgstr "Gvadelup"
+
+#. 226
+msgid "Equatorial Guinea"
+msgstr "Ekvatorialna Gvineja"
+
+#. 300
+msgid "Greece"
+msgstr "Grčija"
+
+#. 239
+msgid "South Georgia and the South Sandwich Islands"
+msgstr "Južna Georgia in Južni Sandwichevi otoki"
+
+#. 320
+msgid "Guatemala"
+msgstr "Gvatemala"
+
+#. 316
+msgid "Guam"
+msgstr "Guam"
+
+#. 624
+msgid "Guinea-Bissau"
+msgstr "Gvineja-Bissau"
+
+#. 328
+msgid "Guyana"
+msgstr "Gvajana"
+
+#. 344
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#. 334
+msgid "Heard Island and McDonald Islands"
+msgstr "Otoki Heard in McDonald"
+
+#. 340
+msgid "Honduras"
+msgstr "Honduras"
+
+#. 191
+msgid "Croatia"
+msgstr "Hrvaška"
+
+#. 332
+msgid "Haiti"
+msgstr "Haiti"
+
+#. 348
+msgid "Hungary"
+msgstr "Madžarska"
+
+#. 360
+msgid "Indonesia"
+msgstr "Indonezija"
+
+#. 372
+msgid "Ireland"
+msgstr "Irska"
+
+#. 376
+msgid "Israel"
+msgstr "Izrael"
+
+#. 833
+msgid "Isle of Man"
+msgstr "Otok Man"
+
+#. 356
+msgid "India"
+msgstr "Indija"
+
+#. 086
+msgid "British Indian Ocean Territory"
+msgstr "Britansko ozemlje v Indijskem oceanu"
+
+#. 368
+msgid "Iraq"
+msgstr "Irak"
+
+#. 364
+msgid "Iran, Islamic Republic of"
+msgstr "Iran"
+
+#. 352
+msgid "Iceland"
+msgstr "Islandija"
+
+#. 380
+msgid "Italy"
+msgstr "Italija"
+
+#. 832
+msgid "Jersey"
+msgstr "Jersey"
+
+#. 388
+msgid "Jamaica"
+msgstr "Jamajka"
+
+#. 400
+msgid "Jordan"
+msgstr "Jordanija"
+
+#. 392
+msgid "Japan"
+msgstr "Japonska"
+
+#. 404
+msgid "Kenya"
+msgstr "Kenija"
+
+#. 417
+msgid "Kyrgyzstan"
+msgstr "Kirgizistan"
+
+#. 116
+msgid "Cambodia"
+msgstr "Kambodža"
+
+#. 296
+msgid "Kiribati"
+msgstr "Kiribati"
+
+#. 174
+msgid "Comoros"
+msgstr "Komori"
+
+#. 659
+msgid "Saint Kitts and Nevis"
+msgstr "Saint Kitts in Nevis"
+
+#. 408
+msgid "Korea, Democratic People's Republic of"
+msgstr "Severna Koreja"
+
+#. 410
+msgid "Korea, Republic of"
+msgstr "Južna Koreja"
+
+#. 414
+msgid "Kuwait"
+msgstr "Kuvajt"
+
+#. 136
+msgid "Cayman Islands"
+msgstr "Kajmanski otoki"
+
+#. 398
+msgid "Kazakhstan"
+msgstr "Kazahstan"
+
+#. 418
+msgid "Lao People's Democratic Republic"
+msgstr "Laoška ljudska demokratična republika"
+
+#. 422
+msgid "Lebanon"
+msgstr "Libanon"
+
+#. 662
+msgid "Saint Lucia"
+msgstr "Saint Lucia"
+
+#. 438
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
+
+#. 144
+msgid "Sri Lanka"
+msgstr "Šrilanka"
+
+#. 430
+msgid "Liberia"
+msgstr "Liberija"
+
+#. 426
+msgid "Lesotho"
+msgstr "Lesoto"
+
+#. 440
+msgid "Lithuania"
+msgstr "Litva"
+
+#. 442
+msgid "Luxembourg"
+msgstr "Luksemburg"
+
+#. 428
+msgid "Latvia"
+msgstr "Latvija"
+
+#. 434
+msgid "Libyan Arab Jamahiriya"
+msgstr "Libijska arabska džamahirija"
+
+#. 504
+msgid "Morocco"
+msgstr "Maroko"
+
+#. 492
+msgid "Monaco"
+msgstr "Monako"
+
+#. 498
+msgid "Moldova, Republic of"
+msgstr "Moldavija"
+
+#. 499
+msgid "Montenegro"
+msgstr "Črna Gora"
+
+#. 663
+msgid "Saint Martin (French part)"
+msgstr "Saint Martin (Francoski del)"
+
+#. 450
+msgid "Madagascar"
+msgstr "Madagaskar"
+
+#. 584
+msgid "Marshall Islands"
+msgstr "Marshallovi otoki"
+
+#. 807
+msgid "Macedonia, the former Yugoslav Republic of"
+msgstr "Makedonija"
+
+#. 466
+msgid "Mali"
+msgstr "Mali"
+
+#. 104
+msgid "Myanmar"
+msgstr "Mjanmar"
+
+#. 496
+msgid "Mongolia"
+msgstr "Mongolija"
+
+#. 446
+msgid "Macao"
+msgstr "Macao"
+
+#. 580
+msgid "Northern Mariana Islands"
+msgstr "Severni Marianski otoki"
+
+#. 474
+msgid "Martinique"
+msgstr "Martinik"
+
+#. 478
+msgid "Mauritania"
+msgstr "Mavretanija"
+
+#. 500
+msgid "Montserrat"
+msgstr "Montserrat"
+
+#. 470
+msgid "Malta"
+msgstr "Malta"
+
+#. 480
+msgid "Mauritius"
+msgstr "Mavricij"
+
+#. 462
+msgid "Maldives"
+msgstr "Maldivi"
+
+#. 454
+msgid "Malawi"
+msgstr "Malavi"
+
+#. 484
+msgid "Mexico"
+msgstr "Mehika"
+
+#. 458
+msgid "Malaysia"
+msgstr "Malezija"
+
+#. 508
+msgid "Mozambique"
+msgstr "Mozambik"
+
+#. 516
+msgid "Namibia"
+msgstr "Namibija"
+
+#. 540
+msgid "New Caledonia"
+msgstr "Nova Kaledonija"
+
+#. 562
+msgid "Niger"
+msgstr "Niger"
+
+#. 574
+msgid "Norfolk Island"
+msgstr "Norfolški otok"
+
+#. 566
+msgid "Nigeria"
+msgstr "Nigerija"
+
+#. 558
+msgid "Nicaragua"
+msgstr "Nikaragva"
+
+#. 528
+msgid "Netherlands"
+msgstr "Nizozemska"
+
+#. 578
+msgid "Norway"
+msgstr "Norveška"
+
+#. 524
+msgid "Nepal"
+msgstr "Nepal"
+
+#. 520
+msgid "Nauru"
+msgstr "Nauru"
+
+#. 570
+msgid "Niue"
+msgstr "Niue"
+
+#. 554
+msgid "New Zealand"
+msgstr "Nova Zelandija"
+
+#. 512
+msgid "Oman"
+msgstr "Oman"
+
+#. 591
+msgid "Panama"
+msgstr "Panama"
+
+#. 604
+msgid "Peru"
+msgstr "Peru"
+
+#. 258
+msgid "French Polynesia"
+msgstr "Francoska Polinezija"
+
+#. 598
+msgid "Papua New Guinea"
+msgstr "Papua Nova Gvineja"
+
+#. 608
+msgid "Philippines"
+msgstr "Filipini"
+
+#. 586
+msgid "Pakistan"
+msgstr "Pakistan"
+
+#. 616
+msgid "Poland"
+msgstr "Poljska"
+
+#. 666
+msgid "Saint Pierre and Miquelon"
+msgstr "Saint Pierre in Miquelon"
+
+#. 612
+msgid "Pitcairn"
+msgstr "Pitcairn"
+
+#. 630
+msgid "Puerto Rico"
+msgstr "Portoriko"
+
+#. 275
+msgid "Palestinian Territory, Occupied"
+msgstr "Palestinsko ozemlje, okupirano"
+
+#. 620
+msgid "Portugal"
+msgstr "Portugalska"
+
+#. 585
+msgid "Palau"
+msgstr "Palau"
+
+#. 600
+msgid "Paraguay"
+msgstr "Paragvaj"
+
+#. 634
+msgid "Qatar"
+msgstr "Katar"
+
+#. 638
+msgid "Reunion"
+msgstr "Reunion"
+
+#. 642
+msgid "Romania"
+msgstr "Romunija"
+
+#. 688
+msgid "Serbia"
+msgstr "Srbija"
+
+#. 643
+msgid "Russian Federation"
+msgstr "Ruska federacija"
+
+#. 646
+msgid "Rwanda"
+msgstr "Ruanda"
+
+#. 682
+msgid "Saudi Arabia"
+msgstr "Saudska Arabija"
+
+#. 090
+msgid "Solomon Islands"
+msgstr "Solomonovi otoki"
+
+#. 690
+msgid "Seychelles"
+msgstr "Sejšeli"
+
+#. 736
+msgid "Sudan"
+msgstr "Sudan"
+
+#. 752
+msgid "Sweden"
+msgstr "Švedska"
+
+#. 702
+msgid "Singapore"
+msgstr "Singapur"
+
+#. 654
+msgid "Saint Helena"
+msgstr "Sveta Helena"
+
+#. 705
+msgid "Slovenia"
+msgstr "Slovenija"
+
+#. 744
+msgid "Svalbard and Jan Mayen"
+msgstr "Svalbard in Jan Mayen"
+
+#. 703
+msgid "Slovakia"
+msgstr "Slovaška"
+
+#. 694
+msgid "Sierra Leone"
+msgstr "Sierra Leone"
+
+#. 674
+msgid "San Marino"
+msgstr "San Marino"
+
+#. 686
+msgid "Senegal"
+msgstr "Senegal"
+
+#. 706
+msgid "Somalia"
+msgstr "Somalija"
+
+#. 740
+msgid "Suriname"
+msgstr "Surinam"
+
+#. 678
+msgid "Sao Tome and Principe"
+msgstr "Sao Tome in Principe"
+
+#. 222
+msgid "El Salvador"
+msgstr "Salvador"
+
+#. 760
+msgid "Syrian Arab Republic"
+msgstr "Sirska arabska republika"
+
+#. 748
+msgid "Swaziland"
+msgstr "Svazi"
+
+#. 796
+msgid "Turks and Caicos Islands"
+msgstr "Turks in Caicoški otoki"
+
+#. 148
+msgid "Chad"
+msgstr "Čad"
+
+#. 260
+msgid "French Southern Territories"
+msgstr "Francoska južna ozemlja"
+
+#. 768
+msgid "Togo"
+msgstr "Togo"
+
+#. 764
+msgid "Thailand"
+msgstr "Tajska"
+
+#. 762
+msgid "Tajikistan"
+msgstr "Tadžikistan"
+
+#. 772
+msgid "Tokelau"
+msgstr "Tokelau"
+
+#. 626
+msgid "Timor-Leste"
+msgstr "Vzhodni Timor"
+
+#. 795
+msgid "Turkmenistan"
+msgstr "Turkmenistan"
+
+#. 788
+msgid "Tunisia"
+msgstr "Tunizija"
+
+#. 776
+msgid "Tonga"
+msgstr "Tonga"
+
+#. 792
+msgid "Turkey"
+msgstr "Turčija"
+
+#. 780
+msgid "Trinidad and Tobago"
+msgstr "Trinidad in Tobago"
+
+#. 798
+msgid "Tuvalu"
+msgstr "Tuvalu"
+
+#. 158
+msgid "Taiwan, Province of China"
+msgstr "Tajvan, provinca Kitajske"
+
+#. 834
+msgid "Tanzania, United Republic of"
+msgstr "Tanzanija"
+
+#. 804
+msgid "Ukraine"
+msgstr "Ukrajina"
+
+#. 800
+msgid "Uganda"
+msgstr "Uganda"
+
+#. 581
+msgid "United States Minor Outlying Islands"
+msgstr "manjši otoki Združenih držav Amerike"
+
+#. 840
+msgid "United States"
+msgstr "Združene države Amerike"
+
+#. 858
+msgid "Uruguay"
+msgstr "Urugvaj"
+
+#. 860
+msgid "Uzbekistan"
+msgstr "Uzbekistan"
+
+#. 336
+msgid "Holy See (Vatican City State)"
+msgstr "Sveti sedež (Vatikanska mestna država)"
+
+#. 670
+msgid "Saint Vincent and the Grenadines"
+msgstr "Saint Vincent in Grenadini"
+
+#. 862
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#. 092
+msgid "Virgin Islands, British"
+msgstr "Britanski Deviški otoki"
+
+#. 850
+msgid "Virgin Islands, U.S."
+msgstr "Ameriški Deviški otoki"
+
+#. 704
+msgid "Viet Nam"
+msgstr "Vietnam"
+
+#. 548
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+#. 876
+msgid "Wallis and Futuna"
+msgstr "Wallis in Futuna"
+
+#. 882
+msgid "Samoa"
+msgstr "Samoa"
+
+#. 887
+msgid "Yemen"
+msgstr "Jemen"
+
+#. 175
+msgid "Mayotte"
+msgstr "Mayotte"
+
+#. 710
+msgid "South Africa"
+msgstr "Južnoafriška Republika"
+
+#. 894
+msgid "Zambia"
+msgstr "Zambija"
+
+#. 716
+msgid "Zimbabwe"
+msgstr "Zimbabve"
+
+msgid "* Unknown, add is_in tags to those cities"
+msgstr ""
+
+msgid "Car"
+msgstr "Avto"
+
+msgid "Iso2"
+msgstr "Iso2"
+
+msgid "Iso3"
+msgstr "Iso3"
+
+msgid "Country"
+msgstr "Država"
+
+msgid "Postal"
+msgstr "Pošta"
+
+msgid "Town"
+msgstr "Mesto"
+
+msgid "District"
+msgstr "Regija"
+
+msgid "Street"
+msgstr "Ulica"
+
+msgid "Number"
+msgstr "Številka"
+
+msgid "Enter Destination"
+msgstr "Vpišite cilj"
+
+msgid "Zip Code"
+msgstr "Poštna številka"
+
+msgid "City"
+msgstr "Mesto"
+
+msgid "District/Township"
+msgstr "Regija"
+
+msgid "Map"
+msgstr "Zemljevid"
+
+msgid "Bookmark"
+msgstr "Zaznamek"
+
+msgid "Destination"
+msgstr "Cilj"
+
+msgid "Display"
+msgstr "Prikaz"
+
+msgid "Route"
+msgstr "Načrt poti"
+
+msgid "Former Destinations"
+msgstr "Prejšnji cilji"
+
+msgid "Bookmarks"
+msgstr "Zaznamki"
+
+msgid "Layout"
+msgstr "Razporeditev"
+
+msgid "Projection"
+msgstr "Projekcija"
+
+msgid "Vehicle"
+msgstr "Vozilo"
+
+msgid "ZoomOut"
+msgstr "Pomanjšava"
+
+msgid "Decrease zoom level"
+msgstr ""
+
+msgid "ZoomIn"
+msgstr "Povečava"
+
+msgid "Increase zoom level"
+msgstr ""
+
+msgid "Recalculate"
+msgstr "Preračunaj"
+
+msgid "Redraw map"
+msgstr ""
+
+msgid "Info"
+msgstr "Podrobnosti"
+
+msgid "Set destination"
+msgstr ""
+
+msgid "Opens address search dialog"
+msgstr ""
+
+msgid "Stop Navigation"
+msgstr "Ustavi navigacijo"
+
+msgid "Test"
+msgstr "Preizkus"
+
+msgid "_Quit"
+msgstr "_Izhod"
+
+msgid "Quit the application"
+msgstr ""
+
+msgid "Show position cursor"
+msgstr ""
+
+msgid "Lock on Road"
+msgstr "Ostani na cesti"
+
+msgid "Keep orientation to the North"
+msgstr ""
+
+msgid "Switches map orientation to the north or the vehicle"
+msgstr ""
+
+msgid "Show/hide route description"
+msgstr ""
+
+msgid "Autozoom"
+msgstr ""
+
+msgid "Enable/disable automatic zoom level changing"
+msgstr ""
+
+msgid "Fullscreen"
+msgstr "Celozaslonski način"
+
+msgid "Data"
+msgstr "Podatki"
+
+msgid "N"
+msgstr "S"
+
+msgid "NE"
+msgstr "SV"
+
+msgid "E"
+msgstr "V"
+
+msgid "SE"
+msgstr "JV"
+
+msgid "S"
+msgstr "J"
+
+msgid "SW"
+msgstr "JZ"
+
+msgid "W"
+msgstr "Z"
+
+msgid "NW"
+msgstr "SZ"
+
+msgid "No"
+msgstr "Ne"
+
+msgid "2D"
+msgstr "2D"
+
+msgid "3D"
+msgstr "3D"
+
+msgid "OT"
+msgstr ""
+
+#, c-format
+msgid "Route %4.0fkm    %02d:%02d ETA"
+msgstr "Načrt poti %4.0fkm    %02d:%02d ETA"
+
+msgid "Route 0000km  0+00:00 ETA"
+msgstr "Načrt poti 0000km  0+00:00 ETA"
+
+msgid "Back to map"
+msgstr "Nazaj na zemljevid"
+
+msgid "Main Menu"
+msgstr "Glavni meni"
+
+msgid "Help"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Add Bookmark"
+msgstr ""
+
+msgid "Add Bookmark folder"
+msgstr ""
+
+msgid "Rename"
+msgstr ""
+
+msgid "POIs"
+msgstr ""
+
+msgid "View in Browser"
+msgstr "Prikaz v brskalniku"
+
+msgid "Streets"
+msgstr "Ceste"
+
+msgid "House numbers"
+msgstr ""
+
+msgid "View Attributes"
+msgstr "Prikaz lastnosti"
+
+msgid "View on map"
+msgstr "Prikaz na zemljevidu"
+
+msgid "Cut Bookmark"
+msgstr ""
+
+msgid "Copy Bookmark"
+msgstr ""
+
+msgid "Rename Bookmark"
+msgstr ""
+
+msgid "Paste Bookmark"
+msgstr ""
+
+msgid "Delete Bookmark"
+msgstr ""
+
+msgid "Paste bookmark"
+msgstr ""
+
+#, c-format
+msgid "Bookmark %s"
+msgstr "Zaznamuj %s"
+
+msgid "House number"
+msgstr ""
+
+msgid "Maps"
+msgstr "Zemljevidi"
+
+msgid "Show Satellite Status"
+msgstr ""
+
+msgid " Elevation "
+msgstr ""
+
+msgid " Azimuth "
+msgstr ""
+
+msgid "Show NMEA Data"
+msgstr ""
+
+msgid "car"
+msgstr ""
+
+msgid "bike"
+msgstr ""
+
+msgid "pedestrian"
+msgstr ""
+
+#, c-format
+msgid "Current profile: %s"
+msgstr ""
+
+#, c-format
+msgid "Change profile to: %s"
+msgstr ""
+
+msgid "Set as active"
+msgstr ""
+
+msgid "Show Satellite status"
+msgstr ""
+
+msgid "Show NMEA data"
+msgstr ""
+
+msgid "Rules"
+msgstr "Pravila"
+
+msgid "Lock on road"
+msgstr "Prikleni na cesto"
+
+msgid "Northing"
+msgstr "Sever zgoraj"
+
+msgid "Map follows Vehicle"
+msgstr "Zemljevid sledi vozilu"
+
+msgid "Message"
+msgstr ""
+
+msgid "Route Description"
+msgstr ""
+
+msgid "Height Profile"
+msgstr ""
+
+msgid "Show Locale"
+msgstr ""
+
+msgid "About Navit"
+msgstr ""
+
+#. Authors
+msgid "By"
+msgstr ""
+
+#. Contributors
+msgid "And all the Navit Team"
+msgstr ""
+
+msgid "members and contributors."
+msgstr ""
+
+msgid "Map Point"
+msgstr ""
+
+msgid "Vehicle Position"
+msgstr "Položaj vozila"
+
+msgid "Main menu"
+msgstr "Glavni meni"
+
+msgid ""
+"Show\n"
+"Map"
+msgstr ""
+
+msgid "Settings"
+msgstr "Nastavitve"
+
+msgid "Tools"
+msgstr "Orodja"
+
+msgid "About"
+msgstr ""
+
+msgid "Actions"
+msgstr "Dejanja"
+
+msgid "Quit"
+msgstr "Izhod"
+
+msgid ""
+"Stop\n"
+"Navigation"
+msgstr ""
+
+msgid "Window Mode"
+msgstr "Okenski način"
+
+msgid "Description"
+msgstr ""
+
+msgid "horse"
+msgstr ""
+
+#. chr:
+#. flags used for a truck: (first flag number is 0)
+#. 8: SIZE_OR_WEIGHT_LIMIT
+#. 21: TRANSPORT_TRUCK
+#. speed setup:
+#. 'speed' data of the atkaction for a car is
+#. reduced about 10 km/h. When the speed was at
+#. 10 km/h, I reduced it to 5 km/h.
+#. 'route_weight' data has been treated in the same way.
+#. If you want to discourage the use of small roads,
+#. just reduce this value.
+#. size and weight setup:
+#. This is an example, you have to use the data of your truck.
+#. bobshaffer's standard truck:
+#. (1 lb = 453.59237 g, 1 foot = .3048 m)
+#. (data has to be in [cm] and [kg] according to 'atkaction.h')
+#. width=  9    feet,   274 cm
+#. height= 13.5  feet,   411 cm
+#. length= 70    feet,  2134 cm
+#. weight= 80000 lbs,  36287 kg
+#. axle_weight= 34000 lbs,  15422 kg
+#. 
+msgid "truck"
+msgstr ""

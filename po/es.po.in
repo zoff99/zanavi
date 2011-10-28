@@ -1,0 +1,1651 @@
+# Spanish translations for navit
+# Copyright (C) 2008 The Navit Team
+# This file is distributed under the same license as the navit package.
+# Chris Eubank <cteubank@gmail.com> 2007
+# Emilio Gómez Fernández <Unknown> 2008
+msgid ""
+msgstr ""
+"Project-Id-Version: navit 0.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-22 15:11+0100\n"
+"PO-Revision-Date: 2011-09-20 09:42+0000\n"
+"Last-Translator: Ricardo Jurado <Unknown>\n"
+"Language-Team: Chris Eubank <cteubank@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
+"X-Poedit-Bookmarks: -1,-1,-1,23,-1,-1,-1,-1,-1,-1\n"
+"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
+
+#, c-format
+msgid "Running from source directory\n"
+msgstr "Ejecutando desde el directorio fuente\n"
+
+#, c-format
+msgid "setting '%s' to '%s'\n"
+msgstr "configurando '%s' a '%s'\n"
+
+#. TRANSLATORS: the following counts refer to streets
+msgid "zeroth"
+msgstr "cero"
+
+msgid "first"
+msgstr "primera"
+
+msgid "second"
+msgstr "segunda"
+
+msgid "third"
+msgstr "tercera"
+
+msgid "fourth"
+msgstr "cuarta"
+
+msgid "fifth"
+msgstr "quinta"
+
+msgid "sixth"
+msgstr "sexta"
+
+#. TRANSLATORS: the following counts refer to roundabout exits
+msgid "zeroth exit"
+msgstr "salida cero"
+
+msgid "first exit"
+msgstr "primera salida"
+
+msgid "second exit"
+msgstr "segunda salida"
+
+msgid "third exit"
+msgstr "tercera salida"
+
+msgid "fourth exit"
+msgstr "cuarta salida"
+
+msgid "fifth exit"
+msgstr "quinta salida"
+
+msgid "sixth exit"
+msgstr "sexta salida"
+
+#, c-format
+msgid "%d m"
+msgstr "%d metros"
+
+#, c-format
+msgid "in %d m"
+msgstr "en %d metros"
+
+#, c-format
+msgid "%d meters"
+msgstr "%d metros"
+
+#, c-format
+msgid "in %d meters"
+msgstr "en %d metros"
+
+#, c-format
+msgid "%d.%d kilometers"
+msgstr "%d,%d kilómetros"
+
+#, c-format
+msgid "in %d.%d kilometers"
+msgstr "en %d,%d kilómetros"
+
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "un kilómetro"
+msgstr[1] "%d kilómetros"
+
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "en un kilómetro"
+msgstr[1] "en %d kilómetros"
+
+msgid "exit"
+msgstr "salir"
+
+msgid "into the ramp"
+msgstr "en la salida"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#, c-format
+msgid "%sinto the street %s%s%s"
+msgstr "%s en la calle %s %s %s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|male form"
+msgstr "%s en el %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|female form"
+msgstr "%s en la %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|neutral form"
+msgstr "%s en %s%s%s"
+
+#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#, c-format
+msgid "%sinto the %s"
+msgstr "%s en la %s"
+
+#. TRANSLATORS: right, as in 'Turn right'
+msgid "right"
+msgstr "a la derecha"
+
+#. TRANSLATORS: left, as in 'Turn left'
+msgid "left"
+msgstr "a la izquierda"
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "easily "
+msgstr "ligeramente "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "strongly "
+msgstr "bruscamente "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "really strongly "
+msgstr "de forma muy pronunciada "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "unknown "
+msgstr "desconocido "
+
+msgid "When possible, please turn around"
+msgstr "Dé la vuelta cuando sea posible"
+
+#, c-format
+msgid "Enter the roundabout soon and leave it at the %s"
+msgstr "Entre en la próxima rotonda y salga por la %s"
+
+#. TRANSLATORS: %s is the distance to the roundabout
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "%s entre en la rotonda"
+
+#, c-format
+msgid "then leave the roundabout at the %s"
+msgstr "después salga de la rotonda por la %s"
+
+#, c-format
+msgid "Leave the roundabout at the %s"
+msgstr "Salga de la rotonda por la %s"
+
+#, c-format
+msgid "Follow the road for the next %s"
+msgstr "Continúe en esta carretera durante %s"
+
+msgid "soon"
+msgstr "próximamente"
+
+#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#, c-format
+msgid "Take the %1$s road to the %2$s"
+msgstr "Tome la %1$s carretera %2$s"
+
+#, c-format
+msgid "after %i roads"
+msgstr "después de %i carreteras"
+
+msgid "now"
+msgstr "ahora"
+
+#, c-format
+msgid "then take the %1$s road to the %2$s"
+msgstr "entonces tome la %1$s salida %2$s"
+
+msgid "error"
+msgstr "error"
+
+#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#, c-format
+msgid "Turn %1$s%2$s %3$s%4$s"
+msgstr "Gire %1$s%2$s %3$s%4$s"
+
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "luego gire %1$s%2$s %3$s%4$s"
+
+#, c-format
+msgid "You have reached your destination %s"
+msgstr "Ha llegado a su destino %s"
+
+msgid "then you have reached your destination."
+msgstr "entonces ha llegado a su destino."
+
+msgid "Position"
+msgstr "Posición"
+
+msgid "Command"
+msgstr "Orden"
+
+msgid "Length"
+msgstr "Longitud"
+
+msgid "km"
+msgstr "km"
+
+msgid "m"
+msgstr "m"
+
+msgid "Time"
+msgstr "Tiempo"
+
+msgid "Destination Length"
+msgstr "Distancia a destino"
+
+msgid "Destination Time"
+msgstr "Tiempo a destino"
+
+msgid "Roadbook"
+msgstr "Guía"
+
+msgid "Set as position"
+msgstr "Definir como origen"
+
+msgid "Set as destination"
+msgstr "Definir como destino"
+
+msgid "Add as bookmark"
+msgstr "Agregar como favorito"
+
+#, c-format
+msgid "Point 0x%x 0x%x"
+msgstr "Punto 0x%x 0x%x"
+
+#, c-format
+msgid "Screen coord : %d %d"
+msgstr "Coordenadas de pantalla : %d %d"
+
+#. 020
+msgid "Andorra"
+msgstr "Andorra"
+
+#. 784
+msgid "United Arab Emirates"
+msgstr "Emiratos Árabes Unidos"
+
+#. 004
+msgid "Afghanistan"
+msgstr "Afganistán"
+
+#. 028
+msgid "Antigua and Barbuda"
+msgstr "Antigua y Barbuda"
+
+#. 660
+msgid "Anguilla"
+msgstr "Anguila"
+
+#. 008
+msgid "Albania"
+msgstr "Albania"
+
+#. 051
+msgid "Armenia"
+msgstr "Armenia"
+
+#. 530
+msgid "Netherlands Antilles"
+msgstr "Antillas Holandesas"
+
+#. 024
+msgid "Angola"
+msgstr "Angola"
+
+#. 010
+msgid "Antarctica"
+msgstr "Antártica"
+
+#. 032
+msgid "Argentina"
+msgstr "Argentina"
+
+#. 016
+msgid "American Samoa"
+msgstr "Samoa Americana"
+
+#. 040
+msgid "Austria"
+msgstr "Austria"
+
+#. 036
+msgid "Australia"
+msgstr "Australia"
+
+#. 533
+msgid "Aruba"
+msgstr "Aruba"
+
+#. 248
+msgid "Aland Islands"
+msgstr "Islas de Åland"
+
+#. 031
+msgid "Azerbaijan"
+msgstr "Azerbaiyán"
+
+#. 070
+msgid "Bosnia and Herzegovina"
+msgstr "Bosnia y Herzegovina"
+
+#. 052
+msgid "Barbados"
+msgstr "Barbados"
+
+#. 050
+msgid "Bangladesh"
+msgstr "Bangladesh"
+
+#. 056
+msgid "Belgium"
+msgstr "Bélgica"
+
+#. 854
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+#. 100
+msgid "Bulgaria"
+msgstr "Bulgaria"
+
+#. 048
+msgid "Bahrain"
+msgstr "Bahrein"
+
+#. 108
+msgid "Burundi"
+msgstr "Burundi"
+
+#. 204
+msgid "Benin"
+msgstr "Benín"
+
+#. 652
+msgid "Saint Barthelemy"
+msgstr "San Bartolomé"
+
+#. 060
+msgid "Bermuda"
+msgstr "Bermudas"
+
+#. 096
+msgid "Brunei Darussalam"
+msgstr "Brunei Darussalam"
+
+#. 068
+msgid "Bolivia"
+msgstr "Bolivia"
+
+#. 076
+msgid "Brazil"
+msgstr "Brasil"
+
+#. 044
+msgid "Bahamas"
+msgstr "Bahamas"
+
+#. 064
+msgid "Bhutan"
+msgstr "Bután"
+
+#. 074
+msgid "Bouvet Island"
+msgstr "Isla Bouvet"
+
+#. 072
+msgid "Botswana"
+msgstr "Botsuana"
+
+#. 112
+msgid "Belarus"
+msgstr "Bielorrusia"
+
+#. 084
+msgid "Belize"
+msgstr "Belice"
+
+#. 124
+msgid "Canada"
+msgstr "Canadá"
+
+#. 166
+msgid "Cocos (Keeling) Islands"
+msgstr "Islas de Cocos (Keeling)"
+
+#. 180
+msgid "Congo, Democratic Republic of the"
+msgstr "Congo, República Democrática del"
+
+#. 140
+msgid "Central African Republic"
+msgstr "República Centroafricana"
+
+#. 178
+msgid "Congo"
+msgstr "Congo"
+
+#. 756
+msgid "Switzerland"
+msgstr "Suiza"
+
+#. 384
+msgid "Cote d'Ivoire"
+msgstr "Costa de Marfil"
+
+#. 184
+msgid "Cook Islands"
+msgstr "Islas Cook"
+
+#. 152
+msgid "Chile"
+msgstr "Chile"
+
+#. 120
+msgid "Cameroon"
+msgstr "Camerún"
+
+#. 156
+msgid "China"
+msgstr "China"
+
+#. 170
+msgid "Colombia"
+msgstr "Colombia"
+
+#. 188
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#. 192
+msgid "Cuba"
+msgstr "Cuba"
+
+#. 132
+msgid "Cape Verde"
+msgstr "Cabo Verde"
+
+#. 162
+msgid "Christmas Island"
+msgstr "Isla Natividad"
+
+#. 196
+msgid "Cyprus"
+msgstr "Chipre"
+
+#. 203
+msgid "Czech Republic"
+msgstr "República Checa"
+
+#. 276
+msgid "Germany"
+msgstr "Alemania"
+
+#. 262
+msgid "Djibouti"
+msgstr "República de Yibuti"
+
+#. 208
+msgid "Denmark"
+msgstr "Dinamarca"
+
+#. 212
+msgid "Dominica"
+msgstr "Dominica"
+
+#. 214
+msgid "Dominican Republic"
+msgstr "República Dominicana"
+
+#. 012
+msgid "Algeria"
+msgstr "Argelia"
+
+#. 218
+msgid "Ecuador"
+msgstr "Ecuador"
+
+#. 233
+msgid "Estonia"
+msgstr "Estonia"
+
+#. 818
+msgid "Egypt"
+msgstr "Egipto"
+
+#. 732
+msgid "Western Sahara"
+msgstr "Sahara Occidental"
+
+#. 232
+msgid "Eritrea"
+msgstr "Eritrea"
+
+#. 724
+msgid "Spain"
+msgstr "España"
+
+#. 231
+msgid "Ethiopia"
+msgstr "Etiopía"
+
+#. 246
+msgid "Finland"
+msgstr "Finlandia"
+
+#. 242
+msgid "Fiji"
+msgstr "Fiyi"
+
+#. 238
+msgid "Falkland Islands (Malvinas)"
+msgstr "Islas Malvinas"
+
+#. 583
+msgid "Micronesia, Federated States of"
+msgstr "Estados Federados de Micronesia"
+
+#. 234
+msgid "Faroe Islands"
+msgstr "Islas Feroe"
+
+#. 250
+msgid "France"
+msgstr "Francia"
+
+#. 266
+msgid "Gabon"
+msgstr "Gabón"
+
+#. 826
+msgid "United Kingdom"
+msgstr "Reino Unido"
+
+#. 308
+msgid "Grenada"
+msgstr "Granada"
+
+#. 268
+msgid "Georgia"
+msgstr "Georgia"
+
+#. 254
+msgid "French Guiana"
+msgstr "Guayana Francesa"
+
+#. 831
+msgid "Guernsey"
+msgstr "Guernesey"
+
+#. 288
+msgid "Ghana"
+msgstr "Ghana"
+
+#. 292
+msgid "Gibraltar"
+msgstr "Gibraltar"
+
+#. 304
+msgid "Greenland"
+msgstr "Groenlandia"
+
+#. 270
+msgid "Gambia"
+msgstr "Gambia"
+
+#. 324
+msgid "Guinea"
+msgstr "Guinea"
+
+#. 312
+msgid "Guadeloupe"
+msgstr "Guadalupe"
+
+#. 226
+msgid "Equatorial Guinea"
+msgstr "Guinea Ecuatorial"
+
+#. 300
+msgid "Greece"
+msgstr "Grecia"
+
+#. 239
+msgid "South Georgia and the South Sandwich Islands"
+msgstr "Islas Georgias del Sur y Sandwich del Sur"
+
+#. 320
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#. 316
+msgid "Guam"
+msgstr "Guam"
+
+#. 624
+msgid "Guinea-Bissau"
+msgstr "Guinea-Bissau"
+
+#. 328
+msgid "Guyana"
+msgstr "Guayana"
+
+#. 344
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#. 334
+msgid "Heard Island and McDonald Islands"
+msgstr "Islas Heard y McDonald"
+
+#. 340
+msgid "Honduras"
+msgstr "Honduras"
+
+#. 191
+msgid "Croatia"
+msgstr "Croacia"
+
+#. 332
+msgid "Haiti"
+msgstr "Haiti"
+
+#. 348
+msgid "Hungary"
+msgstr "Hungría"
+
+#. 360
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. 372
+msgid "Ireland"
+msgstr "Irlanda"
+
+#. 376
+msgid "Israel"
+msgstr "Israel"
+
+#. 833
+msgid "Isle of Man"
+msgstr "Isla de Man"
+
+#. 356
+msgid "India"
+msgstr "India"
+
+#. 086
+msgid "British Indian Ocean Territory"
+msgstr "Territorio Británico en el Océano Indico"
+
+#. 368
+msgid "Iraq"
+msgstr "Irak"
+
+#. 364
+msgid "Iran, Islamic Republic of"
+msgstr "Irán"
+
+#. 352
+msgid "Iceland"
+msgstr "Islandia"
+
+#. 380
+msgid "Italy"
+msgstr "Italia"
+
+#. 832
+msgid "Jersey"
+msgstr "Jersey"
+
+#. 388
+msgid "Jamaica"
+msgstr "Jamaica"
+
+#. 400
+msgid "Jordan"
+msgstr "Jordania"
+
+#. 392
+msgid "Japan"
+msgstr "Japón"
+
+#. 404
+msgid "Kenya"
+msgstr "Kenia"
+
+#. 417
+msgid "Kyrgyzstan"
+msgstr "Kirguistán"
+
+#. 116
+msgid "Cambodia"
+msgstr "Camboya"
+
+#. 296
+msgid "Kiribati"
+msgstr "Kiribati"
+
+#. 174
+msgid "Comoros"
+msgstr "Comoras"
+
+#. 659
+msgid "Saint Kitts and Nevis"
+msgstr "San Cristóbal y Nieves"
+
+#. 408
+msgid "Korea, Democratic People's Republic of"
+msgstr "Corea, República Democrática Popular de"
+
+#. 410
+msgid "Korea, Republic of"
+msgstr "Corea, República de"
+
+#. 414
+msgid "Kuwait"
+msgstr "Kuwait"
+
+#. 136
+msgid "Cayman Islands"
+msgstr "Islas Caimán"
+
+#. 398
+msgid "Kazakhstan"
+msgstr "Kazajstán"
+
+#. 418
+msgid "Lao People's Democratic Republic"
+msgstr "República Democrática Popular Lao"
+
+#. 422
+msgid "Lebanon"
+msgstr "Líbano"
+
+#. 662
+msgid "Saint Lucia"
+msgstr "Santa Lucía"
+
+#. 438
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
+
+#. 144
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
+
+#. 430
+msgid "Liberia"
+msgstr "Liberia"
+
+#. 426
+msgid "Lesotho"
+msgstr "Lesoto"
+
+#. 440
+msgid "Lithuania"
+msgstr "Lituania"
+
+#. 442
+msgid "Luxembourg"
+msgstr "Luxemburgo"
+
+#. 428
+msgid "Latvia"
+msgstr "Letonia"
+
+#. 434
+msgid "Libyan Arab Jamahiriya"
+msgstr "Libia"
+
+#. 504
+msgid "Morocco"
+msgstr "Marruecos"
+
+#. 492
+msgid "Monaco"
+msgstr "Mónaco"
+
+#. 498
+msgid "Moldova, Republic of"
+msgstr "Moldavia, República de"
+
+#. 499
+msgid "Montenegro"
+msgstr "Montenegro"
+
+#. 663
+msgid "Saint Martin (French part)"
+msgstr "San Martín (zona francesa)"
+
+#. 450
+msgid "Madagascar"
+msgstr "Madagascar"
+
+#. 584
+msgid "Marshall Islands"
+msgstr "Islas Marshall"
+
+#. 807
+msgid "Macedonia, the former Yugoslav Republic of"
+msgstr "Antigua República Yugoslava de Macedonia"
+
+#. 466
+msgid "Mali"
+msgstr "Mali"
+
+#. 104
+msgid "Myanmar"
+msgstr "Myanmar"
+
+#. 496
+msgid "Mongolia"
+msgstr "Mongolia"
+
+#. 446
+msgid "Macao"
+msgstr "Macao"
+
+#. 580
+msgid "Northern Mariana Islands"
+msgstr "Islas Marianas del Norte"
+
+#. 474
+msgid "Martinique"
+msgstr "Martinica"
+
+#. 478
+msgid "Mauritania"
+msgstr "Mauritania"
+
+#. 500
+msgid "Montserrat"
+msgstr "Montserrat"
+
+#. 470
+msgid "Malta"
+msgstr "Malta"
+
+#. 480
+msgid "Mauritius"
+msgstr "Mauricio"
+
+#. 462
+msgid "Maldives"
+msgstr "Maldivas"
+
+#. 454
+msgid "Malawi"
+msgstr "Malawi"
+
+#. 484
+msgid "Mexico"
+msgstr "México"
+
+#. 458
+msgid "Malaysia"
+msgstr "Malasia"
+
+#. 508
+msgid "Mozambique"
+msgstr "Mozambique"
+
+#. 516
+msgid "Namibia"
+msgstr "Namibia"
+
+#. 540
+msgid "New Caledonia"
+msgstr "Nueva Caledonia"
+
+#. 562
+msgid "Niger"
+msgstr "Níger"
+
+#. 574
+msgid "Norfolk Island"
+msgstr "Isla Norfolk"
+
+#. 566
+msgid "Nigeria"
+msgstr "Nigeria"
+
+#. 558
+msgid "Nicaragua"
+msgstr "Nicaragua"
+
+#. 528
+msgid "Netherlands"
+msgstr "Países Bajos"
+
+#. 578
+msgid "Norway"
+msgstr "Noruega"
+
+#. 524
+msgid "Nepal"
+msgstr "Nepal"
+
+#. 520
+msgid "Nauru"
+msgstr "Nauru"
+
+#. 570
+msgid "Niue"
+msgstr "Niue"
+
+#. 554
+msgid "New Zealand"
+msgstr "Nueva Zelanda"
+
+#. 512
+msgid "Oman"
+msgstr "Omán"
+
+#. 591
+msgid "Panama"
+msgstr "Panamá"
+
+#. 604
+msgid "Peru"
+msgstr "Perú"
+
+#. 258
+msgid "French Polynesia"
+msgstr "Polinesia Francesa"
+
+#. 598
+msgid "Papua New Guinea"
+msgstr "Papúa Nueva Guinea"
+
+#. 608
+msgid "Philippines"
+msgstr "Filipinas"
+
+#. 586
+msgid "Pakistan"
+msgstr "Pakistán"
+
+#. 616
+msgid "Poland"
+msgstr "Polonia"
+
+#. 666
+msgid "Saint Pierre and Miquelon"
+msgstr "San Pedro y Miquelón"
+
+#. 612
+msgid "Pitcairn"
+msgstr "Pitcairn"
+
+#. 630
+msgid "Puerto Rico"
+msgstr "Puerto Rico"
+
+#. 275
+msgid "Palestinian Territory, Occupied"
+msgstr "Territorio Palestino Ocupado"
+
+#. 620
+msgid "Portugal"
+msgstr "Portugal"
+
+#. 585
+msgid "Palau"
+msgstr "Palau"
+
+#. 600
+msgid "Paraguay"
+msgstr "Paraguay"
+
+#. 634
+msgid "Qatar"
+msgstr "Catar"
+
+#. 638
+msgid "Reunion"
+msgstr "Reunión"
+
+#. 642
+msgid "Romania"
+msgstr "Rumania"
+
+#. 688
+msgid "Serbia"
+msgstr "Serbia"
+
+#. 643
+msgid "Russian Federation"
+msgstr "Federación de Rusia"
+
+#. 646
+msgid "Rwanda"
+msgstr "Ruanda"
+
+#. 682
+msgid "Saudi Arabia"
+msgstr "Arabia Saudita"
+
+#. 090
+msgid "Solomon Islands"
+msgstr "Islas Salomón"
+
+#. 690
+msgid "Seychelles"
+msgstr "Seychelles"
+
+#. 736
+msgid "Sudan"
+msgstr "Sudán"
+
+#. 752
+msgid "Sweden"
+msgstr "Suecia"
+
+#. 702
+msgid "Singapore"
+msgstr "Singapur"
+
+#. 654
+msgid "Saint Helena"
+msgstr "Santa Helena"
+
+#. 705
+msgid "Slovenia"
+msgstr "Eslovenia"
+
+#. 744
+msgid "Svalbard and Jan Mayen"
+msgstr "Svalbard y Jan Mayen"
+
+#. 703
+msgid "Slovakia"
+msgstr "Eslovaquia"
+
+#. 694
+msgid "Sierra Leone"
+msgstr "Sierra Leona"
+
+#. 674
+msgid "San Marino"
+msgstr "San Marino"
+
+#. 686
+msgid "Senegal"
+msgstr "Senegal"
+
+#. 706
+msgid "Somalia"
+msgstr "Somalia"
+
+#. 740
+msgid "Suriname"
+msgstr "Surinam"
+
+#. 678
+msgid "Sao Tome and Principe"
+msgstr "Santo Tomé y Príncipe"
+
+#. 222
+msgid "El Salvador"
+msgstr "El Salvador"
+
+#. 760
+msgid "Syrian Arab Republic"
+msgstr "República Árabe de Siria"
+
+#. 748
+msgid "Swaziland"
+msgstr "Suazilandia"
+
+#. 796
+msgid "Turks and Caicos Islands"
+msgstr "Islas Turcas y Caicos"
+
+#. 148
+msgid "Chad"
+msgstr "Chad"
+
+#. 260
+msgid "French Southern Territories"
+msgstr "Territorios Australes Franceses"
+
+#. 768
+msgid "Togo"
+msgstr "Togo"
+
+#. 764
+msgid "Thailand"
+msgstr "Tailandia"
+
+#. 762
+msgid "Tajikistan"
+msgstr "Tayikistán"
+
+#. 772
+msgid "Tokelau"
+msgstr "Tokelau"
+
+#. 626
+msgid "Timor-Leste"
+msgstr "Timor Oriental"
+
+#. 795
+msgid "Turkmenistan"
+msgstr "Turkmenistán"
+
+#. 788
+msgid "Tunisia"
+msgstr "Túnez"
+
+#. 776
+msgid "Tonga"
+msgstr "Tonga"
+
+#. 792
+msgid "Turkey"
+msgstr "Turquía"
+
+#. 780
+msgid "Trinidad and Tobago"
+msgstr "Trinidad y Tobago"
+
+#. 798
+msgid "Tuvalu"
+msgstr "Tuvalu"
+
+#. 158
+msgid "Taiwan, Province of China"
+msgstr "Taiwán, Provincia de China"
+
+#. 834
+msgid "Tanzania, United Republic of"
+msgstr "Tanzania, República Unida de"
+
+#. 804
+msgid "Ukraine"
+msgstr "Ucrania"
+
+#. 800
+msgid "Uganda"
+msgstr "Uganda"
+
+#. 581
+msgid "United States Minor Outlying Islands"
+msgstr "Islas Ultramarinas Menores de los Estados Unidos"
+
+#. 840
+msgid "United States"
+msgstr "Estados Unidos"
+
+#. 858
+msgid "Uruguay"
+msgstr "Uruguay"
+
+#. 860
+msgid "Uzbekistan"
+msgstr "Uzbekistán"
+
+#. 336
+msgid "Holy See (Vatican City State)"
+msgstr "Santa Sede (Ciudad Estado del Vaticano)"
+
+#. 670
+msgid "Saint Vincent and the Grenadines"
+msgstr "San Vicente y las Granadinas"
+
+#. 862
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#. 092
+msgid "Virgin Islands, British"
+msgstr "Islas Vírgenes, Británicas"
+
+#. 850
+msgid "Virgin Islands, U.S."
+msgstr "Islas Vírgenes, EE.UU."
+
+#. 704
+msgid "Viet Nam"
+msgstr "Vietnam"
+
+#. 548
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+#. 876
+msgid "Wallis and Futuna"
+msgstr "Wallis y Futuna"
+
+#. 882
+msgid "Samoa"
+msgstr "Samoa"
+
+#. 887
+msgid "Yemen"
+msgstr "Yemen"
+
+#. 175
+msgid "Mayotte"
+msgstr "Mayotte"
+
+#. 710
+msgid "South Africa"
+msgstr "Sudáfrica"
+
+#. 894
+msgid "Zambia"
+msgstr "Zambia"
+
+#. 716
+msgid "Zimbabwe"
+msgstr "Zimbabue"
+
+msgid "* Unknown, add is_in tags to those cities"
+msgstr "* Desconocido, añadir etiquetas is_in a estas ciudades"
+
+msgid "Car"
+msgstr "Auto"
+
+msgid "Iso2"
+msgstr "Iso2"
+
+msgid "Iso3"
+msgstr "Iso3"
+
+msgid "Country"
+msgstr "País"
+
+msgid "Postal"
+msgstr "Postal"
+
+msgid "Town"
+msgstr "Pueblo"
+
+msgid "District"
+msgstr "Distrito"
+
+msgid "Street"
+msgstr "Calle"
+
+msgid "Number"
+msgstr "Número"
+
+msgid "Enter Destination"
+msgstr "Introducir destino"
+
+msgid "Zip Code"
+msgstr "Código postal"
+
+msgid "City"
+msgstr "Ciudad"
+
+msgid "District/Township"
+msgstr "Distrito"
+
+msgid "Map"
+msgstr "Mapa"
+
+msgid "Bookmark"
+msgstr "Marcador"
+
+msgid "Destination"
+msgstr "Destino"
+
+msgid "Display"
+msgstr "Visualizar"
+
+msgid "Route"
+msgstr "Ruta"
+
+msgid "Former Destinations"
+msgstr "Destinos anteriores"
+
+msgid "Bookmarks"
+msgstr "Favoritos"
+
+msgid "Layout"
+msgstr "Diseño"
+
+msgid "Projection"
+msgstr "Proyección"
+
+msgid "Vehicle"
+msgstr "Vehículo"
+
+msgid "ZoomOut"
+msgstr "Alejar"
+
+msgid "Decrease zoom level"
+msgstr "Reducir el nivel de zoom"
+
+msgid "ZoomIn"
+msgstr "Aumentar"
+
+msgid "Increase zoom level"
+msgstr "Aumentar el nivel de zoom"
+
+msgid "Recalculate"
+msgstr "Recalcular"
+
+msgid "Redraw map"
+msgstr "Redibujar mapa"
+
+msgid "Info"
+msgstr "Información"
+
+msgid "Set destination"
+msgstr "Fijar destino"
+
+msgid "Opens address search dialog"
+msgstr "Abre el dialogo de busqueda de dirección"
+
+msgid "Stop Navigation"
+msgstr "Detener navegación"
+
+msgid "Test"
+msgstr "Prueba"
+
+msgid "_Quit"
+msgstr "_Salir"
+
+msgid "Quit the application"
+msgstr "Salir de la aplicación"
+
+msgid "Show position cursor"
+msgstr "Mostrar posición del cursor"
+
+msgid "Lock on Road"
+msgstr "Bloqueo en la ruta"
+
+msgid "Keep orientation to the North"
+msgstr "Mantener orientación al Norte"
+
+msgid "Switches map orientation to the north or the vehicle"
+msgstr "Cambia la orientación del mapa entre el norte y el vehículo"
+
+msgid "Show/hide route description"
+msgstr "Mostrar/ocultar descripción de la ruta"
+
+msgid "Autozoom"
+msgstr "Autoampliar"
+
+msgid "Enable/disable automatic zoom level changing"
+msgstr "Activa/desactiva nivel de zoom automático"
+
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+msgid "Data"
+msgstr "Datos"
+
+msgid "N"
+msgstr "N"
+
+msgid "NE"
+msgstr "NE"
+
+msgid "E"
+msgstr "E"
+
+msgid "SE"
+msgstr "SE"
+
+msgid "S"
+msgstr "S"
+
+msgid "SW"
+msgstr "SO"
+
+msgid "W"
+msgstr "O"
+
+msgid "NW"
+msgstr "NO"
+
+msgid "No"
+msgstr "No"
+
+msgid "2D"
+msgstr "2D"
+
+msgid "3D"
+msgstr "3D"
+
+msgid "OT"
+msgstr "OT"
+
+#, c-format
+msgid "Route %4.0fkm    %02d:%02d ETA"
+msgstr "Ruta %4.0fkm    %02d:%02d TEL"
+
+msgid "Route 0000km  0+00:00 ETA"
+msgstr "Ruta 0000km  0+00:00 TEL"
+
+msgid "Back to map"
+msgstr "Volver al mapa"
+
+msgid "Main Menu"
+msgstr "Menú principal"
+
+msgid "Help"
+msgstr "Ayuda"
+
+msgid "Back"
+msgstr "Atrás"
+
+msgid "Add Bookmark"
+msgstr "Añadir marcador"
+
+msgid "Add Bookmark folder"
+msgstr "Añadir carpeta de marcadores"
+
+msgid "Rename"
+msgstr "Renombrar"
+
+msgid "POIs"
+msgstr "PDIs"
+
+msgid "View in Browser"
+msgstr "Ver en el navegador"
+
+msgid "Streets"
+msgstr "Calles"
+
+msgid "House numbers"
+msgstr "Números de portal"
+
+msgid "View Attributes"
+msgstr "Ver atributos"
+
+msgid "View on map"
+msgstr "Ver en el mapa"
+
+msgid "Cut Bookmark"
+msgstr "Cortar marcador"
+
+msgid "Copy Bookmark"
+msgstr "Copiar marcador"
+
+msgid "Rename Bookmark"
+msgstr "Renombrar marcador"
+
+msgid "Paste Bookmark"
+msgstr "Pegar marcador"
+
+msgid "Delete Bookmark"
+msgstr "Eliminar marcador"
+
+msgid "Paste bookmark"
+msgstr "Pegar marcador"
+
+#, c-format
+msgid "Bookmark %s"
+msgstr "Marcador %s"
+
+msgid "House number"
+msgstr "Número de portal"
+
+msgid "Maps"
+msgstr "Mapas"
+
+msgid "Show Satellite Status"
+msgstr "Mostrar estado de satélite"
+
+msgid " Elevation "
+msgstr " Elevación "
+
+msgid " Azimuth "
+msgstr " Azimut "
+
+msgid "Show NMEA Data"
+msgstr "Mostar datos NMEA"
+
+msgid "car"
+msgstr "automóvil"
+
+msgid "bike"
+msgstr "bicicleta"
+
+msgid "pedestrian"
+msgstr "peatón"
+
+#, c-format
+msgid "Current profile: %s"
+msgstr "Perfil actual: %s"
+
+#, c-format
+msgid "Change profile to: %s"
+msgstr "Cambiar perfil a: %s"
+
+msgid "Set as active"
+msgstr "Establecer como activo"
+
+msgid "Show Satellite status"
+msgstr "Mostrar estado de satélite"
+
+msgid "Show NMEA data"
+msgstr "Mostar datos NMEA"
+
+msgid "Rules"
+msgstr "Reglas"
+
+msgid "Lock on road"
+msgstr "Bloqueo en la ruta"
+
+msgid "Northing"
+msgstr "Hacia el Norte"
+
+msgid "Map follows Vehicle"
+msgstr "El mapa sigue al vehículo"
+
+msgid "Message"
+msgstr "Mensaje"
+
+msgid "Route Description"
+msgstr "Descripción de ruta"
+
+msgid "Height Profile"
+msgstr "Perfil de altura"
+
+msgid "Show Locale"
+msgstr "Mostrar locale"
+
+msgid "About Navit"
+msgstr "Acerca de Navit"
+
+#. Authors
+msgid "By"
+msgstr "Por"
+
+#. Contributors
+msgid "And all the Navit Team"
+msgstr "Y todo el equipo de Navit"
+
+msgid "members and contributors."
+msgstr "miembros y colaboradores"
+
+msgid "Map Point"
+msgstr "Punto del Mapa"
+
+msgid "Vehicle Position"
+msgstr "Posición del vehículo"
+
+msgid "Main menu"
+msgstr "Menú principal"
+
+msgid ""
+"Show\n"
+"Map"
+msgstr ""
+"Mostrar\n"
+"Mapa"
+
+msgid "Settings"
+msgstr "Configuración"
+
+msgid "Tools"
+msgstr "Herramientas"
+
+msgid "About"
+msgstr "Acerca de"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Quit"
+msgstr "Cerrar"
+
+msgid ""
+"Stop\n"
+"Navigation"
+msgstr ""
+"Parar\n"
+"Navegación"
+
+msgid "Window Mode"
+msgstr "Modo ventana"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "horse"
+msgstr "caballo"
+
+#. chr:
+#. flags used for a truck: (first flag number is 0)
+#. 8: SIZE_OR_WEIGHT_LIMIT
+#. 21: TRANSPORT_TRUCK
+#. speed setup:
+#. 'speed' data of the atkaction for a car is
+#. reduced about 10 km/h. When the speed was at
+#. 10 km/h, I reduced it to 5 km/h.
+#. 'route_weight' data has been treated in the same way.
+#. If you want to discourage the use of small roads,
+#. just reduce this value.
+#. size and weight setup:
+#. This is an example, you have to use the data of your truck.
+#. bobshaffer's standard truck:
+#. (1 lb = 453.59237 g, 1 foot = .3048 m)
+#. (data has to be in [cm] and [kg] according to 'atkaction.h')
+#. width=  9    feet,   274 cm
+#. height= 13.5  feet,   411 cm
+#. length= 70    feet,  2134 cm
+#. weight= 80000 lbs,  36287 kg
+#. axle_weight= 34000 lbs,  15422 kg
+#. 
+msgid "truck"
+msgstr "camión"

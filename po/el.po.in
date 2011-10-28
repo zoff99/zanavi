@@ -1,0 +1,1648 @@
+# Greek translation for navit
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the navit package.
+# Vassilis, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: navit 0.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-22 15:11+0100\n"
+"PO-Revision-Date: 2011-01-13 12:58+0000\n"
+"Last-Translator: alichani <alichani@yahoo.co.uk>\n"
+"Language-Team: Greek <el@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
+"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
+
+#, c-format
+msgid "Running from source directory\n"
+msgstr "Λειτουργία από τον πηγαίο κατάλογο\n"
+
+#, c-format
+msgid "setting '%s' to '%s'\n"
+msgstr "ρύθμιση '%s' στο'%s'\n"
+
+#. TRANSLATORS: the following counts refer to streets
+msgid "zeroth"
+msgstr "τρέχουσα"
+
+msgid "first"
+msgstr "πρώτος"
+
+msgid "second"
+msgstr "δεύτερος"
+
+msgid "third"
+msgstr "τρίτη"
+
+msgid "fourth"
+msgstr "τέταρτος"
+
+msgid "fifth"
+msgstr "πέμπτος"
+
+msgid "sixth"
+msgstr "έκτος"
+
+#. TRANSLATORS: the following counts refer to roundabout exits
+msgid "zeroth exit"
+msgstr "τρέχουσα έξοδο"
+
+msgid "first exit"
+msgstr "πρώτη έξοδο"
+
+msgid "second exit"
+msgstr "δεύτερη έξοδο"
+
+msgid "third exit"
+msgstr "τρίτη έξοδο"
+
+msgid "fourth exit"
+msgstr "τέταρτη έξοδο"
+
+msgid "fifth exit"
+msgstr "πέμπτη έξοδο"
+
+msgid "sixth exit"
+msgstr "έκτη έξοδο"
+
+#, c-format
+msgid "%d m"
+msgstr "%d μ"
+
+#, c-format
+msgid "in %d m"
+msgstr "σε %d μ"
+
+#, c-format
+msgid "%d meters"
+msgstr "%d μέτρα"
+
+#, c-format
+msgid "in %d meters"
+msgstr "σε %d μέτρα"
+
+#, c-format
+msgid "%d.%d kilometers"
+msgstr "%d.%d χιλιόμετρα"
+
+#, c-format
+msgid "in %d.%d kilometers"
+msgstr "σε %d %d χιλιόμετρα"
+
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "Ένα χιλιόμετρο"
+msgstr[1] "%d χιλιόμετρα"
+
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "σε ένα χιλιόμετρο"
+msgstr[1] "σε %d χιλιόμετρα"
+
+msgid "exit"
+msgstr "έξοδος"
+
+msgid "into the ramp"
+msgstr "στη ράμπα"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#, c-format
+msgid "%sinto the street %s%s%s"
+msgstr "%s στην οδό %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|male form"
+msgstr "%sστον %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|female form"
+msgstr "%sστην %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#, c-format
+msgid "%sinto the %s%s%s|neutral form"
+msgstr "%sστο %s%s%s"
+
+#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#, c-format
+msgid "%sinto the %s"
+msgstr "%s στην %s"
+
+#. TRANSLATORS: right, as in 'Turn right'
+msgid "right"
+msgstr "δεξιά"
+
+#. TRANSLATORS: left, as in 'Turn left'
+msgid "left"
+msgstr "αριστερά"
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "easily "
+msgstr "ελαφρά "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "strongly "
+msgstr "Κλειστά "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "really strongly "
+msgstr "πολύ κλειστά "
+
+#. TRANSLATORS: Don't forget the ending space
+msgid "unknown "
+msgstr "άγνωστο "
+
+msgid "When possible, please turn around"
+msgstr "Όταν είναι δυνατόν, κάνε αναστροφή"
+
+#, c-format
+msgid "Enter the roundabout soon and leave it at the %s"
+msgstr "Είσοδος σε κυκλική πορεία άμεσα και έξοδος στη %s"
+
+#. TRANSLATORS: %s is the distance to the roundabout
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "Σε %s, μπες σε κυκλική πορεία"
+
+#, c-format
+msgid "then leave the roundabout at the %s"
+msgstr "και βγείτε απο την κυκλική πορεία στην %s"
+
+#, c-format
+msgid "Leave the roundabout at the %s"
+msgstr "Εξοδος απο την κυκλική πορεία στην %s"
+
+#, c-format
+msgid "Follow the road for the next %s"
+msgstr "Ακολουθήστε το δρόμο για τα επόμενα %s"
+
+msgid "soon"
+msgstr "σύντομα"
+
+#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#, c-format
+msgid "Take the %1$s road to the %2$s"
+msgstr "Πάρτε τον %1$s δρόμο για το %2$s"
+
+#, c-format
+msgid "after %i roads"
+msgstr "μετά από %i δρόμους"
+
+msgid "now"
+msgstr "τώρα"
+
+#, c-format
+msgid "then take the %1$s road to the %2$s"
+msgstr "στη συνέχεια πάρτε το %1$s δρόμο για το %2$s"
+
+msgid "error"
+msgstr "σφάλμα"
+
+#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#, c-format
+msgid "Turn %1$s%2$s %3$s%4$s"
+msgstr "Στρίψτε %1$s%2$s %3$s%4$s"
+
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "και στρίψτε %1$s%2$s %3$s%4$s"
+
+#, c-format
+msgid "You have reached your destination %s"
+msgstr "Φτάσατε στον προορισμό σας %s"
+
+msgid "then you have reached your destination."
+msgstr "τότε έχετε φτάσει στον προορισμό σας."
+
+msgid "Position"
+msgstr "Θέση"
+
+msgid "Command"
+msgstr "Εντολή"
+
+msgid "Length"
+msgstr "Μήκος"
+
+msgid "km"
+msgstr "χλμ"
+
+msgid "m"
+msgstr "μ"
+
+msgid "Time"
+msgstr "Χρόνος"
+
+msgid "Destination Length"
+msgstr "Απόσταση Προορισμού"
+
+msgid "Destination Time"
+msgstr "Χρόνος που απομένει"
+
+msgid "Roadbook"
+msgstr "Οδηγίες Διαδρομής"
+
+msgid "Set as position"
+msgstr "Ορισμός ως αφετηρία"
+
+msgid "Set as destination"
+msgstr "Ορισμός ως προορισμός"
+
+msgid "Add as bookmark"
+msgstr "Προσθήκη ως σελιδοδείκτης"
+
+#, c-format
+msgid "Point 0x%x 0x%x"
+msgstr "Σημείο 0x%x 0x%x"
+
+#, c-format
+msgid "Screen coord : %d %d"
+msgstr "Συντεταγμένες οθόνης : %d %d"
+
+#. 020
+msgid "Andorra"
+msgstr "Ανδόρα"
+
+#. 784
+msgid "United Arab Emirates"
+msgstr "Ηνωμένα Αραβικά Εμιράτα"
+
+#. 004
+msgid "Afghanistan"
+msgstr "Αφγανιστάν"
+
+#. 028
+msgid "Antigua and Barbuda"
+msgstr "Αντίγκουα και Μπαρμπούντα"
+
+#. 660
+msgid "Anguilla"
+msgstr "Ανγκίλα"
+
+#. 008
+msgid "Albania"
+msgstr "Αλβανία"
+
+#. 051
+msgid "Armenia"
+msgstr "Αρμενία"
+
+#. 530
+msgid "Netherlands Antilles"
+msgstr "Ολλανδικές Αντίλλες"
+
+#. 024
+msgid "Angola"
+msgstr "Ανγκόλα"
+
+#. 010
+msgid "Antarctica"
+msgstr "Ανταρκτική"
+
+#. 032
+msgid "Argentina"
+msgstr "Αργεντινή"
+
+#. 016
+msgid "American Samoa"
+msgstr "Αμερικανική Σαμόα"
+
+#. 040
+msgid "Austria"
+msgstr "Αυστρία"
+
+#. 036
+msgid "Australia"
+msgstr "Αυστραλία"
+
+#. 533
+msgid "Aruba"
+msgstr "Αρούμπα"
+
+#. 248
+msgid "Aland Islands"
+msgstr "Νήσοι Όλαντ"
+
+#. 031
+msgid "Azerbaijan"
+msgstr "Αζερμπαϊτζάν"
+
+#. 070
+msgid "Bosnia and Herzegovina"
+msgstr "Βοσνία-Ερζεγοβίνη"
+
+#. 052
+msgid "Barbados"
+msgstr "Μπαρμπέιντος"
+
+#. 050
+msgid "Bangladesh"
+msgstr "Μπαγκλαντές"
+
+#. 056
+msgid "Belgium"
+msgstr "Βέλγιο"
+
+#. 854
+msgid "Burkina Faso"
+msgstr "Μπουρκίνα Φάσο"
+
+#. 100
+msgid "Bulgaria"
+msgstr "Βουλγαρία"
+
+#. 048
+msgid "Bahrain"
+msgstr "Μπαχρέιν"
+
+#. 108
+msgid "Burundi"
+msgstr "Μπουρουντί"
+
+#. 204
+msgid "Benin"
+msgstr "Μπενίν"
+
+#. 652
+msgid "Saint Barthelemy"
+msgstr "Αγιος Βαρθολομαίος"
+
+#. 060
+msgid "Bermuda"
+msgstr "Βερμούδες"
+
+#. 096
+msgid "Brunei Darussalam"
+msgstr "Μπρουνέι Νταρουσαλάμ"
+
+#. 068
+msgid "Bolivia"
+msgstr "Βολιβία"
+
+#. 076
+msgid "Brazil"
+msgstr "Βραζιλία"
+
+#. 044
+msgid "Bahamas"
+msgstr "Μπαχάμες"
+
+#. 064
+msgid "Bhutan"
+msgstr "Μπουτάν"
+
+#. 074
+msgid "Bouvet Island"
+msgstr "Νήσος Μπουβέ"
+
+#. 072
+msgid "Botswana"
+msgstr "Μποτσουάνα"
+
+#. 112
+msgid "Belarus"
+msgstr "Λευκορωσία"
+
+#. 084
+msgid "Belize"
+msgstr "Μπελίζ"
+
+#. 124
+msgid "Canada"
+msgstr "Καναδάς"
+
+#. 166
+msgid "Cocos (Keeling) Islands"
+msgstr "Νήσοι Κόκος (Κήλινγκ)"
+
+#. 180
+msgid "Congo, Democratic Republic of the"
+msgstr "Δημοκρατία του Κονγκό"
+
+#. 140
+msgid "Central African Republic"
+msgstr "Δημοκρατία Κεντρικής Αφρικής"
+
+#. 178
+msgid "Congo"
+msgstr "Κονγκό"
+
+#. 756
+msgid "Switzerland"
+msgstr "Ελβετία"
+
+#. 384
+msgid "Cote d'Ivoire"
+msgstr "Ακτή Ελεφαντοστού"
+
+#. 184
+msgid "Cook Islands"
+msgstr "Νήσοι Κουκ"
+
+#. 152
+msgid "Chile"
+msgstr "Χιλή"
+
+#. 120
+msgid "Cameroon"
+msgstr "Καμερούν"
+
+#. 156
+msgid "China"
+msgstr "Κίνα"
+
+#. 170
+msgid "Colombia"
+msgstr "Κολομβία"
+
+#. 188
+msgid "Costa Rica"
+msgstr "Κόστα Ρίκα"
+
+#. 192
+msgid "Cuba"
+msgstr "Κούβα"
+
+#. 132
+msgid "Cape Verde"
+msgstr "Πράσινο Ακρωτήριο"
+
+#. 162
+msgid "Christmas Island"
+msgstr "Νήσοι Χριστουγέννων"
+
+#. 196
+msgid "Cyprus"
+msgstr "Κύπρος"
+
+#. 203
+msgid "Czech Republic"
+msgstr "Δημοκρατία της Τσεχίας"
+
+#. 276
+msgid "Germany"
+msgstr "Γερμανία"
+
+#. 262
+msgid "Djibouti"
+msgstr "Τζιμπουτί"
+
+#. 208
+msgid "Denmark"
+msgstr "Δανία"
+
+#. 212
+msgid "Dominica"
+msgstr "Ντομίνικα"
+
+#. 214
+msgid "Dominican Republic"
+msgstr "Δομινικανή Δημοκρατία"
+
+#. 012
+msgid "Algeria"
+msgstr "Αλγερία"
+
+#. 218
+msgid "Ecuador"
+msgstr "Εκουαδόρ"
+
+#. 233
+msgid "Estonia"
+msgstr "Εσθονία"
+
+#. 818
+msgid "Egypt"
+msgstr "Αίγυπτος"
+
+#. 732
+msgid "Western Sahara"
+msgstr "Δυτική Σαχάρα"
+
+#. 232
+msgid "Eritrea"
+msgstr "Ερυθραία"
+
+#. 724
+msgid "Spain"
+msgstr "Ισπανία"
+
+#. 231
+msgid "Ethiopia"
+msgstr "Αιθιοπία"
+
+#. 246
+msgid "Finland"
+msgstr "Φινλανδία"
+
+#. 242
+msgid "Fiji"
+msgstr "Νησιά Φίτζι"
+
+#. 238
+msgid "Falkland Islands (Malvinas)"
+msgstr "Νήσοι Φώκλαντ (Μαλβίνες)"
+
+#. 583
+msgid "Micronesia, Federated States of"
+msgstr "Μικρονησία, Ομόσπονδες Πολιτείες της"
+
+#. 234
+msgid "Faroe Islands"
+msgstr "Νήσοι Φερόε"
+
+#. 250
+msgid "France"
+msgstr "Γαλλία"
+
+#. 266
+msgid "Gabon"
+msgstr "Γκαμπόν"
+
+#. 826
+msgid "United Kingdom"
+msgstr "Ηνωμένο Βασίλειο"
+
+#. 308
+msgid "Grenada"
+msgstr "Γρενάδα"
+
+#. 268
+msgid "Georgia"
+msgstr "Γεωργία"
+
+#. 254
+msgid "French Guiana"
+msgstr "Γαλλική Γουινέα"
+
+#. 831
+msgid "Guernsey"
+msgstr "Νήσος Guernsey"
+
+#. 288
+msgid "Ghana"
+msgstr "Γκάνα"
+
+#. 292
+msgid "Gibraltar"
+msgstr "Γιβραλτάρ"
+
+#. 304
+msgid "Greenland"
+msgstr "Γροιλανδία"
+
+#. 270
+msgid "Gambia"
+msgstr "Γκάμπια"
+
+#. 324
+msgid "Guinea"
+msgstr "Γουινέα"
+
+#. 312
+msgid "Guadeloupe"
+msgstr "Γουαδελούπη"
+
+#. 226
+msgid "Equatorial Guinea"
+msgstr "Ισημερινή Γουινέα"
+
+#. 300
+msgid "Greece"
+msgstr "Ελλάδα"
+
+#. 239
+msgid "South Georgia and the South Sandwich Islands"
+msgstr "Νότια Τζόρτζια και Νότιοι νήσοι Σάντουιτς"
+
+#. 320
+msgid "Guatemala"
+msgstr "Γουατεμάλα"
+
+#. 316
+msgid "Guam"
+msgstr "Γκουάμ"
+
+#. 624
+msgid "Guinea-Bissau"
+msgstr "Γουινέα-Μπισσάου"
+
+#. 328
+msgid "Guyana"
+msgstr "Γουιάνα"
+
+#. 344
+msgid "Hong Kong"
+msgstr "Χονγκ Κονγκ"
+
+#. 334
+msgid "Heard Island and McDonald Islands"
+msgstr "Νήσος Χερντ και Νήσοι ΜακΝτόναλντ"
+
+#. 340
+msgid "Honduras"
+msgstr "Ονδούρα"
+
+#. 191
+msgid "Croatia"
+msgstr "Κροατία"
+
+#. 332
+msgid "Haiti"
+msgstr "Αϊτή"
+
+#. 348
+msgid "Hungary"
+msgstr "Ουγγαρία"
+
+#. 360
+msgid "Indonesia"
+msgstr "Ινδονησία"
+
+#. 372
+msgid "Ireland"
+msgstr "Ιρλανδία"
+
+#. 376
+msgid "Israel"
+msgstr "Ισραήλ"
+
+#. 833
+msgid "Isle of Man"
+msgstr "Αϊλ οφ Μαν"
+
+#. 356
+msgid "India"
+msgstr "Ινδία"
+
+#. 086
+msgid "British Indian Ocean Territory"
+msgstr "Βρετανικά Εδάφη Ινδικού Ωκεανού"
+
+#. 368
+msgid "Iraq"
+msgstr "Ιράκ"
+
+#. 364
+msgid "Iran, Islamic Republic of"
+msgstr "Ισλαμική Δημοκρατία του Ιράν"
+
+#. 352
+msgid "Iceland"
+msgstr "Ισλανδία"
+
+#. 380
+msgid "Italy"
+msgstr "Ιταλία"
+
+#. 832
+msgid "Jersey"
+msgstr "Τζέρσεϋ"
+
+#. 388
+msgid "Jamaica"
+msgstr "Τζαμάικα"
+
+#. 400
+msgid "Jordan"
+msgstr "Ιορδανία"
+
+#. 392
+msgid "Japan"
+msgstr "Ιαπωνία"
+
+#. 404
+msgid "Kenya"
+msgstr "Κένυα"
+
+#. 417
+msgid "Kyrgyzstan"
+msgstr "Κιργκιστάν"
+
+#. 116
+msgid "Cambodia"
+msgstr "Καμπότζη"
+
+#. 296
+msgid "Kiribati"
+msgstr "Κιριμπάτι"
+
+#. 174
+msgid "Comoros"
+msgstr "Κομόρες"
+
+#. 659
+msgid "Saint Kitts and Nevis"
+msgstr "Σαιντ Κίτς και Νέβις"
+
+#. 408
+msgid "Korea, Democratic People's Republic of"
+msgstr "Κορέα, Λαϊκη Δημοκρατία της"
+
+#. 410
+msgid "Korea, Republic of"
+msgstr "Κορέα, Δημοκρατία της"
+
+#. 414
+msgid "Kuwait"
+msgstr "Κουβέιτ"
+
+#. 136
+msgid "Cayman Islands"
+msgstr "Νήσοι Κέυμαν"
+
+#. 398
+msgid "Kazakhstan"
+msgstr "Καζακστάν"
+
+#. 418
+msgid "Lao People's Democratic Republic"
+msgstr "Λαϊκή Δημοκρατία του Λάος"
+
+#. 422
+msgid "Lebanon"
+msgstr "Λίβανος"
+
+#. 662
+msgid "Saint Lucia"
+msgstr "Αγία Λουκία"
+
+#. 438
+msgid "Liechtenstein"
+msgstr "Λίχτενσταϊν"
+
+#. 144
+msgid "Sri Lanka"
+msgstr "Σρι Λάνκα"
+
+#. 430
+msgid "Liberia"
+msgstr "Λιβερία"
+
+#. 426
+msgid "Lesotho"
+msgstr "Λεσότο"
+
+#. 440
+msgid "Lithuania"
+msgstr "Λιθουανία"
+
+#. 442
+msgid "Luxembourg"
+msgstr "Λουξεμβούργο"
+
+#. 428
+msgid "Latvia"
+msgstr "Λεττονία"
+
+#. 434
+msgid "Libyan Arab Jamahiriya"
+msgstr "Λυβική Αραβική Τζαμαχιρία"
+
+#. 504
+msgid "Morocco"
+msgstr "Μαρόκο"
+
+#. 492
+msgid "Monaco"
+msgstr "Μονακό"
+
+#. 498
+msgid "Moldova, Republic of"
+msgstr "Δημοκρατία της Μολδαβίας"
+
+#. 499
+msgid "Montenegro"
+msgstr "Μαυροβούνιο"
+
+#. 663
+msgid "Saint Martin (French part)"
+msgstr "Άγιος Μαρτίνος (Γαλλικό τμήμα)"
+
+#. 450
+msgid "Madagascar"
+msgstr "Μαδαγασκάρη"
+
+#. 584
+msgid "Marshall Islands"
+msgstr "Νήσοι Μάρσαλ"
+
+#. 807
+msgid "Macedonia, the former Yugoslav Republic of"
+msgstr "Π.Γ.Δ.Μ."
+
+#. 466
+msgid "Mali"
+msgstr "Μάλι"
+
+#. 104
+msgid "Myanmar"
+msgstr "Μιανμάρ"
+
+#. 496
+msgid "Mongolia"
+msgstr "Μογγολία"
+
+#. 446
+msgid "Macao"
+msgstr "Μακάο"
+
+#. 580
+msgid "Northern Mariana Islands"
+msgstr "Νήσοι Βόρειες Μαριάνες"
+
+#. 474
+msgid "Martinique"
+msgstr "Μαρτινίκα"
+
+#. 478
+msgid "Mauritania"
+msgstr "Μαυριτανία"
+
+#. 500
+msgid "Montserrat"
+msgstr "Μοντσεράτ"
+
+#. 470
+msgid "Malta"
+msgstr "Μάλτα"
+
+#. 480
+msgid "Mauritius"
+msgstr "Μαυρίκιος"
+
+#. 462
+msgid "Maldives"
+msgstr "Μαλδίβες"
+
+#. 454
+msgid "Malawi"
+msgstr "Μαλάουι"
+
+#. 484
+msgid "Mexico"
+msgstr "Μεξικό"
+
+#. 458
+msgid "Malaysia"
+msgstr "Μαλαισία"
+
+#. 508
+msgid "Mozambique"
+msgstr "Μοζαμβίκη"
+
+#. 516
+msgid "Namibia"
+msgstr "Ναμίμπια"
+
+#. 540
+msgid "New Caledonia"
+msgstr "Νέα Καληδονία"
+
+#. 562
+msgid "Niger"
+msgstr "Νίγηρας"
+
+#. 574
+msgid "Norfolk Island"
+msgstr "Νήσοι Νόρφολκ"
+
+#. 566
+msgid "Nigeria"
+msgstr "Νιγηρία"
+
+#. 558
+msgid "Nicaragua"
+msgstr "Νικαράγουα"
+
+#. 528
+msgid "Netherlands"
+msgstr "Ολλανδία"
+
+#. 578
+msgid "Norway"
+msgstr "Νορβηγία"
+
+#. 524
+msgid "Nepal"
+msgstr "Νεπάλ"
+
+#. 520
+msgid "Nauru"
+msgstr "Ναουρού"
+
+#. 570
+msgid "Niue"
+msgstr "Νιούε"
+
+#. 554
+msgid "New Zealand"
+msgstr "Νέα Ζηλανδία"
+
+#. 512
+msgid "Oman"
+msgstr "Ομάν"
+
+#. 591
+msgid "Panama"
+msgstr "Παναμάς"
+
+#. 604
+msgid "Peru"
+msgstr "Περού"
+
+#. 258
+msgid "French Polynesia"
+msgstr "Γαλλική Πολυνησία"
+
+#. 598
+msgid "Papua New Guinea"
+msgstr "Παπούα-Νέα Γουινέα"
+
+#. 608
+msgid "Philippines"
+msgstr "Φιλιππίνες"
+
+#. 586
+msgid "Pakistan"
+msgstr "Πακιστάν"
+
+#. 616
+msgid "Poland"
+msgstr "Πολωνία"
+
+#. 666
+msgid "Saint Pierre and Miquelon"
+msgstr "Σεν Πιερ και Μικελόν"
+
+#. 612
+msgid "Pitcairn"
+msgstr "Πίτκερν"
+
+#. 630
+msgid "Puerto Rico"
+msgstr "Πόρτο Ρίκο"
+
+#. 275
+msgid "Palestinian Territory, Occupied"
+msgstr "Κατεχόμενα Παλαιστινιακά Εδάφη"
+
+#. 620
+msgid "Portugal"
+msgstr "Πορτογαλία"
+
+#. 585
+msgid "Palau"
+msgstr "Παλάου"
+
+#. 600
+msgid "Paraguay"
+msgstr "Παραγουάη"
+
+#. 634
+msgid "Qatar"
+msgstr "Κατάρ"
+
+#. 638
+msgid "Reunion"
+msgstr "Ρεουνιόν"
+
+#. 642
+msgid "Romania"
+msgstr "Ρουμανία"
+
+#. 688
+msgid "Serbia"
+msgstr "Σερβία"
+
+#. 643
+msgid "Russian Federation"
+msgstr "Ρωσική Ομοσπονδία"
+
+#. 646
+msgid "Rwanda"
+msgstr "Ρουάντα"
+
+#. 682
+msgid "Saudi Arabia"
+msgstr "Σαουδική Αραβία"
+
+#. 090
+msgid "Solomon Islands"
+msgstr "Νήσοι Σολομώντος"
+
+#. 690
+msgid "Seychelles"
+msgstr "Σεϋχέλλες"
+
+#. 736
+msgid "Sudan"
+msgstr "Σουδάν"
+
+#. 752
+msgid "Sweden"
+msgstr "Σουηδία"
+
+#. 702
+msgid "Singapore"
+msgstr "Σινγκαπούρη"
+
+#. 654
+msgid "Saint Helena"
+msgstr "Νήσος Αγίας Ελένης"
+
+#. 705
+msgid "Slovenia"
+msgstr "Σλοβενία"
+
+#. 744
+msgid "Svalbard and Jan Mayen"
+msgstr "Νήσοι Σβάλμπαρντ και Γιαν Μάγιεν"
+
+#. 703
+msgid "Slovakia"
+msgstr "Σλοβακία"
+
+#. 694
+msgid "Sierra Leone"
+msgstr "Σιέρα Λεόνε"
+
+#. 674
+msgid "San Marino"
+msgstr "Άγιος Μαρίνος"
+
+#. 686
+msgid "Senegal"
+msgstr "Σενεγάλη"
+
+#. 706
+msgid "Somalia"
+msgstr "Σομαλία"
+
+#. 740
+msgid "Suriname"
+msgstr "Σουρινάμ"
+
+#. 678
+msgid "Sao Tome and Principe"
+msgstr "Sao Tome και Principe"
+
+#. 222
+msgid "El Salvador"
+msgstr "Ελ Σαλβαδόρ"
+
+#. 760
+msgid "Syrian Arab Republic"
+msgstr "Αραβική Δημοκρατία της Συρίας"
+
+#. 748
+msgid "Swaziland"
+msgstr "Σουαζιλάνδη"
+
+#. 796
+msgid "Turks and Caicos Islands"
+msgstr "Νήσοι Τούρκς και Καΐκος"
+
+#. 148
+msgid "Chad"
+msgstr "Τσαντ"
+
+#. 260
+msgid "French Southern Territories"
+msgstr "Γαλλικές Νότιες Περιοχές"
+
+#. 768
+msgid "Togo"
+msgstr "Τόγκο"
+
+#. 764
+msgid "Thailand"
+msgstr "Ταϊλάνδη"
+
+#. 762
+msgid "Tajikistan"
+msgstr "Τατζικιστάν"
+
+#. 772
+msgid "Tokelau"
+msgstr "Τοκελάου"
+
+#. 626
+msgid "Timor-Leste"
+msgstr "Τιμόρ-Λέστε"
+
+#. 795
+msgid "Turkmenistan"
+msgstr "Τουρκμενιστάν"
+
+#. 788
+msgid "Tunisia"
+msgstr "Τυνησία"
+
+#. 776
+msgid "Tonga"
+msgstr "Τόνγκα"
+
+#. 792
+msgid "Turkey"
+msgstr "Τουρκία"
+
+#. 780
+msgid "Trinidad and Tobago"
+msgstr "Τρίνινταντ και Τομπάγκο"
+
+#. 798
+msgid "Tuvalu"
+msgstr "Τουβάλου"
+
+#. 158
+msgid "Taiwan, Province of China"
+msgstr "Ταϊβάν, Επαρχία της Κίνας"
+
+#. 834
+msgid "Tanzania, United Republic of"
+msgstr "Τανζανία, Ενωμένη Δημοκρατία της"
+
+#. 804
+msgid "Ukraine"
+msgstr "Ουκρανία"
+
+#. 800
+msgid "Uganda"
+msgstr "Ουγκάντα"
+
+#. 581
+msgid "United States Minor Outlying Islands"
+msgstr "Απομακρυσμένες Νησίδες των Ηνωμένων Πολιτειών"
+
+#. 840
+msgid "United States"
+msgstr "Ηνωμένες Πολιτείες της Αμερικής"
+
+#. 858
+msgid "Uruguay"
+msgstr "Ουρουγουάη"
+
+#. 860
+msgid "Uzbekistan"
+msgstr "Ουζμπεκιστάν"
+
+#. 336
+msgid "Holy See (Vatican City State)"
+msgstr "Αγία Έδρα (Κράτος της Πόλης του Βατικανού)"
+
+#. 670
+msgid "Saint Vincent and the Grenadines"
+msgstr "Άγιος Βικέντιος και Γρεναδίνες"
+
+#. 862
+msgid "Venezuela"
+msgstr "Βενεζουέλα"
+
+#. 092
+msgid "Virgin Islands, British"
+msgstr "Παρθένοι Νήσοι, Βρετανικές"
+
+#. 850
+msgid "Virgin Islands, U.S."
+msgstr "Παρθένοι Νήσοι, Η.Π.A."
+
+#. 704
+msgid "Viet Nam"
+msgstr "Βιετνάμ"
+
+#. 548
+msgid "Vanuatu"
+msgstr "Βανουάτου"
+
+#. 876
+msgid "Wallis and Futuna"
+msgstr "Νήσοι Γουόλις και Φουτούνα"
+
+#. 882
+msgid "Samoa"
+msgstr "Σαμόα"
+
+#. 887
+msgid "Yemen"
+msgstr "Υεμένη"
+
+#. 175
+msgid "Mayotte"
+msgstr "Μαγιότ"
+
+#. 710
+msgid "South Africa"
+msgstr "Νότιος Αφρική"
+
+#. 894
+msgid "Zambia"
+msgstr "Ζάμπια"
+
+#. 716
+msgid "Zimbabwe"
+msgstr "Ζιμπάμπουε"
+
+msgid "* Unknown, add is_in tags to those cities"
+msgstr "* Άγνωστη, προσθέστε ετικέτες is_in σε αυτές τις πόλεις"
+
+msgid "Car"
+msgstr "Αυτοκίνητο"
+
+msgid "Iso2"
+msgstr "Iso2"
+
+msgid "Iso3"
+msgstr "Iso3"
+
+msgid "Country"
+msgstr "Χώρα"
+
+msgid "Postal"
+msgstr "Ταχυδρομική"
+
+msgid "Town"
+msgstr "Πόλη"
+
+msgid "District"
+msgstr "Επαρχία"
+
+msgid "Street"
+msgstr "Οδός"
+
+msgid "Number"
+msgstr "Αριθμός"
+
+msgid "Enter Destination"
+msgstr "Εισάγετε προορισμό"
+
+msgid "Zip Code"
+msgstr "Ταχ. Κώδικας"
+
+msgid "City"
+msgstr "Πόλη"
+
+msgid "District/Township"
+msgstr "Επαρχία/Οικισμός"
+
+msgid "Map"
+msgstr "Χάρτης"
+
+msgid "Bookmark"
+msgstr "Σελιδοδείκτης"
+
+msgid "Destination"
+msgstr "Προορισμός"
+
+msgid "Display"
+msgstr "Προβολή"
+
+msgid "Route"
+msgstr "Διαδρομή"
+
+msgid "Former Destinations"
+msgstr "Προγενέστερες διαδρομές"
+
+msgid "Bookmarks"
+msgstr "Σελιδοδείκτες"
+
+msgid "Layout"
+msgstr "Διάταξη"
+
+msgid "Projection"
+msgstr "Προβολή :"
+
+msgid "Vehicle"
+msgstr "Όχημα"
+
+msgid "ZoomOut"
+msgstr "Σμίκρυνση"
+
+msgid "Decrease zoom level"
+msgstr "Μείωση κλίμακας εστίασης"
+
+msgid "ZoomIn"
+msgstr "Μεγέθυνση"
+
+msgid "Increase zoom level"
+msgstr "Αυξηση κλίμακας εστίασης"
+
+msgid "Recalculate"
+msgstr "Επαναϋπολογισμός"
+
+msgid "Redraw map"
+msgstr "Επανασχεδίαση χάρτη"
+
+msgid "Info"
+msgstr "Πληροφορίες"
+
+msgid "Set destination"
+msgstr "Ορισμός προορισμού"
+
+msgid "Opens address search dialog"
+msgstr "Ανοιγμα διαλόγου αναζήτησης διεύθυνσης"
+
+msgid "Stop Navigation"
+msgstr "Διακοπή πλοήγησης"
+
+msgid "Test"
+msgstr "Δοκιμή"
+
+msgid "_Quit"
+msgstr "_Έξοδος"
+
+msgid "Quit the application"
+msgstr "Έξοδος από την εφαρμογή"
+
+msgid "Show position cursor"
+msgstr "Εμφάνιση δρομέα θέσης"
+
+msgid "Lock on Road"
+msgstr "Κλείδωμα στο δρόμο"
+
+msgid "Keep orientation to the North"
+msgstr "Παραμονή προσανατολισμού στο βορά"
+
+msgid "Switches map orientation to the north or the vehicle"
+msgstr "Εναλάσει το προσανατολισμό του χάρτη στο βορά ή στο αυτοκίνητο"
+
+msgid "Show/hide route description"
+msgstr "Εμφάνιση/απόκρυψη περιγραφής διαδρομής"
+
+msgid "Autozoom"
+msgstr "Αυτόματο Ζουμ"
+
+msgid "Enable/disable automatic zoom level changing"
+msgstr "(Απ)ενεργοποίηση αυτόματης αλλαγής εστίασης"
+
+msgid "Fullscreen"
+msgstr "Πλήρης Οθόνη"
+
+msgid "Data"
+msgstr "Δεδομένα"
+
+msgid "N"
+msgstr "Β"
+
+msgid "NE"
+msgstr "ΒΑ"
+
+msgid "E"
+msgstr "Α"
+
+msgid "SE"
+msgstr "ΝΑ"
+
+msgid "S"
+msgstr "Ν"
+
+msgid "SW"
+msgstr "ΝΔ"
+
+msgid "W"
+msgstr "Δ"
+
+msgid "NW"
+msgstr "ΒΔ"
+
+msgid "No"
+msgstr "Όχι"
+
+msgid "2D"
+msgstr "2Δ"
+
+msgid "3D"
+msgstr "3Δ"
+
+msgid "OT"
+msgstr "ΟΤ"
+
+#, c-format
+msgid "Route %4.0fkm    %02d:%02d ETA"
+msgstr "Διαδρομή %4.0fχλμ Χρόνος που απομένει %02d:%02d"
+
+msgid "Route 0000km  0+00:00 ETA"
+msgstr "Διαδρομή 0000χλμ Χρόνος που απομένει 0+00:00"
+
+msgid "Back to map"
+msgstr "Πίσω στο χάρτη"
+
+msgid "Main Menu"
+msgstr "Κύριο Μενού"
+
+msgid "Help"
+msgstr "Βοήθεια"
+
+msgid "Back"
+msgstr "Προηγ."
+
+msgid "Add Bookmark"
+msgstr "Προσθήκη σελιδοδείκτη"
+
+msgid "Add Bookmark folder"
+msgstr "Πρόσθεση φακέλου Σελιδοδείκτη"
+
+msgid "Rename"
+msgstr "Μετονομασία"
+
+msgid "POIs"
+msgstr "Σημεία Ενδιαφέροντος"
+
+msgid "View in Browser"
+msgstr "Επισκόπηση σε Φυλλομετρητή"
+
+msgid "Streets"
+msgstr "Οδοί"
+
+msgid "House numbers"
+msgstr "Αριθμοί σπιτιών"
+
+msgid "View Attributes"
+msgstr "Προβολή Ιδιοτήτων"
+
+msgid "View on map"
+msgstr "Προβολή στο χάρτη"
+
+msgid "Cut Bookmark"
+msgstr "Αποκοπή Σελιδοδείκτη"
+
+msgid "Copy Bookmark"
+msgstr "Αντιγραφή Σελιδοδείκτη"
+
+msgid "Rename Bookmark"
+msgstr "Μετονομασία Σελιδοδείκτη"
+
+msgid "Paste Bookmark"
+msgstr "Επικόληση Σελιδοδείκτη"
+
+msgid "Delete Bookmark"
+msgstr "Διαγραφή Σελιδοδείκτη"
+
+msgid "Paste bookmark"
+msgstr "Επικόληση σελιδοδείκτη"
+
+#, c-format
+msgid "Bookmark %s"
+msgstr "Σελιδοδείκτης %s"
+
+msgid "House number"
+msgstr "Αριθμός σπιτιού"
+
+msgid "Maps"
+msgstr "Χάρτες"
+
+msgid "Show Satellite Status"
+msgstr "Εμφάνιση Κατάστασης Δορυφόρων"
+
+msgid " Elevation "
+msgstr " Υψόμετρο "
+
+msgid " Azimuth "
+msgstr " Αζιμούθιο "
+
+msgid "Show NMEA Data"
+msgstr "Εμφάνιση Δεδομένων ΝΜΕΑ"
+
+msgid "car"
+msgstr "αυτοκίνητο"
+
+msgid "bike"
+msgstr "ποδήλατο"
+
+msgid "pedestrian"
+msgstr "Πεζός"
+
+#, c-format
+msgid "Current profile: %s"
+msgstr "Τρέχον προφίλ: %s"
+
+#, c-format
+msgid "Change profile to: %s"
+msgstr "Αλλαγή προφίλ σε: %s"
+
+msgid "Set as active"
+msgstr "Καθορισμός ως ενεργό"
+
+msgid "Show Satellite status"
+msgstr "Εμφάνιση Κατάστασης Δορυφόρων"
+
+msgid "Show NMEA data"
+msgstr "Εμφάνιση δεδομένων ΝΜΕΑ"
+
+msgid "Rules"
+msgstr "Κανόνες"
+
+msgid "Lock on road"
+msgstr "Κλείδωμα στο δρόμο"
+
+msgid "Northing"
+msgstr "Χάρτης στο βορρά"
+
+msgid "Map follows Vehicle"
+msgstr "Ο χάρτης ακολουθεί το Όχημα"
+
+msgid "Message"
+msgstr "Μήνυμα"
+
+msgid "Route Description"
+msgstr "Περιγραφή Διαδρομής"
+
+msgid "Height Profile"
+msgstr "Ύψος προφίλ"
+
+msgid "Show Locale"
+msgstr "Eμφάνιση Εντοπιότητας"
+
+msgid "About Navit"
+msgstr "Περί του Navit"
+
+#. Authors
+msgid "By"
+msgstr "Από"
+
+#. Contributors
+msgid "And all the Navit Team"
+msgstr "Και όλη την ομάδα του Navit"
+
+msgid "members and contributors."
+msgstr "μέλη και συνεισφέροντες"
+
+msgid "Map Point"
+msgstr "Σημείο Χάρτη"
+
+msgid "Vehicle Position"
+msgstr "Θέση Οχήματος"
+
+msgid "Main menu"
+msgstr "Κύριο Μενού"
+
+msgid ""
+"Show\n"
+"Map"
+msgstr ""
+"Εμφάνιση\n"
+"Χάρτη"
+
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+msgid "Tools"
+msgstr "Εργαλεία"
+
+msgid "About"
+msgstr "Περί"
+
+msgid "Actions"
+msgstr "Ενέργειες"
+
+msgid "Quit"
+msgstr "Έξοδος"
+
+msgid ""
+"Stop\n"
+"Navigation"
+msgstr "Διακοπή"
+
+msgid "Window Mode"
+msgstr "Λειτουργία παραθύρων"
+
+msgid "Description"
+msgstr "Περιγραφή"
+
+msgid "horse"
+msgstr "άλογο"
+
+#. chr:
+#. flags used for a truck: (first flag number is 0)
+#. 8: SIZE_OR_WEIGHT_LIMIT
+#. 21: TRANSPORT_TRUCK
+#. speed setup:
+#. 'speed' data of the atkaction for a car is
+#. reduced about 10 km/h. When the speed was at
+#. 10 km/h, I reduced it to 5 km/h.
+#. 'route_weight' data has been treated in the same way.
+#. If you want to discourage the use of small roads,
+#. just reduce this value.
+#. size and weight setup:
+#. This is an example, you have to use the data of your truck.
+#. bobshaffer's standard truck:
+#. (1 lb = 453.59237 g, 1 foot = .3048 m)
+#. (data has to be in [cm] and [kg] according to 'atkaction.h')
+#. width=  9    feet,   274 cm
+#. height= 13.5  feet,   411 cm
+#. length= 70    feet,  2134 cm
+#. weight= 80000 lbs,  36287 kg
+#. axle_weight= 34000 lbs,  15422 kg
+#. 
+msgid "truck"
+msgstr "φορτηγό"

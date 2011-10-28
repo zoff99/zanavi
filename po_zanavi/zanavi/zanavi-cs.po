@@ -1,0 +1,325 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ZANavi 1.0.0\n"
+"Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
+"POT-Creation-Date: 2011-10-06 22:20+0200\n"
+"PO-Revision-Date: 2011-10-11 20:32+0000\n"
+"Last-Translator: doJan Pernica <Unknown>\n"
+"Language-Team: zoff99 <zoff@zanavi.cc>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
+"X-Generator: Launchpad (build 14124)\n"
+
+msgid "map download"
+msgstr "Stáhnout mapu"
+
+msgid "Welcome to ZANavi"
+msgstr "Vítejte v ZANavi"
+
+msgid "More info"
+msgstr "Více informací"
+
+msgid "zoom in"
+msgstr "přiblížit"
+
+msgid "zoom out"
+msgstr "oddálit"
+
+#. TRANSLATORS: text to translate is: exit ZANavi
+msgid "exit navit"
+msgstr "ukončit ZANavi"
+
+msgid "toggle POI"
+msgstr "toogle POI"
+
+msgid "address search (offline)"
+msgstr "Hledání (offline)"
+
+msgid "address search (online)"
+msgstr "Hledání (online)"
+
+msgid "Mapdownload"
+msgstr "Stahování mapy"
+
+msgid "downloading"
+msgstr "stahování"
+
+msgid "ETA"
+msgstr "Zbýv. čas"
+
+msgid "Error downloading map!"
+msgstr "Chyba při stahování mapy!"
+
+msgid "Error downloading map, resuming"
+msgstr "Chyba při stahování mapy, zkouším znovu"
+
+msgid "ready"
+msgstr "připraveno"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "No address found"
+msgstr "Adresa nenalezena"
+
+msgid "Enter: City and Street"
+msgstr "Vložte: město a ulici"
+
+msgid "No search string entered"
+msgstr "Vyhledávací řetězec je prázdný"
+
+msgid "setting destination to"
+msgstr "Nastavuji cíl do"
+
+msgid "getting search results"
+msgstr "Získávám výsledky hledání"
+
+msgid "searching ..."
+msgstr "hledám...."
+
+msgid "No Results found!"
+msgstr "Nic nenalzeno"
+
+#. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr "Mapové podklady (c) OpenStreetMap contributors, CC-BY-SA"
+
+msgid "partial match"
+msgstr "částečná shoda"
+
+msgid "Search"
+msgstr "Hledání"
+
+msgid "drive here"
+msgstr "navigovat sem"
+
+msgid "loading search results"
+msgstr "nahrávám výsledky hledání"
+
+msgid "towns"
+msgstr "města"
+
+msgid "delete maps"
+msgstr "smazat mapy"
+
+msgid "download maps"
+msgstr "stahování map"
+
+msgid "Map already up to date"
+msgstr "Mapa je aktuální"
+
+msgid "search full mapfile [BETA]"
+msgstr "Prohledat celý mapový podklad [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_fast_provider"
+msgstr "GSM/3g/WiFi"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_fast_provider"
+msgstr "K získání pozice použij síť GSM/3g/WiFi (používá Internet)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__follow_gps"
+msgstr "Následuj"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__follow_gps"
+msgstr ""
+"Centruj mapu podle GPS. Aktivujte tuto volbu, pokud chcete používat "
+"směrování kompasem."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_vehicle_in_center"
+msgstr "Centruj dle pozice"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_vehicle_in_center"
+msgstr "Zobrazuje pozici uprostřed obrazovky místo ve spodní části"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_base"
+msgstr "Kompas"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_base"
+msgstr "Získej směr jízdy podle kompasu. Potřebuje hodně CPU (a baterie)."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_always"
+msgstr "Vždy kompas"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_always"
+msgstr ""
+"Získávej směr jizdy vždy podle kompasu a to i v případě vyšších rychlostí"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_compass_heading_fast"
+msgstr "rychlý Kompas"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_compass_heading_fast"
+msgstr "Kompas se točí velmi jemně. POZOR: vezme si veškerý výkon CPU"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_imperial"
+msgstr "Imperial"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_imperial"
+msgstr "Používej imperiální jednotky (míle, ...) místo metrických."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_3d_map"
+msgstr "3D"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_3d_map"
+msgstr "Zobrazení mapy v 3D [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_anti_aliasing"
+msgstr "Vyhlazování"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_anti_aliasing"
+msgstr ""
+"Při vykreslování mapy použij vyhlazování čar. Je rychlejší, pokud je vypnuto."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__gui_oneway_arrows"
+msgstr "Jednosměrky"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__gui_oneway_arrows"
+msgstr "Ukazuj šipky u jednosměrných cest [BETA]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_debug_messages"
+msgstr "Ladící hlášky"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_debug_messages"
+msgstr "Zobrazuj ladící hlášky [DEBUG]"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__navit_lang"
+msgstr "Jazyk"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__navit_lang"
+msgstr "Vyber komunikační jazky (pro aplikaci je nutný restart aplikace)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_lock_on_roads"
+msgstr "Jen po silnicích"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_lock_on_roads"
+msgstr ""
+"Umístnit pozici vždy na nejbližší komunikaci. Vypněte, pokud se pohybujete "
+"mimo značené trasy."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_route_highways"
+msgstr "Preferuj dálnice"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_route_highways"
+msgstr "Preferování dálnic. Při vypnuté volbě je potřeba více paměti."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__save_zoomlevel"
+msgstr "Úroveň přiblížení"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__save_zoomlevel"
+msgstr "Ukládat posledně použitou úroveň přiblížení."
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__show_sat_status"
+msgstr "Stav statelitů"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__show_sat_status"
+msgstr "Ukazuj stav GPS satelitů"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__title__use_agps"
+msgstr "aGPS"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__PREF__summ__use_agps"
+msgstr "používej asistované GPS (potřebuje Internet)"
+
+#. TRANSLATORS: see en_US for english text to translate!!
+msgid "__INFO_BOX_TITLE__"
+msgstr "Vítejte v ZANavi"
+
+#. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
+msgid "__INFO_BOX_TEXT__"
+msgstr ""
+"ZANavi jste právě spustili poprvé!\\n\\nPrvně zvolte \"stáhnout mapy\"\\n z "
+"menu a stáhněte mapu\\n oblastí, kde se právě nacházíte.\\n\\n Mapové "
+"soubory jsou velké,\\n proto se ujistěte, že máte datový paušál!\\n\\n "
+"Mapové podklady:\\n CC-BY-SA OpenStreetMap Project\\n\\n Více informací "
+"získáte\\n na našich stránkách\\n http://zanavi.cc\\n\\n Přejme hodně zábavy "
+"se ZANavi."
+
+msgid "Announcer Off"
+msgstr "Vypnout ohlašování"
+
+msgid "Announcer On"
+msgstr "Zapnout ohlašování"
+
+msgid ""
+"Language is not available for TTS! Using your phone's default settings"
+msgstr "Není dostupný jazyk pro TTS. Použivám implicitní nastavení telefonu."
+
+msgid "Using Voice for:"
+msgstr "Používám hlas pro:"
+
+msgid "Settings"
+msgstr "Nastavení"
+
+msgid "Creating outputfile, wait"
+msgstr "Vytvářím výstupní soubor, čekejte prosím"
+
+msgid "Creating outputfile, long time"
+msgstr "Vytvářím výstupní soubor, bude to trvat déle"
+
+msgid "MD5 mismatch"
+msgstr "Chyba MD5 kontroly"
+
+msgid "generating MD5 checksum"
+msgstr "Generuji MD5 kontrolní součet"
+
+msgid "Use as destination"
+msgstr "Použít jako cíl"
+
+msgid "back"
+msgstr "zpět"
+
+msgid "destination"
+msgstr "cíl"
+
+msgid "wait ..."
+msgstr "čekejte..."
+
+msgid "Enter Destination"
+msgstr "Zadejte cíl"
+
+msgid "Zoom to Route"
+msgstr "Zobrazit celou trasu"
+
+msgid "Stop Navigation"
+msgstr "Přestat navigovat"
+
+msgid "Streets"
+msgstr "Ulice"
+
+msgid "touch map to zoom"
+msgstr "pro přiblížení se dotkněte mapy"
