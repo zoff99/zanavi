@@ -685,7 +685,7 @@ search_list_get_result(struct search_list *this_)
 	struct attr attr2;
 	int has_street_name=0;
 
-	// dbg(0,"******* enter *******\n");
+	//dbg(0,"******* enter *******\n");
 	le=&this_->levels[level];
 	//dbg(0,"le=%p\n", le);
 	for (;;)
@@ -719,12 +719,17 @@ search_list_get_result(struct search_list *this_)
 						break;
 				}
 			}
-			if (le->parent)
-			{
-				//dbg(0,"mapset_search_new with item(%d,%d)\n", le->parent->item.id_hi, le->parent->item.id_lo);
-			}
-			//dbg(0,"############## attr=%s\n", attr_to_name(le->attr->type));
+			//if (le->parent)
+			//{
+			//	//dbg(0,"mapset_search_new with item(%d,%d)\n", le->parent->item.id_hi, le->parent->item.id_lo);
+			//}
+			//else
+			//{
+			//	dbg(0,"NO parent!!\n");
+			//}
+			// dbg(0,"############## attr=%s\n", attr_to_name(le->attr->type));
 			le->search=mapset_search_new(this_->ms, &le->parent->item, le->attr, le->partial);
+			// ** DOC ** mapset_search_new(struct mapset *ms, struct item *item, struct attr *search_attr, int partial)
 			le->hash=g_hash_table_new(search_item_hash_hash, search_item_hash_equal);
 		}
 		//dbg(0,"le->search=%p\n", le->search);
@@ -1424,8 +1429,8 @@ static struct country2 all_country_list[]= {
   {175,	NULL,	"YT", "MYT", /* 175 */ "Mayotte"},
   {710,	"ZA",	"ZA", "ZAF", /* 710 */ "South Africa"},
   {894,	"Z",	"ZM", "ZMB", /* 894 */ "Zambia"},
-  {716,	"ZW",	"ZW", "ZWE", /* 716 */ "Zimbabwe"}
-  // {999, "*",    "*",  "*",             "* Unknown, add is_in tags to those cities"},
+  {716,	"ZW",	"ZW", "ZWE", /* 716 */ "Zimbabwe"},
+  {999, "*",    "*",  "*",             "Unknown"},
 };
 
 
@@ -1694,7 +1699,8 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 
 	dbg(0,"-- START --\n");
 
-	// search in "attr_country_all" -> seems to be when item is in no country
+	// search in "attr_country_all" -> seems to be when item is in no country?? or not
+	/*
 	dbg(0,"-- country all start --\n");
 	while (tmp)
 	{
@@ -1705,6 +1711,7 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 		tmp=g_list_next(tmp);
 	}
 	dbg(0,"-- country all end --\n");
+	*/
 
 	// normal search stuff -------- START ----------
 	if (search_country_flags == 1)
@@ -1712,7 +1719,7 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 		dbg(0,"-- country default start --\n");
 		while (phrases)
 		{
-			dbg(0,"s=%s\n",phrases->data);
+			// dbg(0,"s=%s\n",phrases->data);
 			// set default country
 			search_list_search(sl, country_default(), 0);
 			ret=search_address__country(ret, sl, phrases, NULL, partial, jni);
@@ -1729,7 +1736,7 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 		country.u.str=search_country_string;
 		while (phrases)
 		{
-			dbg(0,"s=%s\n",phrases->data);
+			// dbg(0,"s=%s\n",phrases->data);
 			search_list_search(sl, &country, 0);
 			// set a country
 			ret=search_address__country(ret, sl, phrases, NULL, partial, jni);
@@ -1751,8 +1758,8 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 				phrases=phrases_first;
 				while (phrases)
 				{
-					//dbg(0,"s country=%s\n",all_country_list[j1].iso2);
-					//dbg(0,"s=%s\n",phrases->data);
+					// dbg(0,"s country=%s\n",all_country_list[j1].iso2);
+					// dbg(0,"s=%s\n",phrases->data);
 					country.type=attr_country_iso2;
 					country.u.str=all_country_list[j1].iso2;
 					search_list_search(sl, &country, 0);

@@ -97,7 +97,7 @@ import com.zoffcc.applications.zanavi.NavitMapDownloader.ProgressThread;
 
 public class Navit extends Activity implements Handler.Callback, SensorEventListener
 {
-	public static final String VERSION_TEXT_LONG_INC_REV = "v1.0.0-795";
+	public static final String VERSION_TEXT_LONG_INC_REV = "v1.0.0-850";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
 	public static String NavitAppVersion_string = "0";

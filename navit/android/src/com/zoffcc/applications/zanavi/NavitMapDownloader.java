@@ -55,11 +55,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -72,6 +79,10 @@ public class NavitMapDownloader
 	static final String ZANAVI_MAPS_SEVERTEXT_URL = "http://dl.zanavi.cc/server.txt";
 	static final String ZANAVI_MAPS_BASE_URL_PROTO = "http://";
 	static final String ZANAVI_MAPS_BASE_URL_WO_SERVERNAME = "/data/";
+	//	static final String ZANAVI_MAPS_BASE_URL = "https://192.168.0.3:446/maps/";
+	//	static final String ZANAVI_MAPS_SEVERTEXT_URL = "https://192.168.0.3:446/maps/server.txt";
+	//	static final String ZANAVI_MAPS_BASE_URL_PROTO = "https://";
+	//	static final String ZANAVI_MAPS_BASE_URL_WO_SERVERNAME = "/maps/";
 
 	static int MULTI_NUM_THREADS = 1; // how many download streams for 1 file
 
@@ -2057,13 +2068,62 @@ public class NavitMapDownloader
 		return exit_code;
 	}
 
+	private void trust_Every_ssl_cert()
+	{
+		// NEVER enable this on a production release!!!!!!!!!!
+		try
+		{
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
+			{
+				public boolean verify(String hostname, SSLSession session)
+				{
+					Log.d("NavitMapDownloader", "DANGER !!! trusted hostname=" + hostname + " DANGER !!!");
+					// return true -> mean we trust this cert !! DANGER !! DANGER !!
+					return true;
+				}
+			});
+			SSLContext context = SSLContext.getInstance("TLS");
+			context.init(null, new X509TrustManager[] { new X509TrustManager()
+			{
+				public java.security.cert.X509Certificate[] getAcceptedIssuers()
+				{
+					return new java.security.cert.X509Certificate[0];
+				}
+
+				@Override
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException
+				{
+				}
+
+				@Override
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException
+				{
+				}
+			} }, new SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		// NEVER enable this on a production release!!!!!!!!!!
+	}
+
 	public String d_get_servername()
 	{
+		// this is only for debugging
+		// NEVER enable this on a production release!!!!!!!!!!
+		// NEVER enable this on a production release!!!!!!!!!!
+		// trust_Every_ssl_cert();
+		// NEVER enable this on a production release!!!!!!!!!!
+		// NEVER enable this on a production release!!!!!!!!!!
+
 		String servername = null;
 		try
 		{
 			URL url = new URL(ZANAVI_MAPS_SEVERTEXT_URL);
 			System.out.println(ZANAVI_MAPS_SEVERTEXT_URL);
+
 			HttpURLConnection c = (HttpURLConnection) url.openConnection();
 			c.addRequestProperty("User-Agent", Navit.UserAgentString);
 			c.addRequestProperty("Pragma", "no-cache");
