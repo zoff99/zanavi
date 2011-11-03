@@ -951,6 +951,7 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 			if (slr->street != NULL)
 			if ((street_name != NULL)&&(slr->street->name != NULL))
 			{
+
 				if (strcmp(slr->street->name, street_name)==0)
 				{
 					char *buffer;
@@ -1543,10 +1544,10 @@ search_full_world(char *addr, int partial, int search_order, struct jni_object *
 												{
 													buffer=g_strdup_printf("TWN:H%dL%d:%f:%f:%.7s %.101s",p->common.item.id_hi,p->common.item.id_lo,g.lat,g.lng,p->common.postal,p->common.town_name);
 												}
-			#ifdef HAVE_API_ANDROID
+#ifdef HAVE_API_ANDROID
 												// return results to android as they come in ...
 												android_return_search_result(jni,buffer);
-			#endif
+#endif
 											}
 											phrases=g_list_next(phrases);
 
@@ -1599,10 +1600,10 @@ search_full_world(char *addr, int partial, int search_order, struct jni_object *
 														buffer=g_strdup_printf("STR:H%dL%d:%f:%f:%.7s %.101s",p->common.item.id_hi,p->common.item.id_lo,g.lat,g.lng,p->common.postal,attr.u.str);
 													}
 													//dbg(0,"street3=%s\n",buffer);
-				#ifdef HAVE_API_ANDROID
+#ifdef HAVE_API_ANDROID
 													// return results to android as they come in ...
 													android_return_search_result(jni,buffer);
-				#endif
+#endif
 												}
 												phrases=g_list_next(phrases);
 											}
@@ -1644,10 +1645,10 @@ search_full_world(char *addr, int partial, int search_order, struct jni_object *
 												{
 													buffer=g_strdup_printf("STR:H%dL%d:%f:%f:%.7s %.101s",p->common.item.id_hi,p->common.item.id_lo,g.lat,g.lng,p->common.postal,attr.u.str);
 												}
-			#ifdef HAVE_API_ANDROID
+#ifdef HAVE_API_ANDROID
 												// return results to android as they come in ...
 												android_return_search_result(jni,buffer);
-			#endif
+#endif
 											}
 											phrases=g_list_next(phrases);
 										}

@@ -52,7 +52,8 @@ import android.widget.ListView;
 
 public class NavitAddressResultListActivity extends ListActivity
 {
-
+	public static NavitAddressResultListActivity self_ = null;
+	static ArrayAdapter<String> adapter_ = null;
 	private int selected_id = -1;
 	private int selected_id_passthru = -1;
 	private Boolean is_empty = true;
@@ -120,13 +121,16 @@ public class NavitAddressResultListActivity extends ListActivity
 			j++;
 		}
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result_list);
-		setListAdapter(adapter);
+		self_ = this;
+
+		adapter_ = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result_list);
+		setListAdapter(adapter_);
 		this.getListView().setFastScrollEnabled(true);
 		is_empty = true;
 
 		// ListActivity has a ListView, which you can get with:
 		ListView lv = getListView();
+
 		// Then you can create a listener like so:
 		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
 		{
@@ -139,6 +143,24 @@ public class NavitAddressResultListActivity extends ListActivity
 
 		});
 
+	}
+
+	public void fillStringArray_later(String s)
+	{
+		System.out.println("fillStringArray_later: " + s);
+	}
+
+	public static void add_item_later(String item)
+	{
+		try
+		{
+			self_.add_item_(item);
+			adapter_.notifyDataSetChanged();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void add_item_(String item)
@@ -203,7 +225,17 @@ public class NavitAddressResultListActivity extends ListActivity
 						// user wants to set as destination
 						this.selected_id = this.selected_id_passthru;
 						// close this activity
-						executeDone();
+						executeDone("set");
+					}
+					else if (sel_id == 2)
+					{
+						// "back"
+					}
+					else if (sel_id == 3)
+					{
+						// show destination on map
+						this.selected_id = this.selected_id_passthru;
+						executeDone("view");
 					}
 				}
 			}
@@ -242,10 +274,18 @@ public class NavitAddressResultListActivity extends ListActivity
 	//		super.onBackPressed();
 	//	}
 
-	private void executeDone()
+	private void executeDone(String what)
 	{
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra("selected_id", String.valueOf(this.selected_id));
+		if (what.equals("view"))
+		{
+			resultIntent.putExtra("what", "view");
+		}
+		else
+		{
+			resultIntent.putExtra("what", "-");
+		}
 		setResult(Activity.RESULT_OK, resultIntent);
 		finish();
 	}

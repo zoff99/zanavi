@@ -2197,59 +2197,93 @@ public class NavitGraphics
 	public native int CallbackMessageChannel(int i, String s);
 
 	/**
-	 * start a search on the map
+	 * return search result from C-code
 	 */
 	public void fillStringArray(String s)
 	{
 		// Log.e("NavitGraphics", "**** fillStringArray s=" + s);
 		// deactivate the spinner
-		Navit.NavitAddressSearchSpinnerActive = false;
+		// --> no we want to spin ** Navit.NavitAddressSearchSpinnerActive = false;
 
-		Navit.Navit_Address_Result_Struct tmp_addr = new Navit_Address_Result_Struct();
-		String[] tmp_s = s.split(":");
-		tmp_addr.result_type = tmp_s[0];
-		tmp_addr.item_id = tmp_s[1];
-		tmp_addr.lat = Float.parseFloat(tmp_s[2]);
-		tmp_addr.lon = Float.parseFloat(tmp_s[3]);
-		// the rest ist address
-		tmp_addr.addr = s.substring(4 + tmp_s[0].length() + tmp_s[1].length() + tmp_s[2].length() + tmp_s[3].length(), s.length());
-
-		// if "type" and "H id" and "text" is the same, treat it as a double entry!
-		//    this is just a crude estimate now
-		String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id.split("L")[0] + ":" + tmp_addr.addr;
-		//System.out.println("hash_id=" + hash_id);
-		if (!Navit.Navit_Address_Result_double_index.contains(hash_id))
+		if (s.equals("D:D"))
 		{
-			Navit.NavitAddressResultList_foundItems.add(tmp_addr);
-			Navit.Navit_Address_Result_double_index.add(hash_id);
-			//System.out.println("*add*=" + hash_id);
-
-			if (tmp_addr.result_type.equals("TWN"))
-			{
-				Navit.search_results_towns++;
-			}
-			else if (tmp_addr.result_type.equals("STR"))
-			{
-				Navit.search_results_streets++;
-			}
-			else if (tmp_addr.result_type.equals("SHN"))
-			{
-				Navit.search_results_streets_hn++;
-			}
-
-			// make the dialog move its bar ...
-			Bundle b = new Bundle();
-			b.putInt("dialog_num", Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
-			b.putInt("max", Navit.ADDRESS_RESULTS_DIALOG_MAX);
-			b.putInt("cur", Navit.NavitAddressResultList_foundItems.size() % (Navit.ADDRESS_RESULTS_DIALOG_MAX + 1));
-			b.putString("title", Navit.get_text("loading search results")); //TRANS
-			b.putString("text", Navit.get_text("towns") + ":" + Navit.search_results_towns + " " + Navit.get_text("Streets") + ":" + Navit.search_results_streets + "/" + Navit.search_results_streets_hn);
-			Navit.msg_to_msg_handler(b, 10);
+			// ok its a dummy, just move the percent bar
+			// Log.e("NavitGraphics", "**** fillStringArray s=" + s);
 		}
 		else
 		{
-			//System.out.println("double " + tmp_addr.addr);
+			try
+			{
+				// we hope its a real result value
+				Navit.Navit_Address_Result_Struct tmp_addr = new Navit_Address_Result_Struct();
+				String[] tmp_s = s.split(":");
+				tmp_addr.result_type = tmp_s[0];
+				tmp_addr.item_id = tmp_s[1];
+				tmp_addr.lat = Float.parseFloat(tmp_s[2]);
+				tmp_addr.lon = Float.parseFloat(tmp_s[3]);
+				// the rest ist address
+				tmp_addr.addr = s.substring(4 + tmp_s[0].length() + tmp_s[1].length() + tmp_s[2].length() + tmp_s[3].length(), s.length());
+
+				// if "type" and "H id" and "text" is the same, treat it as a double entry!
+				//    this is just a crude estimate now
+				String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id.split("L")[0] + ":" + tmp_addr.addr;
+				//System.out.println("hash_id=" + hash_id);
+				if (!Navit.Navit_Address_Result_double_index.contains(hash_id))
+				{
+					Navit.NavitAddressResultList_foundItems.add(tmp_addr);
+					Navit.Navit_Address_Result_double_index.add(hash_id);
+					//System.out.println("*add*=" + hash_id);
+
+					if (tmp_addr.result_type.equals("TWN"))
+					{
+						Navit.search_results_towns++;
+					}
+					else if (tmp_addr.result_type.equals("STR"))
+					{
+						Navit.search_results_streets++;
+					}
+					else if (tmp_addr.result_type.equals("SHN"))
+					{
+						Navit.search_results_streets_hn++;
+					}
+
+					Navit.NavitSearchresultBar_title = Navit.get_text("loading search results");
+					Navit.NavitSearchresultBar_text = Navit.get_text("towns") + ":" + Navit.search_results_towns + " " + Navit.get_text("Streets") + ":" + Navit.search_results_streets + "/" + Navit.search_results_streets_hn;
+
+					// make the dialog move its bar ...
+					//			Bundle b = new Bundle();
+					//			b.putInt("dialog_num", Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
+					//			b.putInt("max", Navit.ADDRESS_RESULTS_DIALOG_MAX);
+					//			b.putInt("cur", Navit.NavitAddressResultList_foundItems.size() % (Navit.ADDRESS_RESULTS_DIALOG_MAX + 1));
+					//			b.putString("title", Navit.get_text("loading search results")); //TRANS
+					//			b.putString("text", Navit.get_text("towns") + ":" + Navit.search_results_towns + " " + Navit.get_text("Streets") + ":" + Navit.search_results_streets + "/" + Navit.search_results_streets_hn);
+					//			Navit.msg_to_msg_handler(b, 10);
+				}
+				else
+				{
+					//System.out.println("double " + tmp_addr.addr);
+				}
+			}
+			catch (Exception e)
+			{
+
+			}
 		}
+
+		// always move the bar, so that the user knows app is still doing something (and has not crashed!)
+		//		Navit.NavitSearchresultBarIndex++;
+		//		if (Navit.NavitSearchresultBarIndex > Navit.ADDRESS_RESULTS_DIALOG_MAX)
+		//		{
+		//			Navit.NavitSearchresultBarIndex = 0;
+		//		}
+		// make the dialog move its bar ...
+		//		Bundle b = new Bundle();
+		//		b.putInt("dialog_num", Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
+		//		b.putInt("max", Navit.ADDRESS_RESULTS_DIALOG_MAX);
+		//		b.putInt("cur", Navit.NavitSearchresultBarIndex);
+		//		b.putString("title", Navit.get_text("loading search results")); //TRANS
+		//		b.putString("text", Navit.get_text("towns") + ":" + Navit.search_results_towns + " " + Navit.get_text("Streets") + ":" + Navit.search_results_streets + "/" + Navit.search_results_streets_hn);
+		//		Navit.msg_to_msg_handler(b, 10);
 	}
 
 	public void SearchResultList(int i, int partial_match, String text, int flags, String country_iso2, String search_latlon, int search_radius)

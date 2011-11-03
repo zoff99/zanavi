@@ -218,6 +218,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public static final int NavitAddressSearchCountry_id = 74;
 	public static final int NavitMapPreview_id = 75;
 	public static final int NavitAddressSearch_id_gmaps = 76;
+	public static int NavitSearchresultBarIndex = -1;
+	public static String NavitSearchresultBar_title = "";
+	public static String NavitSearchresultBar_text = "";
 	public static List<Navit_Address_Result_Struct> NavitAddressResultList_foundItems = new ArrayList<Navit_Address_Result_Struct>();
 
 	public SensorManager sensorManager = null;
@@ -1415,6 +1418,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		// clear results
 		Navit.NavitAddressResultList_foundItems.clear();
 		Navit.Navit_Address_Result_double_index.clear();
+		Navit.NavitSearchresultBarIndex = -1;
+		Navit.NavitSearchresultBar_title = "";
+		Navit.NavitSearchresultBar_text = "";
 
 		if (Navit_last_address_search_string.equals(""))
 		{
@@ -1763,6 +1769,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 						// clear results
 						Navit.NavitAddressResultList_foundItems.clear();
 						Navit.Navit_Address_Result_double_index.clear();
+						Navit.NavitSearchresultBarIndex = -1;
+						Navit.NavitSearchresultBar_title = "";
+						Navit.NavitSearchresultBar_text = "";
 						Navit.search_results_towns = 0;
 						Navit.search_results_streets = 0;
 						Navit.search_results_streets_hn = 0;
@@ -1824,45 +1833,68 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				{
 					try
 					{
-						Log.d("Navit", "adress result list id=" + Integer.parseInt(data.getStringExtra("selected_id")));
-						// get the coords for the destination
-						int destination_id = Integer.parseInt(data.getStringExtra("selected_id"));
-
-						// ok now set target
-						Toast.makeText(getApplicationContext(), Navit.get_text("setting destination to") + "\n" + Navit.NavitAddressResultList_foundItems.get(destination_id).addr, Toast.LENGTH_LONG).show(); //TRANS
-
-						Message msg = new Message();
-						Bundle b = new Bundle();
-						b.putInt("Callback", 3);
-						b.putString("lat", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lat));
-						b.putString("lon", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
-						b.putString("q", Navit.NavitAddressResultList_foundItems.get(destination_id).addr);
-						msg.setData(b);
-						N_NavitGraphics.callback_handler.sendMessage(msg);
-
-						// zoom_to_route();
-						try
+						if (data.getStringExtra("what").equals("view"))
 						{
-							Thread.sleep(400);
-						}
-						catch (InterruptedException e)
-						{
-						}
+							// get the coords for the destination
+							int destination_id = Integer.parseInt(data.getStringExtra("selected_id"));
 
-						try
-						{
-							Navit.follow_button_on();
-						}
-						catch (Exception e2)
-						{
-							e2.printStackTrace();
-						}
+							try
+							{
+								Navit.follow_button_off();
+							}
+							catch (Exception e2)
+							{
+								e2.printStackTrace();
+							}
 
-						show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+							show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+						}
+						else
+						{
+							Log.d("Navit", "adress result list id=" + Integer.parseInt(data.getStringExtra("selected_id")));
+							// get the coords for the destination
+							int destination_id = Integer.parseInt(data.getStringExtra("selected_id"));
+
+							// ok now set target
+							Toast.makeText(getApplicationContext(), Navit.get_text("setting destination to") + "\n" + Navit.NavitAddressResultList_foundItems.get(destination_id).addr, Toast.LENGTH_LONG).show(); //TRANS
+
+							Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putInt("Callback", 3);
+							b.putString("lat", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lat));
+							b.putString("lon", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+							b.putString("q", Navit.NavitAddressResultList_foundItems.get(destination_id).addr);
+							msg.setData(b);
+							N_NavitGraphics.callback_handler.sendMessage(msg);
+
+							// zoom_to_route();
+							try
+							{
+								Thread.sleep(400);
+							}
+							catch (InterruptedException e)
+							{
+							}
+
+							try
+							{
+								Navit.follow_button_on();
+							}
+							catch (Exception e2)
+							{
+								e2.printStackTrace();
+							}
+
+							show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+						}
 					}
 					catch (NumberFormatException e)
 					{
 						Log.d("Navit", "NumberFormatException selected_id");
+					}
+					catch (Exception e)
+					{
+
 					}
 				}
 				else
@@ -2017,8 +2049,16 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					b.putInt("dialog_num", this.dialog_num);
 					b.putInt("max", Navit.ADDRESS_RESULTS_DIALOG_MAX);
 					b.putInt("cur", this.spinner_current_value % (Navit.ADDRESS_RESULTS_DIALOG_MAX + 1));
-					b.putString("title", Navit.get_text("getting search results")); //TRANS
-					b.putString("text", Navit.get_text("searching ...")); //TRANS
+					if ((Navit.NavitSearchresultBar_title.equals("")) && (Navit.NavitSearchresultBar_text.equals("")))
+					{
+						b.putString("title", Navit.get_text("getting search results")); //TRANS
+						b.putString("text", Navit.get_text("searching ...")); //TRANS
+					}
+					else
+					{
+						b.putString("title", Navit.NavitSearchresultBar_title);
+						b.putString("text", Navit.NavitSearchresultBar_text);
+					}
 					msg.setData(b);
 					mHandler.sendMessage(msg);
 					try

@@ -215,6 +215,20 @@ public class NavitMapPreviewActivity extends Activity
 		btn_cancel_dest.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		btn_cancel_dest.setGravity(Gravity.CENTER);
 
+		Button btn_view_dest = new Button(this);
+		btn_view_dest.setText(Navit.get_text("show destination on map")); //TRANS
+		btn_view_dest.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				//System.out.println("2222222");
+				selected_id = 3;
+				executeDone();
+			}
+		});
+		btn_view_dest.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		btn_view_dest.setGravity(Gravity.CENTER);
+
 		TextView header = new TextView(this);
 		try
 		{
@@ -328,7 +342,8 @@ public class NavitMapPreviewActivity extends Activity
 
 		relativelayout.addView(header);
 		relativelayout.addView(relativelayout2);
-		relativelayout.addView(btn_cancel_dest);
+		// relativelayout.addView(btn_cancel_dest);
+		relativelayout.addView(btn_view_dest);
 		relativelayout.addView(dummy1);
 		relativelayout.addView(btn_set_dest);
 		setContentView(relativelayout);
