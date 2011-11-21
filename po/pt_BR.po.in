@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2011-04-06 10:28+0000\n"
-"Last-Translator: Carla Pita <Unknown>\n"
+"PO-Revision-Date: 2011-11-16 19:52+0000\n"
+"Last-Translator: diecavallax <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
-"X-Generator: Launchpad (build 14085)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:17+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #, c-format
@@ -116,7 +116,7 @@ msgstr "na rampa"
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
 #, c-format
 msgid "%sinto the street %s%s%s"
-msgstr "%sna rua %s%s%s"
+msgstr "%sna %s%s%s"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
 #, c-format
@@ -148,11 +148,11 @@ msgstr "à esquerda"
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "easily "
-msgstr "facilmente "
+msgstr "levemente "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "strongly "
-msgstr "rapidamente "
+msgstr "acentuadamente "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "really strongly "
@@ -163,11 +163,11 @@ msgid "unknown "
 msgstr "desconhecido "
 
 msgid "When possible, please turn around"
-msgstr "Assim que possível, dê meia-volta."
+msgstr "Quando possível, favor retornar"
 
 #, c-format
 msgid "Enter the roundabout soon and leave it at the %s"
-msgstr "Entre na rotunda e logo deixá-lo no %s"
+msgstr "Entre na rotatória e pegue a %s"
 
 #. TRANSLATORS: %s is the distance to the roundabout
 #, c-format
@@ -184,7 +184,7 @@ msgstr "Deixe a rotatória na %s"
 
 #, c-format
 msgid "Follow the road for the next %s"
-msgstr "Siga a estrada pelo próximo %s"
+msgstr "Continue na via por %s"
 
 msgid "soon"
 msgstr "em breve"
@@ -192,18 +192,18 @@ msgstr "em breve"
 #. TRANSLATORS: First argument is the how manieth street to take, second the direction
 #, c-format
 msgid "Take the %1$s road to the %2$s"
-msgstr "Pegue a %1$s estrada para o %2$s"
+msgstr "Pegue a %1$s via para a %2$s"
 
 #, c-format
 msgid "after %i roads"
-msgstr "após %i estradas"
+msgstr "após %i vias"
 
 msgid "now"
 msgstr "agora"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "então pegue a %1$s estrada para o %2$s"
+msgstr "então pegue a %1$s via para a %2$s"
 
 msgid "error"
 msgstr "erro"
@@ -220,7 +220,7 @@ msgstr "então vire %1$s%2$s %3$s%4$s"
 
 #, c-format
 msgid "You have reached your destination %s"
-msgstr "Você chegou ao destino %s"
+msgstr "Você chegará ao destino em %s"
 
 msgid "then you have reached your destination."
 msgstr "então você chegou ao seu destino."
@@ -244,10 +244,10 @@ msgid "Time"
 msgstr "Tempo"
 
 msgid "Destination Length"
-msgstr "Distância ao Destino"
+msgstr "Distância até o Destino"
 
 msgid "Destination Time"
-msgstr "Tempo ao Destino"
+msgstr "Tempo até o Destino"
 
 msgid "Roadbook"
 msgstr "Guia de estrada"
@@ -1287,7 +1287,7 @@ msgid "Enter Destination"
 msgstr "Entre Destino"
 
 msgid "Zip Code"
-msgstr "Código Postal"
+msgstr "Código Postal (CEP)"
 
 msgid "City"
 msgstr "Cidade"
@@ -1347,10 +1347,10 @@ msgid "Info"
 msgstr "Informação"
 
 msgid "Set destination"
-msgstr "Definir destino"
+msgstr "Definir como destino"
 
 msgid "Opens address search dialog"
-msgstr "Abre busca do endereço de diálogo"
+msgstr "Abrir a busca de endereço"
 
 msgid "Stop Navigation"
 msgstr "Parar Navegação"
@@ -1435,7 +1435,7 @@ msgid "Route 0000km  0+00:00 ETA"
 msgstr "Rota 0000km  TEC 0+00:00"
 
 msgid "Back to map"
-msgstr "Volta ao mapa"
+msgstr "Voltar ao mapa"
 
 msgid "Main Menu"
 msgstr "Menu Principal"
@@ -1474,7 +1474,7 @@ msgid "View on map"
 msgstr "Ver no mapa"
 
 msgid "Cut Bookmark"
-msgstr "Corta Favorito"
+msgstr "Recortar Favorito"
 
 msgid "Copy Bookmark"
 msgstr "Copiar Favorito"
@@ -1575,7 +1575,7 @@ msgid "And all the Navit Team"
 msgstr "E toda a equipe do Navit"
 
 msgid "members and contributors."
-msgstr "membros e contributores"
+msgstr "membros e colaboradores."
 
 msgid "Map Point"
 msgstr "Ponto no mapa"

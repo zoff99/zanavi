@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: ZANavi 1.0.0\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
 "POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-10-07 06:09+0000\n"
-"Last-Translator: Nathalie Oldenburg <Unknown>\n"
+"PO-Revision-Date: 2011-11-14 20:30+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
-"X-Generator: Launchpad (build 14124)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:00+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 msgid "map download"
 msgstr "Térkép letöltése"
@@ -211,43 +211,45 @@ msgstr "Írott és hangos nyelv kiválasztása; újraindítás szükséges"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_lock_on_roads"
-msgstr ""
+msgstr "Maradj az úton"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_lock_on_roads"
 msgstr ""
+"A pointert az úton tartja akkor is, ha esetleg a koordináta eltér (autós "
+"beállítás, gyalog vagy terepen kikapcsolandó)"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_route_highways"
-msgstr ""
+msgstr "Autópályák"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_route_highways"
-msgstr ""
+msgstr "Részesítsd előnyben az autópályák használatát"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__save_zoomlevel"
-msgstr ""
+msgstr "Kivágás (zoom) tárolása"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__save_zoomlevel"
-msgstr ""
+msgstr "Tárold el az utolsó kivágás (zoom) méretet"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__show_sat_status"
-msgstr ""
+msgstr "Műholdak"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__show_sat_status"
-msgstr ""
+msgstr "Mutasd a műholdak állapotát"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_agps"
-msgstr ""
+msgstr "aGPS használata"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_agps"
-msgstr ""
+msgstr "Assisted GPS használata (internet kapcsolat!)"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__INFO_BOX_TITLE__"
@@ -256,14 +258,13 @@ msgstr "Üdvözöljük a ZANavi-ban!"
 #. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
-"Először használja a ZANavi-t!\\n\\n Kezdetnek válassza a \"Térképek "
-"letöltése\"\\n menüpontot, és töltsön le egy térképet\\n a kívánt "
-"területről.\\n Ez egy nagy adatállományt fog letölteni, tehat kérjük\\n "
-"bizonyosodjon meg, hogy átalánydíjas letöltéses (flatrate) vagy hasonló "
-"előfizetése van (különben sokba kerülhet)!\\n\\n Térképadatok:\\n CC-BY-SA "
-"OpenStreetMap Project\\n\\n További információkért\\n látogassa meg "
-"weblapunkat:\\n http://zanavi.cc\\n\\n Sok örömet kívánunk a ZANavi "
-"használatával!"
+"Először használja a ZANavi-t!\\n\\nKezdetnek válassza a \"Térképek "
+"letöltése\"\\nmenüpontot, és töltsön le egy térképet\\na kívánt területről.\\"
+"nEz egy nagy adatállományt fog letölteni, tehat kérjük\\nbizonyosodjon meg, "
+"hogy átalánydíjas letöltéses (flatrate) vagy hasonló előfizetése van "
+"(különben sokba kerülhet)!\\n\\nTérképadatok:\\n CC-BY-SA OpenStreetMap "
+"Project\\n\\nTovábbi információkért\\nlátogassa meg weblapunkat:\\"
+"nhttp://zanavi.cc\\n\\nSok örömet kívánunk a ZANavi használatával!"
 
 msgid "Announcer Off"
 msgstr "Hangbemondás ki"
@@ -312,13 +313,13 @@ msgid "Enter Destination"
 msgstr "Úticél megadása"
 
 msgid "Zoom to Route"
-msgstr ""
+msgstr "Ráközelítés az útvonalra"
 
 msgid "Stop Navigation"
-msgstr ""
+msgstr "Navigálás vége"
 
 msgid "Streets"
-msgstr ""
+msgstr "Utcák"
 
 msgid "touch map to zoom"
-msgstr ""
+msgstr "Érintsd meg a térképet nagyításhoz (zoom)"

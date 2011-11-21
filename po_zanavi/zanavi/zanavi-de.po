@@ -7,17 +7,17 @@ msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
 "POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-10-10 16:22+0000\n"
+"PO-Revision-Date: 2011-11-14 20:31+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
-"X-Generator: Launchpad (build 14124)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:00+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 msgid "map download"
-msgstr "karten runterladen"
+msgstr "Karten herunterladen"
 
 msgid "Welcome to ZANavi"
 msgstr "Willkommen bei ZANavi"
@@ -33,16 +33,16 @@ msgstr "Zoom out"
 
 #. TRANSLATORS: text to translate is: exit ZANavi
 msgid "exit navit"
-msgstr "ZANavi Beenden"
+msgstr "ZANavi beenden"
 
 msgid "toggle POI"
 msgstr "POI ein/aus"
 
 msgid "address search (offline)"
-msgstr "Adressen suche (offline)"
+msgstr "Adressensuche (offline)"
 
 msgid "address search (online)"
-msgstr "Adressen suche (online)"
+msgstr "Adressensuche (online)"
 
 msgid "Mapdownload"
 msgstr "Kartendownload"
@@ -57,7 +57,7 @@ msgid "Error downloading map!"
 msgstr "Fehler beim Kartendownload!"
 
 msgid "Error downloading map, resuming"
-msgstr "Fehler beim Kartendownload\\ndownload wird fortgesetzt ..."
+msgstr "Fehler beim Kartendownload\\nDownload wird fortgesetzt ..."
 
 msgid "ready"
 msgstr "fertig"
@@ -75,7 +75,7 @@ msgid "No search string entered"
 msgstr "Keine Eingabe"
 
 msgid "setting destination to"
-msgstr "neues Fahrziel"
+msgstr "neues Fahrziel:"
 
 msgid "getting search results"
 msgstr "lade Suchergebnisse"
@@ -88,7 +88,7 @@ msgstr "Suche liefert kein Ergebnis!"
 
 #. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
 msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
-msgstr "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr "Kartendaten: (c) OpenStreetMap contributors, CC-BY-SA"
 
 msgid "partial match"
 msgstr "ungefähr"
@@ -171,7 +171,7 @@ msgstr "Meilen/Fuss"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_imperial"
-msgstr "englische Masseinheiten"
+msgstr "Englische Maßeinheiten wie Meilen benutzen"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__show_3d_map"
@@ -220,12 +220,12 @@ msgstr "Fahrzeug auf Strasse"
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_lock_on_roads"
 msgstr ""
-"Fahrzeug auf nächstgelegene Strasse fixieren. Zufuss oder Offroad bitte "
+"Fahrzeug auf nächstgelegene Strasse fixieren. Zu Fuß oder Offroad bitte "
 "ausschalten"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_route_highways"
-msgstr "Autobahn bevorzugt"
+msgstr "Autobahn bevorzugen"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_route_highways"
@@ -263,12 +263,11 @@ msgstr "Willkommen bei ZANavi"
 #. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
-"Sie starten ZANavi zum ersten Mal!\\n\\n Zum loslegen im Menu \"Karten "
-"laden\"\\n auswählen und Karte für die\\n gewünschte Region runterladen.\\n "
-"Die Kartendatei ist sehr gross,\\n bitte flatrate oder ähnliches "
-"aktivieren!\\n\\n Kartendaten:\\n CC-BY-SA OpenStreetMap Project\\n\\n Für "
-"mehr Infos\\n bitte die Website besuchen\\n http://zanavi.cc\\n\\n       "
-"Viel Spaß mit ZANavi."
+"Sie starten ZANavi zum ersten Mal!\\n\\nZum loslegen im Menu \"Karten "
+"laden\"\\nauswählen und Karte für die\\ngewünschte Region runterladen.\\nDie "
+"Kartendatei ist sehr gross,\\nbitte flatrate oder ähnliches aktivieren!\\n\\"
+"nKartendaten:\\nCC-BY-SA OpenStreetMap Project\\n\\nFür mehr Infos\\nbitte "
+"die Website besuchen\\nhttp://zanavi.cc\\n\\n       Viel Spaß mit ZANavi."
 
 msgid "Announcer Off"
 msgstr "Ansagen stumm"
@@ -279,7 +278,8 @@ msgstr "Ansagen einschalten"
 msgid ""
 "Language is not available for TTS! Using your phone's default settings"
 msgstr ""
-"diese Sprache nicht als TTS verfügbar!\\nVerwende Standardeinstellung"
+"Diese Sprache nicht für Sprachansage verfügbar!\\nVerwende "
+"Standardeinstellung."
 
 msgid "Using Voice for:"
 msgstr "Sprache für Ansagen:"

@@ -3,115 +3,115 @@ msgstr ""
 "Project-Id-Version: ZANavi 1.0.0\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
 "POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-10-02 10:57+0000\n"
-"Last-Translator: zoff99 <zoff@zanavi.cc>\n"
+"PO-Revision-Date: 2011-11-14 17:39+0000\n"
+"Last-Translator: Piotr Jablonski <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
-"X-Generator: Launchpad (build 14124)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:00+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 msgid "map download"
-msgstr ""
+msgstr "pobierz mapy"
 
 msgid "Welcome to ZANavi"
-msgstr ""
+msgstr "Witaj w ZANavi"
 
 msgid "More info"
-msgstr ""
+msgstr "Więcej informacji"
 
 msgid "zoom in"
-msgstr ""
+msgstr "przybliż"
 
 msgid "zoom out"
-msgstr ""
+msgstr "oddal"
 
 #. TRANSLATORS: text to translate is: exit ZANavi
 msgid "exit navit"
-msgstr ""
+msgstr "wyjdź z ZANavi"
 
 msgid "toggle POI"
-msgstr ""
+msgstr "włącz/wyłącz POI"
 
 msgid "address search (offline)"
-msgstr ""
+msgstr "wyszukaj adres (offline)"
 
 msgid "address search (online)"
-msgstr ""
+msgstr "wyszukaj adres (online)"
 
 msgid "Mapdownload"
-msgstr ""
+msgstr "Pobieranie map"
 
 msgid "downloading"
-msgstr ""
+msgstr "Pobieranie"
 
 msgid "ETA"
-msgstr ""
+msgstr "Pozostały czas"
 
 msgid "Error downloading map!"
-msgstr ""
+msgstr "Błąd przy pobieraniu map"
 
 msgid "Error downloading map, resuming"
-msgstr ""
+msgstr "Błąd przy pobieraniu map, ponawiam"
 
 msgid "ready"
-msgstr ""
+msgstr "gotowe"
 
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 msgid "No address found"
-msgstr ""
+msgstr "Nie znaleziono adresu"
 
 msgid "Enter: City and Street"
-msgstr ""
+msgstr "Wprowadź: Miasto oraz Ulica"
 
 msgid "No search string entered"
-msgstr ""
+msgstr "Nie wprowadzono żadnych znaków"
 
 msgid "setting destination to"
-msgstr ""
+msgstr "ustawianie celu trasy do"
 
 msgid "getting search results"
-msgstr ""
+msgstr "pobieranie wyników wyszukiwania"
 
 msgid "searching ..."
-msgstr ""
+msgstr "wyszukuję ..."
 
 msgid "No Results found!"
-msgstr ""
+msgstr "Nic nie znaleziono!"
 
 #. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
 msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
-msgstr ""
+msgstr "Dane map (c) OpenStreetMap contributors, CC-BY-SA"
 
 msgid "partial match"
-msgstr ""
+msgstr "częściowe dopasowanie"
 
 msgid "Search"
-msgstr ""
+msgstr "Wyszukaj"
 
 msgid "drive here"
-msgstr ""
+msgstr "Jedź tutaj"
 
 msgid "loading search results"
-msgstr ""
+msgstr "wczytywanie wyników wyszukiwania"
 
 msgid "towns"
-msgstr ""
+msgstr "miasta"
 
 msgid "delete maps"
-msgstr ""
+msgstr "usuń mapy"
 
 msgid "download maps"
-msgstr ""
+msgstr "Pobierz mapy"
 
 msgid "Map already up to date"
-msgstr ""
+msgstr "Mapa jest już w najnowszej wersji"
 
 msgid "search full mapfile [BETA]"
-msgstr ""
+msgstr "przeszukaj cały plik map [BETA]"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_fast_provider"
@@ -266,48 +266,50 @@ msgstr ""
 msgid ""
 "Language is not available for TTS! Using your phone's default settings"
 msgstr ""
+"Język nie jest wspierany przez TTS! Przełączam na ustawienia domyślne "
+"telefonu"
 
 msgid "Using Voice for:"
-msgstr ""
+msgstr "Używam głosu dla:"
 
 msgid "Settings"
-msgstr ""
+msgstr "Ustawienia"
 
 msgid "Creating outputfile, wait"
-msgstr ""
+msgstr "Tworzę plik wyjściowy, czekaj"
 
 msgid "Creating outputfile, long time"
-msgstr ""
+msgstr "Tworzę plik wyjściowy, długi czas oczekiwania"
 
 msgid "MD5 mismatch"
-msgstr ""
+msgstr "skrót MD5 niepoprawny"
 
 msgid "generating MD5 checksum"
-msgstr ""
+msgstr "generowanie skrótu MD5"
 
 msgid "Use as destination"
-msgstr ""
+msgstr "Użyj jako celu"
 
 msgid "back"
-msgstr ""
+msgstr "wstecz"
 
 msgid "destination"
-msgstr ""
+msgstr "Cel"
 
 msgid "wait ..."
-msgstr ""
+msgstr "czekaj ..."
 
 msgid "Enter Destination"
-msgstr ""
+msgstr "Wprowadź cel"
 
 msgid "Zoom to Route"
-msgstr ""
+msgstr "Przybliż do trasy"
 
 msgid "Stop Navigation"
-msgstr ""
+msgstr "Zatrzymaj nawigację"
 
 msgid "Streets"
-msgstr ""
+msgstr "Ulice"
 
 msgid "touch map to zoom"
-msgstr ""
+msgstr "dotknij mapy aby przybliżyć"

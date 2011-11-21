@@ -2,22 +2,23 @@
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the navit package.
 # momcilo, 2010.
-#
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2011-02-20 18:16+0000\n"
-"Last-Translator: Slobodan Simic <Unknown>\n"
-"Language-Team: Serbian <sr@li.org>\n"
+"PO-Revision-Date: 2011-11-15 11:42+0000\n"
+"Last-Translator: momcilo <Unknown>\n"
+"Language-Team: Launchpad Serbian Translators\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
-"X-Generator: Launchpad (build 14085)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:17+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
+"Language: sr\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #, c-format
@@ -26,7 +27,7 @@ msgstr "Покренут из изворног директоријума\n"
 
 #, c-format
 msgid "setting '%s' to '%s'\n"
-msgstr "постављам '%s' на '%s'\n"
+msgstr "постављам „%s“ на „%s“\n"
 
 #. TRANSLATORS: the following counts refer to streets
 msgid "zeroth"
@@ -74,11 +75,11 @@ msgstr "шестом излазу"
 
 #, c-format
 msgid "%d m"
-msgstr "%d м"
+msgstr "%d m"
 
 #, c-format
 msgid "in %d m"
-msgstr "за %d м"
+msgstr "за %d m"
 
 #, c-format
 msgid "%d meters"
@@ -229,7 +230,7 @@ msgid "then you have reached your destination."
 msgstr "стићи ћете на своје одредиште."
 
 msgid "Position"
-msgstr "Позиција"
+msgstr "Положај"
 
 msgid "Command"
 msgstr "Наредба"
@@ -238,10 +239,10 @@ msgid "Length"
 msgstr "Дужина"
 
 msgid "km"
-msgstr "км"
+msgstr "km"
 
 msgid "m"
-msgstr "м"
+msgstr "m"
 
 msgid "Time"
 msgstr "Време"
@@ -270,7 +271,7 @@ msgstr "Тачка 0x%x 0x%x"
 
 #, c-format
 msgid "Screen coord : %d %d"
-msgstr "Екранске координате: %d %d"
+msgstr "Координате екрана: %d %d"
 
 #. 020
 msgid "Andorra"
@@ -290,7 +291,7 @@ msgstr "Антигва и Барбуда"
 
 #. 660
 msgid "Anguilla"
-msgstr "Ангвила"
+msgstr "Ангила"
 
 #. 008
 msgid "Albania"
@@ -850,7 +851,7 @@ msgstr "Мали"
 
 #. 104
 msgid "Myanmar"
-msgstr "Мијанмар"
+msgstr "Бурма"
 
 #. 496
 msgid "Mongolia"
@@ -1122,7 +1123,7 @@ msgstr "Чад"
 
 #. 260
 msgid "French Southern Territories"
-msgstr "Француске jужне tериторије"
+msgstr "Француске јужне територије"
 
 #. 768
 msgid "Togo"
@@ -1170,7 +1171,7 @@ msgstr "Тувалу"
 
 #. 158
 msgid "Taiwan, Province of China"
-msgstr "Тајван, Кинеска Провинција"
+msgstr "Тајван, Кинеска провинција"
 
 #. 834
 msgid "Tanzania, United Republic of"
@@ -1178,7 +1179,7 @@ msgstr "Танзанија, Уједињена република"
 
 #. 804
 msgid "Ukraine"
-msgstr "Украјна"
+msgstr "Украина"
 
 #. 800
 msgid "Uganda"
@@ -1257,16 +1258,16 @@ msgid "Zimbabwe"
 msgstr "Зимбабве"
 
 msgid "* Unknown, add is_in tags to those cities"
-msgstr "* Непознато, додај is_in  таг у ове градове"
+msgstr "* Непознато, додај is_in ознаке у ове градове"
 
 msgid "Car"
 msgstr "Кола"
 
 msgid "Iso2"
-msgstr "Iso2"
+msgstr "Исо2"
 
 msgid "Iso3"
-msgstr "Iso3"
+msgstr "Исо3"
 
 msgid "Country"
 msgstr "Држава"
@@ -1311,7 +1312,7 @@ msgid "Display"
 msgstr "Приказ"
 
 msgid "Route"
-msgstr "рута"
+msgstr "Рута"
 
 msgid "Former Destinations"
 msgstr "Претходна одредишта"
@@ -1332,13 +1333,13 @@ msgid "ZoomOut"
 msgstr "Умањи"
 
 msgid "Decrease zoom level"
-msgstr "Умањи"
+msgstr "Умањите ниво увећања"
 
 msgid "ZoomIn"
 msgstr "Увећај"
 
 msgid "Increase zoom level"
-msgstr "Увећај"
+msgstr "Увећајте ниво увећања"
 
 msgid "Recalculate"
 msgstr "Прерачунај"
@@ -1362,10 +1363,10 @@ msgid "Test"
 msgstr "Проба"
 
 msgid "_Quit"
-msgstr "_Напусти"
+msgstr "_Изађи"
 
 msgid "Quit the application"
-msgstr "Напуштање програма"
+msgstr "Изађите из програма"
 
 msgid "Show position cursor"
 msgstr "Прикажи позицију"
@@ -1374,10 +1375,10 @@ msgid "Lock on Road"
 msgstr "Прати пут"
 
 msgid "Keep orientation to the North"
-msgstr "Орјентација према северу"
+msgstr "Задржи усмерење према северу"
 
 msgid "Switches map orientation to the north or the vehicle"
-msgstr "Прабацује орјентацију на север или на правац возила"
+msgstr "Пребацује усмерење карте на север или на правац возила"
 
 msgid "Show/hide route description"
 msgstr "Прикажи/сакриј опис руте"
@@ -1432,16 +1433,16 @@ msgstr "ОТ"
 
 #, c-format
 msgid "Route %4.0fkm    %02d:%02d ETA"
-msgstr "Рута %4.0fкм %02d:%02d ПВД"
+msgstr "Рута %4.0fkm %02d:%02d ПВД"
 
 msgid "Route 0000km  0+00:00 ETA"
-msgstr "Рута 0000км 0+00:00 ПВД"
+msgstr "Рута 0000km 0+00:00 ПВД"
 
 msgid "Back to map"
 msgstr "Назад на мапу"
 
 msgid "Main Menu"
-msgstr "Главни мени"
+msgstr "Главни избор"
 
 msgid "Help"
 msgstr "Помоћ"
@@ -1453,7 +1454,7 @@ msgid "Add Bookmark"
 msgstr "Додај обележивач"
 
 msgid "Add Bookmark folder"
-msgstr "Додај фасциклу са обележивачима"
+msgstr "Додај фасциклу обележивача"
 
 msgid "Rename"
 msgstr "Преименуј"
@@ -1474,7 +1475,7 @@ msgid "View Attributes"
 msgstr "Преглед особина"
 
 msgid "View on map"
-msgstr "Погледај на мапи"
+msgstr "Погледај на карти"
 
 msgid "Cut Bookmark"
 msgstr "Исеци обележивач"
@@ -1502,7 +1503,7 @@ msgid "House number"
 msgstr "Кућни број"
 
 msgid "Maps"
-msgstr "Мапе"
+msgstr "Карте"
 
 msgid "Show Satellite Status"
 msgstr "Прикажи стање сателита"
@@ -1514,7 +1515,7 @@ msgid " Azimuth "
 msgstr " Азимут "
 
 msgid "Show NMEA Data"
-msgstr "Приказ NMEA података"
+msgstr "Приказ НМЕА података"
 
 msgid "car"
 msgstr "кола"
@@ -1531,7 +1532,7 @@ msgstr "Тренутни профил: %s"
 
 #, c-format
 msgid "Change profile to: %s"
-msgstr "Примени профил: %s"
+msgstr "Промени профил на: %s"
 
 msgid "Set as active"
 msgstr "Постави као активан"
@@ -1540,7 +1541,7 @@ msgid "Show Satellite status"
 msgstr "Прикажи стање сателита"
 
 msgid "Show NMEA data"
-msgstr "Прикажи NMEA податке"
+msgstr "Прикажи НМЕА податке"
 
 msgid "Rules"
 msgstr "Правила"
@@ -1552,7 +1553,7 @@ msgid "Northing"
 msgstr "Прати север"
 
 msgid "Map follows Vehicle"
-msgstr "Мапа прати возило"
+msgstr "Карта прати возило"
 
 msgid "Message"
 msgstr "Порука"
@@ -1578,16 +1579,16 @@ msgid "And all the Navit Team"
 msgstr "и цео тим Навита"
 
 msgid "members and contributors."
-msgstr "чланови и доприносиоци"
+msgstr "чланови и доприносиоци."
 
 msgid "Map Point"
-msgstr "Тачка на мапи"
+msgstr "Тачка на карти"
 
 msgid "Vehicle Position"
-msgstr "Позиција возила"
+msgstr "Положај возила"
 
 msgid "Main menu"
-msgstr "Главни мени"
+msgstr "Главни избор"
 
 msgid ""
 "Show\n"
@@ -1597,7 +1598,7 @@ msgstr ""
 "мапу"
 
 msgid "Settings"
-msgstr "Поставке"
+msgstr "Подешавања"
 
 msgid "Tools"
 msgstr "Алатке"

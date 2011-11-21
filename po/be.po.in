@@ -1,170 +1,168 @@
-# Norwegian translations for navit
-# Copyright (C) 2008 The Navit Team
+# Belarusian translation for navit
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the navit package.
-# Bendik Brenne <bendik@xplore.nu>, 2008.
-# Helge Hafting <helge.hafting@aitel.hist.no>
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: navit 0.5.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: navit\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2010-11-02 18:03+0000\n"
-"Last-Translator: KaZeR <Unknown>\n"
-"Language-Team: Bendik Brenne <bendik@xplore.nu>\n"
+"PO-Revision-Date: 2011-10-11 19:19+0000\n"
+"Last-Translator: Anatoli Putseyeu <Unknown>\n"
+"Language-Team: Belarusian <be@li.org>\n"
 "MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2011-11-18 21:16+0000\n"
 "X-Generator: Launchpad (build 14299)\n"
-"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #, c-format
 msgid "Running from source directory\n"
-msgstr "Kjører fra kildemappen\n"
+msgstr ""
 
 #, c-format
 msgid "setting '%s' to '%s'\n"
-msgstr "setter '%s' til '%s'\n"
+msgstr ""
 
 #. TRANSLATORS: the following counts refer to streets
 msgid "zeroth"
-msgstr "nullte"
+msgstr ""
 
 msgid "first"
-msgstr "første"
+msgstr "першы"
 
 msgid "second"
-msgstr "andre"
+msgstr "другі"
 
 msgid "third"
-msgstr "tredje"
+msgstr "трэці"
 
 msgid "fourth"
-msgstr "fjerde"
+msgstr "чацьверты"
 
 msgid "fifth"
-msgstr "femte"
+msgstr "пяты"
 
 msgid "sixth"
-msgstr "sjette"
+msgstr "шосты"
 
 #. TRANSLATORS: the following counts refer to roundabout exits
 msgid "zeroth exit"
-msgstr "nullte avkjørsel"
+msgstr ""
 
 msgid "first exit"
-msgstr "første avkjøring"
+msgstr "першы выхад"
 
 msgid "second exit"
-msgstr "andre avkjøring"
+msgstr "другі выхад"
 
 msgid "third exit"
-msgstr "tredje avkjøring"
+msgstr "трэці выхад"
 
 msgid "fourth exit"
-msgstr "fjerde avkjøring"
+msgstr "чацвёрты выхад"
 
 msgid "fifth exit"
-msgstr "femte avkjøring"
+msgstr "пяты выхад"
 
 msgid "sixth exit"
-msgstr "sjette avkjøring"
+msgstr "шосты выхад"
 
 #, c-format
 msgid "%d m"
-msgstr "%d meter"
+msgstr ""
 
 #, c-format
 msgid "in %d m"
-msgstr "om %d meter"
+msgstr "праз %d м"
 
 #, c-format
 msgid "%d meters"
-msgstr "%d meter"
+msgstr "%d метраў"
 
 #, c-format
 msgid "in %d meters"
-msgstr "om %d meter"
+msgstr "праз %d метраў"
 
 #, c-format
 msgid "%d.%d kilometers"
-msgstr "%d.%d kilometer"
+msgstr "%d.%d кіламетраў"
 
 #, c-format
 msgid "in %d.%d kilometers"
-msgstr "om %d,%d kilometer"
+msgstr "праз %d.%d кіламетраў"
 
 #, c-format
 msgid "one kilometer"
 msgid_plural "%d kilometers"
-msgstr[0] "en kilometer"
-msgstr[1] "%d kilometer"
+msgstr[0] "адзін кіламетр"
+msgstr[1] "%d кіламетраў"
 
 #, c-format
 msgid "in one kilometer"
 msgid_plural "in %d kilometers"
-msgstr[0] "om en kilometer"
-msgstr[1] "om %d kilometer"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "exit"
-msgstr "avkjørsel"
+msgstr "выхад"
 
 msgid "into the ramp"
-msgstr "ut på akselerasjonsfeltet"
+msgstr ""
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
 #, c-format
 msgid "%sinto the street %s%s%s"
-msgstr "%sinn på gaten %s%s%s"
+msgstr ""
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
 #, c-format
 msgid "%sinto the %s%s%s|male form"
-msgstr "%sinn på %s%s%sen"
+msgstr ""
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
 #, c-format
 msgid "%sinto the %s%s%s|female form"
-msgstr "%sinn på %s%s%sa"
+msgstr ""
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
 #, c-format
 msgid "%sinto the %s%s%s|neutral form"
-msgstr "%sin på %s%s%set"
+msgstr ""
 
 #. TRANSLATORS: gives the name of the next road to turn into (into the E17)
 #, c-format
 msgid "%sinto the %s"
-msgstr "%sinn på %s"
+msgstr ""
 
 #. TRANSLATORS: right, as in 'Turn right'
 msgid "right"
-msgstr "høyre"
+msgstr "направа"
 
 #. TRANSLATORS: left, as in 'Turn left'
 msgid "left"
-msgstr "venstre"
+msgstr "налева"
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "easily "
-msgstr "slakt "
+msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "strongly "
-msgstr "skarpt "
+msgstr "мацней "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "really strongly "
-msgstr "veldig skarpt "
+msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "unknown "
-msgstr "ukjent "
+msgstr ""
 
 msgid "When possible, please turn around"
-msgstr "Snu når det er mulig"
+msgstr "Развярніцеся, калі будзе магчымасць"
 
 #, c-format
 msgid "Enter the roundabout soon and leave it at the %s"
@@ -173,1092 +171,1092 @@ msgstr ""
 #. TRANSLATORS: %s is the distance to the roundabout
 #, c-format
 msgid "In %s, enter the roundabout"
-msgstr "Om %s, kjør inn i rundkjøringen"
+msgstr ""
 
 #, c-format
 msgid "then leave the roundabout at the %s"
-msgstr "forlat så rundkjøringen ut %s"
+msgstr ""
 
 #, c-format
 msgid "Leave the roundabout at the %s"
-msgstr "Forlat rundkjøringen ut %s"
+msgstr ""
 
 #, c-format
 msgid "Follow the road for the next %s"
-msgstr "Følg veien de neste %s"
+msgstr ""
 
 msgid "soon"
-msgstr "snart"
+msgstr "скора"
 
 #. TRANSLATORS: First argument is the how manieth street to take, second the direction
 #, c-format
 msgid "Take the %1$s road to the %2$s"
-msgstr "Ta den %1$s veien mot %2$s"
+msgstr ""
 
 #, c-format
 msgid "after %i roads"
-msgstr "etter %i avkjøringer"
+msgstr ""
 
 msgid "now"
-msgstr "nå"
+msgstr "зараз"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "ta deretter %1$s til %2$s"
+msgstr ""
 
 msgid "error"
-msgstr "feil"
+msgstr "памылка"
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
-msgstr "Sving %1$s til %2$s om %3$s %4$s"
+msgstr ""
 
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "sving så %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #, c-format
 msgid "You have reached your destination %s"
-msgstr "Du har nådd ditt reisemål %s"
+msgstr ""
 
 msgid "then you have reached your destination."
-msgstr "så har du nådd ditt reisemål."
+msgstr ""
 
 msgid "Position"
-msgstr "Posisjon"
+msgstr "Размяшчэнне"
 
 msgid "Command"
-msgstr "Instruks"
+msgstr ""
 
 msgid "Length"
-msgstr "Avstand"
+msgstr "Працягласць"
 
 msgid "km"
-msgstr "km"
+msgstr "км"
 
 msgid "m"
-msgstr "m"
+msgstr "м"
 
 msgid "Time"
-msgstr "Tid"
+msgstr "Час"
 
 msgid "Destination Length"
-msgstr "Avstand til målet"
+msgstr ""
 
 msgid "Destination Time"
-msgstr "Tid til målet"
+msgstr ""
 
 msgid "Roadbook"
-msgstr "Kjørebok"
+msgstr ""
 
 msgid "Set as position"
-msgstr "Sett som posisjon"
+msgstr ""
 
 msgid "Set as destination"
-msgstr "Sett som reisemål"
+msgstr ""
 
 msgid "Add as bookmark"
-msgstr "Legg til som bokmerke"
+msgstr "Дадаць як закладку"
 
 #, c-format
 msgid "Point 0x%x 0x%x"
-msgstr "Punkt 0x%x 0x%x"
+msgstr ""
 
 #, c-format
 msgid "Screen coord : %d %d"
-msgstr "Skjermkoordinat: %d %d"
+msgstr ""
 
 #. 020
 msgid "Andorra"
-msgstr "Andorra"
+msgstr "Андора"
 
 #. 784
 msgid "United Arab Emirates"
-msgstr "De forente arabiske emirater"
+msgstr "Злучаныя Арабскія Эміраты"
 
 #. 004
 msgid "Afghanistan"
-msgstr "Afghanistan"
+msgstr "Афганістан"
 
 #. 028
 msgid "Antigua and Barbuda"
-msgstr "Antigua og Barbuda"
+msgstr "Антыгуа і Барбуда"
 
 #. 660
 msgid "Anguilla"
-msgstr "Anguilla"
+msgstr "Ангілья"
 
 #. 008
 msgid "Albania"
-msgstr "Albania"
+msgstr "Албанія"
 
 #. 051
 msgid "Armenia"
-msgstr "Armenia"
+msgstr "Арменія"
 
 #. 530
 msgid "Netherlands Antilles"
-msgstr "De nederlandske Antillene"
+msgstr "Нідэрландскія Антыльскія астравы"
 
 #. 024
 msgid "Angola"
-msgstr "Angola"
+msgstr "Ангола"
 
 #. 010
 msgid "Antarctica"
-msgstr "Antarktis"
+msgstr "Антарктыда"
 
 #. 032
 msgid "Argentina"
-msgstr "Argentina"
+msgstr "Аргенціна"
 
 #. 016
 msgid "American Samoa"
-msgstr "Amerikansk Samoa"
+msgstr "Усходняе Самоа"
 
 #. 040
 msgid "Austria"
-msgstr "Østerrike"
+msgstr "Аўстрыя"
 
 #. 036
 msgid "Australia"
-msgstr "Australia"
+msgstr "Аўстралія"
 
 #. 533
 msgid "Aruba"
-msgstr "Aruba"
+msgstr "Аруба"
 
 #. 248
 msgid "Aland Islands"
-msgstr "Åland"
+msgstr "Аландскія астравы"
 
 #. 031
 msgid "Azerbaijan"
-msgstr "Azerbaijan"
+msgstr "Азербайджан"
 
 #. 070
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnia and Herzegovina"
+msgstr "Боснія і Герцагавіна"
 
 #. 052
 msgid "Barbados"
-msgstr "Barbados"
+msgstr "Барбадас"
 
 #. 050
 msgid "Bangladesh"
-msgstr "Bangladesh"
+msgstr "Бангладэш"
 
 #. 056
 msgid "Belgium"
-msgstr "Belgia"
+msgstr "Бельгія"
 
 #. 854
 msgid "Burkina Faso"
-msgstr "Burkina Faso"
+msgstr "Буркіна Фасо"
 
 #. 100
 msgid "Bulgaria"
-msgstr "Bulgaria"
+msgstr "Балгарыя"
 
 #. 048
 msgid "Bahrain"
-msgstr "Bahrain"
+msgstr "Бахрэйн"
 
 #. 108
 msgid "Burundi"
-msgstr "Burundi"
+msgstr "Бурундзі"
 
 #. 204
 msgid "Benin"
-msgstr "Benin"
+msgstr "Бенін"
 
 #. 652
 msgid "Saint Barthelemy"
-msgstr "Saint Barthelemy"
+msgstr "Сэнт-Бартелеми"
 
 #. 060
 msgid "Bermuda"
-msgstr "Bermuda"
+msgstr "Бэрмудзкія астравы"
 
 #. 096
 msgid "Brunei Darussalam"
-msgstr "Brunei"
+msgstr "Брунэй Даруссалам"
 
 #. 068
 msgid "Bolivia"
-msgstr "Bolivia"
+msgstr "Балівія"
 
 #. 076
 msgid "Brazil"
-msgstr "Brasil"
+msgstr "Бразілія"
 
 #. 044
 msgid "Bahamas"
-msgstr "Bahamas"
+msgstr "Багамскія астравы"
 
 #. 064
 msgid "Bhutan"
-msgstr "Bhutan"
+msgstr "Бутан"
 
 #. 074
 msgid "Bouvet Island"
-msgstr "Bouvetøya"
+msgstr "Востраў Буве"
 
 #. 072
 msgid "Botswana"
-msgstr "Botswana"
+msgstr "Батсвана"
 
 #. 112
 msgid "Belarus"
-msgstr "Hviterussland"
+msgstr "Беларусь"
 
 #. 084
 msgid "Belize"
-msgstr "Belize"
+msgstr "Бэліз"
 
 #. 124
 msgid "Canada"
-msgstr "Canada"
+msgstr "Канада"
 
 #. 166
 msgid "Cocos (Keeling) Islands"
-msgstr "Kokosøyene"
+msgstr "Какосавыя (Кілінг) астравы"
 
 #. 180
 msgid "Congo, Democratic Republic of the"
-msgstr "Kongo, Den demokratiske republikken"
+msgstr "Дэмакратычная Рэспубліка Конга"
 
 #. 140
 msgid "Central African Republic"
-msgstr "Den sentralafrikanske republikk"
+msgstr "Цэнтральнаафрыканская Рэспубліка"
 
 #. 178
 msgid "Congo"
-msgstr "Kongo"
+msgstr "Конга"
 
 #. 756
 msgid "Switzerland"
-msgstr "Sveits"
+msgstr "Швейцарыя"
 
 #. 384
 msgid "Cote d'Ivoire"
-msgstr "Elfenbenskysten"
+msgstr "Кот д'Івуар"
 
 #. 184
 msgid "Cook Islands"
-msgstr "Cookøyene"
+msgstr "Астравы Кука"
 
 #. 152
 msgid "Chile"
-msgstr "Chile"
+msgstr "Чылі"
 
 #. 120
 msgid "Cameroon"
-msgstr "Kamerun"
+msgstr "Камерун"
 
 #. 156
 msgid "China"
-msgstr "Kina"
+msgstr "Кітай"
 
 #. 170
 msgid "Colombia"
-msgstr "Colombia"
+msgstr "Калумбія"
 
 #. 188
 msgid "Costa Rica"
-msgstr "Costa Rica"
+msgstr "Коста Рыка"
 
 #. 192
 msgid "Cuba"
-msgstr "Kuba"
+msgstr "Куба"
 
 #. 132
 msgid "Cape Verde"
-msgstr "Kapp Verde"
+msgstr "Каба Вэрдэ"
 
 #. 162
 msgid "Christmas Island"
-msgstr "Christmasøya"
+msgstr "Востраў Раства"
 
 #. 196
 msgid "Cyprus"
-msgstr "Kypros"
+msgstr "Кіпр"
 
 #. 203
 msgid "Czech Republic"
-msgstr "Tsjekkia"
+msgstr "Чэшская рэспубліка"
 
 #. 276
 msgid "Germany"
-msgstr "Tyskland"
+msgstr "Германія"
 
 #. 262
 msgid "Djibouti"
-msgstr "Djibouti"
+msgstr "Джыбуці"
 
 #. 208
 msgid "Denmark"
-msgstr "Danmark"
+msgstr "Данія"
 
 #. 212
 msgid "Dominica"
-msgstr "Dominica"
+msgstr "Дамініка"
 
 #. 214
 msgid "Dominican Republic"
-msgstr "Den dominikanske republikk"
+msgstr "Дамініканская Рэспубліка"
 
 #. 012
 msgid "Algeria"
-msgstr "Algerie"
+msgstr "Алжыр"
 
 #. 218
 msgid "Ecuador"
-msgstr "Ecuador"
+msgstr "Эквадор"
 
 #. 233
 msgid "Estonia"
-msgstr "Estland"
+msgstr "Эстонія"
 
 #. 818
 msgid "Egypt"
-msgstr "Egypt"
+msgstr "Егіпет"
 
 #. 732
 msgid "Western Sahara"
-msgstr "Vest-Sahara"
+msgstr "Заходняя Сахара"
 
 #. 232
 msgid "Eritrea"
-msgstr "Eritrea"
+msgstr "Эрытрэя"
 
 #. 724
 msgid "Spain"
-msgstr "Spania"
+msgstr "Іспанія"
 
 #. 231
 msgid "Ethiopia"
-msgstr "Etiopia"
+msgstr "Эфіопія"
 
 #. 246
 msgid "Finland"
-msgstr "Finland"
+msgstr "Фінляндыя"
 
 #. 242
 msgid "Fiji"
-msgstr "Fiji"
+msgstr "Фіджы"
 
 #. 238
 msgid "Falkland Islands (Malvinas)"
-msgstr "Falklandsøyene (Malvinas)"
+msgstr "Фальклендзкія (Мальвінскія) астравы"
 
 #. 583
 msgid "Micronesia, Federated States of"
-msgstr "Mikronesia"
+msgstr "Фэдэратыўныя Штаты Мікранэзіі"
 
 #. 234
 msgid "Faroe Islands"
-msgstr "Færøyene"
+msgstr "Фарэрскія астравы"
 
 #. 250
 msgid "France"
-msgstr "Frankrike"
+msgstr "Францыя"
 
 #. 266
 msgid "Gabon"
-msgstr "Gabon"
+msgstr "Габон"
 
 #. 826
 msgid "United Kingdom"
-msgstr "Storbritannia"
+msgstr "Вялікабрытанія"
 
 #. 308
 msgid "Grenada"
-msgstr "Grenada"
+msgstr "Грэнада"
 
 #. 268
 msgid "Georgia"
-msgstr "Georgia"
+msgstr "Грузія"
 
 #. 254
 msgid "French Guiana"
-msgstr "Fransk Guyana"
+msgstr "Французская Гвіяна"
 
 #. 831
 msgid "Guernsey"
-msgstr "Guernsey"
+msgstr "Гернсі"
 
 #. 288
 msgid "Ghana"
-msgstr "Ghana"
+msgstr "Гана"
 
 #. 292
 msgid "Gibraltar"
-msgstr "Gibraltar"
+msgstr "Гібралтар"
 
 #. 304
 msgid "Greenland"
-msgstr "Grønland"
+msgstr "Грэнландыя"
 
 #. 270
 msgid "Gambia"
-msgstr "Gambia"
+msgstr "Гамбія"
 
 #. 324
 msgid "Guinea"
-msgstr "Guinea"
+msgstr "Гвінея"
 
 #. 312
 msgid "Guadeloupe"
-msgstr "Guadeloupe"
+msgstr "Гвадэлупа"
 
 #. 226
 msgid "Equatorial Guinea"
-msgstr "Ekvatorial-Guinea"
+msgstr "Экватарыяльная Гвінея"
 
 #. 300
 msgid "Greece"
-msgstr "Hellas"
+msgstr "Грэцыя"
 
 #. 239
 msgid "South Georgia and the South Sandwich Islands"
-msgstr "Sør-Georgia og Sør-Sandwichøyene"
+msgstr "Паўднёвая Джорджыя і Паўднёвыя Сэндвічавыя выспы"
 
 #. 320
 msgid "Guatemala"
-msgstr "Guatemala"
+msgstr "Гватэмала"
 
 #. 316
 msgid "Guam"
-msgstr "Guam"
+msgstr "Гуам"
 
 #. 624
 msgid "Guinea-Bissau"
-msgstr "Guinea-Bissau"
+msgstr "Гвінея-Бісаў"
 
 #. 328
 msgid "Guyana"
-msgstr "Guyana"
+msgstr "Гаяна"
 
 #. 344
 msgid "Hong Kong"
-msgstr "Hong Kong"
+msgstr "Ганконг"
 
 #. 334
 msgid "Heard Island and McDonald Islands"
-msgstr "Heard- og McDonald-øyene"
+msgstr "Востраў Херд і астравы МакДональд"
 
 #. 340
 msgid "Honduras"
-msgstr "Honduras"
+msgstr "Гандурас"
 
 #. 191
 msgid "Croatia"
-msgstr "Kroatia"
+msgstr "Харватыя"
 
 #. 332
 msgid "Haiti"
-msgstr "Haiti"
+msgstr "Гаіці"
 
 #. 348
 msgid "Hungary"
-msgstr "Ungarn"
+msgstr "Венгрыя"
 
 #. 360
 msgid "Indonesia"
-msgstr "Indonesia"
+msgstr "Інданэзія"
 
 #. 372
 msgid "Ireland"
-msgstr "Irland"
+msgstr "Ірландыя"
 
 #. 376
 msgid "Israel"
-msgstr "Israel"
+msgstr "Ізраіль"
 
 #. 833
 msgid "Isle of Man"
-msgstr "Man"
+msgstr "Востраў Мэн"
 
 #. 356
 msgid "India"
-msgstr "India"
+msgstr "Індыя"
 
 #. 086
 msgid "British Indian Ocean Territory"
-msgstr "Det britiske territoriet i Indiahavet"
+msgstr "Брытанская тэрыторыя ў Індыйскім акіяне"
 
 #. 368
 msgid "Iraq"
-msgstr "Irak"
+msgstr "Ірак"
 
 #. 364
 msgid "Iran, Islamic Republic of"
-msgstr "Iran"
+msgstr "Ісламская Рэспубліка Іран"
 
 #. 352
 msgid "Iceland"
-msgstr "Island"
+msgstr "Ісландыя"
 
 #. 380
 msgid "Italy"
-msgstr "Italia"
+msgstr "Італія"
 
 #. 832
 msgid "Jersey"
-msgstr "Jersey"
+msgstr "Джэрсі"
 
 #. 388
 msgid "Jamaica"
-msgstr "Jamaica"
+msgstr "Ямайка"
 
 #. 400
 msgid "Jordan"
-msgstr "Jordan"
+msgstr "Іарданія"
 
 #. 392
 msgid "Japan"
-msgstr "Japan"
+msgstr "Японія"
 
 #. 404
 msgid "Kenya"
-msgstr "Kenya"
+msgstr "Кенія"
 
 #. 417
 msgid "Kyrgyzstan"
-msgstr "Kirgisistan"
+msgstr "Кыргыстан"
 
 #. 116
 msgid "Cambodia"
-msgstr "Kambodsja"
+msgstr "Камбоджа"
 
 #. 296
 msgid "Kiribati"
-msgstr "Kiribati"
+msgstr "Кірыбаці"
 
 #. 174
 msgid "Comoros"
-msgstr "Komorene"
+msgstr "Каморскія астравы"
 
 #. 659
 msgid "Saint Kitts and Nevis"
-msgstr "Saint Kitts og Nevis"
+msgstr "Сэнт-Кітс і Нэвіс"
 
 #. 408
 msgid "Korea, Democratic People's Republic of"
-msgstr "Nord-Korea"
+msgstr "Карэйская Народна-Дэмакратычная Рэспубліка"
 
 #. 410
 msgid "Korea, Republic of"
-msgstr "Sør-Korea"
+msgstr "Рэспубліка Карэя"
 
 #. 414
 msgid "Kuwait"
-msgstr "Kuwait"
+msgstr "Кувейт"
 
 #. 136
 msgid "Cayman Islands"
-msgstr "Caymanøyene"
+msgstr "Кайманавы астравы"
 
 #. 398
 msgid "Kazakhstan"
-msgstr "Kazakhstan"
+msgstr "Казахстан"
 
 #. 418
 msgid "Lao People's Democratic Republic"
-msgstr "Laos"
+msgstr "Лаоская Народна-Дэмакратычная Рэспубліка"
 
 #. 422
 msgid "Lebanon"
-msgstr "Libanon"
+msgstr "Ліван"
 
 #. 662
 msgid "Saint Lucia"
-msgstr "Saint Lucia"
+msgstr "Сэнт-Люсія"
 
 #. 438
 msgid "Liechtenstein"
-msgstr "Liechtenstein"
+msgstr "Ліхтэнштайн"
 
 #. 144
 msgid "Sri Lanka"
-msgstr "Sri Lanka"
+msgstr "Шры-Ланка"
 
 #. 430
 msgid "Liberia"
-msgstr "Liberia"
+msgstr "Ліберыя"
 
 #. 426
 msgid "Lesotho"
-msgstr "Lesotho"
+msgstr "Лесота"
 
 #. 440
 msgid "Lithuania"
-msgstr "Litauen"
+msgstr "Літва"
 
 #. 442
 msgid "Luxembourg"
-msgstr "Luxembourg"
+msgstr "Люксембург"
 
 #. 428
 msgid "Latvia"
-msgstr "Latvia"
+msgstr "Латвія"
 
 #. 434
 msgid "Libyan Arab Jamahiriya"
-msgstr "Libya"
+msgstr "Лівійская Арабская Джамахірыя"
 
 #. 504
 msgid "Morocco"
-msgstr "Marokko"
+msgstr "Марока"
 
 #. 492
 msgid "Monaco"
-msgstr "Monaco"
+msgstr "Манака"
 
 #. 498
 msgid "Moldova, Republic of"
-msgstr "Moldova"
+msgstr "Малдова, Рэспубліка"
 
 #. 499
 msgid "Montenegro"
-msgstr "Montenegro"
+msgstr "Чарнагорыя"
 
 #. 663
 msgid "Saint Martin (French part)"
-msgstr "Saint Martin (Fransk del)"
+msgstr "Сэнт-Марцін (французская частка)"
 
 #. 450
 msgid "Madagascar"
-msgstr "Madagaskar"
+msgstr "Мадагаскар"
 
 #. 584
 msgid "Marshall Islands"
-msgstr "Marshalløyene"
+msgstr "Маршалавы астравы"
 
 #. 807
 msgid "Macedonia, the former Yugoslav Republic of"
-msgstr "Makedonia"
+msgstr "Македонія, былая Югаслаўская рэспубліка"
 
 #. 466
 msgid "Mali"
-msgstr "Mali"
+msgstr "Малі"
 
 #. 104
 msgid "Myanmar"
-msgstr "Burma"
+msgstr "М'янма"
 
 #. 496
 msgid "Mongolia"
-msgstr "Mongolia"
+msgstr "Манголія"
 
 #. 446
 msgid "Macao"
-msgstr "Macao"
+msgstr "Макао"
 
 #. 580
 msgid "Northern Mariana Islands"
-msgstr "Nord-Marianene"
+msgstr "Паўночныя Марыянскія астравы"
 
 #. 474
 msgid "Martinique"
-msgstr "Martinique"
+msgstr "Марцініка"
 
 #. 478
 msgid "Mauritania"
-msgstr "Mauretania"
+msgstr "Маўрытанія"
 
 #. 500
 msgid "Montserrat"
-msgstr "Montserrat"
+msgstr "Мансэрат"
 
 #. 470
 msgid "Malta"
-msgstr "Malta"
+msgstr "Мальта"
 
 #. 480
 msgid "Mauritius"
-msgstr "Mauritius"
+msgstr "Маўрыкій"
 
 #. 462
 msgid "Maldives"
-msgstr "Maldivene"
+msgstr "Мальдыўскія астравы"
 
 #. 454
 msgid "Malawi"
-msgstr "Malawi"
+msgstr "Малаві"
 
 #. 484
 msgid "Mexico"
-msgstr "Mexico"
+msgstr "Мексіка"
 
 #. 458
 msgid "Malaysia"
-msgstr "Malaysia"
+msgstr "Малайзія"
 
 #. 508
 msgid "Mozambique"
-msgstr "Mosambik"
+msgstr "Мазамбік"
 
 #. 516
 msgid "Namibia"
-msgstr "Namibia"
+msgstr "Намібія"
 
 #. 540
 msgid "New Caledonia"
-msgstr "Ny-Caledonia"
+msgstr "Новая Каледонія"
 
 #. 562
 msgid "Niger"
-msgstr "Niger"
+msgstr "Нігер"
 
 #. 574
 msgid "Norfolk Island"
-msgstr "Norfolkøya"
+msgstr "Востраў Норфалк"
 
 #. 566
 msgid "Nigeria"
-msgstr "Nigeria"
+msgstr "Нігерыя"
 
 #. 558
 msgid "Nicaragua"
-msgstr "Nicaragua"
+msgstr "Нікарагуа"
 
 #. 528
 msgid "Netherlands"
-msgstr "Nederland"
+msgstr "Нідэрланды"
 
 #. 578
 msgid "Norway"
-msgstr "Norge"
+msgstr "Нарвегія"
 
 #. 524
 msgid "Nepal"
-msgstr "Nepal"
+msgstr "Нэпал"
 
 #. 520
 msgid "Nauru"
-msgstr "Nauru"
+msgstr "Науру"
 
 #. 570
 msgid "Niue"
-msgstr "Niue"
+msgstr "Ніуе"
 
 #. 554
 msgid "New Zealand"
-msgstr "New Zealand"
+msgstr "Новая Зеландыя"
 
 #. 512
 msgid "Oman"
-msgstr "Oman"
+msgstr "Аман"
 
 #. 591
 msgid "Panama"
-msgstr "Panama"
+msgstr "Панама"
 
 #. 604
 msgid "Peru"
-msgstr "Peru"
+msgstr "Перу"
 
 #. 258
 msgid "French Polynesia"
-msgstr "Fransk Polynesia"
+msgstr "Французская Палінезія"
 
 #. 598
 msgid "Papua New Guinea"
-msgstr "Papua Ny-Guinea"
+msgstr "Папуа–Новая Гвінэя"
 
 #. 608
 msgid "Philippines"
-msgstr "Filippinene"
+msgstr "Філіпіны"
 
 #. 586
 msgid "Pakistan"
-msgstr "Pakistan"
+msgstr "Пакістан"
 
 #. 616
 msgid "Poland"
-msgstr "Polen"
+msgstr "Польшча"
 
 #. 666
 msgid "Saint Pierre and Miquelon"
-msgstr "Saint-Pierre og Miquelon"
+msgstr "Сэнт-П'ер і Мікелон"
 
 #. 612
 msgid "Pitcairn"
-msgstr "Pitcairnøyene"
+msgstr "Піткэрн"
 
 #. 630
 msgid "Puerto Rico"
-msgstr "Puerto Rico"
+msgstr "Пуэрта Рыка"
 
 #. 275
 msgid "Palestinian Territory, Occupied"
-msgstr "Palestina"
+msgstr "Палестынская тэрыторыя, акупаваная"
 
 #. 620
 msgid "Portugal"
-msgstr "Portugal"
+msgstr "Партугалія"
 
 #. 585
 msgid "Palau"
-msgstr "Palau"
+msgstr "Палау"
 
 #. 600
 msgid "Paraguay"
-msgstr "Paraguay"
+msgstr "Парагвай"
 
 #. 634
 msgid "Qatar"
-msgstr "Qatar"
+msgstr "Катар"
 
 #. 638
 msgid "Reunion"
-msgstr "Reunion"
+msgstr "Рэюньён"
 
 #. 642
 msgid "Romania"
-msgstr "Romania"
+msgstr "Румынія"
 
 #. 688
 msgid "Serbia"
-msgstr "Serbia"
+msgstr "Сербія"
 
 #. 643
 msgid "Russian Federation"
-msgstr "Russland"
+msgstr "Расійская Федэрацыя"
 
 #. 646
 msgid "Rwanda"
-msgstr "Rwanda"
+msgstr "Руанда"
 
 #. 682
 msgid "Saudi Arabia"
-msgstr "Saudi-Arabia"
+msgstr "Саудаўская Аравія"
 
 #. 090
 msgid "Solomon Islands"
-msgstr "Salomonøyene"
+msgstr "Саламонавы Астравы"
 
 #. 690
 msgid "Seychelles"
-msgstr "Seychellene"
+msgstr "Сейшэльскія астравы"
 
 #. 736
 msgid "Sudan"
-msgstr "Sudan"
+msgstr "Судан"
 
 #. 752
 msgid "Sweden"
-msgstr "Sverige"
+msgstr "Швецыя"
 
 #. 702
 msgid "Singapore"
-msgstr "Singapore"
+msgstr "Сінгапур"
 
 #. 654
 msgid "Saint Helena"
-msgstr "Saint Helena"
+msgstr "Востраў Святой Елены"
 
 #. 705
 msgid "Slovenia"
-msgstr "Slovenia"
+msgstr "Славенія"
 
 #. 744
 msgid "Svalbard and Jan Mayen"
-msgstr "Svalbard og Jan Mayen"
+msgstr "Шпіцбэрген і Ян-Майен"
 
 #. 703
 msgid "Slovakia"
-msgstr "Slovakia"
+msgstr "Славакія"
 
 #. 694
 msgid "Sierra Leone"
-msgstr "Sierra Leone"
+msgstr "Сьера-Леонэ"
 
 #. 674
 msgid "San Marino"
-msgstr "San Marino"
+msgstr "Сан-Марына"
 
 #. 686
 msgid "Senegal"
-msgstr "Senegal"
+msgstr "Сенегал"
 
 #. 706
 msgid "Somalia"
-msgstr "Somalia"
+msgstr "Самалі"
 
 #. 740
 msgid "Suriname"
-msgstr "Surinam"
+msgstr "Сурынам"
 
 #. 678
 msgid "Sao Tome and Principe"
-msgstr "São Tomé og Príncipe"
+msgstr "Сан-Томе і Прынсыпі"
 
 #. 222
 msgid "El Salvador"
-msgstr "El Salvador"
+msgstr "Сальвадор"
 
 #. 760
 msgid "Syrian Arab Republic"
-msgstr "Syria"
+msgstr "Сірыйская Арабская Рэспубліка"
 
 #. 748
 msgid "Swaziland"
-msgstr "Swaziland"
+msgstr "Свазіленд"
 
 #. 796
 msgid "Turks and Caicos Islands"
-msgstr "Turks- og Caicosøyene"
+msgstr "Астравы Тэркс і Кайкас"
 
 #. 148
 msgid "Chad"
-msgstr "Tsjad"
+msgstr "Чад"
 
 #. 260
 msgid "French Southern Territories"
-msgstr "De franske sørterritorier"
+msgstr "Французскія Паўднёвыя Тэрыторыі"
 
 #. 768
 msgid "Togo"
-msgstr "Togo"
+msgstr "Тога"
 
 #. 764
 msgid "Thailand"
-msgstr "Thailand"
+msgstr "Тайланд"
 
 #. 762
 msgid "Tajikistan"
-msgstr "Tadsjikistan"
+msgstr "Таджыкістан"
 
 #. 772
 msgid "Tokelau"
-msgstr "Tokelau"
+msgstr "Такелаў"
 
 #. 626
 msgid "Timor-Leste"
-msgstr "Øst-Timor"
+msgstr "Тымор-Лестэ"
 
 #. 795
 msgid "Turkmenistan"
-msgstr "Turkmenistan"
+msgstr "Туркменістан"
 
 #. 788
 msgid "Tunisia"
-msgstr "Tunisia"
+msgstr "Туніс"
 
 #. 776
 msgid "Tonga"
-msgstr "Tonga"
+msgstr "Тонга"
 
 #. 792
 msgid "Turkey"
-msgstr "Tyrkia"
+msgstr "Турцыя"
 
 #. 780
 msgid "Trinidad and Tobago"
-msgstr "Trinidad og Tobago"
+msgstr "Трынідад і Табага"
 
 #. 798
 msgid "Tuvalu"
-msgstr "Tuvalu"
+msgstr "Тувалу"
 
 #. 158
 msgid "Taiwan, Province of China"
-msgstr "Taiwan"
+msgstr "Кітайская правінцыя Тайвань"
 
 #. 834
 msgid "Tanzania, United Republic of"
-msgstr "Tanzania"
+msgstr "Злучаная Рэспубліка Танзанія"
 
 #. 804
 msgid "Ukraine"
-msgstr "Ukraina"
+msgstr "Украіна"
 
 #. 800
 msgid "Uganda"
-msgstr "Uganda"
+msgstr "Уганда"
 
 #. 581
 msgid "United States Minor Outlying Islands"
-msgstr "USAs ytre småøyer"
+msgstr "Знешнія Малыя Астравы (ЗША)"
 
 #. 840
 msgid "United States"
-msgstr "USA"
+msgstr "Злучаныя Штаты Амерыкі"
 
 #. 858
 msgid "Uruguay"
-msgstr "Uruguay"
+msgstr "Уругвай"
 
 #. 860
 msgid "Uzbekistan"
-msgstr "Usbekistan"
+msgstr "Узбекістан"
 
 #. 336
 msgid "Holy See (Vatican City State)"
-msgstr "Vatikanstaten"
+msgstr "Ватыкан (Папскі Пасад)"
 
 #. 670
 msgid "Saint Vincent and the Grenadines"
-msgstr "Saint Vincent og Grenadinene"
+msgstr "Сэнт-Вінсэнт і Грэнадзіны"
 
 #. 862
 msgid "Venezuela"
-msgstr "Venezuela"
+msgstr "Венесуэла"
 
 #. 092
 msgid "Virgin Islands, British"
-msgstr "Jomfruøyene (Storbritannia)"
+msgstr "Віргінскія астравы (Брытанія)"
 
 #. 850
 msgid "Virgin Islands, U.S."
-msgstr "Jomfruøyene (USA)"
+msgstr "Віргінскія астравы (ЗША)"
 
 #. 704
 msgid "Viet Nam"
-msgstr "Vietnam"
+msgstr "В'етнам"
 
 #. 548
 msgid "Vanuatu"
-msgstr "Vanuatu"
+msgstr "Вануату"
 
 #. 876
 msgid "Wallis and Futuna"
-msgstr "Wallis- og Futunaøyene"
+msgstr "Астравы Уоліс і Футуна"
 
 #. 882
 msgid "Samoa"
-msgstr "Samoa"
+msgstr "Самоа"
 
 #. 887
 msgid "Yemen"
-msgstr "Yemen"
+msgstr "Емен"
 
 #. 175
 msgid "Mayotte"
-msgstr "Mayotte"
+msgstr "Маёта"
 
 #. 710
 msgid "South Africa"
-msgstr "Sør-Afrika"
+msgstr "Паўднёва-Афрыканская Рэспубліка"
 
 #. 894
 msgid "Zambia"
-msgstr "Zambia"
+msgstr "Замбія"
 
 #. 716
 msgid "Zimbabwe"
-msgstr "Zimbabwe"
+msgstr "Зімбабвэ"
 
 msgid "* Unknown, add is_in tags to those cities"
-msgstr "Ukjent, legg is_in-tagger til de byene."
+msgstr "Невядома, дадайце is_in тэгі да гэтых гарадоў"
 
 msgid "Car"
-msgstr "Bil"
+msgstr "Аўтамабіль"
 
 msgid "Iso2"
 msgstr "Iso2"
@@ -1267,157 +1265,157 @@ msgid "Iso3"
 msgstr "Iso3"
 
 msgid "Country"
-msgstr "Land"
+msgstr "Краіна"
 
 msgid "Postal"
-msgstr "Post"
+msgstr ""
 
 msgid "Town"
-msgstr "Sted"
+msgstr "Горад"
 
 msgid "District"
-msgstr "Distrikt/Kommune"
+msgstr "Раён"
 
 msgid "Street"
-msgstr "Gate"
+msgstr "Вуліца"
 
 msgid "Number"
-msgstr "Nummer"
+msgstr "Нумар"
 
 msgid "Enter Destination"
-msgstr "Oppgi reisemålet"
+msgstr "Увядзіце пункт прызначэння"
 
 msgid "Zip Code"
-msgstr "Postnummer"
+msgstr "Паштовы індэкс"
 
 msgid "City"
-msgstr "Sted"
+msgstr "Горад"
 
 msgid "District/Township"
-msgstr "Distrikt/Kommune"
+msgstr ""
 
 msgid "Map"
-msgstr "Kart"
+msgstr "Карта"
 
 msgid "Bookmark"
-msgstr "Bokmerke"
+msgstr ""
 
 msgid "Destination"
-msgstr "Reisemål"
+msgstr "Прызначэнне"
 
 msgid "Display"
-msgstr "Visning"
+msgstr ""
 
 msgid "Route"
-msgstr "Rute"
+msgstr "Шлях"
 
 msgid "Former Destinations"
-msgstr "Tidligere reisemål"
+msgstr ""
 
 msgid "Bookmarks"
-msgstr "Bokmerker"
+msgstr "Закладкі"
 
 msgid "Layout"
-msgstr "Utseende"
+msgstr ""
 
 msgid "Projection"
-msgstr "Projeksjon"
+msgstr ""
 
 msgid "Vehicle"
-msgstr "Kjøretøy"
+msgstr ""
 
 msgid "ZoomOut"
-msgstr "Zoom ut"
+msgstr "Аддаліць"
 
 msgid "Decrease zoom level"
-msgstr "Zoom inn"
+msgstr ""
 
 msgid "ZoomIn"
-msgstr "Zoom inn"
+msgstr "Наблізіць"
 
 msgid "Increase zoom level"
-msgstr "Zoom ut"
+msgstr ""
 
 msgid "Recalculate"
-msgstr "Omberegn"
+msgstr "Пералічыць"
 
 msgid "Redraw map"
 msgstr ""
 
 msgid "Info"
-msgstr "Info"
+msgstr "Інфармацыя"
 
 msgid "Set destination"
-msgstr "Sett destinasjon"
+msgstr ""
 
 msgid "Opens address search dialog"
 msgstr ""
 
 msgid "Stop Navigation"
-msgstr "Stopp navigasjon"
+msgstr "Спыніць навігацыю"
 
 msgid "Test"
-msgstr "Test"
+msgstr "Праверка"
 
 msgid "_Quit"
-msgstr "_Avslutt"
+msgstr "_Quit"
 
 msgid "Quit the application"
-msgstr "Avslutt applikasjonen"
+msgstr "Выхад з дастасаваньня"
 
 msgid "Show position cursor"
 msgstr ""
 
 msgid "Lock on Road"
-msgstr "Lås til vei"
+msgstr ""
 
 msgid "Keep orientation to the North"
-msgstr "Hold kartorientering mot nord"
+msgstr ""
 
 msgid "Switches map orientation to the north or the vehicle"
 msgstr ""
 
 msgid "Show/hide route description"
-msgstr "Vis/Sjul rutebeskrivelse"
+msgstr ""
 
 msgid "Autozoom"
-msgstr "Auto-zoom"
+msgstr ""
 
 msgid "Enable/disable automatic zoom level changing"
 msgstr ""
 
 msgid "Fullscreen"
-msgstr "Fullskjerm"
+msgstr "Поўнаэкранны рэжым"
 
 msgid "Data"
-msgstr "Data"
+msgstr "Дадзеныя"
 
 msgid "N"
 msgstr "N"
 
 msgid "NE"
-msgstr "NØ"
+msgstr "NE"
 
 msgid "E"
-msgstr "Ø"
+msgstr "E"
 
 msgid "SE"
-msgstr "SØ"
+msgstr "SE"
 
 msgid "S"
 msgstr "S"
 
 msgid "SW"
-msgstr "SV"
+msgstr "SW"
 
 msgid "W"
-msgstr "V"
+msgstr "W"
 
 msgid "NW"
-msgstr "NV"
+msgstr "NW"
 
 msgid "No"
-msgstr "Nei"
+msgstr "Не"
 
 msgid "2D"
 msgstr "2D"
@@ -1426,204 +1424,200 @@ msgid "3D"
 msgstr "3D"
 
 msgid "OT"
-msgstr "OT"
+msgstr ""
 
 #, c-format
 msgid "Route %4.0fkm    %02d:%02d ETA"
-msgstr "Rute %4.0fkm %02d:%02d estimert tid"
+msgstr ""
 
 msgid "Route 0000km  0+00:00 ETA"
-msgstr "Rute 0000km 0+00:00 estimert tid"
+msgstr ""
 
 msgid "Back to map"
-msgstr "Tilbake til kart"
+msgstr "Назад на мапу"
 
 msgid "Main Menu"
-msgstr "Hovedmeny"
+msgstr "Галоўнае меню"
 
 msgid "Help"
-msgstr "Hjelp"
+msgstr "Даведка"
 
 msgid "Back"
-msgstr "Tilbake"
+msgstr "Назад"
 
 msgid "Add Bookmark"
-msgstr "Legg til bokmerke"
+msgstr "Дадаць закладку"
 
 msgid "Add Bookmark folder"
-msgstr "Legg til bokmerke mappe"
+msgstr ""
 
 msgid "Rename"
-msgstr "Bytt navn"
+msgstr "Перайменаваць"
 
 msgid "POIs"
-msgstr "Landemerker"
+msgstr ""
 
 msgid "View in Browser"
-msgstr "Vis i browser"
+msgstr ""
 
 msgid "Streets"
-msgstr "Gater"
+msgstr "Вуліцы"
 
 msgid "House numbers"
-msgstr "Husnummer"
+msgstr "Нумары дамоў"
 
 msgid "View Attributes"
-msgstr "Vis attributter"
+msgstr ""
 
 msgid "View on map"
-msgstr "Vis på kart"
+msgstr "Праглядзець на мапе"
 
 msgid "Cut Bookmark"
-msgstr "Klipp bokmerke"
+msgstr ""
 
 msgid "Copy Bookmark"
-msgstr "Kopier bokmerke"
+msgstr ""
 
 msgid "Rename Bookmark"
-msgstr "Endre navn på bokmerke"
+msgstr "Перайменаваць закладку"
 
 msgid "Paste Bookmark"
-msgstr "Lim inn bokmerke"
+msgstr ""
 
 msgid "Delete Bookmark"
-msgstr "Slett bokmerke"
+msgstr "Выдаліць закладку"
 
 msgid "Paste bookmark"
-msgstr "Lim inn bokmerke"
+msgstr ""
 
 #, c-format
 msgid "Bookmark %s"
-msgstr "Bokmerk %s"
+msgstr ""
 
 msgid "House number"
-msgstr "Husnummer"
+msgstr "Нумар дому"
 
 msgid "Maps"
-msgstr "Kart"
+msgstr "Мапы"
 
 msgid "Show Satellite Status"
-msgstr "Vis satelittstatus"
+msgstr "Паказаць статус спадарожнікаў"
 
 msgid " Elevation "
-msgstr " Høyde over havet "
+msgstr " Вышыня "
 
 msgid " Azimuth "
-msgstr " Azimuth "
+msgstr ""
 
 msgid "Show NMEA Data"
-msgstr "Vis NMEA-data"
+msgstr "Паказаць дадзеныя NMEA"
 
 msgid "car"
-msgstr "bil"
+msgstr "аўтамабіль"
 
 msgid "bike"
-msgstr "sykkel"
+msgstr "веласіпед"
 
 msgid "pedestrian"
-msgstr "fotgjenger"
+msgstr "пешаход"
 
 #, c-format
 msgid "Current profile: %s"
-msgstr "Aktiv profil: %s"
+msgstr "Бягучы профіль: %s"
 
 #, c-format
 msgid "Change profile to: %s"
-msgstr "Bytt profil: %s"
+msgstr "Змяніць профіль: %s"
 
 msgid "Set as active"
-msgstr "Sett som aktiv"
+msgstr ""
 
 msgid "Show Satellite status"
-msgstr "Vis satelittstatus"
+msgstr ""
 
 msgid "Show NMEA data"
-msgstr "Vis NMEA-data"
+msgstr ""
 
 msgid "Rules"
-msgstr "Regler"
+msgstr "Правілы"
 
 msgid "Lock on road"
-msgstr "Lås til vei"
+msgstr ""
 
 msgid "Northing"
-msgstr "Hold nord oppover"
+msgstr ""
 
 msgid "Map follows Vehicle"
-msgstr "Kart følger kjøretøy"
+msgstr ""
 
 msgid "Message"
-msgstr "Melding"
+msgstr "Паведамленне"
 
 msgid "Route Description"
 msgstr ""
 
 msgid "Height Profile"
-msgstr "Høydeprofil"
+msgstr ""
 
 msgid "Show Locale"
 msgstr ""
 
 msgid "About Navit"
-msgstr "Om Navit"
+msgstr ""
 
 #. Authors
 msgid "By"
-msgstr "Av"
+msgstr ""
 
 #. Contributors
 msgid "And all the Navit Team"
-msgstr "Og alle i Navit teamet"
+msgstr ""
 
 msgid "members and contributors."
-msgstr "medlemmer og bidragsytere."
+msgstr ""
 
 msgid "Map Point"
-msgstr "Kartpunkt"
+msgstr ""
 
 msgid "Vehicle Position"
-msgstr "Kjøretøysposisjon"
+msgstr ""
 
 msgid "Main menu"
-msgstr "Hovedmeny"
+msgstr ""
 
 msgid ""
 "Show\n"
 "Map"
 msgstr ""
-"Vis\n"
-"kart"
 
 msgid "Settings"
-msgstr "Innstillinger"
+msgstr "Налады"
 
 msgid "Tools"
-msgstr "Verktøy"
+msgstr "Інструменты"
 
 msgid "About"
-msgstr "Om"
+msgstr "Аб праграме"
 
 msgid "Actions"
-msgstr "Handlinger"
+msgstr "Дзеянні"
 
 msgid "Quit"
-msgstr "Avslutt"
+msgstr "Выйсці"
 
 msgid ""
 "Stop\n"
 "Navigation"
 msgstr ""
-"Stopp\n"
-"navigasjon"
 
 msgid "Window Mode"
-msgstr "Vindusmodus"
+msgstr ""
 
 msgid "Description"
-msgstr "Beskrivelse"
+msgstr "Апісанне"
 
 msgid "horse"
-msgstr "hest"
+msgstr ""
 
 #. chr:
 #. flags used for a truck: (first flag number is 0)

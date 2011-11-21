@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2011-09-14 05:55+0000\n"
-"Last-Translator: Guus <Unknown>\n"
+"PO-Revision-Date: 2011-11-01 14:30+0000\n"
+"Last-Translator: rob <linuxned@gmail.com>\n"
 "Language-Team: afaber\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-10-06 19:08+0000\n"
-"X-Generator: Launchpad (build 14085)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:17+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 msgid "soon"
@@ -24,11 +24,11 @@ msgstr "straks"
 
 #, c-format
 msgid "Running from source directory\n"
-msgstr "Gestart vanuit de brondirectory\n"
+msgstr "Gestart vanuit de bronmap\n"
 
 #, c-format
 msgid "setting '%s' to '%s'\n"
-msgstr "Instelling '%s' naar '%s'\n"
+msgstr "'%s' instellen op '%s'\n"
 
 #. TRANSLATORS: the following counts refer to streets
 msgid "zeroth"
@@ -114,7 +114,7 @@ msgid "exit"
 msgstr "afslag"
 
 msgid "into the ramp"
-msgstr "naar de afslag"
+msgstr "naar de oprit"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
 #, c-format
@@ -143,11 +143,11 @@ msgstr "%snaar de %s"
 
 #. TRANSLATORS: right, as in 'Turn right'
 msgid "right"
-msgstr "rechts"
+msgstr "rechtsaf"
 
 #. TRANSLATORS: left, as in 'Turn left'
 msgid "left"
-msgstr "links"
+msgstr "linksaf"
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "easily "
@@ -170,12 +170,12 @@ msgstr "Indien mogelijk omkeren"
 
 #, c-format
 msgid "Enter the roundabout soon and leave it at the %s"
-msgstr "Ga straks de rotonde op en ga er af bij de %s"
+msgstr "Volg straks de rotonde en verlaat deze bij de %s"
 
 #. TRANSLATORS: %s is the distance to the roundabout
 #, c-format
 msgid "In %s, enter the roundabout"
-msgstr "Neem de rotonde %s"
+msgstr "Na %s, volg de rotonde"
 
 #, c-format
 msgid "then leave the roundabout at the %s"
@@ -196,14 +196,14 @@ msgstr "Neem de %1$s straat naar %2$s"
 
 #, c-format
 msgid "after %i roads"
-msgstr "na %i wegen"
+msgstr "na %i straten"
 
 msgid "now"
 msgstr "nu"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "neem daarna de %1$s weg naar %2$s"
+msgstr "neem daarna de %1$s straat naar de %2$s"
 
 msgid "error"
 msgstr "fout"
@@ -218,13 +218,12 @@ msgstr "Ga %3$s %1$s naar %2$s %4$s"
 msgid "then turn %1$s%2$s %3$s%4$s"
 msgstr "daarna, ga na %3$s wegen %1$s %2$s naar %4$s"
 
-# over 200 meter links aanhouden
 #, c-format
 msgid "You have reached your destination %s"
-msgstr "%s bestemming bereikt"
+msgstr "Bestemming %s bereikt"
 
 msgid "then you have reached your destination."
-msgstr "dan heeft u uw bestemming bereikt."
+msgstr "daarna heeft u uw bestemming bereikt."
 
 msgid "Position"
 msgstr "Positie"
@@ -233,7 +232,7 @@ msgid "Command"
 msgstr "Commando"
 
 msgid "Length"
-msgstr "Duur"
+msgstr "Afstand"
 
 msgid "km"
 msgstr "km"
@@ -254,13 +253,13 @@ msgid "Roadbook"
 msgstr "route beschrijving"
 
 msgid "Set as position"
-msgstr "Zet als positie"
+msgstr "Als positie instellen"
 
 msgid "Set as destination"
-msgstr "Gebruik als bestemming"
+msgstr "Kies als bestemming"
 
 msgid "Add as bookmark"
-msgstr "Opnemen als favoriet"
+msgstr "Toevoegen als bladwijzer"
 
 #, c-format
 msgid "Point 0x%x 0x%x"
@@ -332,11 +331,11 @@ msgstr "Aruba"
 
 #. 248
 msgid "Aland Islands"
-msgstr "Färöer eilanden"
+msgstr "Alandseilanden"
 
 #. 031
 msgid "Azerbaijan"
-msgstr "Azerbeidjan"
+msgstr "Azerbeidzjan"
 
 #. 070
 msgid "Bosnia and Herzegovina"
@@ -584,7 +583,7 @@ msgstr "Georgië"
 
 #. 254
 msgid "French Guiana"
-msgstr "Frans Guiana"
+msgstr "Frans Guyana"
 
 #. 831
 msgid "Guernsey"
@@ -608,7 +607,7 @@ msgstr "Gambia"
 
 #. 324
 msgid "Guinea"
-msgstr "Papoea-Nieuw-Guinea"
+msgstr "Guinea"
 
 #. 312
 msgid "Guadeloupe"
@@ -616,7 +615,7 @@ msgstr "Guadeloupe"
 
 #. 226
 msgid "Equatorial Guinea"
-msgstr "Equitoriaal Guinea"
+msgstr "Equatoriaal-Guinea"
 
 #. 300
 msgid "Greece"
@@ -660,7 +659,7 @@ msgstr "Kroatië"
 
 #. 332
 msgid "Haiti"
-msgstr "Haiti"
+msgstr "Haïti"
 
 #. 348
 msgid "Hungary"
@@ -680,7 +679,7 @@ msgstr "Israël"
 
 #. 833
 msgid "Isle of Man"
-msgstr "Eiland van Man"
+msgstr "Eiland Man"
 
 #. 356
 msgid "India"
@@ -968,11 +967,11 @@ msgstr "Frans Polynesië"
 
 #. 598
 msgid "Papua New Guinea"
-msgstr "Papua Nieuw Guinea"
+msgstr "Papoea-Nieuw-Guinea"
 
 #. 608
 msgid "Philippines"
-msgstr "Philippijnen"
+msgstr "Filipijnen"
 
 #. 586
 msgid "Pakistan"
@@ -1069,7 +1068,7 @@ msgstr "Slovenië"
 
 #. 744
 msgid "Svalbard and Jan Mayen"
-msgstr "Svalbard und Jan Mayen"
+msgstr "Svalbard en Jan Mayen"
 
 #. 703
 msgid "Slovakia"
@@ -1197,7 +1196,7 @@ msgstr "Uruguay"
 
 #. 860
 msgid "Uzbekistan"
-msgstr "Uzbekistan"
+msgstr "Oezbekistan"
 
 #. 336
 msgid "Holy See (Vatican City State)"
@@ -1287,9 +1286,8 @@ msgstr "Straat"
 msgid "Number"
 msgstr "Nummer"
 
-#
 msgid "Enter Destination"
-msgstr "Bestemming"
+msgstr "Voer bestemming in"
 
 msgid "Zip Code"
 msgstr "Postcode"
@@ -1304,13 +1302,13 @@ msgid "Map"
 msgstr "Kaart"
 
 msgid "Bookmark"
-msgstr "Favoriet"
+msgstr "Bladwijzer"
 
 msgid "Destination"
 msgstr "Bestemming"
 
 msgid "Display"
-msgstr "Tonen"
+msgstr "Weergave"
 
 msgid "Route"
 msgstr "Route"
@@ -1319,7 +1317,7 @@ msgid "Former Destinations"
 msgstr "Vorige bestemmingen"
 
 msgid "Bookmarks"
-msgstr "Favorieten"
+msgstr "Bladwijzers"
 
 msgid "Layout"
 msgstr "Opmaak"
@@ -1331,16 +1329,16 @@ msgid "Vehicle"
 msgstr "Voertuig"
 
 msgid "ZoomOut"
-msgstr "Verkleinen"
+msgstr "Uitzoomen"
 
 msgid "Decrease zoom level"
-msgstr "Verlaag zoomniveau"
+msgstr "Zoomniveau verlagen"
 
 msgid "ZoomIn"
-msgstr "Vergroten"
+msgstr "Inzoomen"
 
 msgid "Increase zoom level"
-msgstr "Verhoog zoomniveau"
+msgstr "Zoomniveau vehogen"
 
 msgid "Recalculate"
 msgstr "Herberekenen"
@@ -1358,22 +1356,22 @@ msgid "Opens address search dialog"
 msgstr "Opent het venster om adressen te zoeken"
 
 msgid "Stop Navigation"
-msgstr "Stop navigatie"
+msgstr "Navigatie stoppen"
 
 msgid "Test"
 msgstr "Test"
 
 msgid "_Quit"
-msgstr "Beëindigen"
+msgstr "A_fsluiten"
 
 msgid "Quit the application"
 msgstr "Het programma afsluiten"
 
 msgid "Show position cursor"
-msgstr "Laat de positieaanwijzing zien"
+msgstr "Positieaanwijzer tonen"
 
 msgid "Lock on Road"
-msgstr "Huidige locatie altijd op de weg"
+msgstr "Vergrendelen op de weg"
 
 msgid "Keep orientation to the North"
 msgstr "Houd de oriëntatie richting het noorden"
@@ -1382,16 +1380,16 @@ msgid "Switches map orientation to the north or the vehicle"
 msgstr "Schakelt kaartoriëntatie naar het noorden of het voertuig"
 
 msgid "Show/hide route description"
-msgstr "Bekijk/verberg routeomschrijving"
+msgstr "Routebeschrijving tonen/verbergen"
 
 msgid "Autozoom"
 msgstr "Autozoom"
 
 msgid "Enable/disable automatic zoom level changing"
-msgstr "Aan/uit zetten van het automatisch veranderen van het zoomniveau"
+msgstr "Aan-/uitzetten van het automatisch veranderen van het zoomniveau"
 
 msgid "Fullscreen"
-msgstr "Beeldvullend"
+msgstr "Schermvullend"
 
 msgid "Data"
 msgstr "Gegevens"
@@ -1452,53 +1450,53 @@ msgid "Back"
 msgstr "Terug"
 
 msgid "Add Bookmark"
-msgstr "Bladwijzer Toevoegen"
+msgstr "Bladwijzer toevoegen"
 
 msgid "Add Bookmark folder"
-msgstr "Bladwijzermap Toevoegen"
+msgstr "Bladwijzermap toevoegen"
 
 msgid "Rename"
-msgstr "Hernoem"
+msgstr "Hernoemen"
 
 msgid "POIs"
-msgstr "bezienswaardigheden"
+msgstr "Nuttige plaatsen"
 
 msgid "View in Browser"
-msgstr "Bekijk in browser"
+msgstr "Bekijken in browser"
 
 msgid "Streets"
 msgstr "Straten"
 
 msgid "House numbers"
-msgstr "huisnummers"
+msgstr "Huisnummers"
 
 msgid "View Attributes"
 msgstr "Bekijk eigenschappen"
 
 msgid "View on map"
-msgstr "Bekijk op de kaart"
+msgstr "Op kaart bekijken"
 
 msgid "Cut Bookmark"
-msgstr "Knip Bladwijzer"
+msgstr "Bladwijzer knippen"
 
 msgid "Copy Bookmark"
-msgstr "Kopieer Bladwijzer"
+msgstr "Bladwijzer kopiëren"
 
 msgid "Rename Bookmark"
-msgstr "Hernoem Bladwijzer"
+msgstr "Bladwijzer hernoemen"
 
 msgid "Paste Bookmark"
-msgstr "Plak Bladwijzer"
+msgstr "Bladwijzer plakken"
 
 msgid "Delete Bookmark"
-msgstr "Verwijder Bladwijzer"
+msgstr "Bladwijzer verwijderen"
 
 msgid "Paste bookmark"
-msgstr "Plak Bladwijzer"
+msgstr "Bladwijzer plakken"
 
 #, c-format
 msgid "Bookmark %s"
-msgstr "Favoriet %s"
+msgstr "Bladwijzer %s"
 
 msgid "House number"
 msgstr "Huisnummer"
@@ -1507,7 +1505,7 @@ msgid "Maps"
 msgstr "Kaarten"
 
 msgid "Show Satellite Status"
-msgstr "Toon satellietstatus"
+msgstr "Satellietstatus tonen"
 
 msgid " Elevation "
 msgstr " Hoogte "
@@ -1516,7 +1514,7 @@ msgid " Azimuth "
 msgstr " Azimuth "
 
 msgid "Show NMEA Data"
-msgstr "Toon NMEA gegevens"
+msgstr "NMEA-gegevens tonen"
 
 msgid "car"
 msgstr "auto"
@@ -1533,22 +1531,22 @@ msgstr "Huidig profiel: %s"
 
 #, c-format
 msgid "Change profile to: %s"
-msgstr "profiel veranderen naar: % s"
+msgstr "Profiel veranderen naar: % s"
 
 msgid "Set as active"
 msgstr "Activeren"
 
 msgid "Show Satellite status"
-msgstr "Satellietstatus weergeven"
+msgstr "Satellietstatus tonen"
 
 msgid "Show NMEA data"
-msgstr "Toon NMEA-gegevens"
+msgstr "NMEA-gegevens tonen"
 
 msgid "Rules"
-msgstr "Voorschrift"
+msgstr "Regels"
 
 msgid "Lock on road"
-msgstr "Op weg plaatsen"
+msgstr "Vergrendelen op de weg"
 
 msgid "Northing"
 msgstr "Noord boven"
@@ -1557,7 +1555,7 @@ msgid "Map follows Vehicle"
 msgstr "Kaart volgt voertuig"
 
 msgid "Message"
-msgstr "Boodschap"
+msgstr "Bericht"
 
 msgid "Route Description"
 msgstr "Routebeschrijving"
@@ -1566,7 +1564,7 @@ msgid "Height Profile"
 msgstr "Hoogteprofiel"
 
 msgid "Show Locale"
-msgstr "Toon taal"
+msgstr "Taal tonen"
 
 msgid "About Navit"
 msgstr "Over Navit"
@@ -1596,7 +1594,7 @@ msgid ""
 "Map"
 msgstr ""
 "Kaart\n"
-"Weergeven"
+"tonen"
 
 msgid "Settings"
 msgstr "Instellingen"
@@ -1605,7 +1603,7 @@ msgid "Tools"
 msgstr "Gereedschappen"
 
 msgid "About"
-msgstr "Over"
+msgstr "Info"
 
 msgid "Actions"
 msgstr "Acties"

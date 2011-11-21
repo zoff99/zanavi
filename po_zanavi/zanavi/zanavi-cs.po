@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: ZANavi 1.0.0\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
 "POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-10-11 20:32+0000\n"
-"Last-Translator: doJan Pernica <Unknown>\n"
+"PO-Revision-Date: 2011-11-14 20:35+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
-"X-Generator: Launchpad (build 14124)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:00+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 msgid "map download"
 msgstr "Stáhnout mapu"
@@ -29,7 +29,7 @@ msgstr "oddálit"
 
 #. TRANSLATORS: text to translate is: exit ZANavi
 msgid "exit navit"
-msgstr "ukončit ZANavi"
+msgstr "Ukončit ZANavi"
 
 msgid "toggle POI"
 msgstr "toogle POI"
@@ -158,7 +158,7 @@ msgstr ""
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_compass_heading_fast"
-msgstr "rychlý Kompas"
+msgstr "Rychlý kompas"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_compass_heading_fast"
@@ -253,7 +253,7 @@ msgstr "aGPS"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_agps"
-msgstr "používej asistované GPS (potřebuje Internet)"
+msgstr "Používej asistované GPS (potřebuje Internet)"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__INFO_BOX_TITLE__"
@@ -262,12 +262,11 @@ msgstr "Vítejte v ZANavi"
 #. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
-"ZANavi jste právě spustili poprvé!\\n\\nPrvně zvolte \"stáhnout mapy\"\\n z "
-"menu a stáhněte mapu\\n oblastí, kde se právě nacházíte.\\n\\n Mapové "
-"soubory jsou velké,\\n proto se ujistěte, že máte datový paušál!\\n\\n "
-"Mapové podklady:\\n CC-BY-SA OpenStreetMap Project\\n\\n Více informací "
-"získáte\\n na našich stránkách\\n http://zanavi.cc\\n\\n Přejme hodně zábavy "
-"se ZANavi."
+"ZANavi jste právě spustili poprvé!\\n\\nPrvně zvolte \"stáhnout mapy\"\\nz "
+"menu a stáhněte mapu\\noblastí, kde se právě nacházíte.\\n\\nMapové soubory "
+"jsou velké,\\nproto se ujistěte, že máte datový paušál!\\n\\nMapové "
+"podklady:\\nCC-BY-SA OpenStreetMap Project\\n\\nVíce informací získáte\\nna "
+"našich stránkách\\nhttp://zanavi.cc\\n\\nPřejme hodně zábavy se ZANavi."
 
 msgid "Announcer Off"
 msgstr "Vypnout ohlašování"

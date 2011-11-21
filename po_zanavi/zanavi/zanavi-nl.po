@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
 "POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-10-04 17:54+0000\n"
-"Last-Translator: Guus <Unknown>\n"
+"PO-Revision-Date: 2011-11-14 20:34+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-12 17:28+0000\n"
-"X-Generator: Launchpad (build 14124)\n"
+"X-Launchpad-Export-Date: 2011-11-18 21:00+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 msgid "map download"
 msgstr "download kaarten"
@@ -218,43 +218,47 @@ msgstr "Stel de taal in. Herstart is dan nodig!"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_lock_on_roads"
-msgstr ""
+msgstr "plaats op de weg"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_lock_on_roads"
 msgstr ""
+"Plaatst het voertuig op de dichtsbijzijnde weg. Zet deze uit voor wandelen "
+"of offroad rijden"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_route_highways"
-msgstr ""
+msgstr "voorkeur voor snelwegen"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_route_highways"
 msgstr ""
+"geef voorkeur aan snelwegen voor de route (uitschakelen gebruikt meer "
+"geheugen!!)"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__save_zoomlevel"
-msgstr ""
+msgstr "zoomniveau"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__save_zoomlevel"
-msgstr ""
+msgstr "bewaar laatste zoomniveau"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__show_sat_status"
-msgstr ""
+msgstr "satteliet status"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__show_sat_status"
-msgstr ""
+msgstr "weergeven satteliet status"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__title__use_agps"
-msgstr ""
+msgstr "aGPS"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__PREF__summ__use_agps"
-msgstr ""
+msgstr "gebruik assisted GPS (gebruikt Internet !!)"
 
 #. TRANSLATORS: see en_US for english text to translate!!
 msgid "__INFO_BOX_TITLE__"
@@ -263,12 +267,12 @@ msgstr "Welkom bij ZANavi"
 #. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
-"U voert ZANavi voor de eerste keer uit.\\n\\n Om te beginnen, selecteer  \\n "
-"\"download kaarten\"\\n uit het menu en download een kaart\\n van je regio.\\"
-"n De kaarten zijn groot,\\n het is dus aangeraden om een \\n ongelimiteerde "
-"internetverbinding te hebben!\\n\\n Kaartdata:\\n CC-BY-SA OpenStreetMap "
-"Project\\n\\n Voor meer info\\n bezoek onze site\\n http://zanavi.cc\\n\\n   "
-"    Nog veel plezier met ZANavi."
+"U voert ZANavi voor de eerste keer uit.\\n\\nOm te beginnen, selecteer\\"
+"n\"download kaarten\"\\nuit het menu en download een kaart\\nvan je regio.\\"
+"nDe kaarten zijn groot,\\nhet is dus aangeraden om een\\nongelimiteerde "
+"internetverbinding te hebben!\\n\\nKaartdata:\\nCC-BY-SA OpenStreetMap "
+"Project\\n\\nVoor meer info\\nbezoek onze site\\nhttp://zanavi.cc\\n\\n      "
+" Nog veel plezier met ZANavi."
 
 msgid "Announcer Off"
 msgstr "spraak uit"
@@ -300,28 +304,28 @@ msgid "generating MD5 checksum"
 msgstr "MD5sum genereren"
 
 msgid "Use as destination"
-msgstr ""
+msgstr "gebruik als bestemming"
 
 msgid "back"
-msgstr ""
+msgstr "terug"
 
 msgid "destination"
-msgstr ""
+msgstr "bestemming"
 
 msgid "wait ..."
-msgstr ""
+msgstr "wachten ..."
 
 msgid "Enter Destination"
-msgstr ""
+msgstr "voer bestemming in"
 
 msgid "Zoom to Route"
-msgstr ""
+msgstr "Zoom naar route"
 
 msgid "Stop Navigation"
-msgstr ""
+msgstr "Stop navigatie"
 
 msgid "Streets"
-msgstr ""
+msgstr "Straten"
 
 msgid "touch map to zoom"
-msgstr ""
+msgstr "raak kaart aan om te zoomen"
