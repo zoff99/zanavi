@@ -103,6 +103,8 @@ static void navit_set_vehicle(struct navit *this_, struct navit_vehicle *nv);
 int allow_gui_internal = 0;
 int routing_mode = 0;
 int MYSTERY_SPEED = 2;
+int offline_search_filter_duplicates = 0;
+int offline_search_break_searching = 0;
 
 struct navit *global_navit;
 
@@ -2181,16 +2183,19 @@ navit_init(struct navit *this_)
 		}
 		if (this_->tracking) {
 			if ((map=tracking_get_map(this_->tracking))) {
-				struct attr map_a,active;
+				struct attr map_a,active,map_name;
 				map_a.type=attr_map;
 				map_a.u.map=map;
 				active.type=attr_active;
 				active.u.num=0;
+				map_name.type=attr_name;
+				map_name.u.str="_ms_tracking";
+				map_set_attr(map_a.u.map, &map_name);
 				mapset_add_attr(ms, &map_a);
 				map_set_attr(map, &active);
 			}
 		}
-		navit_add_former_destinations_from_file(this_);
+		// *DISABLED* navit_add_former_destinations_from_file(this_);
 	}
 	if (this_->route) {
 		struct attr callback;
@@ -3180,9 +3185,17 @@ navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 			count=route_get_destinations(this_->route, pc, 16);
 			destination_file = bookmarks_get_destination_file(TRUE);
 			bookmarks_append_coord(this_->bookmarks, destination_file, pc, count, "former_itinerary_part", NULL, NULL, this_->recentdest_count);
+#ifdef HAVE_API_ANDROID
+			// waypoint reached
+			android_return_generic_int(5, 1);
+#endif
 			break;	
 		case 2:
 			navit_set_destination(this_, NULL, NULL, 0);
+			// ** inform java that we reached our destination **
+#ifdef HAVE_API_ANDROID
+			android_return_generic_int(4, 1);
+#endif
 			break;
 		}
 	}

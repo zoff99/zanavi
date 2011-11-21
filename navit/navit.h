@@ -35,6 +35,9 @@ extern int draw_display_at_speed;
 extern int routing_mode;	// 0-> normal highway rounting
 							// 1-> normal roads routing
 							// 2-> future use
+extern int offline_search_filter_duplicates;
+extern int offline_search_break_searching;
+
 
 /* prototypes */
 enum attr_type;
