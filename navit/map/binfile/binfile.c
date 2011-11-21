@@ -38,6 +38,7 @@
 #include "endianess.h"
 #include "callback.h"
 #include "types.h"
+#include "navit.h"
 
 static int map_id;
 
@@ -1757,7 +1758,8 @@ static struct item *
 map_rect_get_item_byid_binfile(struct map_rect_priv *mr, int id_hi, int id_lo)
 {
 	struct tile *t;
-	if (mr->m->eoc) {
+	if (mr->m->eoc)
+	{
 		while (pop_tile(mr));
 		push_zipfile_tile(mr, id_hi, 0, 0, 0);
 	}
@@ -1766,10 +1768,13 @@ map_rect_get_item_byid_binfile(struct map_rect_priv *mr, int id_hi, int id_lo)
 	mr->item.id_hi=id_hi;
 	mr->item.id_lo=id_lo;
 	if (mr->m->changes)
+	{
 		push_modified_item(mr);
+	}
 	setup_pos(mr);
 	binfile_coord_rewind(mr);
 	binfile_attr_rewind(mr);
+
 	return &mr->item;
 }
 
@@ -1915,7 +1920,8 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
      * NOTE: If you implement search for other attributes than attr_town_name and attr_street_name,
      * please update this comment and the documentation for map_search_new() in map.c
      */
-	switch (search->type) {
+	switch (search->type)
+	{
 		case attr_country_name:
 			break;
 		case attr_town_name:
@@ -1936,16 +1942,24 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 				break;
 			map_rec = map_rect_new_binfile(map, NULL);
 			town = map_rect_get_item_byid_binfile(map_rec, item->id_hi, item->id_lo);
-			if (town) {
+			if (town)
+			{
 				struct coord c;
 
 				if (binmap_search_by_index(map, town, &msp->mr))
+				{
 					msp->mode = 1;
-				else {
-					if (item_coord_get(town, &c, 1)) {
+				}
+				else
+				{
+					if (item_coord_get(town, &c, 1))
+					{
 						if ((msp->mr=binmap_search_street_by_place(map, town, &c, &msp->ms))) 
+						{
 							msp->mode = 2;
-						else {
+						}
+						else
+						{
 							msp->mr=binmap_search_street_by_estimate(map, town, &c, &msp->ms);
 							msp->mode = 3;
 						}	
@@ -1953,7 +1967,9 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 				}
 				map_rect_destroy_binfile(map_rec);
 				if (!msp->mr)
+				{
 					break;
+				}
 				willsearch=1;
 				break;
 			}
@@ -1968,7 +1984,8 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 			msp->map=map;
 			msp->mr_item = map_rect_new_binfile(map, NULL);
 			msp->item = map_rect_get_item_byid_binfile(msp->mr_item, item->id_hi, item->id_lo);
-			if (binmap_search_by_index(map, msp->item, &msp->mr) != 3) {
+			if (binmap_search_by_index(map, msp->item, &msp->mr) != 3)
+			{
 				struct coord c;
 				if (item_coord_get(msp->item, &c, 1))
 				{
@@ -1987,10 +2004,14 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 		default:
 			break;
 	}
-	if(!willsearch) {
+
+	if (!willsearch)
+	{
 		g_free(msp);
 		msp=NULL;
-	} else {
+	}
+	else
+	{
 		msp->str=linguistics_casefold(search->u.str);
 	}
 	return msp;
@@ -1999,9 +2020,54 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 static int
 ascii_cmp(char *name, char *match, int partial)
 {
-	char *s=linguistics_casefold(name);
-	int ret=linguistics_compare(s,match,partial);
-	g_free(s);
+	int ret=1;
+
+	if (name==NULL)
+	{
+		return ret;
+	}
+
+	if (match==NULL)
+	{
+		return ret;
+	}
+
+	char *s2=linguistics_casefold(match); // user entered search string
+	char *s1=linguistics_casefold(name); // string from mapfile
+	char *s1_1=linguistics_expand_special(s1, 1);
+	char *s2_1=linguistics_expand_special(s2, 1);
+
+	if (s1_1)
+	{
+		if (s2_1)
+		{
+			ret=linguistics_compare(s1_1,s2_1,partial);
+		}
+		else
+		{
+			ret=linguistics_compare(s1_1,s2,partial);
+		}
+	}
+	else
+	{
+		if (s2_1)
+		{
+			ret=linguistics_compare(s1,s2_1,partial);
+		}
+		else
+		{
+			ret=linguistics_compare(s1,s2,partial);
+		}
+	}
+
+	if (s1_1)
+		g_free(s1_1);
+	if (s2_1)
+		g_free(s2_1);
+	if (s1)
+		g_free(s1);
+	if (s2)
+		g_free(s2);
 	return ret;
 }
 
@@ -2062,18 +2128,54 @@ binmap_search_get_item(struct map_search_priv *map_search)
 	struct item* it;
 	struct attr at;
 
-	for (;;) {
-		while ((it  = map_rect_get_item_binfile(map_search->mr))) {
-			switch (map_search->search->type) {
+	for (;;)
+	{
+		while ((it  = map_rect_get_item_binfile(map_search->mr)))
+		{
+			switch (map_search->search->type)
+			{
 			case attr_town_name:
 			case attr_district_name:
 			case attr_town_or_district_name:
+
+#if 0
 				if (map_search->mr->tile_depth > 1 && item_is_town(*it) && !item_is_district(*it) && map_search->search->type != attr_district_name) {
 					if (binfile_attr_get(it->priv_data, attr_town_name_match, &at) || binfile_attr_get(it->priv_data, attr_town_name, &at)) {
 						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial) && !duplicate(map_search, it, attr_town_name)) 
 							return it;
 					}
 				}
+#endif
+
+#if 1
+				if (map_search->mr->tile_depth > 1 && item_is_town(*it) && !item_is_district(*it) && map_search->search->type != attr_district_name)
+				{
+					if (binfile_attr_get(it->priv_data, attr_town_name, &at))
+					{
+						//dbg(0,"22town n:%s\n",at.u.str);
+						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial)
+								// && !duplicate(map_search, it, attr_town_name)
+							)
+						{
+							//dbg(0,"town n:%s\n",at.u.str);
+							return it;
+						}
+					}
+
+					if (binfile_attr_get(it->priv_data, attr_town_name_match, &at))
+					{
+						//dbg(0,"11town M:%s\n",at.u.str);
+						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial)
+								// && !duplicate(map_search, it, attr_town_name)
+							)
+						{
+							//dbg(0,"town M:%s\n",at.u.str);
+							return it;
+						}
+					}
+				}
+#endif
+
 				if (map_search->mr->tile_depth > 1 && item_is_district(*it) && map_search->search->type != attr_town_name) {
 					if (binfile_attr_get(it->priv_data, attr_district_name_match, &at) || binfile_attr_get(it->priv_data, attr_district_name, &at)) {
 						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial) && !duplicate(map_search, it, attr_town_name)) 
@@ -2082,32 +2184,107 @@ binmap_search_get_item(struct map_search_priv *map_search)
 				}
 				break;
 			case attr_street_name:
-				if (map_search->mode == 1) {
-					if (binfile_attr_get(it->priv_data, attr_street_name_match, &at) || binfile_attr_get(it->priv_data, attr_street_name, &at)) {
-						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial) && !duplicate(map_search, it, attr_street_name)) {
-							return it;
+				if (map_search->mode == 1)
+				{
+					//if (binfile_attr_get(it->priv_data, attr_street_name_match, &at) || binfile_attr_get(it->priv_data, attr_street_name, &at)) {
+					//	if (!ascii_cmp(at.u.str, map_search->str, map_search->partial) && !duplicate(map_search, it, attr_street_name)) {
+					//		return it;
+					//	}
+					//}
+
+					if (binfile_attr_get(it->priv_data, attr_street_name, &at))
+					{
+						//dbg(0,"str AA:%s\n", at.u.str);
+
+						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial))
+						{
+							if ((offline_search_filter_duplicates != 1) || (!duplicate(map_search, it, attr_street_name)))
+							{
+								return it;
+							}
+							else
+							{
+								//dbg(0,"dup street 1:%s\n",at.u.str);
+							}
 						}
 					}
+
+					if (binfile_attr_get(it->priv_data, attr_street_name_match, &at))
+					{
+						//dbg(0,"str BB:%s\n", at.u.str);
+
+						if (!ascii_cmp(at.u.str, map_search->str, map_search->partial))
+						{
+							if ((offline_search_filter_duplicates != 1) || (!duplicate(map_search, it, attr_street_name)))
+							{
+								return it;
+							}
+							else
+							{
+								//dbg(0,"dup street 2:%s\n",at.u.str);
+							}
+						}
+					}
+
 					continue;
 				}
-				if (item_is_street(*it)) {
+
+				if (item_is_street(*it))
+				{
 					struct attr at;
-					if (map_selection_contains_item_rect(map_search->mr->sel, it) && binfile_attr_get(it->priv_data, attr_label, &at)) {
-						int match=0;
-						char *str=g_strdup(at.u.str);
-						char *word=str;
-						do {
-							if (!ascii_cmp(word, map_search->str, map_search->partial)) {
+					if (map_selection_contains_item_rect(map_search->mr->sel, it))
+					{
+						if (binfile_attr_get(it->priv_data, attr_label, &at))
+						{
+							int match=0;
+							char *str=g_strdup(at.u.str);
+
+							//dbg(0,"search=%s  str is:%s\n",map_search->str, at.u.str);
+
+							if (!ascii_cmp(str, map_search->str, map_search->partial))
+							{
 								match=1;
-								break;
 							}
-							word=linguistics_next_word(word);
-						} while (word);
-						g_free(str);
-						if (match && !duplicate(map_search, it, attr_label)) {
-							item_coord_rewind(it);
-							return it;
+
+#if 0
+							char *word=str;
+							int first=1;
+							do
+							{
+								if (!ascii_cmp(word, map_search->str, map_search->partial))
+								{
+									match=1;
+									break;
+								}
+								if (first==1)
+								{
+									first=0;
+									word=linguistics_next_word(word);
+								}
+								else
+								{
+									word=linguistics_next_word(NULL);
+								}
+							} while (word);
+#endif
+							g_free(str);
+
+							if (match)
+							{
+								if ((offline_search_filter_duplicates != 1) || (!duplicate(map_search, it, attr_label)))
+								{
+									item_coord_rewind(it);
+									return it;
+								}
+							}
 						}
+						//else
+						//{
+						//	if (binfile_attr_get(it->priv_data, attr_street_name, &at))
+						//	{
+						//		dbg(0,"---str X*X:%s\n", at.u.str);
+						//	}
+						//}
 					}
 				}
 				break;
@@ -2126,14 +2303,18 @@ binmap_search_get_item(struct map_search_priv *map_search)
 						{
 							//binfile_attr_get(it->priv_data, attr_street_name, &at);
 							//dbg(0,"hnnn B1 street_name=%s",at.u.str);
+
 							if (!duplicate(map_search, it, attr_house_number))
 							{
 								binfile_attr_rewind(it->priv_data);
 								return it;
 							}
 						}
-					} else
+					}
+					else
+					{
 						return it;
+					}
 				}
 				continue;
 			default:

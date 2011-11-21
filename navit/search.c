@@ -144,25 +144,29 @@ search_list_search(struct search_list *this_, struct attr *search_attr, int part
 	int level=search_list_level(search_attr->type);
 	this_->item=NULL;
 	interpolation_clear(&this_->inter);
-	//dbg(0,"enter\n");
-	//dbg(0,"level=%d\n", level);
-	if (level != -1) {
+	//dbg(0,"## enter\n");
+	//dbg(0,"## level=%d\n", level);
+	if (level != -1)
+	{
 		this_->result.id=0;
 		this_->level=level;
 		le=&this_->levels[level];
 		search_list_search_free(this_, level);
 		le->attr=attr_dup(search_attr);
 		le->partial=partial;
-		if (level > 0) {
+		if (level > 0)
+		{
 			le=&this_->levels[level-1];
 			le->curr=le->list;
 		}
-		//dbg(0,"le=%p partial=%d\n", le, partial);
-	} else if (search_attr->type == attr_postal) {
+		//dbg(0,"## le=%p partial=%d\n", le, partial);
+	}
+	else if (search_attr->type == attr_postal)
+	{
 		g_free(this_->postal);
 		this_->postal=g_strdup(search_attr->u.str);
 	}
-	//dbg(0,"return\n");
+	//dbg(0,"## return\n");
 }
 
 struct search_list_common *
@@ -660,17 +664,26 @@ search_add_result(struct search_list_level *le, struct search_list_common *slc)
 {
 	struct search_list_common *slo;
 	char *merged;
-	slo=g_hash_table_lookup(le->hash, &slc->unique);
-	if (!slo) {
-		g_hash_table_insert(le->hash, &slc->unique, slc);
-		if (slc->postal && !slc->postal_mask) {
+
+	//dbg(0,"enter\n");
+
+	//slo=g_hash_table_lookup(le->hash, &slc->unique);
+	//if (!slo) {
+		//g_hash_table_insert(le->hash, &slc->unique, slc);
+		if (slc->postal && !slc->postal_mask)
+		{
 			slc->postal_mask=g_strdup(slc->postal);
 		}
+		// ******
+		g_list_free(le->list);
+		le->list=NULL;
+		// ******
 		le->list=g_list_append(le->list, slc);
 		return 1;
-	}
+	//}
 	merged=search_postal_merge(slo->postal_mask, slc->postal);
-	if (merged) {
+	if (merged)
+	{
 		g_free(slo->postal_mask);
 		slo->postal_mask=merged;
 	}
@@ -719,26 +732,31 @@ search_list_get_result(struct search_list *this_)
 						break;
 				}
 			}
-			//if (le->parent)
-			//{
-			//	//dbg(0,"mapset_search_new with item(%d,%d)\n", le->parent->item.id_hi, le->parent->item.id_lo);
-			//}
-			//else
-			//{
-			//	dbg(0,"NO parent!!\n");
-			//}
-			// dbg(0,"############## attr=%s\n", attr_to_name(le->attr->type));
+#if 0
+			if (le->parent)
+			{
+				dbg(0,"mapset_search_new with item(%d,%d)\n", le->parent->item.id_hi, le->parent->item.id_lo);
+			}
+			else
+			{
+				dbg(0,"NO parent!!\n");
+			}
+			dbg(0,"############## attr=%s\n", attr_to_name(le->attr->type));
+#endif
 			le->search=mapset_search_new(this_->ms, &le->parent->item, le->attr, le->partial);
 			// ** DOC ** mapset_search_new(struct mapset *ms, struct item *item, struct attr *search_attr, int partial)
 			le->hash=g_hash_table_new(search_item_hash_hash, search_item_hash_equal);
 		}
+
 		//dbg(0,"le->search=%p\n", le->search);
+
 		if (!this_->item)
 		{
 			//dbg(0,"sssss 1");
 			this_->item=mapset_search_get_item(le->search);
 			//dbg(0,"sssss 1 %p\n",this_->item);
 		}
+
 		if (this_->item)
 		{
 			void *p=NULL;
@@ -838,25 +856,36 @@ search_list_get_result(struct search_list *this_)
 					this_->result.street->name=NULL;
 				}
 				//dbg(0,"case 3 XXXX 5\n");
+				break;
 			}
+			// CASE END *********
+
+
 			if (p)
 			{
 				if (search_add_result(le, p))
 				{
-					this_->result.id++;
+					//** this_->result.id++;
+					this_->result.id=0;
+					//dbg(0,"++++ return result\n");
 					return &this_->result;
 				}
 				else
 				{
 					search_list_result_destroy(level, p);
+					// return &this_->result;
 				}
 			}
-		} else {
+		}
+		else
+		{
 			mapset_search_destroy(le->search);
 			le->search=NULL;
 			g_hash_table_destroy(le->hash);
 			if (! level)
+			{
 				break;
+			}
 		}
 	}
 	return NULL;
@@ -945,6 +974,11 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 
 	while ((slr=search_list_get_result(sl)))
 	{
+		if (offline_search_break_searching==1)
+		{
+			break;
+		}
+
 		// does the streetname of the housenumber match the street we want?
 		if (slr != NULL)
 		{
@@ -1000,11 +1034,19 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 	struct coord c;
 	struct attr attr2;
 
+	struct item *save_item;
+	int save_level;
+	int save_last_result_valid;
 
 	while ((slr=search_list_get_result(sl)))
 	{
 		char *buffer;
 		char *buffer2;
+
+		if (offline_search_break_searching==1)
+		{
+			break;
+		}
 
 		if (slr->street)
 		{
@@ -1035,7 +1077,17 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 			count++;
 
 			buffer2=g_strdup_printf("%s", slr->street->name);
+			//dbg(0,"b2:%s\n",buffer2);
 
+
+			save_item=sl->item;
+			save_level=sl->level;
+			save_last_result_valid=sl->last_result_valid;
+
+
+#if 1
+			// put words back to start!!
+			tmp=phrases;
 			while (tmp)
 			{
 				//dbg(0,"s0=%s\n",tmp->data);
@@ -1051,6 +1103,13 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 				}
 				tmp=g_list_next(tmp);
 			}
+#endif
+
+			// restore again
+			sl->item=save_item;
+			sl->level=save_level;
+			sl->last_result_valid=save_last_result_valid;
+
 		}
 
 		if (buffer2)
@@ -1078,10 +1137,22 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 	struct coord_geo g;
 	struct coord c;
 	struct attr attr;
+	struct attr attrx;
+	// struct search_list *sl2=search_list_new(sl->ms);
+	struct item *save_item;
+	int save_level;
+	int save_last_result_valid;
+	// int first=1;
 
 	while ((slr=search_list_get_result(sl)))
 	{
 		char *buffer;
+
+		if (offline_search_break_searching==1)
+		{
+			break;
+		}
+
 		// coords of result
 		c.x=slr->town->common.c->x;
 		c.y=slr->town->common.c->y;
@@ -1097,7 +1168,7 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 			buffer=g_strdup_printf("TWN:H%dL%d:%f:%f:%.101s,%.7s %.101s",slr->town->common.item.id_hi,slr->town->common.item.id_lo,g.lat,g.lng,slr->country->name,slr->town->common.postal,slr->town->common.town_name);
 		}
 
-		//dbg(0,"res=%s\n",buffer);
+		//dbg(0,"**res=%s\n",buffer);
 
 		// deactivated now * result_list=g_list_prepend(result_list,g_strdup(buffer));
 #ifdef HAVE_API_ANDROID
@@ -1106,7 +1177,16 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 #endif
 
 		count++;
-		g_free(buffer);
+		if (buffer)
+			g_free(buffer);
+
+
+		save_item=sl->item;
+		save_level=sl->level;
+		save_last_result_valid=sl->last_result_valid;
+
+		// put words back to start!!
+		tmp=phrases;
 
 		while (tmp)
 		{
@@ -1121,16 +1201,11 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 			tmp=g_list_next(tmp);
 		}
 
+		// restore again
+		sl->item=save_item;
+		sl->level=save_level;
+		sl->last_result_valid=save_last_result_valid;
 	}
-
-	/*
-	if (!count)
-	{
-		dbg(0,"return 1\n");
-		return result_list;
-	}
-	*/
-
 
 	//dbg(0,"return 2\n");
 	return result_list;
@@ -1163,12 +1238,16 @@ search_address__country(GList *result_list, struct search_list *sl, GList *phras
 	{
 		if (tmp != exclude)
 		{
-			//dbg(0,"s=%s\n",tmp->data);
+			//dbg(0,"Is=%s\n",tmp->data);
 			attr.type=attr_town_or_district_name;
 			attr.u.str=tmp->data;
 			search_list_search(sl, &attr, partial);
 			result_list=search_address__town(result_list, sl, phrases, exclude, tmp, partial, jni);
 		}
+		//else
+		//{
+			//dbg(0,"Xs=%s\n",tmp->data);
+		//}
 		tmp=g_list_next(tmp);
 	}
 	//dbg(0,"return 2");
@@ -1438,9 +1517,11 @@ static struct country2 all_country_list[]= {
 static int
 ascii_cmp_local(char *name, char *match, int partial)
 {
-	char *s=linguistics_casefold(name);
-	int ret=linguistics_compare(s,match,partial);
-	g_free(s);
+	char *s1=linguistics_casefold(name);
+	char *s2=linguistics_casefold(match);
+	int ret=linguistics_compare(s1,s2,partial);
+	g_free(s1);
+	g_free(s2);
 	return ret;
 }
 
@@ -1695,37 +1776,20 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 	phrases_first=phrases;
 	sl=search_list_new(ms);
 
-
-//	search_full_world(addr,partial,jni,search_country_flags,search_country_string);
-
 	dbg(0,"-- START --\n");
-
-	// search in "attr_country_all" -> seems to be when item is in no country?? or not
-	/*
-	dbg(0,"-- country all start --\n");
-	while (tmp)
-	{
-		dbg(0,"s=%s\n",tmp->data);
-		attr.u.str=tmp->data;
-		search_list_search(sl, &attr, partial);
-		result_list=search_address__country(result_list, sl, phrases, tmp, partial, jni);
-		tmp=g_list_next(tmp);
-	}
-	dbg(0,"-- country all end --\n");
-	*/
 
 	// normal search stuff -------- START ----------
 	if (search_country_flags == 1)
 	{
 		dbg(0,"-- country default start --\n");
-		while (phrases)
-		{
+		//while (phrases)
+		//{
 			// dbg(0,"s=%s\n",phrases->data);
 			// set default country
 			search_list_search(sl, country_default(), 0);
 			ret=search_address__country(ret, sl, phrases, NULL, partial, jni);
-			phrases=g_list_next(phrases);
-		}
+			// phrases=g_list_next(phrases);
+		//}
 		dbg(0,"-- country default end --\n");
 	}
 	else if (search_country_flags == 2)
@@ -1735,14 +1799,14 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 		struct attr country;
 		country.type=attr_country_iso2;
 		country.u.str=search_country_string;
-		while (phrases)
-		{
+		//while (phrases)
+		//{
 			// dbg(0,"s=%s\n",phrases->data);
 			search_list_search(sl, &country, 0);
 			// set a country
 			ret=search_address__country(ret, sl, phrases, NULL, partial, jni);
-			phrases=g_list_next(phrases);
-		}
+			//phrases=g_list_next(phrases);
+		//}
 		dbg(0,"-- country sel:%s end --\n",search_country_string);
 	}
 	else // flags==3
@@ -1757,15 +1821,20 @@ search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial,
 			if (all_country_list[j1].iso2 != NULL)
 			{
 				phrases=phrases_first;
-				while (phrases)
-				{
+				//while (phrases)
+				//{
 					// dbg(0,"s country=%s\n",all_country_list[j1].iso2);
 					// dbg(0,"s=%s\n",phrases->data);
 					country.type=attr_country_iso2;
 					country.u.str=all_country_list[j1].iso2;
 					search_list_search(sl, &country, 0);
 					ret=search_address__country(ret, sl, phrases, NULL, partial, jni);
-					phrases=g_list_next(phrases);
+					//phrases=g_list_next(phrases);
+				//}
+
+				if (offline_search_break_searching==1)
+				{
+					break;
 				}
 			}
 		}

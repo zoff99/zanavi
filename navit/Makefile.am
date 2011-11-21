@@ -133,20 +133,20 @@ apkg-all: all android/build.xml navit.xml
 	mkdir -p android/res/drawable-ldpi
 	mkdir -p android/res/drawable-mdpi
 	mkdir -p android/res/drawable-hdpi
-	for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert $(srcdir)/xpm/$$i android/res/drawable-mdpi/$${i%.xpm}.png; done 
-	for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 75% $(srcdir)/xpm/$$i android/res/drawable-ldpi/$${i%.xpm}.png; done 
-	for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 150% $(srcdir)/xpm/$$i android/res/drawable-hdpi/$${i%.xpm}.png; done 
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert $(srcdir)/xpm/$$i android/res/drawable-mdpi/$${i%.xpm}.png; done  ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 75% $(srcdir)/xpm/$$i android/res/drawable-ldpi/$${i%.xpm}.png; done  ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 150% $(srcdir)/xpm/$$i android/res/drawable-hdpi/$${i%.xpm}.png; done  ; fi
 
-	for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert $(srcdir)/xpm/$$i android/res/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done
-	for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 75% $(srcdir)/xpm/$$i android/res/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done
-	for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 150% $(srcdir)/xpm/$$i android/res/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert $(srcdir)/xpm/$$i android/res/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 75% $(srcdir)/xpm/$$i android/res/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 150% $(srcdir)/xpm/$$i android/res/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
 
 	mkdir -p android/res2/drawable-hdpi
 	mkdir -p android/res2/drawable-mdpi
 	mkdir -p android/res2/drawable-ldpi
-	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert $(builddir)/xpm/$$i android/res2/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
-	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 75% $(builddir)/xpm/$$i android/res2/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
-	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 150% $(builddir)/xpm/$$i android/res2/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert $(builddir)/xpm/$$i android/res2/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 75% $(builddir)/xpm/$$i android/res2/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 150% $(builddir)/xpm/$$i android/res2/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
 
 #	only use needed pngs to make size of apk smaller
 	if [ "$(builddir)" != "$(srcdir)" ]; then for i in flag_bk_tr.png flag_bk_wh.png mini_roundabout.png gui_active_32_32.png gui_arrow_right_32_32.png gui_arrow_left_32_32.png icon_32_32.png unknown_32_32.png gui_zoom_out_64_64.png gui_zoom_in_64_64.png gui_map_32_32.png gui_home_32_32.png gui_actions_64_64.png gui_settings_64_64.png gui_tools_64_64.png gui_about_64_64.png gui_inactive_32_32.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi

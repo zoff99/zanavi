@@ -52,8 +52,8 @@ import android.widget.ListView;
 
 public class NavitAddressResultListActivity extends ListActivity
 {
-	public static NavitAddressResultListActivity self_ = null;
-	static ArrayAdapter<String> adapter_ = null;
+	// public static NavitAddressResultListActivity self_ = null;
+	ArrayAdapter<String> adapter_ = null;
 	private int selected_id = -1;
 	private int selected_id_passthru = -1;
 	private Boolean is_empty = true;
@@ -121,7 +121,7 @@ public class NavitAddressResultListActivity extends ListActivity
 			j++;
 		}
 
-		self_ = this;
+		// self_ = this;
 
 		adapter_ = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result_list);
 		setListAdapter(adapter_);
@@ -154,8 +154,8 @@ public class NavitAddressResultListActivity extends ListActivity
 	{
 		try
 		{
-			self_.add_item_(item);
-			adapter_.notifyDataSetChanged();
+			// self_.add_item_(item);
+			// adapter_.notifyDataSetChanged();
 		}
 		catch (Exception e)
 		{

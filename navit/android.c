@@ -481,6 +481,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList( JNIE
 			//struct gui_priv *gp4;
 			//struct gui_priv gp_24;
 
+			offline_search_break_searching = 0;
 
 			struct jni_object my_jni_object;
 			my_jni_object.env=env;
@@ -1126,6 +1127,21 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel( JNIEnv
 			// zoom out
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
+		}
+		else if (i == 46)
+		{
+			// stop searching and show results found until now
+			offline_search_break_searching=1;
+		}
+		else if (i == 45)
+		{
+			// filter duplicates in search results
+			offline_search_filter_duplicates=1;
+		}
+		else if (i == 44)
+		{
+			// show duplicates in search results
+			offline_search_filter_duplicates=0;
 		}
 		else if (i == 43)
 		{

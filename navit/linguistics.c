@@ -230,6 +230,7 @@ static const char *special[][3]={
 {"þ","t","th"},
 
 /* Cyrillic capital */
+
 {"Ё","Е"},
 {"Й","И"},
 {"І","I"},
@@ -240,26 +241,28 @@ static const char *special[][3]={
 {"Ѓ","Г"},
 {"Ђ","Д"},
 {"Ќ","К"},
-{"Љ","Л","ЛЬ"},
-{"Њ","Н","НЬ"},
+//{"Љ","Л","ЛЬ"},
+//{"Њ","Н","НЬ"},
 {"Џ","Ц"},
 
 /* Cyrillic small */
+
 {"ё","е"},
 {"й","и"},
 {"і","i"},
 {"ї","i"},
 {"ў","у"},
-{"є","е","э"},
+//{"є","е","э"},
 {"ґ","г"},
 {"ѓ","г"},
 {"ђ","д"},
 {"ќ","к"},
-{"љ","л","ль"},
-{"њ","н","нь"},
+//{"љ","л","ль"},
+//{"њ","н","нь"},
 {"џ","ц"},
 
 };
+
 static GHashTable *special_hash;
 
 /* Array of strings for case conversion
@@ -327,11 +330,15 @@ linguistics_casefold(char *in)
 			charlen=tmp-src+1;
 			g_strlcpy(buf,src,charlen>10?10:charlen);
 			folded=g_hash_table_lookup(casefold_hash,buf);
-			if(folded) {
+
+			if(folded)
+			{
 				while(*folded && dest-ret<len)
 					*dest++=*folded++;
 				src=tmp;
-			} else {
+			}
+			else
+			{
 				while(src<tmp && dest-ret<len)
 					*dest++=*src++;
 			}
@@ -380,7 +387,9 @@ linguistics_compare(char *str, char *match, int partial)
 		}
 		/* Push first mismatching char to the list if it's a special char */
 		sp=linguistics_get_special(utf_boundary,tmp);
-		if(sp){
+
+		if(sp)
+		{
 			spp=g_new(struct special_pos,1);
 			spp->variants=sp;
 			spp->n=1;
@@ -437,10 +446,19 @@ linguistics_expand_special(char *str, int mode)
 	char *in=str;
 	char *out,*ret;
 	int found=0;
-	out=ret=g_strdup(str);
 
-	if (!mode) 
+	if (!str)
+	{
+		return NULL;
+	}
+
+	ret=g_strdup(str);
+	out=ret;
+
+	if (!mode)
+	{
 		return ret;
+	}
 
 	while (*in)
 	{
@@ -459,13 +477,20 @@ linguistics_expand_special(char *str, int mode)
 					{
 						int replace_len=strlen(replace);
 
-						// dbg_assert(replace_len <= len);
-						if (replace_len <= len)
+						if (replace_len > len)
 						{
-							dbg(0,"found %s %s %d %s %d\n",in,search,len,replace,replace_len);
+							fprintf(stderr,"* ERROR !! ERROR !! found %s %s %d %s %d\n",in,search,len,replace,replace_len);
+						}
+						dbg_assert(replace_len <= len);
+						if (replace_len > len)
+						{
+							out+=len;
+							match=0;
+							break;
 						}
 						else
 						{
+							// fprintf(stderr,"  GOOD  !!  GOOD !! found %s %s %d %s %d\n",in,search,len,replace,replace_len);
 							strcpy(out, replace);
 							out+=replace_len;
 							match=1;
@@ -492,7 +517,10 @@ linguistics_expand_special(char *str, int mode)
 	*out++='\0';
 	if (!found)
 	{
-		g_free(ret);
+		if (ret)
+		{
+			g_free(ret);
+		}
 		ret=NULL;
 	}
 	return ret;
@@ -501,10 +529,14 @@ linguistics_expand_special(char *str, int mode)
 char *
 linguistics_next_word(char *str)
 {
-	int len=strcspn(str, " -/()");
-	if (!str[len] || !str[len+1])
-		return NULL;
-	return str+len+1;
+	char* ret=strtok(str, " -/()\"\',.;_[]{}\\");
+	return ret;
+
+//	int len=strcspn(str, " -/()");
+//	if (!str[len] || !str[len+1])
+//		return NULL;
+//	return str+len+1;
+
 }
 
 int
@@ -545,11 +577,15 @@ linguistics_init(void)
 	casefold_hash=g_hash_table_new(g_str_hash, g_str_equal);
 
 	for (i = 0 ; i < sizeof(special)/sizeof(special[0]); i++)
+	{
 		g_hash_table_insert(special_hash,(gpointer)special[i][0],special[i]);
+	}
 
-	for (i = 0 ; upperlower[i]; i+=2) {
+	for (i = 0 ; upperlower[i]; i+=2)
+	{
 		int j,k;
-		for(j=0,k=0;upperlower[i][j] && upperlower[i+1][k];) {
+		for(j=0,k=0;upperlower[i][j] && upperlower[i+1][k];)
+		{
 			char *s1=linguistics_dup_utf8_char(upperlower[i]+j);
 			char *s2=linguistics_dup_utf8_char(upperlower[i+1]+k);
 			g_hash_table_insert(casefold_hash,s1,s2);

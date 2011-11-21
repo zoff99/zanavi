@@ -55,6 +55,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -83,7 +84,9 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -97,12 +100,16 @@ import com.zoffcc.applications.zanavi.NavitMapDownloader.ProgressThread;
 
 public class Navit extends Activity implements Handler.Callback, SensorEventListener
 {
-	public static final String VERSION_TEXT_LONG_INC_REV = "v1.0.0-850";
+	public static final String VERSION_TEXT_LONG_INC_REV = "v1.0.0-930";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
 	public static String NavitAppVersion_string = "0";
 	private Boolean xmlconfig_unpack_file = true;
 	private Boolean write_new_version_file = true;
+	final static int Navit_Status_COMPLETE_NEW_INSTALL = 1;
+	final static int Navit_Status_UPGRADED_TO_NEW_VERSION = 2;
+	final static int Navit_Status_NORMAL_STARTUP = 0;
+	private int startup_status = Navit_Status_NORMAL_STARTUP;
 
 	// for future use ...
 	public static String NavitDataDirectory = "/sdcard/";
@@ -374,6 +381,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Log.e("Navit", "**1**A " + startup_intent.getAction());
 		Log.e("Navit", "**1**D " + startup_intent.getDataString());
 
+		startup_status = Navit_Status_NORMAL_STARTUP;
+
 		// init translated text
 		NavitTextTranslations.init();
 
@@ -555,6 +564,12 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			System.out.println("different version!!");
 			write_new_version_file = true;
 			xmlconfig_unpack_file = true;
+
+			//if ((NavitAppVersion_prev.compareTo("-1") != 0) && (NavitAppVersion.compareTo("-1") != 0))
+			//{
+			// user has upgraded to a new version of ZANavi
+			startup_status = Navit_Status_UPGRADED_TO_NEW_VERSION;
+			//}
 		}
 		else
 		{
@@ -628,9 +643,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		{
 			sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		}
-		catch (Exception e)
+		catch (Exception e3)
 		{
-			e.printStackTrace();
+			e3.printStackTrace();
 		}
 
 		//		try
@@ -653,21 +668,24 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		message.setFadingEdgeLength(20);
 		message.setVerticalFadingEdgeEnabled(true);
 		message.setPadding(10, 5, 10, 5);
-		//message.setVerticalScrollBarEnabled(true);
+		message.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+		message.setGravity(Gravity.LEFT);
+		// message.setScrollBarStyle(TextView.SCROLLBARS_INSIDE_OVERLAY);
+		// message.setVerticalScrollBarEnabled(true);
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-		// margins seem not to work, hmm strange
-		// so add a " " at start of every line. well whadda you gonna do ...
-		//rlp.leftMargin = 8; -> we use "m" string
+		rlp.leftMargin = 7;
+		rlp.rightMargin = 7;
 
-		message.setLayoutParams(rlp);
-		final SpannableString s = new SpannableString(" " + Navit.get_text("__INFO_BOX_TEXT__")); //TRANS
-		Linkify.addLinks(s, Linkify.WEB_URLS);
-		message.setText(s);
-		message.setMovementMethod(LinkMovementMethod.getInstance());
-		infobox.setView(message);
-
-		// for online search
-		Navit.Navit_Geocoder = new Geocoder(this);
+		Navit.Navit_Geocoder = null;
+		try
+		{
+			// for online search
+			Navit.Navit_Geocoder = new Geocoder(this);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
 		//TRANS
 		infobox.setPositiveButton(Navit.get_text("Ok"), new DialogInterface.OnClickListener()
@@ -698,6 +716,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		{
 			// set first-ever-startup flag
 			first_ever_startup = true;
+			startup_status = Navit_Status_COMPLETE_NEW_INSTALL;
 			FileOutputStream fos_temp;
 			try
 			{
@@ -705,6 +724,14 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				fos_temp.write((int) 65); // just write an "A" to the file, but really doesnt matter
 				fos_temp.flush();
 				fos_temp.close();
+
+				message.setLayoutParams(rlp);
+				final SpannableString s = new SpannableString(" " + Navit.get_text("__INFO_BOX_TEXT__")); //TRANS
+				Linkify.addLinks(s, Linkify.WEB_URLS);
+				message.setText(s);
+				message.setMovementMethod(LinkMovementMethod.getInstance());
+				infobox.setView(message);
+
 				infobox.show();
 			}
 			catch (Exception e)
@@ -715,6 +742,27 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		/*
 		 * show info box for first time users
 		 */
+
+		// show info box for upgrade
+		if (startup_status == Navit_Status_UPGRADED_TO_NEW_VERSION)
+		{
+			try
+			{
+				message.setLayoutParams(rlp);
+				final SpannableString s = new SpannableString("\n" + "ZANavi " + NavitAppVersion_string + "\n\n" + "upgraded");
+				Linkify.addLinks(s, Linkify.WEB_URLS);
+				message.setText(s);
+				message.setMovementMethod(LinkMovementMethod.getInstance());
+				infobox.setView(message);
+
+				infobox.show();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		// show info box for upgrade
 
 		// make handler statically available for use in "msg_to_msg_handler"
 		Navit_progress_h = this.progress_handler;
@@ -868,7 +916,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		{
 			public void onGpsStatusChanged(int event)
 			{
-				System.out.println("xxxxx");
+				//System.out.println("xxxxx");
 				if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS)
 				{
 				}
@@ -2028,6 +2076,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			this.dialog_num = dialog_num;
 			this.mHandler = h;
 			this.spinner_current_value = 0;
+
 			this.running = true;
 			Log.e("Navit", "SearchResultsThreadSpinnerThread created");
 		}
@@ -2125,7 +2174,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				Navit_last_address_search_string = filter_bad_chars(Navit_last_address_search_string).toLowerCase();
 				if (Navit_last_address_full_file_search)
 				{
-					// flags			-> order level to search at
+					// flags (18)		-> order level to search at
 					// ================
 					//   0#0   0		-> search full world
 					// lat#lon radius	-> search only this area, around lat,lon
@@ -2418,9 +2467,40 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			search_results_wait_offline.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			search_results_wait_offline.setTitle("--");
 			search_results_wait_offline.setMessage("--");
-			search_results_wait_offline.setCancelable(false);
+			search_results_wait_offline.setCancelable(true); // allow to stop search
 			search_results_wait_offline.setProgress(0);
 			search_results_wait_offline.setMax(10);
+
+			search_results_wait_offline.setOnCancelListener(new OnCancelListener()
+			{
+				public void onCancel(DialogInterface dialog)
+				{
+					Message msg = new Message();
+					Bundle b = new Bundle();
+					b.putInt("Callback", 46);
+					msg.setData(b);
+					try
+					{
+						N_NavitGraphics.callback_handler.sendMessage(msg);
+					}
+					catch (Exception e)
+					{
+					}
+					Log.e("Navit", "onCancel: search_results_wait offline");
+				}
+			});
+
+			/*
+			 * search_results_wait.setButton("stop", new DialogInterface.OnClickListener()
+			 * {
+			 * public void onClick(DialogInterface dialog, int which)
+			 * {
+			 * // Use either finish() or return() to either close the activity or just the dialog
+			 * return;
+			 * }
+			 * });
+			 */
+
 			DialogInterface.OnDismissListener mOnDismissListener4 = new DialogInterface.OnDismissListener()
 			{
 				public void onDismiss(DialogInterface dialog)
@@ -2448,6 +2528,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			search_results_wait.setCancelable(false);
 			search_results_wait.setProgress(0);
 			search_results_wait.setMax(10);
+
 			DialogInterface.OnDismissListener mOnDismissListener3 = new DialogInterface.OnDismissListener()
 			{
 				public void onDismiss(DialogInterface dialog)

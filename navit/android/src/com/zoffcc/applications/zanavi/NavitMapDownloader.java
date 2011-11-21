@@ -649,6 +649,8 @@ public class NavitMapDownloader
 
 							Log.d("NavitMapDownloader", this.my_num + " Error7: " + e);
 
+// ******* ********* D/NavitMapDownloader(  266): 1 Error7: java.io.IOException: No space left on device
+
 							try
 							{
 								bif.close();
@@ -1705,6 +1707,9 @@ public class NavitMapDownloader
 
 					Log.d("NavitMapDownloader", "Error7: " + e);
 					exit_code = 3;
+
+// ******* ********* D/NavitMapDownloader(  266): 1 Error7: java.io.IOException: No space left on device
+
 				}
 				/*
 				 * catch (Exception e)
@@ -2114,7 +2119,7 @@ public class NavitMapDownloader
 		// this is only for debugging
 		// NEVER enable this on a production release!!!!!!!!!!
 		// NEVER enable this on a production release!!!!!!!!!!
-		// trust_Every_ssl_cert();
+		// **** trust_Every_ssl_cert();
 		// NEVER enable this on a production release!!!!!!!!!!
 		// NEVER enable this on a production release!!!!!!!!!!
 
@@ -2528,6 +2533,7 @@ public class NavitMapDownloader
 			}
 			System.out.println("pre 8");
 			f.writeByte(1);
+// ****EEEE**** W/System.err(  266): java.io.IOException: No space left on device
 			System.out.println("pre 9");
 
 			try
@@ -2549,6 +2555,7 @@ public class NavitMapDownloader
 		catch (Exception e)
 		{
 			e.printStackTrace();
+// ****EEEE**** W/System.err(  266): java.io.IOException: No space left on device
 		}
 
 		fp.stop_me();

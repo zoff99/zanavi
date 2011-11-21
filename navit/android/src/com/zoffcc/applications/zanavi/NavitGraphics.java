@@ -1257,7 +1257,21 @@ public class NavitGraphics
 				// routing mode "normal roads"
 				CallbackMessageChannel(43, "");
 			}
-
+			else if (msg.getData().getInt("Callback") == 44)
+			{
+				// show duplicates in search results
+				CallbackMessageChannel(44, "");
+			}
+			else if (msg.getData().getInt("Callback") == 45)
+			{
+				// filter duplicates in search results
+				CallbackMessageChannel(45, "");
+			}
+			else if (msg.getData().getInt("Callback") == 46)
+			{
+				// stop searching and show results found until now
+				CallbackMessageChannel(46, "");
+			}
 		}
 	};
 
@@ -2201,7 +2215,7 @@ public class NavitGraphics
 	 */
 	public void fillStringArray(String s)
 	{
-		// Log.e("NavitGraphics", "**** fillStringArray s=" + s);
+		//Log.e("NavitGraphics", "**** fillStringArray s=" + s);
 		// deactivate the spinner
 		// --> no we want to spin ** Navit.NavitAddressSearchSpinnerActive = false;
 
@@ -2226,7 +2240,9 @@ public class NavitGraphics
 
 				// if "type" and "H id" and "text" is the same, treat it as a double entry!
 				//    this is just a crude estimate now
-				String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id.split("L")[0] + ":" + tmp_addr.addr;
+				// *OLD* String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id.split("L")[0] + ":" + tmp_addr.addr;
+				// String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id + ":" + tmp_addr.addr;
+				String hash_id = tmp_addr.result_type + ":" + tmp_addr.lat + ":" + tmp_addr.lon + ":" + tmp_addr.addr;
 				//System.out.println("hash_id=" + hash_id);
 				if (!Navit.Navit_Address_Result_double_index.contains(hash_id))
 				{
@@ -2259,10 +2275,10 @@ public class NavitGraphics
 					//			b.putString("text", Navit.get_text("towns") + ":" + Navit.search_results_towns + " " + Navit.get_text("Streets") + ":" + Navit.search_results_streets + "/" + Navit.search_results_streets_hn);
 					//			Navit.msg_to_msg_handler(b, 10);
 				}
-				else
-				{
-					//System.out.println("double " + tmp_addr.addr);
-				}
+				//else
+				//{
+				//	//System.out.println("double " + tmp_addr.addr);
+				//}
 			}
 			catch (Exception e)
 			{
@@ -2396,6 +2412,15 @@ public class NavitGraphics
 			// 1048576 (=2^20)  order:  -1	-> zoomed out to world
 			if (DEBUG_TOUCH) System.out.println("scale=" + i);
 			Navit.GlobalScaleLevel = i;
+		}
+		else if (id == 4)
+		{
+			Navit.set_debug_messages1("Destination reached");
+			NavitGraphics.navit_route_status = 0;
+		}
+		else if (id == 5)
+		{
+			Navit.set_debug_messages1("Waypoint reached");
 		}
 	}
 
