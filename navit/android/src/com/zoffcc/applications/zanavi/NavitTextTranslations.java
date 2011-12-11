@@ -503,6 +503,24 @@ public class NavitTextTranslations
 		k = "touch map to zoom";
 		v = new String[] { "en", "touch map to zoom", "cs", "pro přiblížení se dotkněte mapy", "de", "auf Karte drücken zum zoomen", "hu", "Érintsd meg a térképet nagyításhoz (zoom)", "nl", "raak kaart aan om te zoomen", "pl", "dotknij mapy aby przybliżyć", "sk", "Ťuknite na mapu pre priblíženie" };
 		p(k, v);
+		k = "hide duplicates";
+		v = new String[] { "en", "hide duplicates", "de", "keine doppelten" };
+		p(k, v);
+		k = "Recent destinations";
+		v = new String[] { "en", "Recent destinations", "de", "Letzte Ziele" };
+		p(k, v);
+		k = "show destination on map";
+		v = new String[] { "en", "show destination on map", "de", "Ziel auf Karte anzeigen" };
+		p(k, v);
+		k = "delete Destination";
+		v = new String[] { "en", "delete Destination", "de", "Ziel löschen" };
+		p(k, v);
+		k = "rename Destination";
+		v = new String[] { "en", "rename Destination", "de", "Ziel umbenennen" };
+		p(k, v);
+		k = "Rename Destination";
+		v = new String[] { "en", "Rename Destination", "de", "Ziel umbenennen" };
+		p(k, v);
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// change those in https://translations.launchpad.net/zanavi

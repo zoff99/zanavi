@@ -1108,9 +1108,21 @@ public class NavitGraphics
 			else if (msg.getData().getInt("Callback") == 3)
 
 			{
+				// get values
 				String lat = msg.getData().getString("lat");
 				String lon = msg.getData().getString("lon");
 				String q = msg.getData().getString("q");
+				// save dest.
+				//				try
+				//				{
+				//					Navit.remember_destination(q, lat, lon);
+				//				}
+				//				catch (Exception e)
+				//				{
+				//					e.printStackTrace();
+				//				}
+				//Navit.destination_set();
+				// set routing target to lat,lon
 				CallbackMessageChannel(3, lat + "#" + lon + "#" + q);
 			}
 			else if (msg.getData().getInt("Callback") == 4)
@@ -1119,6 +1131,17 @@ public class NavitGraphics
 				// set routing target to pixel x,y
 				int x = msg.getData().getInt("x");
 				int y = msg.getData().getInt("y");
+
+				//				try
+				//				{
+				//					Navit.remember_destination_xy("Point on Screen", x, y);
+				//				}
+				//				catch (Exception e)
+				//				{
+				//					e.printStackTrace();
+				//				}
+				//Navit.destination_set();
+
 				CallbackMessageChannel(4, "" + x + "#" + y);
 				try
 				{
@@ -1136,7 +1159,6 @@ public class NavitGraphics
 			}
 			else if (msg.getData().getInt("Callback") == 7)
 			{
-				String cmd = msg.getData().getString("cmd");
 				CallbackMessageChannel(7, "");
 			}
 			else if ((msg.getData().getInt("Callback") > 7) && (msg.getData().getInt("Callback") < 21))
@@ -1347,7 +1369,7 @@ public class NavitGraphics
 		double d_y = ((c[3] - c[1]) / 6);
 		int angle = (int) (Math.toDegrees(Math.atan2(d_y, d_x)));
 		// System.out.println("arrow angle=" + angle);
-		matrix.postTranslate(-Navit.onway_arrow.getWidth() / 2, -Navit.onway_arrow.getHeight() / 2);
+		matrix.postTranslate(-Navit.oneway_arrow.getWidth() / 2, -Navit.oneway_arrow.getHeight() / 2);
 
 		if (order > DRAW_ONEWAY_ARROWS_AT_ORDER)
 		{
@@ -1375,7 +1397,7 @@ public class NavitGraphics
 				if (c.length == 4)
 				{
 					matrix.postTranslate(middle_x, middle_y);
-					draw_canvas.drawBitmap(Navit.onway_arrow, matrix, paint);
+					draw_canvas.drawBitmap(Navit.oneway_arrow, matrix, paint);
 				}
 			}
 			else
@@ -1419,7 +1441,7 @@ public class NavitGraphics
 		double d_y = ((c[3] - c[1]) / 6);
 		int angle = (int) (Math.toDegrees(Math.atan2(d_y, d_x)));
 		// System.out.println("arrow angle=" + angle);
-		matrix.postTranslate(-Navit.onway_arrow.getWidth() / 2, -Navit.onway_arrow.getHeight() / 2);
+		matrix.postTranslate(-Navit.oneway_arrow.getWidth() / 2, -Navit.oneway_arrow.getHeight() / 2);
 
 		if (order > DRAW_ONEWAY_ARROWS_AT_ORDER)
 		{
@@ -1447,7 +1469,7 @@ public class NavitGraphics
 				if (c.length == 4)
 				{
 					matrix.postTranslate(middle_x, middle_y);
-					draw_canvas.drawBitmap(Navit.onway_arrow, matrix, paint);
+					draw_canvas.drawBitmap(Navit.oneway_arrow, matrix, paint);
 				}
 			}
 			else
@@ -1607,8 +1629,9 @@ public class NavitGraphics
 			//int yaw2 = -yaw;
 			//int x = (int) ((float) x_ * Math.cos(Math.toRadians(yaw2)) - (float) y_ * Math.sin(Math.toRadians(yaw2)));
 			//int y = (int) ((float) x_ * Math.sin(Math.toRadians(yaw2)) + (float) y_ * Math.cos(Math.toRadians(yaw2)));
-			int x = x_;
-			int y = y_;
+
+			//**int x = x_;
+			//**int y = y_;
 
 			//int scx = (int) ((float) scx_ * Math.cos(Math.toRadians(yaw2)) - (float) scy_ * Math.sin(Math.toRadians(yaw2)));
 			//int scy = (int) ((float) scx_ * Math.sin(Math.toRadians(yaw2)) + (float) scy_ * Math.cos(Math.toRadians(yaw2)));

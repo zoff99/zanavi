@@ -220,6 +220,16 @@ public class NavitAndroidOverlay extends ImageView
 					// draw confirmed bubble
 					this.postInvalidate();
 
+					// remeber recent dest.
+					try
+					{
+						Navit.remember_destination_xy("Point on Screen", this.bubble_001.x, this.bubble_001.y);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					Navit.destination_set();
 					// set destination
 					Message msg = new Message();
 					Bundle b = new Bundle();

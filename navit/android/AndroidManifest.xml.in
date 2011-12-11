@@ -28,6 +28,8 @@
 		<activity android:name=".NavitDeleteSelectMapActivity"></activity>
 		<activity android:name=".NavitAddressResultListActivity"></activity>
 		<activity android:name=".NavitMapPreviewActivity"></activity>
+		<activity android:name=".NavitRecentDestinationActivity"></activity>
+		<activity android:name=".GeoCoordEnterDialog"></activity>
 		<activity android:name=".NavitPreferences" android:label="@string/set_preferences"></activity>
     </application>
     <uses-sdk android:minSdkVersion="5" android:targetSdkVersion="8"/>

@@ -29,41 +29,41 @@ public class NavitPreferences extends PreferenceActivity
 	private void dummy_xgettext()
 	{
 		// dummy for xgettext
-		String x=null;
-x=Navit.get_text("__PREF__title__use_fast_provider");
-x=Navit.get_text("__PREF__summ__use_fast_provider");
-x=Navit.get_text("__PREF__title__follow_gps");
-x=Navit.get_text("__PREF__summ__follow_gps");
-x=Navit.get_text("__PREF__title__show_vehicle_in_center");
-x=Navit.get_text("__PREF__summ__show_vehicle_in_center");
-x=Navit.get_text("__PREF__title__use_compass_heading_base");
-x=Navit.get_text("__PREF__summ__use_compass_heading_base");
-x=Navit.get_text("__PREF__title__use_compass_heading_always");
-x=Navit.get_text("__PREF__summ__use_compass_heading_always");
-x=Navit.get_text("__PREF__title__use_compass_heading_fast");
-x=Navit.get_text("__PREF__summ__use_compass_heading_fast");
-x=Navit.get_text("__PREF__title__use_imperial");
-x=Navit.get_text("__PREF__summ__use_imperial");
-x=Navit.get_text("__PREF__title__show_3d_map");
-x=Navit.get_text("__PREF__summ__show_3d_map");
-x=Navit.get_text("__PREF__title__use_anti_aliasing");
-x=Navit.get_text("__PREF__summ__use_anti_aliasing");
-x=Navit.get_text("__PREF__title__gui_oneway_arrows");
-x=Navit.get_text("__PREF__summ__gui_oneway_arrows");
-x=Navit.get_text("__PREF__title__show_debug_messages");
-x=Navit.get_text("__PREF__summ__show_debug_messages");
-x=Navit.get_text("__PREF__title__navit_lang");
-x=Navit.get_text("__PREF__summ__navit_lang");
-x=Navit.get_text("__PREF__title__use_lock_on_roads");
-x=Navit.get_text("__PREF__summ__use_lock_on_roads");
-x=Navit.get_text("__PREF__title__use_route_highways");
-x=Navit.get_text("__PREF__summ__use_route_highways");
-x=Navit.get_text("__PREF__title__save_zoomlevel");
-x=Navit.get_text("__PREF__summ__save_zoomlevel");
-x=Navit.get_text("__PREF__title__show_sat_status");
-x=Navit.get_text("__PREF__summ__show_sat_status");
-x=Navit.get_text("__PREF__title__use_agps");
-x=Navit.get_text("__PREF__summ__use_agps");
+		String x = null;
+		x = Navit.get_text("__PREF__title__use_fast_provider");
+		x = Navit.get_text("__PREF__summ__use_fast_provider");
+		x = Navit.get_text("__PREF__title__follow_gps");
+		x = Navit.get_text("__PREF__summ__follow_gps");
+		x = Navit.get_text("__PREF__title__show_vehicle_in_center");
+		x = Navit.get_text("__PREF__summ__show_vehicle_in_center");
+		x = Navit.get_text("__PREF__title__use_compass_heading_base");
+		x = Navit.get_text("__PREF__summ__use_compass_heading_base");
+		x = Navit.get_text("__PREF__title__use_compass_heading_always");
+		x = Navit.get_text("__PREF__summ__use_compass_heading_always");
+		x = Navit.get_text("__PREF__title__use_compass_heading_fast");
+		x = Navit.get_text("__PREF__summ__use_compass_heading_fast");
+		x = Navit.get_text("__PREF__title__use_imperial");
+		x = Navit.get_text("__PREF__summ__use_imperial");
+		x = Navit.get_text("__PREF__title__show_3d_map");
+		x = Navit.get_text("__PREF__summ__show_3d_map");
+		x = Navit.get_text("__PREF__title__use_anti_aliasing");
+		x = Navit.get_text("__PREF__summ__use_anti_aliasing");
+		x = Navit.get_text("__PREF__title__gui_oneway_arrows");
+		x = Navit.get_text("__PREF__summ__gui_oneway_arrows");
+		x = Navit.get_text("__PREF__title__show_debug_messages");
+		x = Navit.get_text("__PREF__summ__show_debug_messages");
+		x = Navit.get_text("__PREF__title__navit_lang");
+		x = Navit.get_text("__PREF__summ__navit_lang");
+		x = Navit.get_text("__PREF__title__use_lock_on_roads");
+		x = Navit.get_text("__PREF__summ__use_lock_on_roads");
+		x = Navit.get_text("__PREF__title__use_route_highways");
+		x = Navit.get_text("__PREF__summ__use_route_highways");
+		x = Navit.get_text("__PREF__title__save_zoomlevel");
+		x = Navit.get_text("__PREF__summ__save_zoomlevel");
+		x = Navit.get_text("__PREF__title__show_sat_status");
+		x = Navit.get_text("__PREF__summ__show_sat_status");
+		x = Navit.get_text("__PREF__title__use_agps");
+		x = Navit.get_text("__PREF__summ__use_agps");
 		// dummy for xgettext
 	}
 
@@ -76,7 +76,7 @@ x=Navit.get_text("__PREF__summ__use_agps");
 		try
 		{
 			EditTextPreference about_text_pref = ((EditTextPreference) findPreference("about_edit_text"));
-			about_text_pref.setSummary(Navit.VERSION_TEXT_LONG_INC_REV);
+			about_text_pref.setSummary("v" + Navit.NavitAppVersion_string + "-" + Navit.VERSION_TEXT_LONG_INC_REV);
 		}
 		catch (Exception e)
 		{
@@ -84,7 +84,7 @@ x=Navit.get_text("__PREF__summ__use_agps");
 		}
 
 		String[] PrefTransTexts = new String[] { "use_fast_provider", "follow_gps", "show_vehicle_in_center", "use_compass_heading_base", "use_compass_heading_always", "use_compass_heading_fast", "use_imperial", "show_3d_map", "use_anti_aliasing", "gui_oneway_arrows", "show_debug_messages", "navit_lang", "use_lock_on_roads", "use_route_highways", "save_zoomlevel", "show_sat_status", "use_agps" };
-		
+
 		int i = 0;
 		for (i = 0; i < PrefTransTexts.length; i++)
 		{

@@ -60,6 +60,7 @@ public class NavitAddressSearchActivity extends Activity
 {
 	private EditText address_string;
 	private CheckBox pm_checkbox;
+	private CheckBox hdup_checkbox;
 	private CheckBox ff_checkbox;
 	private String search_type;
 	private int search_country_id = 0;
@@ -91,6 +92,13 @@ public class NavitAddressSearchActivity extends Activity
 		pm_checkbox.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		pm_checkbox.setGravity(Gravity.CENTER);
 
+		// partial match checkbox
+		hdup_checkbox = new CheckBox(this);
+		hdup_checkbox.setText(Navit.get_text("hide duplicates")); //TRANS
+		hdup_checkbox.setChecked(false);
+		hdup_checkbox.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		hdup_checkbox.setGravity(Gravity.CENTER);
+
 		// full file checkbox
 		ff_checkbox = new CheckBox(this);
 		ff_checkbox.setText(Navit.get_text("search full mapfile [BETA]")); //TRANS
@@ -107,6 +115,7 @@ public class NavitAddressSearchActivity extends Activity
 					try
 					{
 						search_country_select.setVisibility(View.INVISIBLE);
+						hdup_checkbox.setVisibility(View.INVISIBLE);
 					}
 					catch (Exception e)
 					{
@@ -118,6 +127,7 @@ public class NavitAddressSearchActivity extends Activity
 					try
 					{
 						search_country_select.setVisibility(View.VISIBLE);
+						hdup_checkbox.setVisibility(View.VISIBLE);
 					}
 					catch (Exception e)
 					{
@@ -209,7 +219,8 @@ public class NavitAddressSearchActivity extends Activity
 		{
 			panel.addView(search_country_select);
 			panel.addView(pm_checkbox);
-			panel.addView(ff_checkbox);
+			panel.addView(hdup_checkbox);
+			// panel.addView(ff_checkbox);
 		}
 		panel.addView(btnSearch);
 
@@ -260,12 +271,29 @@ public class NavitAddressSearchActivity extends Activity
 				resultIntent.putExtra("partial_match", "0");
 			}
 
-			if (NavitAddressSearchActivity.this.ff_checkbox.isChecked())
+			if (NavitAddressSearchActivity.this.hdup_checkbox.isChecked())
 			{
-				resultIntent.putExtra("full_file_search", "1");
+				resultIntent.putExtra("hide_dup", "1");
 			}
 			else
 			{
+				resultIntent.putExtra("hide_dup", "0");
+			}
+
+			try
+			{
+				if (NavitAddressSearchActivity.this.ff_checkbox.isChecked())
+				{
+					resultIntent.putExtra("full_file_search", "1");
+				}
+				else
+				{
+					resultIntent.putExtra("full_file_search", "0");
+				}
+			}
+			catch (Exception e)
+			{
+				// on error assume its turned off
 				resultIntent.putExtra("full_file_search", "0");
 			}
 
