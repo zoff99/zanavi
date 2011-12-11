@@ -8,20 +8,28 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2010-11-30 19:21+0000\n"
-"Last-Translator: KaZeR <Unknown>\n"
+"PO-Revision-Date: 2011-12-01 12:42+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Urdu <ur@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-11-18 21:16+0000\n"
-"X-Generator: Launchpad (build 14299)\n"
+"X-Launchpad-Export-Date: 2011-12-01 14:12+0000\n"
+"X-Generator: Launchpad (build 14414)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #, c-format
 msgid "Running from source directory\n"
 msgstr "سورس ڈایرکٹری سے چلا ر ہے ہیں\n"
+
+#, c-format
+msgid "setting '%s' to '%s'\n"
+msgstr "ترتیب '%s' سے '%s'\n"
+
+#. TRANSLATORS: the following counts refer to streets
+msgid "zeroth"
+msgstr "صفر سے"
 
 msgid "first"
 msgstr "پہلا"
@@ -68,6 +76,10 @@ msgid "%d m"
 msgstr "%d میٹر"
 
 #, c-format
+msgid "in %d m"
+msgstr "%d میٹر میں"
+
+#, c-format
 msgid "%d meters"
 msgstr "%d میٹر"
 
@@ -82,6 +94,18 @@ msgstr "%d.%d کلومیٹر"
 #, c-format
 msgid "in %d.%d kilometers"
 msgstr "%d.%d کلومیٹر میں"
+
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "ایک کلومیٹر"
+msgstr[1] "%d کلومیٹر"
+
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "ایک کلومیٹر میں"
+msgstr[1] "%d کلومیٹر میں"
 
 msgid "exit"
 msgstr "اخراج"
@@ -150,54 +174,6 @@ msgstr "گول چوراہے میں  داخل ہوں اور %s سے باہر نک
 msgid "In %s, enter the roundabout"
 msgstr "%s کے بعد گول چوراہے میں داخل ہو جایئں"
 
-#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
-#, c-format
-msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "%1$s%2$s %3$s%4$s پھر گومیں"
-
-msgid "Set as destination"
-msgstr "بطور منزل انتخاب"
-
-msgid "Enter Destination"
-msgstr "منزل داخل کریں"
-
-msgid "Enable/disable automatic zoom level changing"
-msgstr "فعال/غیر فعال کریں زوم کی خود کار تبدیلی"
-
-msgid "Add Bookmark"
-msgstr "بک مارک میں شامل"
-
-msgid " Elevation "
-msgstr " ارتفاع "
-
-#, c-format
-msgid "Current profile: %s"
-msgstr "موجودہ پروفائل: %s"
-
-#, c-format
-msgid "setting '%s' to '%s'\n"
-msgstr "ترتیب '%s' سے '%s'\n"
-
-#. TRANSLATORS: the following counts refer to streets
-msgid "zeroth"
-msgstr "صفر سے"
-
-#, c-format
-msgid "in %d m"
-msgstr "%d میٹر میں"
-
-#, c-format
-msgid "one kilometer"
-msgid_plural "%d kilometers"
-msgstr[0] "ایک کلومیٹر"
-msgstr[1] "%d کلومیٹر"
-
-#, c-format
-msgid "in one kilometer"
-msgid_plural "in %d kilometers"
-msgstr[0] "ایک کلومیٹر میں"
-msgstr[1] "%d کلومیٹر میں"
-
 #, c-format
 msgid "then leave the roundabout at the %s"
 msgstr "پھر گول چوراہے کو  %s پے چھوڑ دیں"
@@ -237,6 +213,11 @@ msgstr "غلطی"
 msgid "Turn %1$s%2$s %3$s%4$s"
 msgstr "%1$s%2$s %3$s%4$s گومیں"
 
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "%1$s%2$s %3$s%4$s پھر گومیں"
+
 #, c-format
 msgid "You have reached your destination %s"
 msgstr "آپ اپنی منزل %s پے پہنچ کئے ہیں"
@@ -273,6 +254,9 @@ msgstr "روڈ بک"
 
 msgid "Set as position"
 msgstr "بطور موجودہ مقام انتخاب"
+
+msgid "Set as destination"
+msgstr "بطور منزل انتخاب"
 
 msgid "Add as bookmark"
 msgstr "بک مارک میں محفوظ کریں"
@@ -1299,6 +1283,9 @@ msgstr "سڑک"
 msgid "Number"
 msgstr "نمبر"
 
+msgid "Enter Destination"
+msgstr "منزل داخل کریں"
+
 msgid "Zip Code"
 msgstr "زپ کوڈ"
 
@@ -1395,6 +1382,9 @@ msgstr "دکھیں/نہ دیکھیں سفر کی تفصیل"
 msgid "Autozoom"
 msgstr "خودکار زوم"
 
+msgid "Enable/disable automatic zoom level changing"
+msgstr "فعال/غیر فعال کریں زوم کی خود کار تبدیلی"
+
 msgid "Fullscreen"
 msgstr "پوری سکرین"
 
@@ -1456,6 +1446,9 @@ msgstr "مدد"
 msgid "Back"
 msgstr "واپس"
 
+msgid "Add Bookmark"
+msgstr "بک مارک میں شامل"
+
 msgid "Add Bookmark folder"
 msgstr "بک مارک فولڈر میں شامل"
 
@@ -1511,6 +1504,9 @@ msgstr "نقشے"
 msgid "Show Satellite Status"
 msgstr "سٹلائٹ کی حالت دیکھیں"
 
+msgid " Elevation "
+msgstr " ارتفاع "
+
 msgid " Azimuth "
 msgstr " سمت "
 
@@ -1525,6 +1521,10 @@ msgstr "سائیکل"
 
 msgid "pedestrian"
 msgstr "پیدل"
+
+#, c-format
+msgid "Current profile: %s"
+msgstr "موجودہ پروفائل: %s"
 
 #, c-format
 msgid "Change profile to: %s"
@@ -1647,4 +1647,83 @@ msgstr "گھوڑا"
 #. axle_weight= 34000 lbs,  15422 kg
 #. 
 msgid "truck"
+msgstr ""
+
+#: bookmarks.c:294 bookmarks.c:365
+msgid "Failed to write bookmarks file"
+msgstr ""
+
+#: country.c:285
+msgid "Unknown"
+msgstr ""
+
+#: navigation.c:431
+#, c-format
+msgid "%d feet"
+msgstr ""
+
+#: navigation.c:433
+#, c-format
+msgid "in %d feet"
+msgstr ""
+
+#: navigation.c:453
+#, c-format
+msgid "%d.%d miles"
+msgstr ""
+
+#: navigation.c:455
+#, c-format
+msgid "in %d.%d miles"
+msgstr ""
+
+#: navigation.c:1586
+msgid "Enter the roundabout soon"
+msgstr ""
+
+#: start_real.c:168
+msgid "No config file navit.xml, navit.xml.local found\n"
+msgstr ""
+
+#: start_real.c:183
+#, c-format
+msgid "Error parsing '%s': %s\n"
+msgstr ""
+
+#: start_real.c:185
+#, c-format
+msgid "Using '%s'\n"
+msgstr ""
+
+#: start_real.c:193
+msgid "No instance has been created, exiting\n"
+msgstr ""
+
+#: osd/core/osd_core.c:1882
+msgid "Look out! Camera!"
+msgstr ""
+
+#: osd/core/osd_core.c:2086
+msgid "Please decrease your speed"
+msgstr ""
+
+#: gui/internal/gui_internal.c:3950
+#, c-format
+msgid "Download %s"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4011
+msgid "Map Download"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4016
+msgid "Active"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4024
+msgid "Download Enabled"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4048
+msgid "Download completely"
 msgstr ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2010-12-04 22:04+0000\n"
+"PO-Revision-Date: 2011-11-27 11:03+0000\n"
 "Last-Translator: drsaudi <mon7b6@gmail.com>\n"
 "Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n % 100 >= "
 "3 && n % 100 <= 10 ? 3 : n % 100 >= 11 && n % 100 <= 99 ? 4 : 5;\n"
-"X-Launchpad-Export-Date: 2011-11-18 21:16+0000\n"
-"X-Generator: Launchpad (build 14299)\n"
+"X-Launchpad-Export-Date: 2011-12-01 14:12+0000\n"
+"X-Generator: Launchpad (build 14414)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #, c-format
@@ -1655,3 +1655,82 @@ msgstr "خيل/فرس"
 #. 
 msgid "truck"
 msgstr "شاحنة"
+
+#: bookmarks.c:294 bookmarks.c:365
+msgid "Failed to write bookmarks file"
+msgstr ""
+
+#: country.c:285
+msgid "Unknown"
+msgstr ""
+
+#: navigation.c:431
+#, c-format
+msgid "%d feet"
+msgstr ""
+
+#: navigation.c:433
+#, c-format
+msgid "in %d feet"
+msgstr ""
+
+#: navigation.c:453
+#, c-format
+msgid "%d.%d miles"
+msgstr ""
+
+#: navigation.c:455
+#, c-format
+msgid "in %d.%d miles"
+msgstr ""
+
+#: navigation.c:1586
+msgid "Enter the roundabout soon"
+msgstr ""
+
+#: start_real.c:168
+msgid "No config file navit.xml, navit.xml.local found\n"
+msgstr ""
+
+#: start_real.c:183
+#, c-format
+msgid "Error parsing '%s': %s\n"
+msgstr ""
+
+#: start_real.c:185
+#, c-format
+msgid "Using '%s'\n"
+msgstr ""
+
+#: start_real.c:193
+msgid "No instance has been created, exiting\n"
+msgstr ""
+
+#: osd/core/osd_core.c:1882
+msgid "Look out! Camera!"
+msgstr ""
+
+#: osd/core/osd_core.c:2086
+msgid "Please decrease your speed"
+msgstr ""
+
+#: gui/internal/gui_internal.c:3950
+#, c-format
+msgid "Download %s"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4011
+msgid "Map Download"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4016
+msgid "Active"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4024
+msgid "Download Enabled"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4048
+msgid "Download completely"
+msgstr ""

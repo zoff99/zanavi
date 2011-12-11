@@ -1,44 +1,22 @@
-# #-#-#-#-#  de.po.in (navit 0.5.0)  #-#-#-#-#
 # German translations for navit
 # Copyright (C) 2007,2008 The Navit Team
 # This file is distributed under the same license as the navit package.
 # Martin Schaller <martin-s@sourceforge.net>, 2007.
 #
-# #-#-#-#-#  navit-de.po (zanavi)  #-#-#-#-#
-# German translation for zanavi
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the zanavi package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  de.po.in (navit 0.5.0)  #-#-#-#-#\n"
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-11-22 15:11+0100\n"
-"PO-Revision-Date: 2011-11-16 20:32+0000\n"
-"Last-Translator: Lars Hennig <Unknown>\n"
+"PO-Revision-Date: 2011-11-27 09:42+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Martin Schaller <martin-s@sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-11-18 21:17+0000\n"
-"X-Generator: Launchpad (build 14299)\n"
-"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
-"#-#-#-#-#  navit-de.po (zanavi)  #-#-#-#-#\n"
-"Project-Id-Version: zanavi\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-11-16 19:56+0100\n"
-"PO-Revision-Date: 2011-11-16 19:38+0000\n"
-"Last-Translator: zoff99 <Unknown>\n"
-"Language-Team: German <de@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-18 21:00+0000\n"
-"X-Generator: Launchpad (build 14299)\n"
+"X-Launchpad-Export-Date: 2011-12-01 14:12+0000\n"
+"X-Generator: Launchpad (build 14414)\n"
 
 #, c-format
 msgid "Running from source directory\n"
