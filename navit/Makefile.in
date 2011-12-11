@@ -1223,7 +1223,8 @@ navit_android_xml: navit_shipped.xml
 @SUPPORT_ANDROID_TRUE@	touch $(builddir)/android/dummy.txt
 @SUPPORT_ANDROID_TRUE@	cd android && ant release
 #	jarsigner $$(cat ~/.keys_args) android/bin/Navit-unsigned.apk mykey
-@SUPPORT_ANDROID_TRUE@	zipalign -f 4 android/bin/Navit-unsigned.apk android/bin/Navit-aligned.apk
+#	zipalign -f 4 android/bin/Navit-unsigned.apk android/bin/Navit-aligned.apk
+@SUPPORT_ANDROID_TRUE@	zipalign -f 4 android/bin/Navit-release-unsigned.apk android/bin/Navit-aligned.apk
 @SUPPORT_ANDROID_TRUE@	cp android/bin/Navit-aligned.apk android/bin/Navit-debug.apk
 
 @SUPPORT_WIN32_TRUE@resource.rsc: $(top_srcdir)/navit/gui/win32/resources/resource.rc

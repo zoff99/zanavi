@@ -208,7 +208,8 @@ apkg-release: apkg-all
 	touch $(builddir)/android/dummy.txt
 	cd android && ant release
 #	jarsigner $$(cat ~/.keys_args) android/bin/Navit-unsigned.apk mykey
-	zipalign -f 4 android/bin/Navit-unsigned.apk android/bin/Navit-aligned.apk
+#	zipalign -f 4 android/bin/Navit-unsigned.apk android/bin/Navit-aligned.apk
+	zipalign -f 4 android/bin/Navit-release-unsigned.apk android/bin/Navit-aligned.apk
 	cp android/bin/Navit-aligned.apk android/bin/Navit-debug.apk
 else
 navit_SOURCES = start.c
