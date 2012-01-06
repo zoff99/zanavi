@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-22 15:11+0100\n"
+"POT-Creation-Date: 2012-01-05 19:42+0100\n"
 "PO-Revision-Date: 2011-12-01 12:43+0000\n"
 "Last-Translator: mansv68 <mansv68@yahoo.co.th>\n"
 "Language-Team: Thai <th@li.org>\n"
@@ -15,1700 +15,409 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2011-12-01 14:12+0000\n"
-"X-Generator: Launchpad (build 14414)\n"
+"X-Launchpad-Export-Date: 2012-01-05 18:52+0000\n"
+"X-Generator: Launchpad (build 14625)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
-#, c-format
-msgid "Running from source directory\n"
-msgstr ""
+#: popup.c:325 popup.c:394
+msgid "Set as position"
+msgstr "กำหนดตำแหน่ง"
 
-#, c-format
-msgid "setting '%s' to '%s'\n"
-msgstr "กำหนด '%s' ถึง '%s'\n"
+#: popup.c:326 popup.c:395
+msgid "Set as destination"
+msgstr "กำหนดเป็นที่หมาย"
 
-#. TRANSLATORS: the following counts refer to streets
+#: popup.c:327 popup.c:396
+msgid "Add as bookmark"
+msgstr "เพิ่มใน บุกมาร์ก"
+
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
+#: navigation.c:303
 msgid "zeroth"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
+#: navigation.c:306
 msgid "first"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
+#: navigation.c:309
 msgid "second"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
+#: navigation.c:312
 msgid "third"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
+#: navigation.c:315
 msgid "fourth"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
+#: navigation.c:318
 msgid "fifth"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
+#: navigation.c:321
 msgid "sixth"
 msgstr ""
 
-#. TRANSLATORS: the following counts refer to roundabout exits
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
+#: navigation.c:324
+msgid "seventh"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
+#: navigation.c:327
+msgid "eighth"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
+#: navigation.c:330
+msgid "ninth"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
+#: navigation.c:342
 msgid "zeroth exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
+#: navigation.c:345
 msgid "first exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
+#: navigation.c:348
 msgid "second exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
+#: navigation.c:351
 msgid "third exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
+#: navigation.c:354
 msgid "fourth exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
+#: navigation.c:357
 msgid "fifth exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
+#: navigation.c:360
 msgid "sixth exit"
 msgstr ""
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
+#: navigation.c:363
+msgid "seventh exit"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
+#: navigation.c:366
+msgid "eighth exit"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
+#: navigation.c:369
+msgid "ninth exit"
+msgstr ""
+
+#: navigation.c:449
 #, c-format
 msgid "%d m"
 msgstr "%d เมตร"
 
+#: navigation.c:451
 #, c-format
 msgid "in %d m"
 msgstr "อีก %d เมตร"
 
+#: navigation.c:461
+#, c-format
+msgid "%d feet"
+msgstr ""
+
+#: navigation.c:463
+#, c-format
+msgid "in %d feet"
+msgstr ""
+
+#: navigation.c:469
 #, c-format
 msgid "%d meters"
 msgstr "%d เมตร"
 
+#: navigation.c:471
 #, c-format
 msgid "in %d meters"
 msgstr "อีก %d เมตร"
 
+#: navigation.c:483
+#, c-format
+msgid "%d.%d miles"
+msgstr ""
+
+#: navigation.c:485
+#, c-format
+msgid "in %d.%d miles"
+msgstr ""
+
+#: navigation.c:488
 #, c-format
 msgid "%d.%d kilometers"
 msgstr ""
 
+#: navigation.c:490
 #, c-format
 msgid "in %d.%d kilometers"
 msgstr "อีก %d.%d กิโลเมตร"
 
+#: navigation.c:496
+#, c-format
+msgid "one mile"
+msgid_plural "%d miles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: navigation.c:498
+#, c-format
+msgid "in one mile"
+msgid_plural "in %d miles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: navigation.c:501
 #, c-format
 msgid "one kilometer"
 msgid_plural "%d kilometers"
 msgstr[0] "%d กิโลเมตร"
 
+#: navigation.c:503
 #, c-format
 msgid "in one kilometer"
 msgid_plural "in %d kilometers"
 msgstr[0] "อีก %d กิโลเมตร"
 
+#: navigation.c:1461
 msgid "exit"
 msgstr "ทางออก"
 
+#: navigation.c:1463
 msgid "into the ramp"
 msgstr ""
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#: navigation.c:1493
 #, c-format
 msgid "%sinto the street %s%s%s"
 msgstr "%s เข้าสู่ถนน %s%s%s"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#: navigation.c:1497
 #, c-format
 msgid "%sinto the %s%s%s|male form"
 msgstr "%s เข้าสู่ %s%s%s| จาก"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#: navigation.c:1501
 #, c-format
 msgid "%sinto the %s%s%s|female form"
 msgstr "%s เข้าสู %s%s%s| จาก"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#: navigation.c:1505
 #, c-format
 msgid "%sinto the %s%s%s|neutral form"
 msgstr "%s เข้าสู่ %s%s%s| จาก"
 
-#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#. / TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#: navigation.c:1512
 #, c-format
 msgid "%sinto the %s"
 msgstr ""
 
-#. TRANSLATORS: right, as in 'Turn right'
+#. / TRANSLATORS: right, as in 'Turn right'
+#: navigation.c:1533
 msgid "right"
 msgstr "ขวา"
 
-#. TRANSLATORS: left, as in 'Turn left'
+#. / TRANSLATORS: left, as in 'Turn left'
+#: navigation.c:1573
 msgid "left"
 msgstr "ซ้าย"
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "easily "
+#. / TRANSLATORS: Don't forget the ending space
+#. / TRANSLATORS: example: turn slight right
+#: navigation.c:1583
+msgid "slight "
 msgstr ""
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "strongly "
-msgstr "อย่างเคร่งคัด "
-
-#. TRANSLATORS: Don't forget the ending space
-msgid "really strongly "
+#. / TRANSLATORS: Don't forget the ending space
+#. / TRANSLATORS: example: turn hard right
+#: navigation.c:1593
+msgid "hard "
 msgstr ""
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "unknown "
-msgstr "ไม่ทราบ "
+#. / TRANSLATORS: Don't forget the ending space
+#. / TRANSLATORS: example: turn really hard right
+#: navigation.c:1599
+msgid "really hard "
+msgstr ""
 
+#: navigation.c:1619
 msgid "When possible, please turn around"
 msgstr "ถ้าเป็นไปได้ ให้กลับรถ"
 
-#, c-format
-msgid "Enter the roundabout soon and leave it at the %s"
+#: navigation.c:1645
+msgid "Enter the roundabout soon"
 msgstr ""
 
-#. TRANSLATORS: %s is the distance to the roundabout
+#. / TRANSLATORS: %s is the distance to the roundabout
+#: navigation.c:1649
 #, c-format
 msgid "In %s, enter the roundabout"
 msgstr ""
 
+#: navigation.c:1653
 #, c-format
 msgid "then leave the roundabout at the %s"
 msgstr ""
 
+#: navigation.c:1655
 #, c-format
 msgid "Leave the roundabout at the %s"
 msgstr ""
 
+#: navigation.c:1663
 #, c-format
 msgid "Follow the road for the next %s"
 msgstr "ตรงไปตามถนน แล้ว %s"
 
+#: navigation.c:1667
 msgid "soon"
 msgstr "ในไม่ช้า"
 
-#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#. / TRANSLATORS: First argument is the how manieth street to take, second the direction
+#: navigation.c:1679
 #, c-format
 msgid "Take the %1$s road to the %2$s"
 msgstr ""
 
+#: navigation.c:1684 navigation.c:1705
 #, c-format
 msgid "after %i roads"
 msgstr ""
 
+#: navigation.c:1689
 msgid "now"
 msgstr "เดี๋ยวนี้"
 
+#: navigation.c:1700
 #, c-format
 msgid "then take the %1$s road to the %2$s"
 msgstr ""
 
+#: navigation.c:1713
 msgid "error"
 msgstr "ข้อผิดพลาด"
 
-#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#. / TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#: navigation.c:1758
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
 msgstr "เลี้ยว %1$s%2$s %3$s%4$s"
 
-#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#. / TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#: navigation.c:1763
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
 msgstr ""
 
+#: navigation.c:1771
 #, c-format
 msgid "You have reached your destination %s"
 msgstr "คุณได้ถึงที่หมายแล้ว %s"
 
+#: navigation.c:1775
 msgid "then you have reached your destination."
 msgstr ""
 
+#: navit.c:1893 gui/internal/gui_internal.c:2945
 msgid "Position"
 msgstr ""
 
+#: navit.c:1894
 msgid "Command"
 msgstr "คำสั่ง"
 
+#: navit.c:1898
 msgid "Length"
 msgstr "ความยาว"
 
+#: navit.c:1902 navit.c:1927
 msgid "km"
 msgstr "กม."
 
+#: navit.c:1906 navit.c:1931
 msgid "m"
 msgstr "เมตร"
 
+#: navit.c:1912
 msgid "Time"
 msgstr "เวลา"
 
+#: navit.c:1924
 msgid "Destination Length"
 msgstr "ระยะทาง ถึงที่หมาย"
 
+#: navit.c:1937
 msgid "Destination Time"
 msgstr "เวลา ถึงที่หมาย"
 
+#: navit.c:1970
 msgid "Roadbook"
 msgstr ""
 
-msgid "Set as position"
-msgstr "กำหนดตำแหน่ง"
-
-msgid "Set as destination"
-msgstr "กำหนดเป็นที่หมาย"
-
-msgid "Add as bookmark"
-msgstr "เพิ่มใน บุกมาร์ก"
-
-#, c-format
-msgid "Point 0x%x 0x%x"
-msgstr "จุด 0x%x 0x%x"
-
-#, c-format
-msgid "Screen coord : %d %d"
-msgstr "พิกัดหน้าจอ : %d %d"
-
-#. 020
-msgid "Andorra"
-msgstr "แอนโดรา"
-
-#. 784
-msgid "United Arab Emirates"
-msgstr "สหรัฐอาหรับอีมิเรตส์"
-
-#. 004
-msgid "Afghanistan"
-msgstr "อาฟกานิสถาน"
-
-#. 028
-msgid "Antigua and Barbuda"
-msgstr "อันทิกัว และ บาร์บูดา"
-
-#. 660
-msgid "Anguilla"
-msgstr "แองกีลา"
-
-#. 008
-msgid "Albania"
-msgstr "อัลเบเนีย"
-
-#. 051
-msgid "Armenia"
-msgstr "อาร์เมเนีย"
-
-#. 530
-msgid "Netherlands Antilles"
-msgstr "เนเธอร์แลนด์ แอนทิลีส"
-
-#. 024
-msgid "Angola"
-msgstr "แองโกลา"
-
-#. 010
-msgid "Antarctica"
-msgstr "แอนตาร์กติกา"
-
-#. 032
-msgid "Argentina"
-msgstr "อาร์เจนตินา"
-
-#. 016
-msgid "American Samoa"
-msgstr "อเมริกัน ซามัว"
-
-#. 040
-msgid "Austria"
-msgstr "ออสเตรีย"
-
-#. 036
-msgid "Australia"
-msgstr "ออสเตรเลีย"
-
-#. 533
-msgid "Aruba"
-msgstr "อรูบา"
-
-#. 248
-msgid "Aland Islands"
-msgstr "เกาะ เอแลนด์"
-
-#. 031
-msgid "Azerbaijan"
-msgstr "อาร์เซอร์ไบจัน"
-
-#. 070
-msgid "Bosnia and Herzegovina"
-msgstr "บอสเนียและเฮอร์เซโกวินา"
-
-#. 052
-msgid "Barbados"
-msgstr "บาร์บาดอส"
-
-#. 050
-msgid "Bangladesh"
-msgstr "บังคลาเทศ"
-
-#. 056
-msgid "Belgium"
-msgstr "เบลเยียม"
-
-#. 854
-msgid "Burkina Faso"
-msgstr "เบอร์กินาฟาโซ"
-
-#. 100
-msgid "Bulgaria"
-msgstr "บัลแกเรีย"
-
-#. 048
-msgid "Bahrain"
-msgstr "บาห์เรียน"
-
-#. 108
-msgid "Burundi"
-msgstr "บูรันดิ"
-
-#. 204
-msgid "Benin"
-msgstr "เบนิน"
-
-#. 652
-msgid "Saint Barthelemy"
-msgstr ""
-
-#. 060
-msgid "Bermuda"
-msgstr "เบอร์มิวดา"
-
-#. 096
-msgid "Brunei Darussalam"
-msgstr "บรูไนดูรัสซาลาม"
-
-#. 068
-msgid "Bolivia"
-msgstr "โบลิเวีย"
-
-#. 076
-msgid "Brazil"
-msgstr "บราซิล"
-
-#. 044
-msgid "Bahamas"
-msgstr "บาฮามา"
-
-#. 064
-msgid "Bhutan"
-msgstr "ภูฏาน"
-
-#. 074
-msgid "Bouvet Island"
-msgstr "เกาะบูเวต์"
-
-#. 072
-msgid "Botswana"
-msgstr "บอทสวานา"
-
-#. 112
-msgid "Belarus"
-msgstr "เบลารุส"
-
-#. 084
-msgid "Belize"
-msgstr "เบลไลซ์"
-
-#. 124
-msgid "Canada"
-msgstr "แคนาดา"
-
-#. 166
-msgid "Cocos (Keeling) Islands"
-msgstr "หมู่เกาะโคโคส (คีลิง)"
-
-#. 180
-msgid "Congo, Democratic Republic of the"
-msgstr ""
-
-#. 140
-msgid "Central African Republic"
-msgstr "สาธารณรัฐอัฟริกากลาง"
-
-#. 178
-msgid "Congo"
-msgstr "คองโก"
-
-#. 756
-msgid "Switzerland"
-msgstr "สวิสเซอร์แลนด์"
-
-#. 384
-msgid "Cote d'Ivoire"
-msgstr "โกตดิวัวร์"
-
-#. 184
-msgid "Cook Islands"
-msgstr "หมู่เกาะคุ้ก"
-
-#. 152
-msgid "Chile"
-msgstr "ชิลี"
-
-#. 120
-msgid "Cameroon"
-msgstr "คาเมรูน"
-
-#. 156
-msgid "China"
-msgstr "จีน"
-
-#. 170
-msgid "Colombia"
-msgstr "โคลัมเบีย"
-
-#. 188
-msgid "Costa Rica"
-msgstr "คอสตาริกา"
-
-#. 192
-msgid "Cuba"
-msgstr "คิวบา"
-
-#. 132
-msgid "Cape Verde"
-msgstr "แหลมเวอร์ดี"
-
-#. 162
-msgid "Christmas Island"
-msgstr "เกาะคริสต์มาส"
-
-#. 196
-msgid "Cyprus"
-msgstr "ไซปรัส"
-
-#. 203
-msgid "Czech Republic"
-msgstr "สาธารณรัฐเชค"
-
-#. 276
-msgid "Germany"
-msgstr "เยอรมันนี"
-
-#. 262
-msgid "Djibouti"
-msgstr "จิบูติ"
-
-#. 208
-msgid "Denmark"
-msgstr "เดนมาร์ก"
-
-#. 212
-msgid "Dominica"
-msgstr "โดมินากัน"
-
-#. 214
-msgid "Dominican Republic"
-msgstr "สาธารณรัฐโดมินิกัน"
-
-#. 012
-msgid "Algeria"
-msgstr "อัลจีเรีย"
-
-#. 218
-msgid "Ecuador"
-msgstr "เอกวาดอร์"
-
-#. 233
-msgid "Estonia"
-msgstr "เอสโทเนีย"
-
-#. 818
-msgid "Egypt"
-msgstr "อียิปต์"
-
-#. 732
-msgid "Western Sahara"
-msgstr "ซาฮาร่าตะวันตก"
-
-#. 232
-msgid "Eritrea"
-msgstr "เอริเทรีย"
-
-#. 724
-msgid "Spain"
-msgstr "สเปน"
-
-#. 231
-msgid "Ethiopia"
-msgstr "เอธิโอเปีย"
-
-#. 246
-msgid "Finland"
-msgstr "ฟินแลนด์"
-
-#. 242
-msgid "Fiji"
-msgstr "ฟิจิ"
-
-#. 238
-msgid "Falkland Islands (Malvinas)"
-msgstr "หมู่เกาะฟอล์กแลนด์ (มาลบีนาส)"
-
-#. 583
-msgid "Micronesia, Federated States of"
-msgstr "ไมโครนีเซีย"
-
-#. 234
-msgid "Faroe Islands"
-msgstr "หมู่เกาะแฟโร"
-
-#. 250
-msgid "France"
-msgstr "ฝรั่งเศส"
-
-#. 266
-msgid "Gabon"
-msgstr "กาบอน"
-
-#. 826
-msgid "United Kingdom"
-msgstr "อังกฤษ"
-
-#. 308
-msgid "Grenada"
-msgstr "เกรนาดา"
-
-#. 268
-msgid "Georgia"
-msgstr "จอร์เจีย"
-
-#. 254
-msgid "French Guiana"
-msgstr "เฟรนช์เกียนา"
-
-#. 831
-msgid "Guernsey"
-msgstr "เกิร์นซีย์"
-
-#. 288
-msgid "Ghana"
-msgstr "กานา"
-
-#. 292
-msgid "Gibraltar"
-msgstr "ยิบรอลตา"
-
-#. 304
-msgid "Greenland"
-msgstr "กรีนแลนด์"
-
-#. 270
-msgid "Gambia"
-msgstr "แกมเบีย"
-
-#. 324
-msgid "Guinea"
-msgstr "กินี"
-
-#. 312
-msgid "Guadeloupe"
-msgstr "กวาเดอลูป"
-
-#. 226
-msgid "Equatorial Guinea"
-msgstr "กินี ตรงเส้นศูนย์สูตร"
-
-#. 300
-msgid "Greece"
-msgstr "กรีซ"
-
-#. 239
-msgid "South Georgia and the South Sandwich Islands"
-msgstr "เกาะเซาท์จอร์เจียและหมู่เกาะเซาท์แซนด์วิช"
-
-#. 320
-msgid "Guatemala"
-msgstr "กัวเตมาลา"
-
-#. 316
-msgid "Guam"
-msgstr "กวม"
-
-#. 624
-msgid "Guinea-Bissau"
-msgstr "กินี - บิสซอ"
-
-#. 328
-msgid "Guyana"
-msgstr "กูยาน่า"
-
-#. 344
-msgid "Hong Kong"
-msgstr "ฮ่องกง"
-
-#. 334
-msgid "Heard Island and McDonald Islands"
-msgstr "เกาะเฮิร์ดและหมู่เกาะแมกดอนัลด์"
-
-#. 340
-msgid "Honduras"
-msgstr "ฮอนดูรัส"
-
-#. 191
-msgid "Croatia"
-msgstr "โครเอเธีย"
-
-#. 332
-msgid "Haiti"
-msgstr "ไฮติ"
-
-#. 348
-msgid "Hungary"
-msgstr "ฮังการี"
-
-#. 360
-msgid "Indonesia"
-msgstr "อินโดนีเซีย"
-
-#. 372
-msgid "Ireland"
-msgstr "ไอร์แลนด์"
-
-#. 376
-msgid "Israel"
-msgstr "อิสราเอล"
-
-#. 833
-msgid "Isle of Man"
-msgstr "เกาะแมน"
-
-#. 356
-msgid "India"
-msgstr "อินเดีย"
-
-#. 086
-msgid "British Indian Ocean Territory"
-msgstr "บริติชอินเดียนโอเชียนเทร์ริทอรี"
-
-#. 368
-msgid "Iraq"
-msgstr "อิรัก"
-
-#. 364
-msgid "Iran, Islamic Republic of"
-msgstr ""
-
-#. 352
-msgid "Iceland"
-msgstr "ไอซ์แลนด์"
-
-#. 380
-msgid "Italy"
-msgstr "อิตาลี"
-
-#. 832
-msgid "Jersey"
-msgstr "เจอร์ซีย์"
-
-#. 388
-msgid "Jamaica"
-msgstr "จาไมก้า"
-
-#. 400
-msgid "Jordan"
-msgstr "จอร์แดน"
-
-#. 392
-msgid "Japan"
-msgstr "ญี่ปุ่น"
-
-#. 404
-msgid "Kenya"
-msgstr "เคนยา"
-
-#. 417
-msgid "Kyrgyzstan"
-msgstr "คีร์กีซสถาน"
-
-#. 116
-msgid "Cambodia"
-msgstr "กัมพูชา"
-
-#. 296
-msgid "Kiribati"
-msgstr "คิริบาติ"
-
-#. 174
-msgid "Comoros"
-msgstr "โคโมรอส"
-
-#. 659
-msgid "Saint Kitts and Nevis"
-msgstr "เซนต์คิตส์และเนวิส"
-
-#. 408
-msgid "Korea, Democratic People's Republic of"
-msgstr "เกาหลีเหนือ"
-
-#. 410
-msgid "Korea, Republic of"
-msgstr "เกาหลีใต้"
-
-#. 414
-msgid "Kuwait"
-msgstr "คูเวต"
-
-#. 136
-msgid "Cayman Islands"
-msgstr "หมู่เกาะเคย์แมน"
-
-#. 398
-msgid "Kazakhstan"
-msgstr "คาซัคสถาน"
-
-#. 418
-msgid "Lao People's Democratic Republic"
-msgstr "สาธารณรัฐประชาธิปไตยประชาชนลาว"
-
-#. 422
-msgid "Lebanon"
-msgstr "เลบานอน"
-
-#. 662
-msgid "Saint Lucia"
-msgstr "เซนต์ลูเซีย"
-
-#. 438
-msgid "Liechtenstein"
-msgstr "ลิชเทนสไตน์"
-
-#. 144
-msgid "Sri Lanka"
-msgstr "ศรีลังกา"
-
-#. 430
-msgid "Liberia"
-msgstr "ไลบีเรีย"
-
-#. 426
-msgid "Lesotho"
-msgstr "เลโซโต"
-
-#. 440
-msgid "Lithuania"
-msgstr "ลิธัวเนีย"
-
-#. 442
-msgid "Luxembourg"
-msgstr "ลักเซมเบอร์ก"
-
-#. 428
-msgid "Latvia"
-msgstr "ลัธเวีย"
-
-#. 434
-msgid "Libyan Arab Jamahiriya"
-msgstr "ลิเบีย"
-
-#. 504
-msgid "Morocco"
-msgstr "โมร็อคโค"
-
-#. 492
-msgid "Monaco"
-msgstr "โมนาโค"
-
-#. 498
-msgid "Moldova, Republic of"
-msgstr "มอลโดวา, สาธารณรัฐ"
-
-#. 499
-msgid "Montenegro"
-msgstr "มอนเตเนโกร"
-
-#. 663
-msgid "Saint Martin (French part)"
-msgstr "แซงมาร์แตง (ส่วนของฝรั่งเศส)"
-
-#. 450
-msgid "Madagascar"
-msgstr "มาดากัสกา"
-
-#. 584
-msgid "Marshall Islands"
-msgstr "หมู่เกาะมาแชล"
-
-#. 807
-msgid "Macedonia, the former Yugoslav Republic of"
-msgstr ""
-
-#. 466
-msgid "Mali"
-msgstr "มาลี"
-
-#. 104
-msgid "Myanmar"
-msgstr "พม่า"
-
-#. 496
-msgid "Mongolia"
-msgstr "มองโกเลีย"
-
-#. 446
-msgid "Macao"
-msgstr "มาเก๊า"
-
-#. 580
-msgid "Northern Mariana Islands"
-msgstr "หมู่เกาะมาเรียน่เหนือ"
-
-#. 474
-msgid "Martinique"
-msgstr "มาทินิค"
-
-#. 478
-msgid "Mauritania"
-msgstr "มอริทาเนีย"
-
-#. 500
-msgid "Montserrat"
-msgstr "มอนต์เซอร์รัท"
-
-#. 470
-msgid "Malta"
-msgstr "มอลตา"
-
-#. 480
-msgid "Mauritius"
-msgstr "มอริเชียส"
-
-#. 462
-msgid "Maldives"
-msgstr "มัลดิฟ"
-
-#. 454
-msgid "Malawi"
-msgstr "มาลาวี"
-
-#. 484
-msgid "Mexico"
-msgstr "เม็กซิโก"
-
-#. 458
-msgid "Malaysia"
-msgstr "มาเลเซีย"
-
-#. 508
-msgid "Mozambique"
-msgstr "โมแซมบิก"
-
-#. 516
-msgid "Namibia"
-msgstr "นามิเบีย"
-
-#. 540
-msgid "New Caledonia"
-msgstr "นิวคาเลโดเนีย"
-
-#. 562
-msgid "Niger"
-msgstr "ไนเจอร์"
-
-#. 574
-msgid "Norfolk Island"
-msgstr "เกาะนอร์ฟอล์ค"
-
-#. 566
-msgid "Nigeria"
-msgstr "ไนจีเรีย"
-
-#. 558
-msgid "Nicaragua"
-msgstr "นิคารากัว"
-
-#. 528
-msgid "Netherlands"
-msgstr "เนเธอร์แลนด์"
-
-#. 578
-msgid "Norway"
-msgstr "นอร์เวย์"
-
-#. 524
-msgid "Nepal"
-msgstr "เนปาล"
-
-#. 520
-msgid "Nauru"
-msgstr "นาวรู"
-
-#. 570
-msgid "Niue"
-msgstr "นิอุเอ"
-
-#. 554
-msgid "New Zealand"
-msgstr "นิวซีแลนด์"
-
-#. 512
-msgid "Oman"
-msgstr "โอมาน"
-
-#. 591
-msgid "Panama"
-msgstr "ปานามา"
-
-#. 604
-msgid "Peru"
-msgstr "เปรู"
-
-#. 258
-msgid "French Polynesia"
-msgstr "ฝรั่งเศสโพลีนีเซีย"
-
-#. 598
-msgid "Papua New Guinea"
-msgstr "ปาปัวนิวกินี"
-
-#. 608
-msgid "Philippines"
-msgstr "ฟิลิปปินส์"
-
-#. 586
-msgid "Pakistan"
-msgstr "ปากีสถาน"
-
-#. 616
-msgid "Poland"
-msgstr "โปแลนด์"
-
-#. 666
-msgid "Saint Pierre and Miquelon"
-msgstr "แซงปีแยร์และมีเกอลง"
-
-#. 612
-msgid "Pitcairn"
-msgstr "พิตแคร์น"
-
-#. 630
-msgid "Puerto Rico"
-msgstr "เปอร์โตริโก"
-
-#. 275
-msgid "Palestinian Territory, Occupied"
-msgstr "ปาเลสไตน์, ดินแดนยึดครอง"
-
-#. 620
-msgid "Portugal"
-msgstr "โปรตุเกส"
-
-#. 585
-msgid "Palau"
-msgstr "เกาะพาเลา"
-
-#. 600
-msgid "Paraguay"
-msgstr "ปารากวัย"
-
-#. 634
-msgid "Qatar"
-msgstr "กาตาร์"
-
-#. 638
-msgid "Reunion"
-msgstr "รียูเนียน"
-
-#. 642
-msgid "Romania"
-msgstr "โรมาเนีย"
-
-#. 688
-msgid "Serbia"
-msgstr "เซอร์เบีย"
-
-#. 643
-msgid "Russian Federation"
-msgstr "สมาพันธรัฐรัสเซีย"
-
-#. 646
-msgid "Rwanda"
-msgstr "รวันด้า"
-
-#. 682
-msgid "Saudi Arabia"
-msgstr "ซาอุดิอาระเบีย"
-
-#. 090
-msgid "Solomon Islands"
-msgstr "หมู่เกาะโซโลมอน"
-
-#. 690
-msgid "Seychelles"
-msgstr "ซีเชลล์"
-
-#. 736
-msgid "Sudan"
-msgstr "ซูดาน"
-
-#. 752
-msgid "Sweden"
-msgstr "สวีเดน"
-
-#. 702
-msgid "Singapore"
-msgstr "สิงคโปร์"
-
-#. 654
-msgid "Saint Helena"
-msgstr "เซนต์เฮเลนา"
-
-#. 705
-msgid "Slovenia"
-msgstr "สโลเวเนีย"
-
-#. 744
-msgid "Svalbard and Jan Mayen"
-msgstr "สฟาลบาร์ และ ยานไมเอน"
-
-#. 703
-msgid "Slovakia"
-msgstr "สโลวาเกีย"
-
-#. 694
-msgid "Sierra Leone"
-msgstr ""
-
-#. 674
-msgid "San Marino"
-msgstr "ซานมาริโน"
-
-#. 686
-msgid "Senegal"
-msgstr "เซนีกัล"
-
-#. 706
-msgid "Somalia"
-msgstr "โซมาเลีย"
-
-#. 740
-msgid "Suriname"
-msgstr "ซูรีนามิ"
-
-#. 678
-msgid "Sao Tome and Principe"
-msgstr "ซาวโทม และ พรินซิป"
-
-#. 222
-msgid "El Salvador"
-msgstr "เอลซัลวาดอร์"
-
-#. 760
-msgid "Syrian Arab Republic"
-msgstr "สาธารณรัฐอาหรับซีเรีย"
-
-#. 748
-msgid "Swaziland"
-msgstr "สวาซิแลนด์"
-
-#. 796
-msgid "Turks and Caicos Islands"
-msgstr "เกาะดติร์กและเคคอส"
-
-#. 148
-msgid "Chad"
-msgstr "ชาด"
-
-#. 260
-msgid "French Southern Territories"
-msgstr "เฟรนช์เซาเทิร์นเทร์ริทอรีส์"
-
-#. 768
-msgid "Togo"
-msgstr "โตโก"
-
-#. 764
-msgid "Thailand"
-msgstr "ราชอาณาจักรไทย"
-
-#. 762
-msgid "Tajikistan"
-msgstr "ธาจีกิสถาน"
-
-#. 772
-msgid "Tokelau"
-msgstr "โตเกเลา"
-
-#. 626
-msgid "Timor-Leste"
-msgstr "ติมอร์ตะวันออก"
-
-#. 795
-msgid "Turkmenistan"
-msgstr "เตอร์กเมนิสถาน"
-
-#. 788
-msgid "Tunisia"
-msgstr "ตูนีเซีย"
-
-#. 776
-msgid "Tonga"
-msgstr "ตองก้า"
-
-#. 792
-msgid "Turkey"
-msgstr "ตุรกี"
-
-#. 780
-msgid "Trinidad and Tobago"
-msgstr "ตรีนิแดดและโทบาโก"
-
-#. 798
-msgid "Tuvalu"
-msgstr "ตูวาลู"
-
-#. 158
-msgid "Taiwan, Province of China"
-msgstr "ไต้หวัน, จังหวัดของจีน"
-
-#. 834
-msgid "Tanzania, United Republic of"
-msgstr "แทนซาเนีย, สหสาธารณรัฐ"
-
-#. 804
-msgid "Ukraine"
-msgstr "ยูเครน"
-
-#. 800
-msgid "Uganda"
-msgstr "ยูกันดา"
-
-#. 581
-msgid "United States Minor Outlying Islands"
-msgstr "เกาะเล็กรอบนอกของสหรัฐอเมริกา"
-
-#. 840
-msgid "United States"
-msgstr "สหรัฐ"
-
-#. 858
-msgid "Uruguay"
-msgstr "อุรุกวัย"
-
-#. 860
-msgid "Uzbekistan"
-msgstr "อุซเบกิสถาน"
-
-#. 336
-msgid "Holy See (Vatican City State)"
-msgstr "นครรัฐวาติกัน"
-
-#. 670
-msgid "Saint Vincent and the Grenadines"
-msgstr "เซนต์วินเซนต์และเกรนาดีนส์"
-
-#. 862
-msgid "Venezuela"
-msgstr "เวเนซุเอลา"
-
-#. 092
-msgid "Virgin Islands, British"
-msgstr "หมู่เกาะบริติชเวอร์จิน"
-
-#. 850
-msgid "Virgin Islands, U.S."
-msgstr "หมู่เกาะเวอร์จินของสหรัฐอเมริกา"
-
-#. 704
-msgid "Viet Nam"
-msgstr "เวียตนาม"
-
-#. 548
-msgid "Vanuatu"
-msgstr "แวนัวตู"
-
-#. 876
-msgid "Wallis and Futuna"
-msgstr "หมู่เกาะวาลลิสและหมู่เกาะฟูตูนา"
-
-#. 882
-msgid "Samoa"
-msgstr "ซามัว"
-
-#. 887
-msgid "Yemen"
-msgstr "เยเมน"
-
-#. 175
-msgid "Mayotte"
-msgstr "เมโยเต้"
-
-#. 710
-msgid "South Africa"
-msgstr "แอฟริกาใต้"
-
-#. 894
-msgid "Zambia"
-msgstr "แซมเบีย"
-
-#. 716
-msgid "Zimbabwe"
-msgstr "ซิมบับเว"
-
-msgid "* Unknown, add is_in tags to those cities"
-msgstr ""
-
-msgid "Car"
-msgstr "รถยนต์"
-
-msgid "Iso2"
-msgstr "ISO2"
-
-msgid "Iso3"
-msgstr "ISO3"
-
-msgid "Country"
-msgstr "ประเทศ"
-
-msgid "Postal"
-msgstr "ไปรษณีย์"
-
-msgid "Town"
-msgstr "เมือง"
-
-msgid "District"
-msgstr "เขต"
-
-msgid "Street"
-msgstr "ถนน"
-
-msgid "Number"
-msgstr "หมายเลข"
-
-msgid "Enter Destination"
-msgstr "กำหนด ที่หมาย"
-
-msgid "Zip Code"
-msgstr "รหัสไปรษณีย์"
-
-msgid "City"
-msgstr "เมือง"
-
-msgid "District/Township"
-msgstr ""
-
-msgid "Map"
-msgstr "แผนที่"
-
-msgid "Bookmark"
-msgstr ""
-
-msgid "Destination"
-msgstr "จุดหมาย"
-
-msgid "Display"
-msgstr "แสดง"
-
-msgid "Route"
-msgstr "เส้นทาง"
-
-msgid "Former Destinations"
-msgstr "ก่อนถึง ที่หมาย"
-
-msgid "Bookmarks"
-msgstr "บุ๊กมาร์ก"
-
-msgid "Layout"
-msgstr "การจัดเรียง"
-
-msgid "Projection"
-msgstr "การฉายแผนที่"
-
-msgid "Vehicle"
-msgstr "ยานพาหนะ"
-
-msgid "ZoomOut"
-msgstr "ขยายออก"
-
-msgid "Decrease zoom level"
-msgstr ""
-
-msgid "ZoomIn"
-msgstr "ขยายเข้า"
-
-msgid "Increase zoom level"
-msgstr ""
-
-msgid "Recalculate"
-msgstr "คำนวนใหม่"
-
-msgid "Redraw map"
-msgstr ""
-
-msgid "Info"
-msgstr "ข้อมูล"
-
-msgid "Set destination"
-msgstr ""
-
-msgid "Opens address search dialog"
-msgstr ""
-
-msgid "Stop Navigation"
-msgstr "หยุดการนำทาง"
-
-msgid "Test"
-msgstr "ทดสอบ"
-
-msgid "_Quit"
-msgstr "_ออกจากโปรแกรม"
-
-msgid "Quit the application"
-msgstr ""
-
-msgid "Show position cursor"
-msgstr ""
-
-msgid "Lock on Road"
-msgstr ""
-
-msgid "Keep orientation to the North"
-msgstr ""
-
-msgid "Switches map orientation to the north or the vehicle"
-msgstr ""
-
-msgid "Show/hide route description"
-msgstr ""
-
-msgid "Autozoom"
-msgstr ""
-
-msgid "Enable/disable automatic zoom level changing"
-msgstr ""
-
-msgid "Fullscreen"
-msgstr "แสดงผลเต็มจอภาพ"
-
-msgid "Data"
-msgstr "ข้อมูล"
-
-msgid "N"
-msgstr "เหนือ"
-
-msgid "NE"
-msgstr "ตะวันออกเฉียงเหนือ"
-
-msgid "E"
-msgstr "ตะวันออก"
-
-msgid "SE"
-msgstr "ตะวันออกเฉียงใต้"
-
-msgid "S"
-msgstr "ใต้"
-
-msgid "SW"
-msgstr "ตะวันตกเฉียงใต้"
-
-msgid "W"
-msgstr "ตะวันตก"
-
-msgid "NW"
-msgstr "ตะวันออกเฉียงเหนือ"
-
-msgid "No"
-msgstr ""
-
-msgid "2D"
-msgstr ""
-
-msgid "3D"
-msgstr ""
-
-msgid "OT"
-msgstr ""
-
-#, c-format
-msgid "Route %4.0fkm    %02d:%02d ETA"
-msgstr "เส้นทาง %4.0f กม. %02d:%02d ETA"
-
-msgid "Route 0000km  0+00:00 ETA"
-msgstr "เส้นทาง 0000km 0+00:00 ETA"
-
-msgid "Back to map"
-msgstr ""
-
-msgid "Main Menu"
-msgstr ""
-
+#: gui/internal/gui_internal.c:1713
 msgid "Help"
 msgstr ""
 
+#: gui/internal/gui_internal.c:1867
 msgid "Back"
 msgstr ""
 
-msgid "Add Bookmark"
-msgstr ""
-
-msgid "Add Bookmark folder"
-msgstr ""
-
-msgid "Rename"
-msgstr ""
-
-msgid "POIs"
-msgstr ""
-
-msgid "View in Browser"
-msgstr ""
-
+#: gui/internal/gui_internal.c:2713
 msgid "Streets"
 msgstr ""
 
+#: gui/internal/gui_internal.c:2721
 msgid "House numbers"
 msgstr ""
 
-msgid "View Attributes"
-msgstr ""
-
-msgid "View on map"
-msgstr ""
-
-msgid "Cut Bookmark"
-msgstr ""
-
-msgid "Copy Bookmark"
-msgstr ""
-
-msgid "Rename Bookmark"
-msgstr ""
-
-msgid "Paste Bookmark"
-msgstr ""
-
-msgid "Delete Bookmark"
-msgstr ""
-
-msgid "Paste bookmark"
-msgstr ""
-
-#, c-format
-msgid "Bookmark %s"
-msgstr ""
-
+#: gui/internal/gui_internal.c:3833 gui/internal/gui_internal.c:3842
 msgid "House number"
 msgstr ""
 
-msgid "Maps"
-msgstr ""
+#: gui/internal/gui_internal.c:3849 gui/internal/gui_internal.c:3858
+msgid "Street"
+msgstr "ถนน"
 
-msgid "Show Satellite Status"
-msgstr ""
+#: gui/internal/gui_internal.c:3868 gui/internal/gui_internal.c:3897
+msgid "Town"
+msgstr "เมือง"
 
-msgid " Elevation "
-msgstr ""
-
-msgid " Azimuth "
-msgstr ""
-
-msgid "Show NMEA Data"
-msgstr ""
-
-msgid "car"
-msgstr ""
-
-msgid "bike"
-msgstr ""
-
-msgid "pedestrian"
-msgstr ""
-
-#, c-format
-msgid "Current profile: %s"
-msgstr ""
-
-#, c-format
-msgid "Change profile to: %s"
-msgstr ""
-
-msgid "Set as active"
-msgstr ""
-
-msgid "Show Satellite status"
-msgstr ""
-
-msgid "Show NMEA data"
-msgstr ""
-
-msgid "Rules"
-msgstr ""
-
-msgid "Lock on road"
-msgstr ""
-
-msgid "Northing"
-msgstr "ทางทิศเหนือ"
-
-msgid "Map follows Vehicle"
-msgstr ""
-
-msgid "Message"
-msgstr ""
-
-msgid "Route Description"
-msgstr ""
-
-msgid "Height Profile"
-msgstr ""
-
-msgid "Show Locale"
-msgstr ""
-
-msgid "About Navit"
-msgstr ""
-
-#. Authors
-msgid "By"
-msgstr ""
-
-#. Contributors
-msgid "And all the Navit Team"
-msgstr ""
-
-msgid "members and contributors."
-msgstr ""
-
-msgid "Map Point"
-msgstr ""
-
-msgid "Vehicle Position"
-msgstr ""
-
-msgid "Main menu"
-msgstr ""
-
-msgid ""
-"Show\n"
-"Map"
-msgstr ""
-
-msgid "Settings"
-msgstr ""
-
-msgid "Tools"
-msgstr ""
-
-msgid "About"
-msgstr ""
-
-msgid "Actions"
-msgstr ""
-
-msgid "Quit"
-msgstr ""
-
-msgid ""
-"Stop\n"
-"Navigation"
-msgstr ""
-
-msgid "Window Mode"
-msgstr ""
-
-msgid "Description"
-msgstr ""
-
-msgid "horse"
-msgstr ""
-
-#. chr:
-#. flags used for a truck: (first flag number is 0)
-#. 8: SIZE_OR_WEIGHT_LIMIT
-#. 21: TRANSPORT_TRUCK
-#. speed setup:
-#. 'speed' data of the atkaction for a car is
-#. reduced about 10 km/h. When the speed was at
-#. 10 km/h, I reduced it to 5 km/h.
-#. 'route_weight' data has been treated in the same way.
-#. If you want to discourage the use of small roads,
-#. just reduce this value.
-#. size and weight setup:
-#. This is an example, you have to use the data of your truck.
-#. bobshaffer's standard truck:
-#. (1 lb = 453.59237 g, 1 foot = .3048 m)
-#. (data has to be in [cm] and [kg] according to 'atkaction.h')
-#. width=  9    feet,   274 cm
-#. height= 13.5  feet,   411 cm
-#. length= 70    feet,  2134 cm
-#. weight= 80000 lbs,  36287 kg
-#. axle_weight= 34000 lbs,  15422 kg
-#. 
-msgid "truck"
-msgstr ""
-
-#: bookmarks.c:294 bookmarks.c:365
-msgid "Failed to write bookmarks file"
-msgstr ""
-
-#: country.c:285
-msgid "Unknown"
-msgstr ""
-
-#: navigation.c:431
-#, c-format
-msgid "%d feet"
-msgstr ""
-
-#: navigation.c:433
-#, c-format
-msgid "in %d feet"
-msgstr ""
-
-#: navigation.c:453
-#, c-format
-msgid "%d.%d miles"
-msgstr ""
-
-#: navigation.c:455
-#, c-format
-msgid "in %d.%d miles"
-msgstr ""
-
-#: navigation.c:1586
-msgid "Enter the roundabout soon"
-msgstr ""
-
-#: start_real.c:168
-msgid "No config file navit.xml, navit.xml.local found\n"
-msgstr ""
-
-#: start_real.c:183
-#, c-format
-msgid "Error parsing '%s': %s\n"
-msgstr ""
-
-#: start_real.c:185
-#, c-format
-msgid "Using '%s'\n"
-msgstr ""
-
-#: start_real.c:193
-msgid "No instance has been created, exiting\n"
-msgstr ""
-
-#: osd/core/osd_core.c:1882
-msgid "Look out! Camera!"
-msgstr ""
-
-#: osd/core/osd_core.c:2086
-msgid "Please decrease your speed"
-msgstr ""
-
-#: gui/internal/gui_internal.c:3950
-#, c-format
-msgid "Download %s"
-msgstr ""
-
-#: gui/internal/gui_internal.c:4011
-msgid "Map Download"
-msgstr ""
+#: gui/internal/gui_internal.c:3889
+msgid "Country"
+msgstr "ประเทศ"
 
 #: gui/internal/gui_internal.c:4016
 msgid "Active"
@@ -1718,6 +427,96 @@ msgstr ""
 msgid "Download Enabled"
 msgstr ""
 
-#: gui/internal/gui_internal.c:4048
-msgid "Download completely"
+#: gui/internal/gui_internal.c:4082
+msgid "Maps"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4134
+msgid "Show Satellite Status"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4142
+msgid " Elevation "
+msgstr ""
+
+#: gui/internal/gui_internal.c:4143
+msgid " Azimuth "
+msgstr ""
+
+#: gui/internal/gui_internal.c:4168
+msgid "Show NMEA Data"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4287
+msgid "car"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4287
+msgid "bike"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4287
+msgid "pedestrian"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4308
+#, c-format
+msgid "Current profile: %s"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4310
+#, c-format
+msgid "Change profile to: %s"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4346
+msgid "Set as active"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4353
+msgid "Show Satellite status"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4359
+msgid "Show NMEA data"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4385
+msgid "Vehicle"
+msgstr "ยานพาหนะ"
+
+#: gui/internal/gui_internal.c:4410
+msgid "Rules"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4418
+msgid "Lock on road"
+msgstr ""
+
+#: gui/internal/gui_internal.c:4424
+msgid "Northing"
+msgstr "ทางทิศเหนือ"
+
+#: gui/internal/gui_internal.c:4430
+msgid "Map follows Vehicle"
+msgstr ""
+
+#: gui/internal/gui_internal.c:5016
+msgid "Message"
+msgstr ""
+
+#: gui/internal/gui_internal.c:6095
+msgid "Route Description"
+msgstr ""
+
+#: gui/internal/gui_internal.c:6219
+msgid "Height Profile"
+msgstr ""
+
+#: osd/core/osd_core.c:1882
+msgid "Look out! Camera!"
+msgstr ""
+
+#: osd/core/osd_core.c:2086
+msgid "Please decrease your speed"
 msgstr ""

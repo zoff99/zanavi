@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-22 15:11+0100\n"
+"POT-Creation-Date: 2012-01-05 19:42+0100\n"
 "PO-Revision-Date: 2011-11-27 12:16+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -16,86 +16,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2011-12-01 14:12+0000\n"
-"X-Generator: Launchpad (build 14414)\n"
+"X-Launchpad-Export-Date: 2012-01-05 18:52+0000\n"
+"X-Generator: Launchpad (build 14625)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
-#, c-format
-msgid "Running from source directory\n"
-msgstr "Запуск з початкового каталогу\n"
+#: popup.c:325 popup.c:394
+msgid "Set as position"
+msgstr "Встановити як початкове положення"
 
-#, c-format
-msgid "setting '%s' to '%s'\n"
-msgstr "настройка '%s' до '%s'\n"
+#: popup.c:326 popup.c:395
+msgid "Set as destination"
+msgstr "Встановити як місце призначення"
 
-#. TRANSLATORS: the following counts refer to streets
+#: popup.c:327 popup.c:396
+msgid "Add as bookmark"
+msgstr "Додати як закладку"
+
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
+#: navigation.c:303
 msgid "zeroth"
 msgstr "нульовий"
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
+#: navigation.c:306
 msgid "first"
 msgstr "перший"
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
+#: navigation.c:309
 msgid "second"
 msgstr "другий"
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
+#: navigation.c:312
 msgid "third"
 msgstr "третій"
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
+#: navigation.c:315
 msgid "fourth"
 msgstr "четвертий"
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
+#: navigation.c:318
 msgid "fifth"
 msgstr "п’ятий"
 
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
+#: navigation.c:321
 msgid "sixth"
 msgstr "шостий"
 
-#. TRANSLATORS: the following counts refer to roundabout exits
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
+#: navigation.c:324
+msgid "seventh"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
+#: navigation.c:327
+msgid "eighth"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
+#: navigation.c:330
+msgid "ninth"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
+#: navigation.c:342
 msgid "zeroth exit"
 msgstr "нульовий виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
+#: navigation.c:345
 msgid "first exit"
 msgstr "перший виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
+#: navigation.c:348
 msgid "second exit"
 msgstr "другий виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
+#: navigation.c:351
 msgid "third exit"
 msgstr "третій виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
+#: navigation.c:354
 msgid "fourth exit"
 msgstr "четвертий виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
+#: navigation.c:357
 msgid "fifth exit"
 msgstr "п’ятий виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
+#: navigation.c:360
 msgid "sixth exit"
 msgstr "шостий виїзд"
 
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
+#: navigation.c:363
+msgid "seventh exit"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
+#: navigation.c:366
+msgid "eighth exit"
+msgstr ""
+
+#. / TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
+#: navigation.c:369
+msgid "ninth exit"
+msgstr ""
+
+#: navigation.c:449
 #, c-format
 msgid "%d m"
 msgstr "%d м"
 
+#: navigation.c:451
 #, c-format
 msgid "in %d m"
 msgstr "за %d м"
 
+#: navigation.c:461
+#, c-format
+msgid "%d feet"
+msgstr ""
+
+#: navigation.c:463
+#, c-format
+msgid "in %d feet"
+msgstr ""
+
+#: navigation.c:469
 #, c-format
 msgid "%d meters"
 msgstr "%d метрів"
 
+#: navigation.c:471
 #, c-format
 msgid "in %d meters"
 msgstr "за %d метрів"
 
+#: navigation.c:483
+#, c-format
+msgid "%d.%d miles"
+msgstr ""
+
+#: navigation.c:485
+#, c-format
+msgid "in %d.%d miles"
+msgstr ""
+
+#: navigation.c:488
 #, c-format
 msgid "%d.%d kilometers"
 msgstr "%d.%d кілометрів"
 
+#: navigation.c:490
 #, c-format
 msgid "in %d.%d kilometers"
 msgstr "за %d.%d кілометрів"
 
+#: navigation.c:496
+#, c-format
+msgid "one mile"
+msgid_plural "%d miles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: navigation.c:498
+#, c-format
+msgid "in one mile"
+msgid_plural "in %d miles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: navigation.c:501
 #, c-format
 msgid "one kilometer"
 msgid_plural "%d kilometers"
@@ -103,6 +204,7 @@ msgstr[0] "%d кілометр"
 msgstr[1] "%d кілометри"
 msgstr[2] "%d кілометрів"
 
+#: navigation.c:503
 #, c-format
 msgid "in one kilometer"
 msgid_plural "in %d kilometers"
@@ -110,1614 +212,217 @@ msgstr[0] "за %d кілометр"
 msgstr[1] "за %d кілометри"
 msgstr[2] "за %d кілометрів"
 
+#: navigation.c:1461
 msgid "exit"
 msgstr "виїзд"
 
+#: navigation.c:1463
 msgid "into the ramp"
 msgstr "з'їзд на"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#: navigation.c:1493
 #, c-format
 msgid "%sinto the street %s%s%s"
 msgstr "%s на вулицю %s%s%s"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#: navigation.c:1497
 #, c-format
 msgid "%sinto the %s%s%s|male form"
 msgstr "%s на %s%s%s"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#: navigation.c:1501
 #, c-format
 msgid "%sinto the %s%s%s|female form"
 msgstr "%s на %s%s%s"
 
-#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#. / TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#: navigation.c:1505
 #, c-format
 msgid "%sinto the %s%s%s|neutral form"
 msgstr "%s на %s%s%s"
 
-#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#. / TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#: navigation.c:1512
 #, c-format
 msgid "%sinto the %s"
 msgstr "%s в %s"
 
-#. TRANSLATORS: right, as in 'Turn right'
+#. / TRANSLATORS: right, as in 'Turn right'
+#: navigation.c:1533
 msgid "right"
 msgstr "праворуч"
 
-#. TRANSLATORS: left, as in 'Turn left'
+#. / TRANSLATORS: left, as in 'Turn left'
+#: navigation.c:1573
 msgid "left"
 msgstr "ліворуч"
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "easily "
-msgstr "легко "
+#. / TRANSLATORS: Don't forget the ending space
+#. / TRANSLATORS: example: turn slight right
+#: navigation.c:1583
+msgid "slight "
+msgstr ""
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "strongly "
-msgstr "круто "
+#. / TRANSLATORS: Don't forget the ending space
+#. / TRANSLATORS: example: turn hard right
+#: navigation.c:1593
+msgid "hard "
+msgstr ""
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "really strongly "
-msgstr "дуже круто "
+#. / TRANSLATORS: Don't forget the ending space
+#. / TRANSLATORS: example: turn really hard right
+#: navigation.c:1599
+msgid "really hard "
+msgstr ""
 
-#. TRANSLATORS: Don't forget the ending space
-msgid "unknown "
-msgstr "невідомо "
-
+#: navigation.c:1619
 msgid "When possible, please turn around"
 msgstr "Якщо це можливо, то розверніться"
 
-#, c-format
-msgid "Enter the roundabout soon and leave it at the %s"
-msgstr "Виїжджайте на круг та з’їдьте з нього на %s повороті"
+#: navigation.c:1645
+msgid "Enter the roundabout soon"
+msgstr ""
 
-#. TRANSLATORS: %s is the distance to the roundabout
+#. / TRANSLATORS: %s is the distance to the roundabout
+#: navigation.c:1649
 #, c-format
 msgid "In %s, enter the roundabout"
 msgstr "Через %s виїзд на дорогу з кільцевим рухом"
 
+#: navigation.c:1653
 #, c-format
 msgid "then leave the roundabout at the %s"
 msgstr "тоді виїдьте з кільця через %s"
 
+#: navigation.c:1655
 #, c-format
 msgid "Leave the roundabout at the %s"
 msgstr "Виїдьте з кільця через %s"
 
+#: navigation.c:1663
 #, c-format
 msgid "Follow the road for the next %s"
 msgstr "Їдьте дорогою наступні %s"
 
+#: navigation.c:1667
 msgid "soon"
 msgstr "скоро"
 
-#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#. / TRANSLATORS: First argument is the how manieth street to take, second the direction
+#: navigation.c:1679
 #, c-format
 msgid "Take the %1$s road to the %2$s"
 msgstr "З’їдьте на дорогу %1$s до %2$s"
 
+#: navigation.c:1684 navigation.c:1705
 #, c-format
 msgid "after %i roads"
 msgstr "після %i дороги"
 
+#: navigation.c:1689
 msgid "now"
 msgstr "зараз"
 
+#: navigation.c:1700
 #, c-format
 msgid "then take the %1$s road to the %2$s"
 msgstr "тоді виїдьте на доргу %1$s до %2$s"
 
+#: navigation.c:1713
 msgid "error"
 msgstr "помилка"
 
-#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#. / TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#: navigation.c:1758
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
 msgstr "Поверніть на %1$s%2$s %3$s%4$s"
 
-#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#. / TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#: navigation.c:1763
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
 msgstr "тоді поверніть на %1$s%2$s %3$s%4$s"
 
+#: navigation.c:1771
 #, c-format
 msgid "You have reached your destination %s"
 msgstr "Ви досягли місця призначення %s"
 
+#: navigation.c:1775
 msgid "then you have reached your destination."
 msgstr "і тоді Ви прибудете в місце призначення."
 
+#: navit.c:1893 gui/internal/gui_internal.c:2945
 msgid "Position"
 msgstr "Позиція"
 
+#: navit.c:1894
 msgid "Command"
 msgstr "Команда"
 
+#: navit.c:1898
 msgid "Length"
 msgstr "Довжина"
 
+#: navit.c:1902 navit.c:1927
 msgid "km"
 msgstr "км"
 
+#: navit.c:1906 navit.c:1931
 msgid "m"
 msgstr "м"
 
+#: navit.c:1912
 msgid "Time"
 msgstr "Час"
 
+#: navit.c:1924
 msgid "Destination Length"
 msgstr "Відстань до місця призначення"
 
+#: navit.c:1937
 msgid "Destination Time"
 msgstr "Час до місця призначення"
 
+#: navit.c:1970
 msgid "Roadbook"
 msgstr "Атлас доріг"
 
-msgid "Set as position"
-msgstr "Встановити як початкове положення"
-
-msgid "Set as destination"
-msgstr "Встановити як місце призначення"
-
-msgid "Add as bookmark"
-msgstr "Додати як закладку"
-
-#, c-format
-msgid "Point 0x%x 0x%x"
-msgstr "Точка 0x%x 0x%x"
-
-#, c-format
-msgid "Screen coord : %d %d"
-msgstr "Координати екрану: %d %d"
-
-#. 020
-msgid "Andorra"
-msgstr "Андора"
-
-#. 784
-msgid "United Arab Emirates"
-msgstr "Об’єднані Арабські Емірати"
-
-#. 004
-msgid "Afghanistan"
-msgstr "Афганістан"
-
-#. 028
-msgid "Antigua and Barbuda"
-msgstr "Антигуа і Барбуда"
-
-#. 660
-msgid "Anguilla"
-msgstr "Ангілья"
-
-#. 008
-msgid "Albania"
-msgstr "Албанія"
-
-#. 051
-msgid "Armenia"
-msgstr "Вірменія"
-
-#. 530
-msgid "Netherlands Antilles"
-msgstr "Антильські острови (Нідерланди)"
-
-#. 024
-msgid "Angola"
-msgstr "Ангола"
-
-#. 010
-msgid "Antarctica"
-msgstr "Антарктика"
-
-#. 032
-msgid "Argentina"
-msgstr "Аргентина"
-
-#. 016
-msgid "American Samoa"
-msgstr "Американське Самоа"
-
-#. 040
-msgid "Austria"
-msgstr "Австрія"
-
-#. 036
-msgid "Australia"
-msgstr "Австралія"
-
-#. 533
-msgid "Aruba"
-msgstr "Аруба"
-
-#. 248
-msgid "Aland Islands"
-msgstr "Аландські острови"
-
-#. 031
-msgid "Azerbaijan"
-msgstr "Азербайджан"
-
-#. 070
-msgid "Bosnia and Herzegovina"
-msgstr "Боснія і Герцеговина"
-
-#. 052
-msgid "Barbados"
-msgstr "Барбадос"
-
-#. 050
-msgid "Bangladesh"
-msgstr "Бангладеш"
-
-#. 056
-msgid "Belgium"
-msgstr "Бельгія"
-
-#. 854
-msgid "Burkina Faso"
-msgstr "Буркіна Фасо"
-
-#. 100
-msgid "Bulgaria"
-msgstr "Болгарія"
-
-#. 048
-msgid "Bahrain"
-msgstr "Бахрейн"
-
-#. 108
-msgid "Burundi"
-msgstr "Бурунді"
-
-#. 204
-msgid "Benin"
-msgstr "Бенін"
-
-#. 652
-msgid "Saint Barthelemy"
-msgstr "Сен Бартельмі"
-
-#. 060
-msgid "Bermuda"
-msgstr "Бермудські острови"
-
-#. 096
-msgid "Brunei Darussalam"
-msgstr "Бруней-Даруссалам"
-
-#. 068
-msgid "Bolivia"
-msgstr "Болівія"
-
-#. 076
-msgid "Brazil"
-msgstr "Бразілія"
-
-#. 044
-msgid "Bahamas"
-msgstr "Багамські острови"
-
-#. 064
-msgid "Bhutan"
-msgstr "Бутан"
-
-#. 074
-msgid "Bouvet Island"
-msgstr "Острів Буве"
-
-#. 072
-msgid "Botswana"
-msgstr "Ботсвана"
-
-#. 112
-msgid "Belarus"
-msgstr "Білорусь"
-
-#. 084
-msgid "Belize"
-msgstr "Беліз"
-
-#. 124
-msgid "Canada"
-msgstr "Канада"
-
-#. 166
-msgid "Cocos (Keeling) Islands"
-msgstr "Кокосові острови"
-
-#. 180
-msgid "Congo, Democratic Republic of the"
-msgstr "Конго, Демократична Республіка"
-
-#. 140
-msgid "Central African Republic"
-msgstr "Центрально-Африканська Республіка"
-
-#. 178
-msgid "Congo"
-msgstr "Конго"
-
-#. 756
-msgid "Switzerland"
-msgstr "Швейцарія"
-
-#. 384
-msgid "Cote d'Ivoire"
-msgstr "Кот д’Івуар"
-
-#. 184
-msgid "Cook Islands"
-msgstr "Острови Кука"
-
-#. 152
-msgid "Chile"
-msgstr "Чілі"
-
-#. 120
-msgid "Cameroon"
-msgstr "Камерун"
-
-#. 156
-msgid "China"
-msgstr "Китай"
-
-#. 170
-msgid "Colombia"
-msgstr "Колумбія"
-
-#. 188
-msgid "Costa Rica"
-msgstr "Коста Ріка"
-
-#. 192
-msgid "Cuba"
-msgstr "Куба"
-
-#. 132
-msgid "Cape Verde"
-msgstr "Кабо-Верде"
-
-#. 162
-msgid "Christmas Island"
-msgstr "Острів Різдва"
-
-#. 196
-msgid "Cyprus"
-msgstr "Кіпр"
-
-#. 203
-msgid "Czech Republic"
-msgstr "Чеська Республіка"
-
-#. 276
-msgid "Germany"
-msgstr "Німеччина"
-
-#. 262
-msgid "Djibouti"
-msgstr "Джибуті"
-
-#. 208
-msgid "Denmark"
-msgstr "Данія"
-
-#. 212
-msgid "Dominica"
-msgstr "Домініка"
-
-#. 214
-msgid "Dominican Republic"
-msgstr "Домініканська республіка"
-
-#. 012
-msgid "Algeria"
-msgstr "Алжир"
-
-#. 218
-msgid "Ecuador"
-msgstr "Еквадор"
-
-#. 233
-msgid "Estonia"
-msgstr "Естонія"
-
-#. 818
-msgid "Egypt"
-msgstr "Єгипет"
-
-#. 732
-msgid "Western Sahara"
-msgstr "Західна Сахара"
-
-#. 232
-msgid "Eritrea"
-msgstr "Еритрея"
-
-#. 724
-msgid "Spain"
-msgstr "Іспанія"
-
-#. 231
-msgid "Ethiopia"
-msgstr "Ефіопія"
-
-#. 246
-msgid "Finland"
-msgstr "Фінляндія"
-
-#. 242
-msgid "Fiji"
-msgstr "Фіджі"
-
-#. 238
-msgid "Falkland Islands (Malvinas)"
-msgstr "Фолклендські острови (Британія)"
-
-#. 583
-msgid "Micronesia, Federated States of"
-msgstr "Мікронезія, федеративні штати"
-
-#. 234
-msgid "Faroe Islands"
-msgstr "Фарерські острови"
-
-#. 250
-msgid "France"
-msgstr "Франція"
-
-#. 266
-msgid "Gabon"
-msgstr "Габон"
-
-#. 826
-msgid "United Kingdom"
-msgstr "Об’єднане Королівство (Великобританія)"
-
-#. 308
-msgid "Grenada"
-msgstr "Гренада"
-
-#. 268
-msgid "Georgia"
-msgstr "Грузія"
-
-#. 254
-msgid "French Guiana"
-msgstr "Французька Гвіана"
-
-#. 831
-msgid "Guernsey"
-msgstr "Гернсі"
-
-#. 288
-msgid "Ghana"
-msgstr "Гана"
-
-#. 292
-msgid "Gibraltar"
-msgstr "Гібралтар"
-
-#. 304
-msgid "Greenland"
-msgstr "Гренландія"
-
-#. 270
-msgid "Gambia"
-msgstr "Гамбія"
-
-#. 324
-msgid "Guinea"
-msgstr "Гвінея"
-
-#. 312
-msgid "Guadeloupe"
-msgstr "Гваделупа"
-
-#. 226
-msgid "Equatorial Guinea"
-msgstr "Екваторіальна Гвінея"
-
-#. 300
-msgid "Greece"
-msgstr "Греція"
-
-#. 239
-msgid "South Georgia and the South Sandwich Islands"
-msgstr "Південна Джорджія та Південні Сандвічеві Острови"
-
-#. 320
-msgid "Guatemala"
-msgstr "Гватемала"
-
-#. 316
-msgid "Guam"
-msgstr "Гуам"
-
-#. 624
-msgid "Guinea-Bissau"
-msgstr "Гвінея-Біссау"
-
-#. 328
-msgid "Guyana"
-msgstr "Гайана"
-
-#. 344
-msgid "Hong Kong"
-msgstr "Гонконг"
-
-#. 334
-msgid "Heard Island and McDonald Islands"
-msgstr "Острів Херд і Острови Макдональд"
-
-#. 340
-msgid "Honduras"
-msgstr "Гондурас"
-
-#. 191
-msgid "Croatia"
-msgstr "Хорватія"
-
-#. 332
-msgid "Haiti"
-msgstr "Гаїті"
-
-#. 348
-msgid "Hungary"
-msgstr "Угорщина"
-
-#. 360
-msgid "Indonesia"
-msgstr "Індонезія"
-
-#. 372
-msgid "Ireland"
-msgstr "Ірландія"
-
-#. 376
-msgid "Israel"
-msgstr "Ізраїль"
-
-#. 833
-msgid "Isle of Man"
-msgstr "Острів Мен"
-
-#. 356
-msgid "India"
-msgstr "Індія"
-
-#. 086
-msgid "British Indian Ocean Territory"
-msgstr "Британські території у Індійському океані"
-
-#. 368
-msgid "Iraq"
-msgstr "Ірак"
-
-#. 364
-msgid "Iran, Islamic Republic of"
-msgstr "Іран, Ісламська Республіка"
-
-#. 352
-msgid "Iceland"
-msgstr "Ісландія"
-
-#. 380
-msgid "Italy"
-msgstr "Італія"
-
-#. 832
-msgid "Jersey"
-msgstr "Джерсі"
-
-#. 388
-msgid "Jamaica"
-msgstr "Ямайка"
-
-#. 400
-msgid "Jordan"
-msgstr "Йорданія"
-
-#. 392
-msgid "Japan"
-msgstr "Японія"
-
-#. 404
-msgid "Kenya"
-msgstr "Кенія"
-
-#. 417
-msgid "Kyrgyzstan"
-msgstr "Киргизстан"
-
-#. 116
-msgid "Cambodia"
-msgstr "Камбоджа"
-
-#. 296
-msgid "Kiribati"
-msgstr "Кірибаті"
-
-#. 174
-msgid "Comoros"
-msgstr "Коморські острови"
-
-#. 659
-msgid "Saint Kitts and Nevis"
-msgstr "Сент-Кіттс і Невіс"
-
-#. 408
-msgid "Korea, Democratic People's Republic of"
-msgstr "Корея, Демократична Республіка"
-
-#. 410
-msgid "Korea, Republic of"
-msgstr "Корея, Республіка"
-
-#. 414
-msgid "Kuwait"
-msgstr "Кувейт"
-
-#. 136
-msgid "Cayman Islands"
-msgstr "Кайманові острови"
-
-#. 398
-msgid "Kazakhstan"
-msgstr "Казахстан"
-
-#. 418
-msgid "Lao People's Democratic Republic"
-msgstr "Лаоська Народно-Демократична Республіка"
-
-#. 422
-msgid "Lebanon"
-msgstr "Ліван"
-
-#. 662
-msgid "Saint Lucia"
-msgstr "Санта Лючія"
-
-#. 438
-msgid "Liechtenstein"
-msgstr "Ліхтенштейн"
-
-#. 144
-msgid "Sri Lanka"
-msgstr "Шрі Ланка"
-
-#. 430
-msgid "Liberia"
-msgstr "Ліберія"
-
-#. 426
-msgid "Lesotho"
-msgstr "Лесото"
-
-#. 440
-msgid "Lithuania"
-msgstr "Литва"
-
-#. 442
-msgid "Luxembourg"
-msgstr "Люксембург"
-
-#. 428
-msgid "Latvia"
-msgstr "Латвія"
-
-#. 434
-msgid "Libyan Arab Jamahiriya"
-msgstr "Лівійська Арабська Джамахірія"
-
-#. 504
-msgid "Morocco"
-msgstr "Марокко"
-
-#. 492
-msgid "Monaco"
-msgstr "Монако"
-
-#. 498
-msgid "Moldova, Republic of"
-msgstr "Республіка Молдова"
-
-#. 499
-msgid "Montenegro"
-msgstr "Чорногорія"
-
-#. 663
-msgid "Saint Martin (French part)"
-msgstr "Сен-Мартен (французька частина)"
-
-#. 450
-msgid "Madagascar"
-msgstr "Мадагаскар"
-
-#. 584
-msgid "Marshall Islands"
-msgstr "Маршаллові Острови"
-
-#. 807
-msgid "Macedonia, the former Yugoslav Republic of"
-msgstr "Македонія, колишня республіка Югославії"
-
-#. 466
-msgid "Mali"
-msgstr "Малі"
-
-#. 104
-msgid "Myanmar"
-msgstr "М'янма"
-
-#. 496
-msgid "Mongolia"
-msgstr "Монголія"
-
-#. 446
-msgid "Macao"
-msgstr "Макао"
-
-#. 580
-msgid "Northern Mariana Islands"
-msgstr "Північні Маріанські Острови"
-
-#. 474
-msgid "Martinique"
-msgstr "Мартиніка"
-
-#. 478
-msgid "Mauritania"
-msgstr "Мавританія"
-
-#. 500
-msgid "Montserrat"
-msgstr "Монтсеррат"
-
-#. 470
-msgid "Malta"
-msgstr "Мальта"
-
-#. 480
-msgid "Mauritius"
-msgstr "Маврикій"
-
-#. 462
-msgid "Maldives"
-msgstr "Мальдиви"
-
-#. 454
-msgid "Malawi"
-msgstr "Малаві"
-
-#. 484
-msgid "Mexico"
-msgstr "Мексика"
-
-#. 458
-msgid "Malaysia"
-msgstr "Малайзія"
-
-#. 508
-msgid "Mozambique"
-msgstr "Мозамбік"
-
-#. 516
-msgid "Namibia"
-msgstr "Намібія"
-
-#. 540
-msgid "New Caledonia"
-msgstr "Нова Каледонія"
-
-#. 562
-msgid "Niger"
-msgstr "Нігер"
-
-#. 574
-msgid "Norfolk Island"
-msgstr "Норфолкські острови"
-
-#. 566
-msgid "Nigeria"
-msgstr "Нігерія"
-
-#. 558
-msgid "Nicaragua"
-msgstr "Нікарагуа"
-
-#. 528
-msgid "Netherlands"
-msgstr "Нідерланди"
-
-#. 578
-msgid "Norway"
-msgstr "Норвегія"
-
-#. 524
-msgid "Nepal"
-msgstr "Непал"
-
-#. 520
-msgid "Nauru"
-msgstr "Науру"
-
-#. 570
-msgid "Niue"
-msgstr "Ніуе"
-
-#. 554
-msgid "New Zealand"
-msgstr "Нова Зеландія"
-
-#. 512
-msgid "Oman"
-msgstr "Оман"
-
-#. 591
-msgid "Panama"
-msgstr "Панама"
-
-#. 604
-msgid "Peru"
-msgstr "Перу"
-
-#. 258
-msgid "French Polynesia"
-msgstr "Французька Полінезія"
-
-#. 598
-msgid "Papua New Guinea"
-msgstr "Папуа Нова Гвінея"
-
-#. 608
-msgid "Philippines"
-msgstr "Філіппіни"
-
-#. 586
-msgid "Pakistan"
-msgstr "Пакистан"
-
-#. 616
-msgid "Poland"
-msgstr "Польща"
-
-#. 666
-msgid "Saint Pierre and Miquelon"
-msgstr "Сен-П'єр і Мікелон"
-
-#. 612
-msgid "Pitcairn"
-msgstr "Піткерн"
-
-#. 630
-msgid "Puerto Rico"
-msgstr "Пуерто Ріко"
-
-#. 275
-msgid "Palestinian Territory, Occupied"
-msgstr "Окуповані Палестинські Території"
-
-#. 620
-msgid "Portugal"
-msgstr "Португалія"
-
-#. 585
-msgid "Palau"
-msgstr "Палау"
-
-#. 600
-msgid "Paraguay"
-msgstr "Парагвай"
-
-#. 634
-msgid "Qatar"
-msgstr "Катар"
-
-#. 638
-msgid "Reunion"
-msgstr "Реюньйон"
-
-#. 642
-msgid "Romania"
-msgstr "Румунія"
-
-#. 688
-msgid "Serbia"
-msgstr "Сербія"
-
-#. 643
-msgid "Russian Federation"
-msgstr "Російська Федерація"
-
-#. 646
-msgid "Rwanda"
-msgstr "Руанда"
-
-#. 682
-msgid "Saudi Arabia"
-msgstr "Саудівська Аравія"
-
-#. 090
-msgid "Solomon Islands"
-msgstr "Соломонові острови"
-
-#. 690
-msgid "Seychelles"
-msgstr "Сейшельські острови"
-
-#. 736
-msgid "Sudan"
-msgstr "Судан"
-
-#. 752
-msgid "Sweden"
-msgstr "Швеція"
-
-#. 702
-msgid "Singapore"
-msgstr "Сингапур"
-
-#. 654
-msgid "Saint Helena"
-msgstr "Острів Святої Єлени"
-
-#. 705
-msgid "Slovenia"
-msgstr "Словенія"
-
-#. 744
-msgid "Svalbard and Jan Mayen"
-msgstr "Острови Свальбард та Ян-Маєн"
-
-#. 703
-msgid "Slovakia"
-msgstr "Словаччина"
-
-#. 694
-msgid "Sierra Leone"
-msgstr "Сьєрра-Леоне"
-
-#. 674
-msgid "San Marino"
-msgstr "Сан Маріно"
-
-#. 686
-msgid "Senegal"
-msgstr "Сенегал"
-
-#. 706
-msgid "Somalia"
-msgstr "Сомалі"
-
-#. 740
-msgid "Suriname"
-msgstr "Сурінам"
-
-#. 678
-msgid "Sao Tome and Principe"
-msgstr "Сан-Томе і Принсипі"
-
-#. 222
-msgid "El Salvador"
-msgstr "Сальвадор"
-
-#. 760
-msgid "Syrian Arab Republic"
-msgstr "Сирійська Арабська Республіка"
-
-#. 748
-msgid "Swaziland"
-msgstr "Свазиленд"
-
-#. 796
-msgid "Turks and Caicos Islands"
-msgstr "Острови Теркс і Кайкос"
-
-#. 148
-msgid "Chad"
-msgstr "Чад"
-
-#. 260
-msgid "French Southern Territories"
-msgstr "Французькі Південні Території"
-
-#. 768
-msgid "Togo"
-msgstr "Того"
-
-#. 764
-msgid "Thailand"
-msgstr "Таїланд"
-
-#. 762
-msgid "Tajikistan"
-msgstr "Таджикістан"
-
-#. 772
-msgid "Tokelau"
-msgstr "Токелау"
-
-#. 626
-msgid "Timor-Leste"
-msgstr "Східний Тімор"
-
-#. 795
-msgid "Turkmenistan"
-msgstr "Туркменістан"
-
-#. 788
-msgid "Tunisia"
-msgstr "Тунізія"
-
-#. 776
-msgid "Tonga"
-msgstr "Тонга"
-
-#. 792
-msgid "Turkey"
-msgstr "Туреччина"
-
-#. 780
-msgid "Trinidad and Tobago"
-msgstr "Тринідад і Тобаго"
-
-#. 798
-msgid "Tuvalu"
-msgstr "Тувалу"
-
-#. 158
-msgid "Taiwan, Province of China"
-msgstr "Иайвань, провінція Китаю"
-
-#. 834
-msgid "Tanzania, United Republic of"
-msgstr "Танзанія, Об’єднана Республіка"
-
-#. 804
-msgid "Ukraine"
-msgstr "Україна"
-
-#. 800
-msgid "Uganda"
-msgstr "Уганда"
-
-#. 581
-msgid "United States Minor Outlying Islands"
-msgstr "Сполучені Штати Малих Віддалених Островів"
-
-#. 840
-msgid "United States"
-msgstr "Сполучені Штати Америки"
-
-#. 858
-msgid "Uruguay"
-msgstr "Уругвай"
-
-#. 860
-msgid "Uzbekistan"
-msgstr "Узбекістан"
-
-#. 336
-msgid "Holy See (Vatican City State)"
-msgstr "Святий Престіл (Ватикан, Місто-Держава)"
-
-#. 670
-msgid "Saint Vincent and the Grenadines"
-msgstr "Сент-Вінсент і Гренадини"
-
-#. 862
-msgid "Venezuela"
-msgstr "Венесуела"
-
-#. 092
-msgid "Virgin Islands, British"
-msgstr "Віргінські острови (Британія)"
-
-#. 850
-msgid "Virgin Islands, U.S."
-msgstr "Віргінські острови (США)"
-
-#. 704
-msgid "Viet Nam"
-msgstr "В’єтнам"
-
-#. 548
-msgid "Vanuatu"
-msgstr "Вануату"
-
-#. 876
-msgid "Wallis and Futuna"
-msgstr "Уолліс і Футуна"
-
-#. 882
-msgid "Samoa"
-msgstr "Самоа"
-
-#. 887
-msgid "Yemen"
-msgstr "Йемен"
-
-#. 175
-msgid "Mayotte"
-msgstr "Майотта"
-
-#. 710
-msgid "South Africa"
-msgstr "Південна Африка"
-
-#. 894
-msgid "Zambia"
-msgstr "Замбія"
-
-#. 716
-msgid "Zimbabwe"
-msgstr "Зімбабве"
-
-msgid "* Unknown, add is_in tags to those cities"
-msgstr "Новідомо, додайте is_in теґ до цих міст"
-
-msgid "Car"
-msgstr "Машина"
-
-msgid "Iso2"
-msgstr "Iso2"
-
-msgid "Iso3"
-msgstr "Iso3"
-
-msgid "Country"
-msgstr "Країна"
-
-msgid "Postal"
-msgstr "Поштова адреса"
-
-msgid "Town"
-msgstr "Місто"
-
-msgid "District"
-msgstr "Округ"
-
-msgid "Street"
-msgstr "Вулиця"
-
-msgid "Number"
-msgstr "Номер"
-
-msgid "Enter Destination"
-msgstr "Введіть пункт призначення"
-
-msgid "Zip Code"
-msgstr "Поштовий індекс"
-
-msgid "City"
-msgstr "Місто"
-
-msgid "District/Township"
-msgstr "Округ/Селище"
-
-msgid "Map"
-msgstr "Карта"
-
-msgid "Bookmark"
-msgstr "Закладка"
-
-msgid "Destination"
-msgstr "Пункт призначення"
-
-msgid "Display"
-msgstr "Показати"
-
-msgid "Route"
-msgstr "Дорога"
-
-msgid "Former Destinations"
-msgstr "Минулий пункт призначення"
-
-msgid "Bookmarks"
-msgstr "Закладки"
-
-msgid "Layout"
-msgstr "Розкладка"
-
-msgid "Projection"
-msgstr "Проекція"
-
-msgid "Vehicle"
-msgstr "Транспортний засіб"
-
-msgid "ZoomOut"
-msgstr "Зменшити"
-
-msgid "Decrease zoom level"
-msgstr "Зменшити масштаб"
-
-msgid "ZoomIn"
-msgstr "Збільшити"
-
-msgid "Increase zoom level"
-msgstr "Збільшити масштаб"
-
-msgid "Recalculate"
-msgstr "Перерахувати"
-
-msgid "Redraw map"
-msgstr "Оновити мапу"
-
-msgid "Info"
-msgstr "Інформація"
-
-msgid "Set destination"
-msgstr "Встановити пункт призначення"
-
-msgid "Opens address search dialog"
-msgstr "Відкриває діалог пошуку адреси"
-
-msgid "Stop Navigation"
-msgstr "Зупинити навігацію"
-
-msgid "Test"
-msgstr "Тест"
-
-msgid "_Quit"
-msgstr "_Вийти"
-
-msgid "Quit the application"
-msgstr "Вийти з програми"
-
-msgid "Show position cursor"
-msgstr "Показати мітку поточного місцезнаходження"
-
-msgid "Lock on Road"
-msgstr "Триматися дороги"
-
-msgid "Keep orientation to the North"
-msgstr "Орієнтувати мапу на північ"
-
-msgid "Switches map orientation to the north or the vehicle"
-msgstr "Переключає орієнтацію мапи на північ або по ходу руху"
-
-msgid "Show/hide route description"
-msgstr "Показати/сховати опис маршруту"
-
-msgid "Autozoom"
-msgstr "Авторозмір"
-
-msgid "Enable/disable automatic zoom level changing"
-msgstr "Ввімкнути/вимкнути автоматичне масштабування"
-
-msgid "Fullscreen"
-msgstr "На весь екран"
-
-msgid "Data"
-msgstr "Дата"
-
-msgid "N"
-msgstr "Пн"
-
-msgid "NE"
-msgstr "ПнСх"
-
-msgid "E"
-msgstr "Сх"
-
-msgid "SE"
-msgstr "ПдСх"
-
-msgid "S"
-msgstr "Пд"
-
-msgid "SW"
-msgstr "ПдЗ"
-
-msgid "W"
-msgstr "З"
-
-msgid "NW"
-msgstr "ПнЗ"
-
-msgid "No"
-msgstr "№"
-
-msgid "2D"
-msgstr "2D"
-
-msgid "3D"
-msgstr "3D"
-
-msgid "OT"
-msgstr "Інший"
-
-#, c-format
-msgid "Route %4.0fkm    %02d:%02d ETA"
-msgstr "Дорога %4.0fкм %02d:%02d ETA"
-
-msgid "Route 0000km  0+00:00 ETA"
-msgstr "Дорога 0000км 0+00:00 ETA"
-
-msgid "Back to map"
-msgstr "Повернутися до карти"
-
-msgid "Main Menu"
-msgstr "Головне меню"
-
+#: gui/internal/gui_internal.c:1713
 msgid "Help"
 msgstr "Допомога"
 
+#: gui/internal/gui_internal.c:1867
 msgid "Back"
 msgstr "Назад"
 
-msgid "Add Bookmark"
-msgstr "Додати закладку"
-
-msgid "Add Bookmark folder"
-msgstr "Додати папку закладок"
-
-msgid "Rename"
-msgstr "Перейменувати"
-
-msgid "POIs"
-msgstr "Інформація про об’єкти"
-
-msgid "View in Browser"
-msgstr "Показати в переглядачі"
-
+#: gui/internal/gui_internal.c:2713
 msgid "Streets"
 msgstr "Вулиці"
 
+#: gui/internal/gui_internal.c:2721
 msgid "House numbers"
 msgstr "Номери будинків"
 
-msgid "View Attributes"
-msgstr "Показати атрибути"
-
-msgid "View on map"
-msgstr "Показати на карті"
-
-msgid "Cut Bookmark"
-msgstr "Вирізати закладку"
-
-msgid "Copy Bookmark"
-msgstr "Копіювати закладку"
-
-msgid "Rename Bookmark"
-msgstr "Перейменувати закладку"
-
-msgid "Paste Bookmark"
-msgstr "Вставити закладку"
-
-msgid "Delete Bookmark"
-msgstr "Вилучити закладку"
-
-msgid "Paste bookmark"
-msgstr "Вставити закладку"
-
-#, c-format
-msgid "Bookmark %s"
-msgstr "Закладка %s"
-
+#: gui/internal/gui_internal.c:3833 gui/internal/gui_internal.c:3842
 msgid "House number"
 msgstr "Номер будинку"
 
-msgid "Maps"
-msgstr "Карти"
+#: gui/internal/gui_internal.c:3849 gui/internal/gui_internal.c:3858
+msgid "Street"
+msgstr "Вулиця"
 
-msgid "Show Satellite Status"
-msgstr "Показати статус супутника"
+#: gui/internal/gui_internal.c:3868 gui/internal/gui_internal.c:3897
+msgid "Town"
+msgstr "Місто"
 
-msgid " Elevation "
-msgstr " Висота "
-
-msgid " Azimuth "
-msgstr " Азимут "
-
-msgid "Show NMEA Data"
-msgstr "Показати дані NMEA"
-
-msgid "car"
-msgstr "автомобіль"
-
-msgid "bike"
-msgstr "велосипед"
-
-msgid "pedestrian"
-msgstr "пішохід"
-
-#, c-format
-msgid "Current profile: %s"
-msgstr "Поточний профіль: %s"
-
-#, c-format
-msgid "Change profile to: %s"
-msgstr "Змінити профіль на: %s"
-
-msgid "Set as active"
-msgstr "Встановити активним"
-
-msgid "Show Satellite status"
-msgstr "Показати статус супутника"
-
-msgid "Show NMEA data"
-msgstr "Показати дані NMEA"
-
-msgid "Rules"
-msgstr "Правила"
-
-msgid "Lock on road"
-msgstr "Триматися дороги"
-
-msgid "Northing"
-msgstr "Північніше"
-
-msgid "Map follows Vehicle"
-msgstr "Карта слідує за транспортним засобом"
-
-msgid "Message"
-msgstr "Повідомлення"
-
-msgid "Route Description"
-msgstr "Опис маршруту"
-
-msgid "Height Profile"
-msgstr "Профіль висот"
-
-msgid "Show Locale"
-msgstr "Перевірити локалізацію"
-
-msgid "About Navit"
-msgstr "Про Navit"
-
-#. Authors
-msgid "By"
-msgstr "від"
-
-#. Contributors
-msgid "And all the Navit Team"
-msgstr "Все про Navit Team"
-
-msgid "members and contributors."
-msgstr "члени та учасникі."
-
-msgid "Map Point"
-msgstr "Точка на карті"
-
-msgid "Vehicle Position"
-msgstr "Положення транспорту"
-
-msgid "Main menu"
-msgstr "Головне меню"
-
-msgid ""
-"Show\n"
-"Map"
-msgstr ""
-"Показати\n"
-"Карту"
-
-msgid "Settings"
-msgstr "Настройки"
-
-msgid "Tools"
-msgstr "Інструменти"
-
-msgid "About"
-msgstr "Про програму..."
-
-msgid "Actions"
-msgstr "Дія"
-
-msgid "Quit"
-msgstr "Вийти"
-
-msgid ""
-"Stop\n"
-"Navigation"
-msgstr ""
-"Зупинити\n"
-"Навігацію"
-
-msgid "Window Mode"
-msgstr "Режим вікна"
-
-msgid "Description"
-msgstr "Опис"
-
-msgid "horse"
-msgstr "кінь"
-
-#. chr:
-#. flags used for a truck: (first flag number is 0)
-#. 8: SIZE_OR_WEIGHT_LIMIT
-#. 21: TRANSPORT_TRUCK
-#. speed setup:
-#. 'speed' data of the atkaction for a car is
-#. reduced about 10 km/h. When the speed was at
-#. 10 km/h, I reduced it to 5 km/h.
-#. 'route_weight' data has been treated in the same way.
-#. If you want to discourage the use of small roads,
-#. just reduce this value.
-#. size and weight setup:
-#. This is an example, you have to use the data of your truck.
-#. bobshaffer's standard truck:
-#. (1 lb = 453.59237 g, 1 foot = .3048 m)
-#. (data has to be in [cm] and [kg] according to 'atkaction.h')
-#. width=  9    feet,   274 cm
-#. height= 13.5  feet,   411 cm
-#. length= 70    feet,  2134 cm
-#. weight= 80000 lbs,  36287 kg
-#. axle_weight= 34000 lbs,  15422 kg
-#. 
-msgid "truck"
-msgstr ""
-
-#: bookmarks.c:294 bookmarks.c:365
-msgid "Failed to write bookmarks file"
-msgstr ""
-
-#: country.c:285
-msgid "Unknown"
-msgstr ""
-
-#: navigation.c:431
-#, c-format
-msgid "%d feet"
-msgstr ""
-
-#: navigation.c:433
-#, c-format
-msgid "in %d feet"
-msgstr ""
-
-#: navigation.c:453
-#, c-format
-msgid "%d.%d miles"
-msgstr ""
-
-#: navigation.c:455
-#, c-format
-msgid "in %d.%d miles"
-msgstr ""
-
-#: navigation.c:1586
-msgid "Enter the roundabout soon"
-msgstr ""
-
-#: start_real.c:168
-msgid "No config file navit.xml, navit.xml.local found\n"
-msgstr ""
-
-#: start_real.c:183
-#, c-format
-msgid "Error parsing '%s': %s\n"
-msgstr ""
-
-#: start_real.c:185
-#, c-format
-msgid "Using '%s'\n"
-msgstr ""
-
-#: start_real.c:193
-msgid "No instance has been created, exiting\n"
-msgstr ""
-
-#: osd/core/osd_core.c:1882
-msgid "Look out! Camera!"
-msgstr ""
-
-#: osd/core/osd_core.c:2086
-msgid "Please decrease your speed"
-msgstr ""
-
-#: gui/internal/gui_internal.c:3950
-#, c-format
-msgid "Download %s"
-msgstr ""
-
-#: gui/internal/gui_internal.c:4011
-msgid "Map Download"
-msgstr ""
+#: gui/internal/gui_internal.c:3889
+msgid "Country"
+msgstr "Країна"
 
 #: gui/internal/gui_internal.c:4016
 msgid "Active"
@@ -1727,6 +432,96 @@ msgstr ""
 msgid "Download Enabled"
 msgstr ""
 
-#: gui/internal/gui_internal.c:4048
-msgid "Download completely"
+#: gui/internal/gui_internal.c:4082
+msgid "Maps"
+msgstr "Карти"
+
+#: gui/internal/gui_internal.c:4134
+msgid "Show Satellite Status"
+msgstr "Показати статус супутника"
+
+#: gui/internal/gui_internal.c:4142
+msgid " Elevation "
+msgstr " Висота "
+
+#: gui/internal/gui_internal.c:4143
+msgid " Azimuth "
+msgstr " Азимут "
+
+#: gui/internal/gui_internal.c:4168
+msgid "Show NMEA Data"
+msgstr "Показати дані NMEA"
+
+#: gui/internal/gui_internal.c:4287
+msgid "car"
+msgstr "автомобіль"
+
+#: gui/internal/gui_internal.c:4287
+msgid "bike"
+msgstr "велосипед"
+
+#: gui/internal/gui_internal.c:4287
+msgid "pedestrian"
+msgstr "пішохід"
+
+#: gui/internal/gui_internal.c:4308
+#, c-format
+msgid "Current profile: %s"
+msgstr "Поточний профіль: %s"
+
+#: gui/internal/gui_internal.c:4310
+#, c-format
+msgid "Change profile to: %s"
+msgstr "Змінити профіль на: %s"
+
+#: gui/internal/gui_internal.c:4346
+msgid "Set as active"
+msgstr "Встановити активним"
+
+#: gui/internal/gui_internal.c:4353
+msgid "Show Satellite status"
+msgstr "Показати статус супутника"
+
+#: gui/internal/gui_internal.c:4359
+msgid "Show NMEA data"
+msgstr "Показати дані NMEA"
+
+#: gui/internal/gui_internal.c:4385
+msgid "Vehicle"
+msgstr "Транспортний засіб"
+
+#: gui/internal/gui_internal.c:4410
+msgid "Rules"
+msgstr "Правила"
+
+#: gui/internal/gui_internal.c:4418
+msgid "Lock on road"
+msgstr "Триматися дороги"
+
+#: gui/internal/gui_internal.c:4424
+msgid "Northing"
+msgstr "Північніше"
+
+#: gui/internal/gui_internal.c:4430
+msgid "Map follows Vehicle"
+msgstr "Карта слідує за транспортним засобом"
+
+#: gui/internal/gui_internal.c:5016
+msgid "Message"
+msgstr "Повідомлення"
+
+#: gui/internal/gui_internal.c:6095
+msgid "Route Description"
+msgstr "Опис маршруту"
+
+#: gui/internal/gui_internal.c:6219
+msgid "Height Profile"
+msgstr "Профіль висот"
+
+#: osd/core/osd_core.c:1882
+msgid "Look out! Camera!"
+msgstr ""
+
+#: osd/core/osd_core.c:2086
+msgid "Please decrease your speed"
 msgstr ""
