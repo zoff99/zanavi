@@ -2,338 +2,471 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZANavi 1.0.0\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
-"POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-11-14 17:39+0000\n"
-"Last-Translator: Piotr Jablonski <Unknown>\n"
+"POT-Creation-Date: 2012-01-05 19:42+0100\n"
+"PO-Revision-Date: 2012-01-05 09:40+0000\n"
+"Last-Translator: S0Cool <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-01 12:56+0000\n"
-"X-Generator: Launchpad (build 14414)\n"
+"X-Launchpad-Export-Date: 2012-01-05 18:48+0000\n"
+"X-Generator: Launchpad (build 14625)\n"
 
-msgid "map download"
-msgstr "pobierz mapy"
+#: NavitMapPreviewActivity.java:191
+msgid "Use as destination"
+msgstr "Użyj jako celu"
 
-msgid "Welcome to ZANavi"
-msgstr "Witaj w ZANavi"
+#: NavitMapPreviewActivity.java:205
+msgid "back"
+msgstr "wstecz"
 
-msgid "More info"
-msgstr "Więcej informacji"
+#: NavitMapPreviewActivity.java:219
+msgid "show destination on map"
+msgstr "pokaż cel na mapie"
 
-msgid "zoom in"
-msgstr "przybliż"
+#: NavitMapPreviewActivity.java:236
+msgid "touch map to zoom"
+msgstr "dotknij mapy aby przybliżyć"
 
-msgid "zoom out"
-msgstr "oddal"
-
-#. TRANSLATORS: text to translate is: exit ZANavi
-msgid "exit navit"
-msgstr "wyjdź z ZANavi"
-
-msgid "toggle POI"
-msgstr "włącz/wyłącz POI"
-
-msgid "address search (offline)"
-msgstr "wyszukaj adres (offline)"
-
-msgid "address search (online)"
-msgstr "wyszukaj adres (online)"
-
-msgid "Mapdownload"
-msgstr "Pobieranie map"
-
-msgid "downloading"
-msgstr "Pobieranie"
-
-msgid "ETA"
-msgstr "Pozostały czas"
-
+#: NavitMapDownloader.java:458 NavitMapDownloader.java:1478
+#: NavitMapDownloader.java:1869 NavitMapDownloader.java:1883
+#: NavitMapDownloader.java:1915
 msgid "Error downloading map!"
 msgstr "Błąd przy pobieraniu map"
 
+#: NavitMapDownloader.java:545 NavitMapDownloader.java:1239
+#: NavitMapDownloader.java:1648 NavitMapDownloader.java:1786
+#: NavitMapDownloader.java:1817 NavitMapDownloader.java:1954
+#: NavitMapDownloader.java:2068 NavitMapDownloader.java:2459
+#: NavitMapDownloader.java:2572 NavitMapDownloader.java:2744
+#: NavitMapDownloader.java:2758
+msgid "Mapdownload"
+msgstr "Pobieranie map"
+
+#: NavitMapDownloader.java:579 NavitMapDownloader.java:1240
+#: NavitMapDownloader.java:1661 NavitMapDownloader.java:1818
+msgid "downloading"
+msgstr "Pobieranie"
+
+#: NavitMapDownloader.java:579 NavitMapDownloader.java:1661
+msgid "ETA"
+msgstr "Pozostały czas"
+
+#: NavitMapDownloader.java:649 NavitMapDownloader.java:1707
 msgid "Error downloading map, resuming"
 msgstr "Błąd przy pobieraniu map, ponawiam"
 
-msgid "ready"
-msgstr "gotowe"
-
-msgid "Ok"
-msgstr "Ok"
-
-msgid "No address found"
-msgstr "Nie znaleziono adresu"
-
-msgid "Enter: City and Street"
-msgstr "Wprowadź: Miasto oraz Ulica"
-
-msgid "No search string entered"
-msgstr "Nie wprowadzono żadnych znaków"
-
-msgid "setting destination to"
-msgstr "ustawianie celu trasy do"
-
-msgid "getting search results"
-msgstr "pobieranie wyników wyszukiwania"
-
-msgid "searching ..."
-msgstr "wyszukuję ..."
-
-msgid "No Results found!"
-msgstr "Nic nie znaleziono!"
-
-#. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
-msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
-msgstr "Dane map (c) OpenStreetMap contributors, CC-BY-SA"
-
-msgid "partial match"
-msgstr "częściowe dopasowanie"
-
-msgid "Search"
-msgstr "Wyszukaj"
-
-msgid "drive here"
-msgstr "Jedź tutaj"
-
-msgid "loading search results"
-msgstr "wczytywanie wyników wyszukiwania"
-
-msgid "towns"
-msgstr "miasta"
-
-msgid "delete maps"
-msgstr "usuń mapy"
-
-msgid "download maps"
-msgstr "Pobierz mapy"
-
+#: NavitMapDownloader.java:1413 NavitMapDownloader.java:1900
 msgid "Map already up to date"
 msgstr "Mapa jest już w najnowszej wersji"
 
+#: NavitMapDownloader.java:1787 NavitMapDownloader.java:2069
+msgid "ready"
+msgstr "gotowe"
+
+#: NavitMapDownloader.java:1955 NavitMapDownloader.java:2460
+msgid "Creating outputfile, long time"
+msgstr "Tworzę plik wyjściowy, długi czas oczekiwania"
+
+#: NavitMapDownloader.java:2018
+msgid "MD5 mismatch"
+msgstr "skrót MD5 niepoprawny"
+
+#: NavitMapDownloader.java:2573
+msgid "Creating outputfile, wait"
+msgstr "Tworzę plik wyjściowy, czekaj"
+
+#: NavitMapDownloader.java:2745 NavitMapDownloader.java:2759
+msgid "generating MD5 checksum"
+msgstr "generowanie skrótu MD5"
+
+#. . english text: Welcome to ZANavi
+#: Navit.java:772
+msgid "__INFO_BOX_TITLE__"
+msgstr "Witamy w ZaNavi"
+
+#: Navit.java:798
+msgid "Ok"
+msgstr "Ok"
+
+#: Navit.java:807
+msgid "More info"
+msgstr "Więcej informacji"
+
+#. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
+#: Navit.java:837
+msgid "__INFO_BOX_TEXT__"
+msgstr ""
+"Używasz ZANavi po raz pierwszy!\\n\\nNa początku wybierz opcję \"Pobieranie "
+"map\"\\nz menu i pobierz mapę\\ndla twojego obszaru.\\nTo spowoduje pobranie "
+"dużego pliku, dlatego proszę\\nupewnij się czy masz pakiet internetowy lub "
+"połączenie WiFi!\\n\\nMapy:\\nCC-BY-SA OpenStreetMap \\n\\nWięcej "
+"informacji\\nna naszej stronie\\nhttp://zanavi.cc\\n\\nMiłej zabawy przy "
+"ZANavi!"
+
+#: Navit.java:1621
+msgid "address search (online)"
+msgstr "wyszukaj adres (online)"
+
+#: Navit.java:1622
+msgid "address search (offline)"
+msgstr "wyszukaj adres (offline)"
+
+#: Navit.java:1625
+msgid "Stop Navigation"
+msgstr "Zatrzymaj nawigację"
+
+#: Navit.java:1626
+msgid "Zoom to Route"
+msgstr "Przybliż do trasy"
+
+#. . TRANSLATORS: text to translate is: exit ZANavi
+#: Navit.java:1629
+msgid "exit navit"
+msgstr "wyjdź z ZANavi"
+
+#: Navit.java:1630
+msgid "toggle POI"
+msgstr "włącz/wyłącz POI"
+
+#: Navit.java:1631
+msgid "Settings"
+msgstr "Ustawienia"
+
+#: Navit.java:1635
+msgid "Announcer Off"
+msgstr "Wyłącz komunikaty"
+
+#: Navit.java:1639
+msgid "Announcer On"
+msgstr "Włącz komunikaty"
+
+#: Navit.java:1642
+msgid "Recent destinations"
+msgstr "Ostatnie cele"
+
+#: Navit.java:1643
+msgid "download maps"
+msgstr "Pobierz mapy"
+
+#: Navit.java:1644
+msgid "delete maps"
+msgstr "usuń mapy"
+
+#: Navit.java:1687
+msgid "No address found"
+msgstr "Nie znaleziono adresu"
+
+#: Navit.java:1775 Navit.java:1789 Navit.java:3671
+msgid "Enter: City and Street"
+msgstr "Wprowadź: Miasto oraz Ulica"
+
+#: Navit.java:2097
+msgid "No search string entered"
+msgstr "Nie wprowadzono żadnych znaków"
+
+#: Navit.java:2227 Navit.java:2335
+msgid "setting destination to"
+msgstr "ustawianie celu trasy do"
+
+#: Navit.java:2241 Navit.java:2349
+msgid "new Waypoint"
+msgstr "Nowy punkt"
+
+#: Navit.java:2525 Navit.java:2580
+msgid "getting search results"
+msgstr "pobieranie wyników wyszukiwania"
+
+#: Navit.java:2526 Navit.java:2581
+msgid "searching ..."
+msgstr "wyszukuję ..."
+
+#: Navit.java:2679 NavitGraphics.java:2298
+msgid "loading search results"
+msgstr "wczytywanie wyników wyszukiwania"
+
+#: Navit.java:2680 NavitGraphics.java:2299
+msgid "towns"
+msgstr "miasta"
+
+#: Navit.java:2680 NavitGraphics.java:2299
+msgid "Streets"
+msgstr "Ulice"
+
+#: Navit.java:2702
+msgid "No Results found!"
+msgstr "Nic nie znaleziono!"
+
+#. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+#: Navit.java:3030 Navit.java:3056
+msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr "Dane map (c) OpenStreetMap contributors, CC-BY-SA"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:34
+msgid "__PREF__title__use_fast_provider"
+msgstr "GSM/3g/WiFi"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:36
+msgid "__PREF__summ__use_fast_provider"
+msgstr "Użyj sieci GSM/3g/WiFi aby ustalić pozycję (wykorzystuje Internet)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:38
+msgid "__PREF__title__follow_gps"
+msgstr "Podążaj za GPS"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:40
+msgid "__PREF__summ__follow_gps"
+msgstr "Podążaj za pozycją GPS. Włącz aby działał kompas."
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:42
+msgid "__PREF__title__show_vehicle_in_center"
+msgstr "Pojazd na środku"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:44
+msgid "__PREF__summ__show_vehicle_in_center"
+msgstr "Pokaż pojazd na środku ekranu zamiast w dolnej części"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:46
+msgid "__PREF__title__use_compass_heading_base"
+msgstr "Kompas"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:48
+msgid "__PREF__summ__use_compass_heading_base"
+msgstr "Ustal kierunki na podstawie kompasu. Intensywnie wykorzystuje CPU!"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:50
+msgid "__PREF__title__use_compass_heading_always"
+msgstr "Zawsze użyj kompasu"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:52
+msgid "__PREF__summ__use_compass_heading_always"
+msgstr "Używa kompasu  nawet przy dużych prędkościach"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:54
+msgid "__PREF__title__use_compass_heading_fast"
+msgstr "Szybki kompas"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:56
+msgid "__PREF__summ__use_compass_heading_fast"
+msgstr "Zakręty bardzo płynne. UWAGA! ZJADA CAŁĄ MOC CPU!"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:58
+msgid "__PREF__title__use_imperial"
+msgstr "Jednostki imperialne"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:60
+msgid "__PREF__summ__use_imperial"
+msgstr "Użyj jednostek imperialnych (brytyjskich) zamiast metrycznych"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:62
+msgid "__PREF__title__show_3d_map"
+msgstr "3D"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:64
+msgid "__PREF__summ__show_3d_map"
+msgstr "Pokaż mapę w 3D [BETA]"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:66
+msgid "__PREF__title__use_anti_aliasing"
+msgstr "Antyaliasing"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:68
+msgid "__PREF__summ__use_anti_aliasing"
+msgstr "Rysuj z antyaliasingiem, mapa jest szybsza, gdy to jest wyłączone"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:70
+msgid "__PREF__title__gui_oneway_arrows"
+msgstr "Strzałki jednokierunkowe"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:72
+msgid "__PREF__summ__gui_oneway_arrows"
+msgstr "Pokaż strzałki na ulicach jednokierunkowych [BETA]"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:74
+msgid "__PREF__title__show_debug_messages"
+msgstr "Komunikaty debuggera"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:76
+msgid "__PREF__summ__show_debug_messages"
+msgstr "Pokaż komunikaty debuggera"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:78
+msgid "__PREF__title__navit_lang"
+msgstr "Język"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:80
+msgid "__PREF__summ__navit_lang"
+msgstr "Wybierz język komunikatów. Wymaga RESTARTU!"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:82
+msgid "__PREF__title__use_lock_on_roads"
+msgstr "Przyciągaj do drogi"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:84
+msgid "__PREF__summ__use_lock_on_roads"
+msgstr ""
+"Przyciągaj pojazd do najbliższej drogi. Wyłącz jeśli idziesz pieszo lub "
+"jedziesz w terenie"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:86
+msgid "__PREF__title__use_route_highways"
+msgstr "Preferuj autostrady"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:88
+msgid "__PREF__summ__use_route_highways"
+msgstr ""
+"Preferuj autostrady przy nawigacji (wyłączenie zwiększa zużycie pamięci!!)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:90
+msgid "__PREF__title__save_zoomlevel"
+msgstr "Powiększenie"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:92
+msgid "__PREF__summ__save_zoomlevel"
+msgstr "Zapamiętaj powiększenie"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:94
+msgid "__PREF__title__show_sat_status"
+msgstr "Status satelit"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:96
+msgid "__PREF__summ__show_sat_status"
+msgstr "Pokaż status satelit"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:98
+msgid "__PREF__title__use_agps"
+msgstr "aGPS"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:100
+msgid "__PREF__summ__use_agps"
+msgstr "Użyj assisted GPS (wykorzystuje Internet!!)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:124
+msgid "__PREF__title__map_directory"
+msgstr "Katalog map"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:126
+msgid "__PREF__summ__map_directory"
+msgstr "Katalog z mapami (zmiana wymaga RESTARTU!)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:128
+msgid "__PREF__dialogtitle__map_directory"
+msgstr "Katalog map"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:130
+msgid "__PREF__dialogcancel__map_directory"
+msgstr "Anuluj"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:132
+msgid "__PREF__dialogok__map_directory"
+msgstr "Ok"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:134
+msgid "__PREF__dialogmsg__map_directory"
+msgstr "Wpisz ścieżkę do katalogu map"
+
+#: NavitRecentDestinationActivity.java:61
+msgid "delete Destination"
+msgstr "usuń Cel"
+
+#: NavitRecentDestinationActivity.java:61
+msgid "rename Destination"
+msgstr "zmień nazwę celu"
+
+#: NavitRecentDestinationActivity.java:182
+msgid "Rename Destination"
+msgstr "Zmień nazwę celu"
+
+#: NavitAddressSearchActivity.java:83
+msgid "Enter Destination"
+msgstr "Wprowadź cel"
+
+#: NavitAddressSearchActivity.java:90
+msgid "partial match"
+msgstr "częściowe dopasowanie"
+
+#: NavitAddressSearchActivity.java:97
+msgid "hide duplicates"
+msgstr "ukryj duplikaty"
+
+#: NavitAddressSearchActivity.java:104
 msgid "search full mapfile [BETA]"
 msgstr "przeszukaj cały plik map [BETA]"
 
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_fast_provider"
-msgstr ""
+#: NavitAddressSearchActivity.java:142
+msgid "Search"
+msgstr "Wyszukaj"
 
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_fast_provider"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__follow_gps"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__follow_gps"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_vehicle_in_center"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_vehicle_in_center"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_compass_heading_base"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_compass_heading_base"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_compass_heading_always"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_compass_heading_always"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_compass_heading_fast"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_compass_heading_fast"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_imperial"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_imperial"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_3d_map"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_3d_map"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_anti_aliasing"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_anti_aliasing"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__gui_oneway_arrows"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__gui_oneway_arrows"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_debug_messages"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_debug_messages"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__navit_lang"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__navit_lang"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_lock_on_roads"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_lock_on_roads"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_route_highways"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_route_highways"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__save_zoomlevel"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__save_zoomlevel"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_sat_status"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_sat_status"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_agps"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_agps"
-msgstr ""
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__INFO_BOX_TITLE__"
-msgstr ""
-
-#. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
-msgid "__INFO_BOX_TEXT__"
-msgstr ""
-
-msgid "Announcer Off"
-msgstr ""
-
-msgid "Announcer On"
-msgstr ""
-
+#: NavitSpeech2.java:131
 msgid ""
 "Language is not available for TTS! Using your phone's default settings"
 msgstr ""
 "Język nie jest wspierany przez TTS! Przełączam na ustawienia domyślne "
 "telefonu"
 
+#: NavitSpeech2.java:148
 msgid "Using Voice for:"
 msgstr "Używam głosu dla:"
 
-msgid "Settings"
-msgstr "Ustawienia"
+#: NavitAndroidOverlay.java:553
+msgid "drive here"
+msgstr "Jedź tutaj"
 
-msgid "Creating outputfile, wait"
-msgstr "Tworzę plik wyjściowy, czekaj"
-
-msgid "Creating outputfile, long time"
-msgstr "Tworzę plik wyjściowy, długi czas oczekiwania"
-
-msgid "MD5 mismatch"
-msgstr "skrót MD5 niepoprawny"
-
-msgid "generating MD5 checksum"
-msgstr "generowanie skrótu MD5"
-
-msgid "Use as destination"
-msgstr "Użyj jako celu"
-
-msgid "back"
-msgstr "wstecz"
-
-msgid "destination"
-msgstr "Cel"
-
+#: NavitAndroidOverlay.java:601
 msgid "wait ..."
 msgstr "czekaj ..."
 
-msgid "Enter Destination"
-msgstr "Wprowadź cel"
+#~ msgid "map download"
+#~ msgstr "pobierz mapy"
 
-msgid "Zoom to Route"
-msgstr "Przybliż do trasy"
+#~ msgid "Welcome to ZANavi"
+#~ msgstr "Witaj w ZANavi"
 
-msgid "Stop Navigation"
-msgstr "Zatrzymaj nawigację"
+#~ msgid "zoom in"
+#~ msgstr "przybliż"
 
-msgid "Streets"
-msgstr "Ulice"
+#~ msgid "zoom out"
+#~ msgstr "oddal"
 
-msgid "touch map to zoom"
-msgstr "dotknij mapy aby przybliżyć"
-
-#: NavitAddressSearchActivity.java:97
-msgid "hide duplicates"
-msgstr ""
-
-#: Navit.java:1465
-msgid "Recent destinations"
-msgstr ""
-
-#: NavitMapPreviewActivity.java:219
-msgid "show destination on map"
-msgstr ""
-
-#: NavitRecentDestinationActivity.java:61
-msgid "delete Destination"
-msgstr ""
-
-#: NavitRecentDestinationActivity.java:61
-msgid "rename Destination"
-msgstr ""
-
-#: NavitRecentDestinationActivity.java:182
-msgid "Rename Destination"
-msgstr ""
+#~ msgid "destination"
+#~ msgstr "Cel"

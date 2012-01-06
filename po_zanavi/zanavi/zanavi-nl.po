@@ -6,265 +6,99 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
-"POT-Creation-Date: 2011-10-06 22:20+0200\n"
-"PO-Revision-Date: 2011-11-14 20:34+0000\n"
-"Last-Translator: zoff99 <Unknown>\n"
+"POT-Creation-Date: 2012-01-05 19:42+0100\n"
+"PO-Revision-Date: 2011-12-19 14:54+0000\n"
+"Last-Translator: D <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-01 12:56+0000\n"
-"X-Generator: Launchpad (build 14414)\n"
+"X-Launchpad-Export-Date: 2012-01-05 18:48+0000\n"
+"X-Generator: Launchpad (build 14625)\n"
 
-msgid "map download"
-msgstr "download kaarten"
+#: NavitMapPreviewActivity.java:191
+msgid "Use as destination"
+msgstr "gebruik als bestemming"
 
-msgid "Welcome to ZANavi"
-msgstr "Welkom bij ZANavi"
+#: NavitMapPreviewActivity.java:205
+msgid "back"
+msgstr "terug"
 
-msgid "More info"
-msgstr "Meer info"
+#: NavitMapPreviewActivity.java:219
+msgid "show destination on map"
+msgstr "toon bestemming op kaart"
 
-msgid "zoom in"
-msgstr "inzoomen"
+#: NavitMapPreviewActivity.java:236
+msgid "touch map to zoom"
+msgstr "raak kaart aan om te zoomen"
 
-msgid "zoom out"
-msgstr "uitzoomen"
-
-#. TRANSLATORS: text to translate is: exit ZANavi
-msgid "exit navit"
-msgstr "ZANavi afsluiten"
-
-msgid "toggle POI"
-msgstr "POI aan/uit"
-
-msgid "address search (offline)"
-msgstr "adres zoeken (offline)"
-
-msgid "address search (online)"
-msgstr "adres zoeken (online)"
-
-msgid "Mapdownload"
-msgstr "kaart download"
-
-msgid "downloading"
-msgstr "downloaden"
-
-msgid "ETA"
-msgstr "VAT"
-
+#: NavitMapDownloader.java:458 NavitMapDownloader.java:1478
+#: NavitMapDownloader.java:1869 NavitMapDownloader.java:1883
+#: NavitMapDownloader.java:1915
 msgid "Error downloading map!"
 msgstr "Fout tijdens downloaden!"
 
+#: NavitMapDownloader.java:545 NavitMapDownloader.java:1239
+#: NavitMapDownloader.java:1648 NavitMapDownloader.java:1786
+#: NavitMapDownloader.java:1817 NavitMapDownloader.java:1954
+#: NavitMapDownloader.java:2068 NavitMapDownloader.java:2459
+#: NavitMapDownloader.java:2572 NavitMapDownloader.java:2744
+#: NavitMapDownloader.java:2758
+msgid "Mapdownload"
+msgstr "kaart download"
+
+#: NavitMapDownloader.java:579 NavitMapDownloader.java:1240
+#: NavitMapDownloader.java:1661 NavitMapDownloader.java:1818
+msgid "downloading"
+msgstr "downloaden"
+
+#: NavitMapDownloader.java:579 NavitMapDownloader.java:1661
+msgid "ETA"
+msgstr "VAT"
+
+#: NavitMapDownloader.java:649 NavitMapDownloader.java:1707
 msgid "Error downloading map, resuming"
 msgstr "Fout tijdens downloaden, opnieuw"
 
+#: NavitMapDownloader.java:1413 NavitMapDownloader.java:1900
+msgid "Map already up to date"
+msgstr "Kaart is al actueel"
+
+#: NavitMapDownloader.java:1787 NavitMapDownloader.java:2069
 msgid "ready"
 msgstr "gereed"
 
-msgid "Ok"
-msgstr "Ok"
+#: NavitMapDownloader.java:1955 NavitMapDownloader.java:2460
+msgid "Creating outputfile, long time"
+msgstr "Bestand wordt gemaakt, kan even duren"
 
-msgid "No address found"
-msgstr "Adres niet gevonden"
+#: NavitMapDownloader.java:2018
+msgid "MD5 mismatch"
+msgstr "MD5 fout"
 
-msgid "Enter: City and Street"
-msgstr "Invoer: plaatsnaam en straat"
+#: NavitMapDownloader.java:2573
+msgid "Creating outputfile, wait"
+msgstr "Bestand wordt gemaakt, even geduld"
 
-msgid "No search string entered"
-msgstr "geen waarde opgegeven"
+#: NavitMapDownloader.java:2745 NavitMapDownloader.java:2759
+msgid "generating MD5 checksum"
+msgstr "MD5sum genereren"
 
-msgid "setting destination to"
-msgstr "bestemming ingesteld op"
-
-msgid "getting search results"
-msgstr "haalt zoekresultaten op"
-
-msgid "searching ..."
-msgstr "zoekt ..."
-
-msgid "No Results found!"
-msgstr "Geen resultaat gevonden!"
-
-#. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
-msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
-msgstr "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA"
-
-msgid "partial match"
-msgstr "zoek op gedeelte"
-
-msgid "Search"
-msgstr "Zoek"
-
-msgid "drive here"
-msgstr "hierheen rijden"
-
-msgid "loading search results"
-msgstr "resultaten ophalen"
-
-msgid "towns"
-msgstr "steden"
-
-msgid "delete maps"
-msgstr "kaarten verwijderen"
-
-msgid "download maps"
-msgstr "download kaarten"
-
-msgid "Map already up to date"
-msgstr "kaart is al up to date"
-
-msgid "search full mapfile [BETA]"
-msgstr "zoek op volledige kaart [BETA]"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_fast_provider"
-msgstr "GSM/3G/WiFi"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_fast_provider"
-msgstr "Gebruik GSM/3G/WiFi om de positie te bepalen (Internet)"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__follow_gps"
-msgstr "Volg GPS"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__follow_gps"
-msgstr "Volg GPS. Benodigd voor de kompas richting"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_vehicle_in_center"
-msgstr "Centreer op voertuig"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_vehicle_in_center"
-msgstr ""
-"Toont het voertuig in het midden van het scherm in plaats van onderin."
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_compass_heading_base"
-msgstr "Kompas richting"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_compass_heading_base"
-msgstr ""
-"Gebruik kompas voor de richting. Kost veel CPU! De wereldweergave zal "
-"afwijken!"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_compass_heading_always"
-msgstr "Altijd kompas gebruiken"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_compass_heading_always"
-msgstr "Gebruikt het kompas voor de rijrichting, ook op hoge snelheid"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_compass_heading_fast"
-msgstr "Gebruik snel kompas"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_compass_heading_fast"
-msgstr "Veel soepeler bij afslagen, WAARSCHUWING: gebruikt heel veel CPU!!!"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_imperial"
-msgstr "Engelse maten"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_imperial"
-msgstr "Gebruik Engelse eenheden in plaats van metrische"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_3d_map"
-msgstr "Kaart in 3D"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_3d_map"
-msgstr "3D weergave van de kaart [BETA]"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_anti_aliasing"
-msgstr "Anti Aliasing"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_anti_aliasing"
-msgstr "schakel anti aliasing in"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__gui_oneway_arrows"
-msgstr "eenrichtingspijlen"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__gui_oneway_arrows"
-msgstr "Toon pijlen bij eenrichtings-straten [BETA]"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_debug_messages"
-msgstr "Toon debug berichten"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_debug_messages"
-msgstr "Toont debug berichten [DEBUG]"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__navit_lang"
-msgstr "Language"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__navit_lang"
-msgstr "Stel de taal in. Herstart is dan nodig!"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_lock_on_roads"
-msgstr "plaats op de weg"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_lock_on_roads"
-msgstr ""
-"Plaatst het voertuig op de dichtsbijzijnde weg. Zet deze uit voor wandelen "
-"of offroad rijden"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_route_highways"
-msgstr "voorkeur voor snelwegen"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_route_highways"
-msgstr ""
-"geef voorkeur aan snelwegen voor de route (uitschakelen gebruikt meer "
-"geheugen!!)"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__save_zoomlevel"
-msgstr "zoomniveau"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__save_zoomlevel"
-msgstr "bewaar laatste zoomniveau"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__show_sat_status"
-msgstr "satteliet status"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__show_sat_status"
-msgstr "weergeven satteliet status"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__title__use_agps"
-msgstr "aGPS"
-
-#. TRANSLATORS: see en_US for english text to translate!!
-msgid "__PREF__summ__use_agps"
-msgstr "gebruik assisted GPS (gebruikt Internet !!)"
-
-#. TRANSLATORS: see en_US for english text to translate!!
+#. . english text: Welcome to ZANavi
+#: Navit.java:772
 msgid "__INFO_BOX_TITLE__"
 msgstr "Welkom bij ZANavi"
 
-#. TRANSLATORS: multicolumn info text for first startup of application (see en_US for english text)
+#: Navit.java:798
+msgid "Ok"
+msgstr "Ok"
+
+#: Navit.java:807
+msgid "More info"
+msgstr "Meer info"
+
+#. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
+#: Navit.java:837
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
 "U voert ZANavi voor de eerste keer uit.\\n\\nOm te beginnen, selecteer\\"
@@ -274,82 +108,372 @@ msgstr ""
 "Project\\n\\nVoor meer info\\nbezoek onze site\\nhttp://zanavi.cc\\n\\n      "
 " Nog veel plezier met ZANavi."
 
+#: Navit.java:1621
+msgid "address search (online)"
+msgstr "adres zoeken (online)"
+
+#: Navit.java:1622
+msgid "address search (offline)"
+msgstr "adres zoeken (offline)"
+
+#: Navit.java:1625
+msgid "Stop Navigation"
+msgstr "Stop navigatie"
+
+#: Navit.java:1626
+msgid "Zoom to Route"
+msgstr "Zoom naar route"
+
+#. . TRANSLATORS: text to translate is: exit ZANavi
+#: Navit.java:1629
+msgid "exit navit"
+msgstr "ZANavi afsluiten"
+
+#: Navit.java:1630
+msgid "toggle POI"
+msgstr "POI aan/uit"
+
+#: Navit.java:1631
+msgid "Settings"
+msgstr "Instellingen"
+
+#: Navit.java:1635
 msgid "Announcer Off"
 msgstr "spraak uit"
 
+#: Navit.java:1639
 msgid "Announcer On"
 msgstr "spraak aan"
 
+#: Navit.java:1642
+msgid "Recent destinations"
+msgstr "Recente locaties"
+
+#: Navit.java:1643
+msgid "download maps"
+msgstr "download kaarten"
+
+#: Navit.java:1644
+msgid "delete maps"
+msgstr "kaarten verwijderen"
+
+#: Navit.java:1687
+msgid "No address found"
+msgstr "Adres niet gevonden"
+
+#: Navit.java:1775 Navit.java:1789 Navit.java:3671
+msgid "Enter: City and Street"
+msgstr "Invoer: plaatsnaam en straat"
+
+#: Navit.java:2097
+msgid "No search string entered"
+msgstr "geen waarde opgegeven"
+
+#: Navit.java:2227 Navit.java:2335
+msgid "setting destination to"
+msgstr "bestemming ingesteld op"
+
+#: Navit.java:2241 Navit.java:2349
+msgid "new Waypoint"
+msgstr ""
+
+#: Navit.java:2525 Navit.java:2580
+msgid "getting search results"
+msgstr "haalt zoekresultaten op"
+
+#: Navit.java:2526 Navit.java:2581
+msgid "searching ..."
+msgstr "zoekt ..."
+
+#: Navit.java:2679 NavitGraphics.java:2298
+msgid "loading search results"
+msgstr "resultaten ophalen"
+
+#: Navit.java:2680 NavitGraphics.java:2299
+msgid "towns"
+msgstr "steden"
+
+#: Navit.java:2680 NavitGraphics.java:2299
+msgid "Streets"
+msgstr "Straten"
+
+#: Navit.java:2702
+msgid "No Results found!"
+msgstr "Geen resultaat gevonden!"
+
+#. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+#: Navit.java:3030 Navit.java:3056
+msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:34
+msgid "__PREF__title__use_fast_provider"
+msgstr "GSM/3G/WiFi"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:36
+msgid "__PREF__summ__use_fast_provider"
+msgstr "Gebruik GSM/3G/WiFi om de positie te bepalen (Internet)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:38
+msgid "__PREF__title__follow_gps"
+msgstr "Volg GPS"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:40
+msgid "__PREF__summ__follow_gps"
+msgstr "Volg GPS. Benodigd voor de kompas richting"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:42
+msgid "__PREF__title__show_vehicle_in_center"
+msgstr "Centreer op voertuig"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:44
+msgid "__PREF__summ__show_vehicle_in_center"
+msgstr ""
+"Toont het voertuig in het midden van het scherm in plaats van onderin."
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:46
+msgid "__PREF__title__use_compass_heading_base"
+msgstr "Kompas richting"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:48
+msgid "__PREF__summ__use_compass_heading_base"
+msgstr ""
+"Gebruik kompas voor de richting. Kost veel CPU! De wereldweergave zal "
+"afwijken!"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:50
+msgid "__PREF__title__use_compass_heading_always"
+msgstr "Altijd kompas gebruiken"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:52
+msgid "__PREF__summ__use_compass_heading_always"
+msgstr "Gebruikt het kompas voor de rijrichting, ook op hoge snelheid"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:54
+msgid "__PREF__title__use_compass_heading_fast"
+msgstr "Gebruik snel kompas"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:56
+msgid "__PREF__summ__use_compass_heading_fast"
+msgstr "Veel soepeler bij afslagen, WAARSCHUWING: gebruikt heel veel CPU!!!"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:58
+msgid "__PREF__title__use_imperial"
+msgstr "Engelse maten"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:60
+msgid "__PREF__summ__use_imperial"
+msgstr "Gebruik Engelse eenheden in plaats van metrische"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:62
+msgid "__PREF__title__show_3d_map"
+msgstr "Kaart in 3D"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:64
+msgid "__PREF__summ__show_3d_map"
+msgstr "3D weergave van de kaart [BETA]"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:66
+msgid "__PREF__title__use_anti_aliasing"
+msgstr "Anti Aliasing"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:68
+msgid "__PREF__summ__use_anti_aliasing"
+msgstr "schakel anti aliasing in"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:70
+msgid "__PREF__title__gui_oneway_arrows"
+msgstr "eenrichtingspijlen"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:72
+msgid "__PREF__summ__gui_oneway_arrows"
+msgstr "Toon pijlen bij eenrichtings-straten [BETA]"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:74
+msgid "__PREF__title__show_debug_messages"
+msgstr "Toon debug berichten"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:76
+msgid "__PREF__summ__show_debug_messages"
+msgstr "Toont debug berichten [DEBUG]"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:78
+msgid "__PREF__title__navit_lang"
+msgstr "Language"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:80
+msgid "__PREF__summ__navit_lang"
+msgstr "Stel de taal in. Herstart is dan nodig!"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:82
+msgid "__PREF__title__use_lock_on_roads"
+msgstr "plaats op de weg"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:84
+msgid "__PREF__summ__use_lock_on_roads"
+msgstr ""
+"Plaatst het voertuig op de dichtsbijzijnde weg. Zet deze uit voor wandelen "
+"of offroad rijden"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:86
+msgid "__PREF__title__use_route_highways"
+msgstr "voorkeur voor snelwegen"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:88
+msgid "__PREF__summ__use_route_highways"
+msgstr ""
+"geef voorkeur aan snelwegen voor de route (uitschakelen gebruikt meer "
+"geheugen!!)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:90
+msgid "__PREF__title__save_zoomlevel"
+msgstr "zoomniveau"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:92
+msgid "__PREF__summ__save_zoomlevel"
+msgstr "bewaar laatste zoomniveau"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:94
+msgid "__PREF__title__show_sat_status"
+msgstr "satteliet status"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:96
+msgid "__PREF__summ__show_sat_status"
+msgstr "weergeven satteliet status"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:98
+msgid "__PREF__title__use_agps"
+msgstr "aGPS"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:100
+msgid "__PREF__summ__use_agps"
+msgstr "gebruik assisted GPS (gebruikt Internet !!)"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:124
+msgid "__PREF__title__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:126
+msgid "__PREF__summ__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:128
+msgid "__PREF__dialogtitle__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:130
+msgid "__PREF__dialogcancel__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:132
+msgid "__PREF__dialogok__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:134
+msgid "__PREF__dialogmsg__map_directory"
+msgstr ""
+
+#: NavitRecentDestinationActivity.java:61
+msgid "delete Destination"
+msgstr "Bestemming verwijderen"
+
+#: NavitRecentDestinationActivity.java:61
+msgid "rename Destination"
+msgstr "Bestemming hernoemen"
+
+#: NavitRecentDestinationActivity.java:182
+msgid "Rename Destination"
+msgstr "Bestemming hernoemen"
+
+#: NavitAddressSearchActivity.java:83
+msgid "Enter Destination"
+msgstr "voer bestemming in"
+
+#: NavitAddressSearchActivity.java:90
+msgid "partial match"
+msgstr "zoek op gedeelte"
+
+#: NavitAddressSearchActivity.java:97
+msgid "hide duplicates"
+msgstr "dubelle verbergen"
+
+#: NavitAddressSearchActivity.java:104
+msgid "search full mapfile [BETA]"
+msgstr "zoek op volledige kaart [BETA]"
+
+#: NavitAddressSearchActivity.java:142
+msgid "Search"
+msgstr "Zoek"
+
+#: NavitSpeech2.java:131
 msgid ""
 "Language is not available for TTS! Using your phone's default settings"
 msgstr ""
 "Taal niet beschikbaar voor TTS!\\nStandaard instellingen worden gebruikt"
 
+#: NavitSpeech2.java:148
 msgid "Using Voice for:"
 msgstr "Gebruik taal voor:"
 
-msgid "Settings"
-msgstr "Instellingen"
+#: NavitAndroidOverlay.java:553
+msgid "drive here"
+msgstr "hierheen rijden"
 
-msgid "Creating outputfile, wait"
-msgstr "Bestand wordt gemaakt, even geduld"
-
-msgid "Creating outputfile, long time"
-msgstr "Bestand wordt gemaakt, kan even duren"
-
-msgid "MD5 mismatch"
-msgstr "MD5 fout"
-
-msgid "generating MD5 checksum"
-msgstr "MD5sum genereren"
-
-msgid "Use as destination"
-msgstr "gebruik als bestemming"
-
-msgid "back"
-msgstr "terug"
-
-msgid "destination"
-msgstr "bestemming"
-
+#: NavitAndroidOverlay.java:601
 msgid "wait ..."
 msgstr "wachten ..."
 
-msgid "Enter Destination"
-msgstr "voer bestemming in"
+#~ msgid "zoom in"
+#~ msgstr "inzoomen"
 
-msgid "Zoom to Route"
-msgstr "Zoom naar route"
+#~ msgid "zoom out"
+#~ msgstr "uitzoomen"
 
-msgid "Stop Navigation"
-msgstr "Stop navigatie"
+#~ msgid "map download"
+#~ msgstr "download kaarten"
 
-msgid "Streets"
-msgstr "Straten"
+#~ msgid "Welcome to ZANavi"
+#~ msgstr "Welkom bij ZANavi"
 
-msgid "touch map to zoom"
-msgstr "raak kaart aan om te zoomen"
-
-#: NavitAddressSearchActivity.java:97
-msgid "hide duplicates"
-msgstr ""
-
-#: Navit.java:1465
-msgid "Recent destinations"
-msgstr ""
-
-#: NavitMapPreviewActivity.java:219
-msgid "show destination on map"
-msgstr ""
-
-#: NavitRecentDestinationActivity.java:61
-msgid "delete Destination"
-msgstr ""
-
-#: NavitRecentDestinationActivity.java:61
-msgid "rename Destination"
-msgstr ""
-
-#: NavitRecentDestinationActivity.java:182
-msgid "Rename Destination"
-msgstr ""
+#~ msgid "destination"
+#~ msgstr "bestemming"

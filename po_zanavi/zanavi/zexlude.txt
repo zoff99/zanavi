@@ -1,0 +1,5 @@
+msgid "__PREF__title__"
+msgstr ""
+
+msgid "__PREF__summ__"
+msgstr ""
