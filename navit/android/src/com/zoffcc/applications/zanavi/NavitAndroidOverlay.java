@@ -186,7 +186,19 @@ public class NavitAndroidOverlay extends ImageView
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		//Log.e("NavitGraphics", "NavitAndroidOverlay -> onTouchEvent");
+		//if (NavitGraphics.wait_for_redraw_map == true)
+		//{
+		//	Log.e("NavitGraphics", "GD NavitAndroidOverlay GD -> onTouchEvent");
+		//	Message msg = new Message();
+		//	Bundle b = new Bundle();
+		//	b.putInt("Callback", 50);
+		//	msg.setData(b);
+		//	Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+		//}
+		//else
+		//{
+		//	// Log.e("NavitGraphics", "NavitAndroidOverlay -> onTouchEvent");
+		//}
 		super.onTouchEvent(event);
 
 		int action = event.getAction();
@@ -229,15 +241,29 @@ public class NavitAndroidOverlay extends ImageView
 					{
 						e.printStackTrace();
 					}
-					Navit.destination_set();
-					// set destination
-					Message msg = new Message();
-					Bundle b = new Bundle();
-					b.putInt("Callback", 4);
-					b.putInt("x", this.bubble_001.x);
-					b.putInt("y", this.bubble_001.y);
-					msg.setData(b);
-					Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+
+					if (NavitGraphics.navit_route_status == 0)
+					{
+						Navit.destination_set();
+
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 4);
+						b.putInt("x", this.bubble_001.x);
+						b.putInt("y", this.bubble_001.y);
+						msg.setData(b);
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					}
+					else
+					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 49);
+						b.putInt("x", this.bubble_001.x);
+						b.putInt("y", this.bubble_001.y);
+						msg.setData(b);
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					}
 
 					//					try
 					//					{
@@ -286,6 +312,25 @@ public class NavitAndroidOverlay extends ImageView
 						overlay_draw_thread1.start();
 					}
 
+					//					System.out.println("ZZZZZZZZ O.11");
+					//					//if (NavitGraphics.wait_for_redraw_map == true)
+					//					{
+					//						System.out.println("ZZZZZZZZ O.11.A");
+					//						// stop drawing the map
+					//						try
+					//						{
+					//							NavitGraphics.CallbackMessageChannel(50, "");
+					//							//							Message msg = new Message();
+					//							//							Bundle b = new Bundle();
+					//							//							b.putInt("Callback", 50);
+					//							//							msg.setData(b);
+					//							//							Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					//						}
+					//						catch (Exception e)
+					//						{
+					//							e.printStackTrace();
+					//						}
+					//					}
 					NavitGraphics.wait_for_redraw_map = true;
 					this.invalidate();
 					//System.out.println("wait_for_redraw_map=true o1");
@@ -293,6 +338,7 @@ public class NavitAndroidOverlay extends ImageView
 					// zoom in
 					try
 					{
+						// NavitGraphics.CallbackMessageChannel(1, "");
 						Message msg = new Message();
 						Bundle b = new Bundle();
 						b.putInt("Callback", 1);
@@ -325,6 +371,26 @@ public class NavitAndroidOverlay extends ImageView
 						overlay_draw_thread1.start();
 					}
 
+					//					System.out.println("ZZZZZZZZ O.22");
+					//					if (NavitGraphics.wait_for_redraw_map == true)
+					//					{
+					//						System.out.println("ZZZZZZZZ O.22.A");
+					//						// stop drawing the map
+					//						try
+					//						{
+					//							NavitGraphics.CallbackMessageChannel(50, "");
+					//							//							Message msg = new Message();
+					//							//							Bundle b = new Bundle();
+					//							//							b.putInt("Callback", 50);
+					//							//							msg.setData(b);
+					//							//							Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					//						}
+					//						catch (Exception e)
+					//						{
+					//							e.printStackTrace();
+					//						}
+					//					}
+
 					try
 					{
 						NavitGraphics.wait_for_redraw_map = true;
@@ -332,6 +398,8 @@ public class NavitAndroidOverlay extends ImageView
 						//System.out.println("wait_for_redraw_map=true o2");
 						//Log.e("NavitGraphics", "wait_for_redraw_map=true o2");
 						// zoom out
+
+						// NavitGraphics.CallbackMessageChannel(2, "");
 						Message msg = new Message();
 						Bundle b = new Bundle();
 						b.putInt("Callback", 2);

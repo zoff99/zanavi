@@ -827,7 +827,6 @@ file_destroy(struct file *f)
 
 struct file_wordexp {
 	int err;
-	char *pattern;
 	wordexp_t we;
 };
 
@@ -836,7 +835,6 @@ file_wordexp_new(const char *pattern)
 {
 	struct file_wordexp *ret=g_new0(struct file_wordexp, 1);
 
-	ret->pattern=g_strdup(pattern);
 	ret->err=wordexp(pattern, &ret->we, 0);
 	if (ret->err)
 		dbg(0,"wordexp('%s') returned %d\n", pattern, ret->err);
@@ -846,16 +844,12 @@ file_wordexp_new(const char *pattern)
 int
 file_wordexp_get_count(struct file_wordexp *wexp)
 {
-	if (wexp->err)
-		return 1;
 	return wexp->we.we_wordc;
 }
 
 char **
 file_wordexp_get_array(struct file_wordexp *wexp)
 {
-	if (wexp->err)
-		return &wexp->pattern;
 	return wexp->we.we_wordv;
 }
 
@@ -864,7 +858,6 @@ file_wordexp_destroy(struct file_wordexp *wexp)
 {
 	if (! wexp->err)
 		wordfree(&wexp->we);
-	g_free(wexp->pattern);
 	g_free(wexp);
 }
 

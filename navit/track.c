@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -451,7 +470,7 @@ tracking_doupdate_lines(struct tracking *tr, struct coord *pc, enum projection p
 	struct coord_geo g;
 	struct coord cc;
 
-	dbg(1,"enter\n");
+	//dbg(1,"enter\n");
 	h=mapset_open(tr->ms);
 	while ((m=mapset_next(h,2))) {
 		cc.x = pc->x;
@@ -481,7 +500,7 @@ tracking_doupdate_lines(struct tracking *tr, struct coord *pc, enum projection p
 		map_rect_destroy(mr);
 	}
 	mapset_close(h);
-	dbg(1, "exit\n");
+	//dbg(1, "exit\n");
 }
 
 
@@ -583,8 +602,9 @@ tracking_value(struct tracking *tr, struct tracking_line *t, int offset, struct 
 {
 	int value=0;
 	struct street_data *sd=t->street;
-	dbg(2, "%d: (0x%x,0x%x)-(0x%x,0x%x)\n", offset, sd->c[offset].x, sd->c[offset].y, sd->c[offset+1].x, sd->c[offset+1].y);
-	if (flags & 1) {
+	//dbg(2, "%d: (0x%x,0x%x)-(0x%x,0x%x)\n", offset, sd->c[offset].x, sd->c[offset].y, sd->c[offset+1].x, sd->c[offset+1].y);
+	if (flags & 1)
+	{
 		struct coord c1, c2, cp;
 		c1.x = sd->c[offset].x;
 		c1.y = sd->c[offset].y;
@@ -608,7 +628,8 @@ tracking_value(struct tracking *tr, struct tracking_line *t, int offset, struct 
 		return value;
 	if ((flags & 16) && tr->route_pref)
 		value += tracking_is_on_route(tr, tr->rt, &sd->item);
-	if ((flags & 32) && tr->overspeed_percent_pref && tr->overspeed_pref ) {
+	if ((flags & 32) && tr->overspeed_percent_pref && tr->overspeed_pref )
+	{
 		struct roadprofile *roadprofile=g_hash_table_lookup(tr->vehicleprofile->roadprofile_hash, (void *)t->street->item.type);
 		if (roadprofile && tr->speed > roadprofile->speed * tr->overspeed_percent_pref/ 100)
 			value += tr->overspeed_pref;
@@ -635,55 +656,64 @@ tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofile *v
 		return;
 	if (!vehicle_get_attr(tr->vehicle, attr_position_valid, &valid, NULL))
 		valid.u.num=attr_position_valid_valid;
-	if (valid.u.num == attr_position_valid_invalid) {
+	if (valid.u.num == attr_position_valid_invalid)
+	{
 		tr->valid=valid.u.num;
 		return;
 	}
 	if (!vehicle_get_attr(tr->vehicle, attr_position_speed, &speed_attr, NULL) ||
 	    !vehicle_get_attr(tr->vehicle, attr_position_direction, &direction_attr, NULL) ||
 	    !vehicle_get_attr(tr->vehicle, attr_position_coord_geo, &coord_geo, NULL) ||
-	    !vehicle_get_attr(tr->vehicle, attr_position_time_iso8601, &time_attr, NULL)) {
-		dbg(0,"failed to get position data %d %d %d %d\n",
-		vehicle_get_attr(tr->vehicle, attr_position_speed, &speed_attr, NULL),
-	    vehicle_get_attr(tr->vehicle, attr_position_direction, &direction_attr, NULL),
-	    vehicle_get_attr(tr->vehicle, attr_position_coord_geo, &coord_geo, NULL),
-	    vehicle_get_attr(tr->vehicle, attr_position_time_iso8601, &time_attr, NULL));
+	    !vehicle_get_attr(tr->vehicle, attr_position_time_iso8601, &time_attr, NULL))
+	{
+		//dbg(0,"failed to get position data %d %d %d %d\n",
+		//vehicle_get_attr(tr->vehicle, attr_position_speed, &speed_attr, NULL),
+	    //vehicle_get_attr(tr->vehicle, attr_position_direction, &direction_attr, NULL),
+	    //vehicle_get_attr(tr->vehicle, attr_position_coord_geo, &coord_geo, NULL),
+	    //vehicle_get_attr(tr->vehicle, attr_position_time_iso8601, &time_attr, NULL));
 		return;
 	}
-	if (!vehicleprofile_get_attr(vehicleprofile,attr_static_speed,&static_speed,NULL) || !vehicleprofile_get_attr(vehicleprofile,attr_static_distance,&static_distance,NULL)) {
+	if (!vehicleprofile_get_attr(vehicleprofile,attr_static_speed,&static_speed,NULL) || !vehicleprofile_get_attr(vehicleprofile,attr_static_distance,&static_distance,NULL))
+	{
 		static_speed.u.num=3;
 		static_distance.u.num=10;
-		dbg(1,"Using defaults for static position detection\n");
+		//dbg(1,"Using defaults for static position detection\n");
 	}
-	dbg(2,"Static speed: %u, static distance: %u\n",static_speed.u.num, static_distance.u.num);
+	//dbg(2,"Static speed: %u, static distance: %u\n",static_speed.u.num, static_distance.u.num);
 	time=iso8601_to_secs(time_attr.u.str);
 	speed=*speed_attr.u.numd;
 	direction=*direction_attr.u.numd;
 	tr->valid=attr_position_valid_valid;
 	transform_from_geo(pro, coord_geo.u.coord_geo, &tr->curr_in);
-	if ((speed < static_speed.u.num && transform_distance(pro, &tr->last_in, &tr->curr_in) < static_distance.u.num )) {
-		dbg(1,"static speed %f coord 0x%x,0x%x vs 0x%x,0x%x\n",speed,tr->last_in.x,tr->last_in.y, tr->curr_in.x, tr->curr_in.y);
+	if ((speed < static_speed.u.num && transform_distance(pro, &tr->last_in, &tr->curr_in) < static_distance.u.num ))
+	{
+		//dbg(1,"static speed %f coord 0x%x,0x%x vs 0x%x,0x%x\n",speed,tr->last_in.x,tr->last_in.y, tr->curr_in.x, tr->curr_in.y);
 		tr->valid=attr_position_valid_static;
 		tr->speed=0;
 		return;
 	}
-	if (vehicle_get_attr(tr->vehicle, attr_lag, &lag, NULL) && lag.u.num > 0) {
+
+	if (vehicle_get_attr(tr->vehicle, attr_lag, &lag, NULL) && lag.u.num > 0)
+	{
 		double espeed;
 		int edirection;
-		if (time-tr->time == 1) {
-			dbg(1,"extrapolating speed from %f and %f (%f)\n",tr->speed, speed, speed-tr->speed);
+		if (time - tr->time == 1)
+		{
+			/* dbg(1,"extrapolating speed from %f and %f (%f)\n",tr->speed, speed, speed-tr->speed); */
 			espeed=speed+(speed-tr->speed)*lag.u.num/10;
-			dbg(1,"extrapolating angle from %f and %f (%d)\n",tr->direction, direction, tracking_angle_diff(direction,tr->direction,360));
+			/* dbg(1,"extrapolating angle from %f and %f (%d)\n",tr->direction, direction, tracking_angle_diff(direction,tr->direction,360)); */
 			edirection=direction+tracking_angle_diff(direction,tr->direction,360)*lag.u.num/10;
-		} else {
-			dbg(1,"no speed and direction extrapolation\n");
+		}
+		else
+		{
+			//dbg(1,"no speed and direction extrapolation\n");
 			espeed=speed;
 			edirection=direction;
 		}
-		dbg(1,"lag %d speed %f direction %d\n",lag.u.num,espeed,edirection);
-		dbg(1,"old 0x%x,0x%x\n",tr->curr_in.x, tr->curr_in.y);
+		//dbg(1,"lag %d speed %f direction %d\n",lag.u.num,espeed,edirection);
+		//dbg(1,"old 0x%x,0x%x\n",tr->curr_in.x, tr->curr_in.y);
 		transform_project(pro, &tr->curr_in, espeed*lag.u.num/36, edirection, &tr->curr_in);
-		dbg(1,"new 0x%x,0x%x\n",tr->curr_in.x, tr->curr_in.y);
+		//dbg(1,"new 0x%x,0x%x\n",tr->curr_in.x, tr->curr_in.y);
 	}
 	tr->time=time;
 	tr->pro=pro;
@@ -697,29 +727,34 @@ tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofile *v
 	tr->last_out=tr->curr_out;
 	tr->last[0]=tr->curr[0];
 	tr->last[1]=tr->curr[1];
-	if (!tr->lines || transform_distance(pro, &tr->last_updated, &tr->curr_in) > 500) {
-		dbg(1, "update\n");
+	if (!tr->lines || transform_distance(pro, &tr->last_updated, &tr->curr_in) > 500)
+	{
+		//dbg(1, "update\n");
 		tracking_flush(tr);
 		tracking_doupdate_lines(tr, &tr->curr_in, pro);
 		tr->last_updated=tr->curr_in;
-		dbg(1,"update end\n");
+		//dbg(1,"update end\n");
 	}
 	
 	tr->street_direction=0;
 	t=tr->lines;
 	tr->curr_line=NULL;
 	min=INT_MAX/2;
-	while (t) {
+	while (t)
+	{
 		struct street_data *sd=t->street;
-		for (i = 0; i < sd->count-1 ; i++) {
+		for (i = 0; i < sd->count-1 ; i++)
+		{
 			value=tracking_value(tr,t,i,&lpnt,min,-1);
-			if (value < min) {
+			if (value < min)
+			{
 				struct coord lpnt_tmp;
 				int angle_delta=tracking_angle_abs_diff(tr->curr_angle, t->angle[i], 360);
 				tr->curr_line=t;
 				tr->pos=i;
 				tr->curr[0]=sd->c[i];
 				tr->curr[1]=sd->c[i+1];
+				/*
 				dbg(1,"lpnt.x=0x%x,lpnt.y=0x%x pos=%d %d+%d+%d+%d=%d\n", lpnt.x, lpnt.y, i, 
 					transform_distance_line_sq(&sd->c[i], &sd->c[i+1], &cin, &lpnt_tmp),
 					tracking_angle_delta(tr, tr->curr_angle, t->angle[i], 0)*tr->angle_pref,
@@ -727,6 +762,7 @@ tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofile *v
 					lpnt.x == tr->last_out.x && lpnt.y == tr->last_out.y ? tr->nostop_pref : 0,
 					value
 				);
+				*/
 				tr->curr_out.x=lpnt.x;
 				tr->curr_out.y=lpnt.y;
 				tr->coord_geo_valid=0;
@@ -741,21 +777,30 @@ tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofile *v
 		}
 		t=t->next;
 	}
-	dbg(1,"tr->curr_line=%p min=%d\n", tr->curr_line, min);
-	if (!tr->curr_line || min > tr->offroad_limit_pref) {
+
+	//dbg(1,"tr->curr_line=%p min=%d\n", tr->curr_line, min);
+
+	if (!tr->curr_line || min > tr->offroad_limit_pref)
+	{
 		tr->curr_out=tr->curr_in;
 		tr->coord_geo_valid=0;
 		tr->street_direction=0;
 	}
-	if (tr->curr_line && (tr->curr_line->street->flags & AF_UNDERGROUND)) {
+
+	if (tr->curr_line && (tr->curr_line->street->flags & AF_UNDERGROUND))
+	{
 		//dbg(0,"AF_UNDERGROUND 1");
 		if (tr->no_gps)
+		{
 			tr->tunnel=1;
-	} else if (tr->tunnel) {
+		}
+	}
+	else if (tr->tunnel)
+	{
 		//dbg(0,"AF_UNDERGROUND 2");
 		tr->speed=0;
 	}
-	dbg(1,"found 0x%x,0x%x\n", tr->curr_out.x, tr->curr_out.y);
+	//dbg(1,"found 0x%x,0x%x\n", tr->curr_out.x, tr->curr_out.y);
 }
 
 static int

@@ -208,7 +208,11 @@ public class NavitRecentDestinationActivity extends ListActivity
 	{
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
-		this.selected_id = position;
+
+		int t_p = position;
+		int t_s = Navit.map_points.size();
+		// compensate "selected_id" for reverse listing order of items!
+		this.selected_id = t_s - t_p - 1;
 		// close this activity
 		executeDone();
 	}

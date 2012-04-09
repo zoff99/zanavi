@@ -103,15 +103,18 @@ int
 event_request_system(const char *system, const char *requestor)
 {
 	void (*event_type_new)(struct event_methods *meth);
-	if (e_system) {
-		if (strcmp(e_system, system)) {
+	if (e_system)
+	{
+		if (strcmp(e_system, system))
+		{
 			dbg(0,"system '%s' already requested by '%s', can't set to '%s' as requested from '%s'\n", e_system, e_requestor, system, requestor);
 			return 0;
 		}
 		return 1;
 	}
 	event_type_new=plugin_get_event_type(system);
-        if (! event_type_new) {
+	if (! event_type_new)
+	{
 		dbg(0,"unsupported event system '%s' requested from '%s'\n", system, requestor);
                 return 0;
 	}

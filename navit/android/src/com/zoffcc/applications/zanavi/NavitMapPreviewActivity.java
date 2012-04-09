@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class NavitMapPreviewActivity extends Activity
@@ -182,6 +183,12 @@ public class NavitMapPreviewActivity extends Activity
 		}
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+
+		// scrollview
+		ScrollView sv = new ScrollView(this);
+		sv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+		// panel linearlayout
 		LinearLayout relativelayout = new LinearLayout(this);
 		relativelayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		relativelayout.setOrientation(LinearLayout.VERTICAL);
@@ -346,7 +353,11 @@ public class NavitMapPreviewActivity extends Activity
 		relativelayout.addView(btn_view_dest);
 		relativelayout.addView(dummy1);
 		relativelayout.addView(btn_set_dest);
-		setContentView(relativelayout);
+
+		sv.addView(relativelayout);
+
+		// set the main view
+		setContentView(sv);
 	}
 
 	@Override

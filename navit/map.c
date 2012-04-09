@@ -51,28 +51,7 @@
 #include "callback.h"
 #include "country.h"
 
-/**
- * @brief Holds information about a map
- *
- * This structure holds information about a map.
- */
-struct map {
-	struct map_methods meth;			/**< Structure with pointers to the map plugin's functions */
-	struct map_priv *priv;				/**< Private data of the map, only known to the map plugin */
-	struct attr **attrs;				/**< Attributes of this map */
-	struct callback_list *attr_cbl;		/**< List of callbacks that are called when attributes change */
-	int refcount;
-};
 
-/**
- * @brief Describes a rectangular extract of a map
- *
- * This structure describes a rectangular extract of a map.
- */
-struct map_rect {
-	struct map *m;				/**< The map this extract is from */
-	struct map_rect_priv *priv; /**< Private data of this map rect, only known to the map plugin */
-};
 
 /**
  * @brief Opens a new map

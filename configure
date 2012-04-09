@@ -20074,9 +20074,9 @@ fi
   if test "$XGETTEXT" != "" ; then
      PO=""
      if test "$LINGUAS" = ""; then
-           ling=` (cd $srcdir/po; /bin/ls *.po.in) `
+           ling=` (cd $srcdir/po; /bin/ls *.po) `
   	   for l in $ling; do
-	        lcode=`basename $l .po.in`
+	        lcode=`basename $l .po`
 	        LINGUAS="$LINGUAS$lcode "
            done
     fi
@@ -20097,7 +20097,7 @@ $as_echo "#define ENABLE_NLS 1" >>confdefs.h
     POFILES="$POFILES $lang.po"
  done
  for lang in $LINGUAS; do
-    POIFILES="$POIFILES $lang.po.in"
+    POIFILES="$POIFILES $lang.po"
  done
 
 

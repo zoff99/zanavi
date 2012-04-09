@@ -1,87 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="Position">
-		<CheckBoxPreference android:title="GSM/3g/Wireless"
-			android:defaultValue="false"
-			android:summary="Use GSM/3g/Wireless networks for getting position"
-			android:key="use_fast_provider" />
-		<CheckBoxPreference android:title="aGPS"
-			android:defaultValue="false"
-			android:summary="Use aGPS (assisted GPS) to get a faster fix (uses Internet)"
-			android:key="use_agps" />
-		<CheckBoxPreference android:title="Follow"
-			android:defaultValue="true"
-			android:summary="Center on GPS. activate this for Compass heading to work"
-			android:key="follow_gps" />
-		<CheckBoxPreference android:title="lock on Roads"
-			android:defaultValue="true"
-			android:summary="lock Vehicle on nearest Road. turn off if you are walking or driving offroad"
-			android:key="use_lock_on_roads" />
-		<CheckBoxPreference android:title="Vehicle in center"
-			android:defaultValue="false"
-			android:summary="show vehicle in screen center, instead of the lower half of the screen"
-			android:key="show_vehicle_in_center" />
-		<CheckBoxPreference android:title="Sat Status"
-			android:defaultValue="false"
-			android:summary="show Satellite status"
-			android:key="show_sat_status" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Direction">
-		<CheckBoxPreference android:title="Compass"
-			android:defaultValue="false"
-			android:summary="Get direction from compass. needs lots of CPU! The worldview will show incorrect position!"
-			android:key="use_compass_heading_base">
-		</CheckBoxPreference>
-		<CheckBoxPreference android:title="Compass always"
-			android:dependency="use_compass_heading_base" android:layout="?android:attr/preferenceLayoutChild"
-			android:defaultValue="false"
-			android:summary="Get current heading from compass even at higher speeds"
-			android:key="use_compass_heading_always" />
-		<CheckBoxPreference android:title="fast Compass"
-			android:dependency="use_compass_heading_base" android:layout="?android:attr/preferenceLayoutChild"
-			android:defaultValue="false"
-			android:summary="turns much smoother, WARNING: WILL EAT ALL your CPU!!"
-			android:key="use_compass_heading_fast">
-		</CheckBoxPreference>
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Units">
-		<CheckBoxPreference android:title="Imperial"
-			android:defaultValue="false" android:summary="Use Imperial units instead of metric units"
-			android:key="use_imperial" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Routing">
-		<CheckBoxPreference android:title="prefer Highways"
-			android:defaultValue="true" android:summary="prefer Highways for routing"
-			android:key="use_route_highways" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="GUI">
-		<CheckBoxPreference android:title="3D"
-			android:defaultValue="false" android:summary="show map in 3D [BETA]"
-			android:key="show_3d_map" />
-		<CheckBoxPreference android:title="Zoomlevel"
-			android:defaultValue="true" android:summary="save last Zoomlevel"
-			android:key="save_zoomlevel" />
-		<CheckBoxPreference android:title="AntiAlias"
-			android:defaultValue="true"
-			android:summary="draw with AntiAlias, map is faster when this is OFF"
-			android:key="use_anti_aliasing" />
-		<CheckBoxPreference android:title="OneWay Arrows"
-			android:defaultValue="false" android:summary="show oneway street arrows [BETA]"
-			android:key="gui_oneway_arrows" />
-		<CheckBoxPreference android:title="Debug Mgs"
-			android:defaultValue="false" android:summary="show Debug Messages [DEBUG]"
-			android:key="show_debug_messages" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Language">
-		<ListPreference android:title="Language"
-			android:summary="Select Language for messages. needs a RESTART!!"
-			android:key="navit_lang" android:defaultValue="*DEFAULT*"
-			android:entries="@array/langArray" android:entryValues="@array/langValues" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Info">
-		<EditTextPreference android:name="About"
-			android:summary="ZANavi Version ???" android:defaultValue=""
-			android:selectable="false" android:title="ZANavi Version"
-			android:key="about_edit_text" />
-	</PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Position" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_fast_provider"
+            android:summary="Use GSM/3g/Wireless networks for getting position"
+            android:title="GSM/3g/Wireless" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_agps"
+            android:summary="Use aGPS (assisted GPS) to get a faster fix (uses Internet)"
+            android:title="aGPS" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="follow_gps"
+            android:summary="Center on GPS. activate this for Compass heading to work"
+            android:title="Follow" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_lock_on_roads"
+            android:summary="lock Vehicle on nearest Road. turn off if you are walking or driving offroad"
+            android:title="lock on Roads" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_vehicle_in_center"
+            android:summary="show vehicle in screen center, instead of the lower half of the screen"
+            android:title="Vehicle in center" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_sat_status"
+            android:summary="show Satellite status"
+            android:title="Sat Status" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Direction" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_compass_heading_base"
+            android:summary="Get direction from compass. needs lots of CPU! The worldview will show incorrect position!"
+            android:title="Compass" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="use_compass_heading_base"
+            android:key="use_compass_heading_always"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:summary="Get current heading from compass even at higher speeds"
+            android:title="Compass always" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="use_compass_heading_base"
+            android:key="use_compass_heading_fast"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:summary="turns much smoother, WARNING: WILL EAT ALL your CPU!!"
+            android:title="fast Compass" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Units" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_imperial"
+            android:summary="Use Imperial units instead of metric units"
+            android:title="Imperial" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Routing" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_route_highways"
+            android:summary="prefer Highways for routing"
+            android:title="prefer Highways" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="speak_street_names"
+            android:summary="Say Streetnames when navigating. on foreign languages streetnames may sound strange!"
+            android:title="speak Streetnames" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="GUI" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_3d_map"
+            android:summary="show map in 3D [BETA]"
+            android:title="3D" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="save_zoomlevel"
+            android:summary="save last Zoomlevel"
+            android:title="Zoomlevel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_anti_aliasing"
+            android:summary="draw with AntiAlias, map is faster when this is OFF"
+            android:title="AntiAlias" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_custom_font"
+            android:summary="use ZANavi custom font"
+            android:title="use custom Font" />
+
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/mapfontsizeArray"
+            android:entryValues="@array/mapfontsizeValues"
+            android:key="map_font_size"
+            android:summary="Select font size for map text"
+            android:title="map font size" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/mapdrawingtimeoutArray"
+            android:entryValues="@array/mapdrawingtimeoutValues"
+            android:key="cancel_map_drawing_timeout"
+            android:summary="Timeout for map drawing. set to long only on fast devices!"
+            android:title="Timeout for map drawing" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/drawatorderArray"
+            android:entryValues="@array/drawatorderValues"
+            android:key="drawatorder"
+            android:summary="Draw more Detail on map. change only on fast devices!"
+            android:title="Draw more Detail" />
+        <ListPreference
+            android:defaultValue="7168"
+            android:entries="@array/mapcacheArray"
+            android:entryValues="@array/mapcacheValues"
+            android:key="mapcache"
+            android:summary="Cachesize for Mapdrawing"
+            android:title="Cache for Map" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/streetsearchrArray"
+            android:entryValues="@array/streetsearchrValues"
+            android:key="streetsearch_r"
+            android:summary="Searchradius for streets inside a town. Bigger radius will find streets further away from town center"
+            android:title="Searchradius" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="gui_oneway_arrows"
+            android:summary="show oneway street arrows [BETA]"
+            android:title="OneWay Arrows" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Debug" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_debug_messages"
+            android:summary="show Debug Messages [DEBUG]"
+            android:title="Debug Mgs" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_debug_functions"
+            android:summary="enable Debug functions in menu [DEBUG]"
+            android:title="Debug Functions" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Language" >
+        <ListPreference
+            android:defaultValue="*DEFAULT*"
+            android:entries="@array/langArray"
+            android:entryValues="@array/langValues"
+            android:key="navit_lang"
+            android:summary="Select Language for messages. needs a RESTART!!"
+            android:title="Language" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Data" >
+        <EditTextPreference
+            android:dialogMessage="mapdir"
+            android:dialogTitle="Enter Map Directory"
+            android:key="map_directory"
+            android:summary="Change mapdirectory. needs a RESTART!!"
+            android:title="Map Directory" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Info" >
+        <EditTextPreference
+            android:name="About"
+            android:defaultValue=""
+            android:key="about_edit_text"
+            android:selectable="false"
+            android:summary="ZANavi Version ???"
+            android:title="ZANavi Version" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

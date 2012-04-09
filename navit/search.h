@@ -21,11 +21,13 @@
 #define NAVIT_SEARCH_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-struct search_list_common {
+struct search_list_common
+{
 	void *parent;
-	struct item unique,item;
+	struct item unique, item;
 	int selected;
 	struct pcoord *c;
 	char *town_name;
@@ -35,7 +37,8 @@ struct search_list_common {
 	char *county_name;
 };
 
-struct search_list_country {
+struct search_list_country
+{
 	struct search_list_common common;
 	char *car;
 	char *iso2;
@@ -44,24 +47,28 @@ struct search_list_country {
 	char *flag;
 };
 
-struct search_list_town {
+struct search_list_town
+{
 	struct search_list_common common;
 	struct item itemt;
 	char *county;
 };
 
-struct search_list_street {
+struct search_list_street
+{
 	struct search_list_common common;
 	char *name;
 };
 
-struct search_list_house_number {
+struct search_list_house_number
+{
 	struct search_list_common common;
 	char *house_number;
 	int interpolation;
 };
 
-struct search_list_result {
+struct search_list_result
+{
 	int id;
 	struct pcoord *c;
 	struct search_list_country *country;
@@ -70,7 +77,6 @@ struct search_list_result {
 	struct search_list_house_number *house_number;
 };
 
-
 /* prototypes */
 struct attr;
 struct mapset;
@@ -78,15 +84,21 @@ struct search_list;
 struct search_list_result;
 struct jni_object;
 struct search_list *search_list_new(struct mapset *ms);
-void search_list_search(struct search_list *this_, struct attr *search_attr, int partial);
+void search_list_search(struct search_list *this_, struct attr *search_attr,
+		int partial);
 char *search_postal_merge(char *mask, char *new_);
 char *search_postal_merge_replace(char *mask, char *new_);
-struct search_list_common *search_list_select(struct search_list *this_, enum attr_type attr_type, int id, int mode);
+struct search_list_common *search_list_select(struct search_list *this_,
+		enum attr_type attr_type, int id, int mode);
 struct search_list_result *search_list_get_result(struct search_list *this_);
 void search_list_destroy(struct search_list *this_);
 void search_init(void);
-GList * search_by_address(GList *result_list,struct mapset *ms, char *addr, int partial, struct jni_object *jni, int search_country_flags, char *search_country_string);
-void search_full_world(char *addr, int partial, int search_order, struct jni_object *jni,struct coord_geo *search_center, int search_radius);
+GList * search_by_address(GList *result_list, struct mapset *ms, char *addr,
+		int partial, struct jni_object *jni, int search_country_flags,
+		char *search_country_string);
+void search_full_world(char *addr, int partial, int search_order,
+		struct jni_object *jni, struct coord_geo *search_center,
+		int search_radius);
 
 /* end of prototypes */
 #ifdef __cplusplus

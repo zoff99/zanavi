@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -234,6 +253,7 @@ flags_to_text(int flags)
 	if (flags & AF_UNPAVED) ret=g_strconcat_printf(ret,"%sAF_UNPAVED",ret?"|":"");
 	if (flags & AF_FORD) ret=g_strconcat_printf(ret,"%sAF_FORD",ret?"|":"");
 	if (flags & AF_UNDERGROUND) ret=g_strconcat_printf(ret,"%sAF_UNDERGROUND",ret?"|":"");
+	if (flags & AF_BRIDGE) ret=g_strconcat_printf(ret,"%sAF_BRIDGE",ret?"|":"");
 	if (flags & AF_DANGEROUS_GOODS) ret=g_strconcat_printf(ret,"%sAF_DANGEROUS_GOODS",ret?"|":"");
 	if ((flags & AF_ALL) == AF_ALL) 
 		return g_strconcat_printf(ret,"%sAF_ALL",ret?"|":"");
@@ -577,6 +597,7 @@ attr_free(struct attr *attr)
 void
 attr_dup_content(struct attr *src, struct attr *dst)
 {
+	// dbg(0,"enter\n");
 	int size;
 	dst->type=src->type;
 	if (src->type >= attr_type_int_begin && src->type <= attr_type_int_end) 
@@ -590,6 +611,7 @@ attr_dup_content(struct attr *src, struct attr *dst)
 			memcpy(dst->u.data, src->u.data, size);
 		}
 	}
+	// dbg(0,"leave\n");
 }
 
 struct attr *
@@ -617,10 +639,14 @@ attr_list_dup(struct attr **attrs)
 	int i,count=0;
 
 	while (attrs[count])
+	{
 		count++;
+	}
 	ret=g_new0(struct attr *, count+1);
 	for (i = 0 ; i < count ; i++)
+	{
 		ret[i]=attr_dup(attrs[i]);
+	}
 	return ret;
 }
 

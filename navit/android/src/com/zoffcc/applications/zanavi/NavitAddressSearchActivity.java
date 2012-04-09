@@ -52,8 +52,8 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class NavitAddressSearchActivity extends Activity
@@ -66,7 +66,7 @@ public class NavitAddressSearchActivity extends Activity
 	private int search_country_id = 0;
 	private Button search_country_select;
 
-	public RelativeLayout NavitAddressSearchActivity_layout;
+	// public RelativeLayout NavitAddressSearchActivity_layout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -74,8 +74,14 @@ public class NavitAddressSearchActivity extends Activity
 		super.onCreate(savedInstanceState);
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+
+		// scrollview
+		ScrollView sv = new ScrollView(this);
+		sv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+		// panel linearlayout
 		LinearLayout panel = new LinearLayout(this);
-		panel.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		panel.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		panel.setOrientation(LinearLayout.VERTICAL);
 
 		// address: label and text field
@@ -220,12 +226,14 @@ public class NavitAddressSearchActivity extends Activity
 			panel.addView(search_country_select);
 			panel.addView(pm_checkbox);
 			panel.addView(hdup_checkbox);
-			// panel.addView(ff_checkbox);
+			panel.addView(ff_checkbox);
 		}
 		panel.addView(btnSearch);
 
-		setContentView(panel);
+		sv.addView(panel);
 
+		// set the main view
+		setContentView(sv);
 	}
 
 	public void start_country_select_form()

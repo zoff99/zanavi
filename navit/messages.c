@@ -57,8 +57,10 @@ message_delete(struct messagelist *this_, int mid)
 	msg = this_->messages;
 	last = NULL;
 
-	while (msg) {
-		if (msg->id == mid) {
+	while (msg)
+	{
+		if (msg->id == mid)
+		{
 			break;
 		}
 
@@ -66,10 +68,14 @@ message_delete(struct messagelist *this_, int mid)
 		msg = msg->next;
 	}
 
-	if (msg) {
-		if (last) {
+	if (msg)
+	{
+		if (last)
+		{
 			last->next = msg->next;
-		} else {
+		}
+		else
+		{
 			this_->messages = msg->next;
 		}
 
@@ -77,7 +83,9 @@ message_delete(struct messagelist *this_, int mid)
 		g_free(msg);
 
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
@@ -94,8 +102,10 @@ message_cleanup(struct messagelist *this_)
 	now = time(NULL);
 
 	i = 0;
-	while (msg && (i < this_->maxnum)) {
-		if ((this_->maxage > 0) && (now - msg->time) > this_->maxage) {
+	while (msg && (i < this_->maxnum))
+	{
+		if ((this_->maxage > 0) && (now - msg->time) > this_->maxage)
+		{
 			break;
 		}
 
@@ -104,13 +114,17 @@ message_cleanup(struct messagelist *this_)
 		msg = msg->next;
 	}
 
-	if (prev) {
+	if (prev)
+	{
 		prev->next = NULL;
-	} else {
+	}
+	else
+	{
 		this_->messages = NULL;
 	}
 
-	while (msg) {
+	while (msg)
+	{
 		next = msg->next;
 
 		g_free(msg->text);
@@ -126,15 +140,21 @@ struct messagelist
 	struct messagelist *this = g_new0(struct messagelist, 1);
 	struct attr num_attr,age_attr;
 
-	if (attr_generic_get_attr(attrs, NULL, attr_message_maxage, &age_attr, NULL)) {
+	if (attr_generic_get_attr(attrs, NULL, attr_message_maxage, &age_attr, NULL))
+	{
 		this->maxage = age_attr.u.num;
-	} else {
+	}
+	else
+	{
 		this->maxage = 10;
 	}
 
-	if (attr_generic_get_attr(attrs, NULL, attr_message_maxnum, &num_attr, NULL)) {
+	if (attr_generic_get_attr(attrs, NULL, attr_message_maxnum, &num_attr, NULL))
+	{
 		this->maxnum = num_attr.u.num;
-	} else {
+	}
+	else
+	{
 		this->maxnum = 3;
 	}
 
@@ -145,9 +165,12 @@ void
 messagelist_init(struct messagelist *this_)
 {
 	if (!event_system())
+	{
 		return;
+	}
 	this_->msg_cleanup_cb = callback_new_1(callback_cast(message_cleanup), this_);
-	this_->msg_cleanup_to = event_add_timeout(1000, 1, this_->msg_cleanup_cb);
+	// 10 secs. delay
+	this_->msg_cleanup_to = event_add_timeout(10000, 1, this_->msg_cleanup_cb);
 }
 
 struct message 
@@ -155,3 +178,4 @@ struct message
 {
 	return this_->messages;
 }
+

@@ -1,0 +1,540 @@
+# translation of navit_cs.po to Čeština
+# Copyright (C) 2007, 2008 The Navit Team
+# This file is distributed under the same license as the navit package.
+# Vaclav Cerny <vatoz@seznam.cz>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: navit 0.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-03-14 19:08+0100\n"
+"PO-Revision-Date: 2012-03-09 07:23+0000\n"
+"Last-Translator: doJan Pernica <Unknown>\n"
+"Language-Team: Čeština\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
+"X-Generator: Launchpad (build 15060)\n"
+"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
+
+#: popup.c:325 popup.c:394
+msgid "Set as position"
+msgstr "Použít jako pozici"
+
+#: popup.c:326 popup.c:395
+msgid "Set as destination"
+msgstr "Nastavit jako cíl"
+
+#: popup.c:327 popup.c:396
+msgid "Add as bookmark"
+msgstr "Použít jako záložku"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
+#: navigation.c:340
+msgid "zeroth"
+msgstr "nultý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
+#: navigation.c:346
+msgid "first"
+msgstr "první"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
+#: navigation.c:352
+msgid "second"
+msgstr "druhý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
+#: navigation.c:358
+msgid "third"
+msgstr "třetí"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
+#: navigation.c:364
+msgid "fourth"
+msgstr "čtvrtý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
+#: navigation.c:370
+msgid "fifth"
+msgstr "pátý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
+#: navigation.c:376
+msgid "sixth"
+msgstr "šestý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
+#: navigation.c:382
+msgid "seventh"
+msgstr "sedmý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
+#: navigation.c:388
+msgid "eighth"
+msgstr "osmý"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
+#: navigation.c:394
+msgid "ninth"
+msgstr "devátý"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
+#: navigation.c:409
+msgid "zeroth exit"
+msgstr "nultý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
+#: navigation.c:415
+msgid "first exit"
+msgstr "první výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
+#: navigation.c:421
+msgid "second exit"
+msgstr "druhý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
+#: navigation.c:427
+msgid "third exit"
+msgstr "třetí výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
+#: navigation.c:433
+msgid "fourth exit"
+msgstr "čtvrtý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
+#: navigation.c:439
+msgid "fifth exit"
+msgstr "pátý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
+#: navigation.c:445
+msgid "sixth exit"
+msgstr "šestý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
+#: navigation.c:451
+msgid "seventh exit"
+msgstr "sedmý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
+#: navigation.c:457
+msgid "eighth exit"
+msgstr "osmý výjezd"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
+#: navigation.c:463
+msgid "ninth exit"
+msgstr "devátý výjezd"
+
+#: navigation.c:557
+#, c-format
+msgid "%d m"
+msgstr "%d m"
+
+#: navigation.c:564
+#, c-format
+msgid "in %d m"
+msgstr "za %d m"
+
+#: navigation.c:582
+#, c-format
+msgid "%d feet"
+msgstr "%d stop"
+
+#: navigation.c:589
+#, c-format
+msgid "in %d feet"
+msgstr "za %d stop"
+
+#: navigation.c:606
+#, c-format
+msgid "%d meters"
+msgstr "%d metrů"
+
+#: navigation.c:616
+#, c-format
+msgid "in %d meters"
+msgstr "za %d metrů"
+
+#: navigation.c:642
+#, c-format
+msgid "%d.%d miles"
+msgstr "%d.%d mílí"
+
+#: navigation.c:649
+#, c-format
+msgid "in %d.%d miles"
+msgstr "za %d.%d mílí"
+
+#: navigation.c:660
+#, c-format
+msgid "%d.%d kilometers"
+msgstr "%d.%d kilometrů"
+
+#: navigation.c:668
+#, c-format
+msgid "in %d.%d kilometers"
+msgstr "za %d.%d kilometrů"
+
+#: navigation.c:678
+#, c-format
+msgid "one mile"
+msgid_plural "%d miles"
+msgstr[0] "jedna míle"
+msgstr[1] "%d mílí"
+msgstr[2] "%d mílí"
+
+#: navigation.c:681
+#, c-format
+msgid "in one mile"
+msgid_plural "in %d miles"
+msgstr[0] "za jednu míli"
+msgstr[1] "za %d mílí"
+msgstr[2] "za %d mílí"
+
+#: navigation.c:692
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "%d kilometr"
+msgstr[1] "%d kilometry"
+msgstr[2] "%d  kilometrů"
+
+#: navigation.c:701
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "za %d  kilometr"
+msgstr[1] "za %d  kilometry"
+msgstr[2] "za %d kilometrů"
+
+#: navigation.c:1800
+msgid "exit"
+msgstr "výjezd"
+
+#: navigation.c:1810
+msgid "into the ramp"
+msgstr "na přivadeč"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#: navigation.c:1872
+#, c-format
+msgid "%sinto the street %s%s%s"
+msgstr "%sdo ulice %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#: navigation.c:1892
+#, c-format
+msgid "%sinto the %s%s%s|male form"
+msgstr "%s do %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#: navigation.c:1912
+#, c-format
+msgid "%sinto the %s%s%s|female form"
+msgstr "%sdo %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#: navigation.c:1932
+#, c-format
+msgid "%sinto the %s%s%s|neutral form"
+msgstr "%sdo %s%s%s"
+
+#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#: navigation.c:1951
+#, c-format
+msgid "%sinto the %s"
+msgstr "%sna %s"
+
+#. TRANSLATORS: right, as in 'Turn right'
+#: navigation.c:1979
+msgid "right"
+msgstr "vpravo"
+
+#. TRANSLATORS: left, as in 'Turn left'
+#: navigation.c:2034
+msgid "left"
+msgstr "vlevo"
+
+#. TRANSLATORS: Don't forget the ending space
+#. TRANSLATORS: EXAMPLE: turn slight right
+#: navigation.c:2054
+msgid "slight "
+msgstr "mírně "
+
+#. TRANSLATORS: Don't forget the ending space
+#. TRANSLATORS: EXAMPLE: turn hard right
+#: navigation.c:2067
+msgid "hard "
+msgstr "prudce "
+
+#. TRANSLATORS: Don't forget the ending space
+#. TRANSLATORS: EXAMPLE: turn really hard right
+#: navigation.c:2076
+msgid "really hard "
+msgstr "opravdu prudce "
+
+#: navigation.c:2099
+msgid "When possible, please turn around"
+msgstr "Až to bude možné, otočte se"
+
+#: navigation.c:2133
+msgid "Enter the roundabout soon"
+msgstr "nyní vjeďte na kruhový objezd"
+
+#. TRANSLATORS: %s is the distance to the roundabout
+#. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
+#: navigation.c:2145
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "Za %s, najeďte na kruhový objezd"
+
+#: navigation.c:2157
+#, c-format
+msgid "then leave the roundabout at the %s"
+msgstr "pak opusťte kruhový objezd na výjezdu %s"
+
+#. TRANSLATORS: EXAMPLE: Leave the roundabout at the second exit
+#: navigation.c:2167
+#, c-format
+msgid "Leave the roundabout at the %s"
+msgstr "Opusťte kruhový objezd na výjezdu %s"
+
+#. TRANSLATORS: EXAMPLE: Follow the road for the next 300 meters
+#: navigation.c:2184
+#, c-format
+msgid "Follow the road for the next %s"
+msgstr "Pokračujte po cestě dalších %s"
+
+#: navigation.c:2191
+msgid "soon"
+msgstr "brzy"
+
+#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#: navigation.c:2214
+#, c-format
+msgid "Take the %1$s road to the %2$s"
+msgstr "Jeďte na %1$s silnici %2$s"
+
+#: navigation.c:2226 navigation.c:2268
+#, c-format
+msgid "after %i roads"
+msgstr "za %i silnice"
+
+#: navigation.c:2234
+msgid "now"
+msgstr "nyní"
+
+#: navigation.c:2256
+#, c-format
+msgid "then take the %1$s road to the %2$s"
+msgstr "pak jeďte %1$s silnici %2$s"
+
+#: navigation.c:2281
+msgid "error"
+msgstr "chyba"
+
+#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#: navigation.c:2347
+#, c-format
+msgid "Turn %1$s%2$s %3$s%4$s"
+msgstr "Zabočte %1$s%2$s %3$s%4$s"
+
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#: navigation.c:2368
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "pak odbočte %1$s%2$s %3$s%4$s"
+
+#. TRANSLATORS: EXAMPLE: You have reached your destination in 300 meters
+#: navigation.c:2384
+#, c-format
+msgid "You have reached your destination %s"
+msgstr "%s dorazíte do cíle"
+
+#: navigation.c:2391
+msgid "then you have reached your destination."
+msgstr "pak budete v cíli."
+
+#: navit.c:1981 gui/internal/gui_internal.c:2964
+msgid "Position"
+msgstr "Poloha"
+
+#: navit.c:1982
+msgid "Command"
+msgstr "Příkaz"
+
+#: navit.c:1986
+msgid "Length"
+msgstr "Délka"
+
+#: navit.c:1990 navit.c:2015
+msgid "km"
+msgstr "km"
+
+#: navit.c:1994 navit.c:2019
+msgid "m"
+msgstr "m"
+
+#: navit.c:2000
+msgid "Time"
+msgstr "Čas"
+
+#: navit.c:2012
+msgid "Destination Length"
+msgstr "Cílová vzdálenost"
+
+#: navit.c:2025
+msgid "Destination Time"
+msgstr "Cílový čas"
+
+#: navit.c:2057
+msgid "Roadbook"
+msgstr "Itinerář"
+
+#: navit.c:3607
+msgid "Waypoint reached"
+msgstr "Dojeli jste na značku"
+
+#: navit.c:3617
+msgid "You have reached your destination"
+msgstr "Dojeli jste do cíle"
+
+#: gui/internal/gui_internal.c:1732
+msgid "Help"
+msgstr "Nápověda"
+
+#: gui/internal/gui_internal.c:1886
+msgid "Back"
+msgstr "Zpět"
+
+#: gui/internal/gui_internal.c:2732
+msgid "Streets"
+msgstr "Ulice"
+
+#: gui/internal/gui_internal.c:2740
+msgid "House numbers"
+msgstr "Čísla domů"
+
+#: gui/internal/gui_internal.c:3852 gui/internal/gui_internal.c:3861
+msgid "House number"
+msgstr "Číslo domu"
+
+#: gui/internal/gui_internal.c:3868 gui/internal/gui_internal.c:3877
+msgid "Street"
+msgstr "Ulice"
+
+#: gui/internal/gui_internal.c:3887 gui/internal/gui_internal.c:3916
+msgid "Town"
+msgstr "Město"
+
+#: gui/internal/gui_internal.c:3908
+msgid "Country"
+msgstr "Země"
+
+#: gui/internal/gui_internal.c:4035
+msgid "Active"
+msgstr "Aktivní"
+
+#: gui/internal/gui_internal.c:4043
+msgid "Download Enabled"
+msgstr "Stahování povoleno"
+
+#: gui/internal/gui_internal.c:4101
+msgid "Maps"
+msgstr "Mapy"
+
+#: gui/internal/gui_internal.c:4153
+msgid "Show Satellite Status"
+msgstr "Ukázat stav satelitu"
+
+#: gui/internal/gui_internal.c:4161
+msgid " Elevation "
+msgstr " Převýšení "
+
+#: gui/internal/gui_internal.c:4162
+msgid " Azimuth "
+msgstr " Azimut "
+
+#: gui/internal/gui_internal.c:4187
+msgid "Show NMEA Data"
+msgstr "Ukázat NMEA data"
+
+#: gui/internal/gui_internal.c:4306
+msgid "car"
+msgstr "auto"
+
+#: gui/internal/gui_internal.c:4306
+msgid "bike"
+msgstr "kolo"
+
+#: gui/internal/gui_internal.c:4306
+msgid "pedestrian"
+msgstr "chodec"
+
+#: gui/internal/gui_internal.c:4327
+#, c-format
+msgid "Current profile: %s"
+msgstr "Aktuální profil: %s"
+
+#: gui/internal/gui_internal.c:4329
+#, c-format
+msgid "Change profile to: %s"
+msgstr "Změnit profil na: %s"
+
+#: gui/internal/gui_internal.c:4365
+msgid "Set as active"
+msgstr "Nastavit jako aktivní"
+
+#: gui/internal/gui_internal.c:4372
+msgid "Show Satellite status"
+msgstr "Ukázat stav satelitu"
+
+#: gui/internal/gui_internal.c:4378
+msgid "Show NMEA data"
+msgstr "Ukázat NMEA data"
+
+#: gui/internal/gui_internal.c:4404
+msgid "Vehicle"
+msgstr "Vozidlo"
+
+#: gui/internal/gui_internal.c:4429
+msgid "Rules"
+msgstr "Pravidla"
+
+#: gui/internal/gui_internal.c:4437
+msgid "Lock on road"
+msgstr "Uchytit na cestu"
+
+#: gui/internal/gui_internal.c:4443
+msgid "Northing"
+msgstr "Severně"
+
+#: gui/internal/gui_internal.c:4449
+msgid "Map follows Vehicle"
+msgstr "Mapa sleduje vozidlo"
+
+#: gui/internal/gui_internal.c:5035
+msgid "Message"
+msgstr "Zpráva"
+
+#: gui/internal/gui_internal.c:6114
+msgid "Route Description"
+msgstr "Popis trasy"
+
+#: gui/internal/gui_internal.c:6238
+msgid "Height Profile"
+msgstr "Výškový profil"
+
+#: osd/core/osd_core.c:1882
+msgid "Look out! Camera!"
+msgstr "Pozor! Radar!"
+
+#: osd/core/osd_core.c:2086
+msgid "Please decrease your speed"
+msgstr "Zpomalte prosím"

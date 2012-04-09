@@ -58,10 +58,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.zoffcc.applications.zanavi.Navit.Navit_Address_Result_Struct;
@@ -72,9 +74,25 @@ public class NavitGraphics
 	private NavitGraphics parent_graphics;
 	private ArrayList overlays = new ArrayList();
 
-	public static DashPathEffect dashed_map_lines__high = new DashPathEffect(new float[] { 8, 3 }, 1);
-	public static DashPathEffect dashed_map_lines__low = new DashPathEffect(new float[] { 10, 10 }, 1);
-	public static DashPathEffect dashed_map_lines__no_dash = null;
+	public final static DashPathEffect dashed_map_lines__high = new DashPathEffect(new float[] { 4, 2 }, 1);
+	public final static DashPathEffect dashed_map_lines__low = new DashPathEffect(new float[] { 15, 11 }, 1);
+	public final static DashPathEffect dashed_map_lines__no_dash = null;
+
+	public final static DashPathEffect h001 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect l001 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect h002 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect l002 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect h003 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect l003 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect h004 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect l004 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect h005 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect l005 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect h006 = new DashPathEffect(new float[] { 6, 3 }, 1);
+	public final static DashPathEffect l006 = new DashPathEffect(new float[] { 6, 3 }, 1);
+
+	public final static DashPathEffect[] dashes__low = { null, l001, l002, l003, l004, l005, l006 };
+	public final static DashPathEffect[] dashes__high = { null, h001, h002, h003, h004, h005, h006 };
 
 	public static int navit_route_status = 0;
 
@@ -92,6 +110,14 @@ public class NavitGraphics
 	public static String debug_line_3 = "";
 
 	public static final int DRAW_ONEWAY_ARROWS_AT_ORDER = 13;
+
+	public static long[] OverlayDrawThread_cancel_drawing_timeout__options = { 300L, 900L, 2100L, 20000L }; // 900L normal, 300L short, 2100L long
+	public static int[] OverlayDrawThread_cancel_thread_sleep_time__options = { 100, 200, 400, 400 };
+	public static long[] OverlayDrawThread_cancel_thread_timeout__options = { 3000L, 3000L, 3000L, 22000L };
+
+	public static long OverlayDrawThread_cancel_drawing_timeout = OverlayDrawThread_cancel_drawing_timeout__options[1];
+	public static int OverlayDrawThread_cancel_thread_sleep_time = OverlayDrawThread_cancel_thread_sleep_time__options[1];
+	public static long OverlayDrawThread_cancel_thread_timeout = OverlayDrawThread_cancel_thread_timeout__options[1];
 
 	int loc_dot_x = 0;
 	int loc_dot_y = 0;
@@ -142,6 +168,9 @@ public class NavitGraphics
 	private NavitOSDJava NavitAOSDJava = null;
 	private TextView NavitMsgTv = null;
 	public static TextView NavitMsgTv_ = null;
+
+	private TextView NavitMsgTv2 = null;
+	public static TextView NavitMsgTv2_ = null;
 
 	public static NavitGlobalMap NavitGlobalMap_ = null;
 
@@ -266,7 +295,7 @@ public class NavitGraphics
 
 		OverlayDrawThread()
 		{
-			//Log.e("NavitGraphics", "OverlayDrawThread created");
+			// Log.e("NavitGraphics", "OverlayDrawThread created");
 			start_timestamp = System.currentTimeMillis();
 		}
 
@@ -275,11 +304,36 @@ public class NavitGraphics
 			this.running = true;
 			this.redraw = true;
 
-			//Log.e("NavitGraphics", "OverlayDrawThread starting");
+			// start_timestamp = System.currentTimeMillis();
+			// Log.e("NavitGraphics", "OverlayDrawThread starting"+start_timestamp);
 
 			while (this.running)
 			{
-				if (System.currentTimeMillis() < start_timestamp + 5000L)
+
+				if (System.currentTimeMillis() > (start_timestamp + OverlayDrawThread_cancel_drawing_timeout))
+				{
+					// after xxx milliseconds of delay, stop drawing the map!
+					// most likely the device is too slow, or there are too much items to draw
+					try
+					{
+						//Log.e("NavitGraphics", "## stop map drawing x1: NOW ##" + System.currentTimeMillis());
+						NavitGraphics.CallbackMessageChannel(50, "");
+						//Message msg = new Message();
+						//Bundle b = new Bundle();
+						//b.putInt("Callback", 50);
+						//msg.setData(b);
+						//callback_handler.sendMessage(msg);
+						//Log.e("NavitGraphics", "## stop map drawing x2: NOW ##" + System.currentTimeMillis());
+						this.running = false;
+						break;
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+
+				if (System.currentTimeMillis() > (start_timestamp + OverlayDrawThread_cancel_thread_timeout))
 				{
 					// just to be safe, stop after 5 seconds
 					this.running = false;
@@ -308,7 +362,7 @@ public class NavitGraphics
 
 				try
 				{
-					Thread.sleep(200);
+					Thread.sleep(OverlayDrawThread_cancel_thread_sleep_time);
 				}
 				catch (InterruptedException e)
 				{
@@ -1044,6 +1098,34 @@ public class NavitGraphics
 			NavitMsgTv.invalidate();
 			// android Messages TextView
 
+			// android Speech Messages TextView
+			Log.e("Navit", "create android Speech Messages TextView");
+			NavitMsgTv2 = new TextView(relativelayout.getContext());
+			NavitMsgTv2_ = NavitMsgTv2;
+			RelativeLayout.LayoutParams NavitMsgTv_lp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			NavitMsgTv_lp2.leftMargin = 10;
+			NavitMsgTv_lp2.rightMargin = 10;
+			int tc2 = Color.argb(125, 0, 0, 0); // half transparent black
+			NavitMsgTv2.setBackgroundColor(tc2);
+			NavitMsgTv2.setTextSize(15);
+			NavitMsgTv2.setTextColor(Color.argb(255, 200, 200, 200)); // almost white
+
+			ScrollView sc = new ScrollView(relativelayout.getContext());
+			RelativeLayout.LayoutParams NavitMsgTv_lp3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			sc.addView(NavitMsgTv2, NavitMsgTv_lp2);
+			sc.setFadingEdgeLength(20);
+			sc.setScrollbarFadingEnabled(true);
+			sc.setHorizontalScrollBarEnabled(true);
+			sc.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+			NavitMsgTv2.setGravity(Gravity.BOTTOM);
+			relativelayout.addView(sc, NavitMsgTv_lp3);
+
+			NavitMsgTv2.bringToFront();
+			NavitMsgTv2.invalidate();
+			NavitMsgTv2.setEnabled(false);
+			NavitMsgTv2.setVisibility(View.GONE);
+			// android Speech Messages TextView
+
 			// big map overlay
 			//			NavitGlobalMap_ = new NavitGlobalMap(relativelayout.getContext());
 			//			RelativeLayout.LayoutParams NavitGlobalMap_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
@@ -1098,51 +1180,55 @@ public class NavitGraphics
 		{
 			if (msg.getData().getInt("Callback") == 1)
 			{
+				// zoom in
 				CallbackMessageChannel(1, "");
 			}
 			else if (msg.getData().getInt("Callback") == 2)
-
 			{
+				// zoom out
 				CallbackMessageChannel(2, "");
 			}
 			else if (msg.getData().getInt("Callback") == 3)
-
 			{
 				// get values
 				String lat = msg.getData().getString("lat");
 				String lon = msg.getData().getString("lon");
 				String q = msg.getData().getString("q");
-				// save dest.
-				//				try
-				//				{
-				//					Navit.remember_destination(q, lat, lon);
-				//				}
-				//				catch (Exception e)
-				//				{
-				//					e.printStackTrace();
-				//				}
-				//Navit.destination_set();
 				// set routing target to lat,lon
 				CallbackMessageChannel(3, lat + "#" + lon + "#" + q);
 			}
+			else if (msg.getData().getInt("Callback") == 48)
+			{
+				// get values
+				String lat = msg.getData().getString("lat");
+				String lon = msg.getData().getString("lon");
+				String q = msg.getData().getString("q");
+				// append to routing, add waypoint at lat,lon
+				CallbackMessageChannel(48, lat + "#" + lon + "#" + q);
+			}
 			else if (msg.getData().getInt("Callback") == 4)
-
 			{
 				// set routing target to pixel x,y
 				int x = msg.getData().getInt("x");
 				int y = msg.getData().getInt("y");
 
-				//				try
-				//				{
-				//					Navit.remember_destination_xy("Point on Screen", x, y);
-				//				}
-				//				catch (Exception e)
-				//				{
-				//					e.printStackTrace();
-				//				}
-				//Navit.destination_set();
-
 				CallbackMessageChannel(4, "" + x + "#" + y);
+				try
+				{
+					Navit.follow_button_on();
+				}
+				catch (Exception e2)
+				{
+					e2.printStackTrace();
+				}
+			}
+			else if (msg.getData().getInt("Callback") == 49)
+			{
+				// set routing target to pixel x,y
+				int x = msg.getData().getInt("x");
+				int y = msg.getData().getInt("y");
+
+				CallbackMessageChannel(49, "" + x + "#" + y);
 				try
 				{
 					Navit.follow_button_on();
@@ -1294,6 +1380,63 @@ public class NavitGraphics
 				// stop searching and show results found until now
 				CallbackMessageChannel(46, "");
 			}
+			else if (msg.getData().getInt("Callback") == 47)
+			{
+				// change maps data dir
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(47, s);
+			}
+			else if (msg.getData().getInt("Callback") == 50)
+			{
+				// we request to stop drawing the map
+				CallbackMessageChannel(50, "");
+			}
+			else if (msg.getData().getInt("Callback") == 51)
+			{
+				// set position to pixel x,y
+				int x = msg.getData().getInt("x");
+				int y = msg.getData().getInt("y");
+				CallbackMessageChannel(51, "" + x + "#" + y);
+			}
+			else if (msg.getData().getInt("Callback") == 52)
+			{
+				// switch to demo vehicle
+				CallbackMessageChannel(52, "");
+			}
+			else if (msg.getData().getInt("Callback") == 53)
+			{
+				// dont speak streetnames
+				CallbackMessageChannel(53, "");
+			}
+			else if (msg.getData().getInt("Callback") == 54)
+			{
+				// speak streetnames
+				CallbackMessageChannel(54, "");
+			}
+			else if (msg.getData().getInt("Callback") == 55)
+			{
+				// set cache size for (map-)files
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(55, s);
+			}
+			//			else if (msg.getData().getInt("Callback") == 56)
+			//			{
+			//				// draw polylines with/without circles at the end
+			//				String s = msg.getData().getString("s");
+			//				CallbackMessageChannel(56, s); // 0 -> draw circles, 1 -> DO NOT draw circles
+			//			}
+			else if (msg.getData().getInt("Callback") == 57)
+			{
+				// keep drawing streets as if at "order" level xxx
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(57, s);
+			}
+			else if (msg.getData().getInt("Callback") == 58)
+			{
+				// street search radius factor (multiplier)
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(58, s);
+			}
 		}
 	};
 
@@ -1349,6 +1492,7 @@ public class NavitGraphics
 		//global_path.close();
 		draw_canvas.drawPath(path, paint);
 		paint.setAntiAlias(b);
+		//paint.setPathEffect(dashed_map_lines__no_dash);
 	}
 
 	protected void draw_polyline2(Paint paint, int c[], int order, int oneway)
@@ -1422,6 +1566,133 @@ public class NavitGraphics
 			draw_canvas.drawPath(path, paint);
 		}
 		paint.setAntiAlias(b);
+		//paint.setPathEffect(dashed_map_lines__no_dash);
+	}
+
+	protected void draw_polyline3(Paint paint, int c[], int order, int width)
+	{
+		//	Log.e("NavitGraphics","draw_polyline3");
+		paint.setStyle(Paint.Style.STROKE);
+		Boolean b = paint.isAntiAlias();
+		paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		float wsave = paint.getStrokeWidth();
+		paint.setStrokeWidth(width);
+
+		paint.setStyle(Paint.Style.FILL);
+		paint.setStrokeWidth(0);
+		draw_canvas.drawCircle(c[0], c[1], (width / 2), paint);
+		for (int i = 2; i < c.length; i += 2)
+		{
+			//if (i < (c.length - 2))
+			//{
+			paint.setStyle(Paint.Style.FILL);
+			paint.setStrokeWidth(0);
+			draw_canvas.drawCircle(c[i], c[i + 1], (width / 2), paint);
+			//}
+			paint.setStyle(Paint.Style.STROKE);
+			paint.setStrokeWidth(width);
+			draw_canvas.drawLine(c[i - 2], c[i - 1], c[i], c[i + 1], paint);
+		}
+		paint.setAntiAlias(b);
+		paint.setStrokeWidth(wsave);
+		//paint.setPathEffect(dashed_map_lines__no_dash);
+	}
+
+	protected void draw_polyline4(Paint paint, int c[], int order, int width, int type)
+	{
+		// type:1 -> underground (tunnel)
+		// type:2 -> bridge
+
+		Boolean b = paint.isAntiAlias();
+		paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		float wsave = paint.getStrokeWidth();
+
+		if (type == 2)
+		{
+			// bridge
+			//
+			//int csave = paint.getColor();
+			paint.setAlpha(120); // 0 .. 255   //    255 -> no seethru
+			paint.setStyle(Paint.Style.STROKE);
+			paint.setStrokeWidth(width + 2);
+			// paint.setColor(Color.BLACK);
+			if (order > 12)
+			{
+				paint.setStrokeWidth(width + 4);
+			}
+			for (int i = 2; i < c.length; i += 2)
+			{
+				draw_canvas.drawLine(c[i - 2], c[i - 1], c[i], c[i + 1], paint);
+			}
+			//paint.setColor(csave);
+
+			// -- circles --
+			/*
+			 * paint.setAlpha(120);
+			 * paint.setStyle(Paint.Style.FILL);
+			 * paint.setStrokeWidth(0);
+			 * draw_canvas.drawCircle(c[0], c[1], (width / 2), paint);
+			 * for (int i = 2; i < c.length; i += 2)
+			 * {
+			 * paint.setStyle(Paint.Style.FILL);
+			 * paint.setStrokeWidth(0);
+			 * draw_canvas.drawCircle(c[i], c[i + 1], (width / 2), paint);
+			 * }
+			 */
+			// -- circles --
+		}
+
+		// ---------------------------------------
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(width);
+
+		if (type == 1)
+		{
+			// tunnel
+			paint.setAlpha(70); // 0 .. 255   //    255 -> no seethru
+			if (order > 13)
+			{
+				paint.setPathEffect(dashed_map_lines__low);
+			}
+			else
+			{
+				paint.setPathEffect(dashed_map_lines__high);
+			}
+		}
+		else if (type == 2)
+		{
+			// bridge
+			paint.setAlpha(70); // 0 .. 255   //    255 -> no seethru			
+		}
+
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(width);
+		for (int i = 2; i < c.length; i += 2)
+		{
+			draw_canvas.drawLine(c[i - 2], c[i - 1], c[i], c[i + 1], paint);
+		}
+
+		paint.setPathEffect(dashed_map_lines__no_dash);
+		paint.setAntiAlias(b);
+		paint.setStrokeWidth(wsave);
+	}
+
+	protected void set_dashes(Paint paint, int variant, int order)
+	{
+		if (variant == 0)
+		{
+			paint.setPathEffect(dashed_map_lines__no_dash);
+			return;
+		}
+
+		if (order > 13)
+		{
+			paint.setPathEffect(dashes__low[variant]);
+		}
+		else
+		{
+			paint.setPathEffect(dashes__high[variant]);
+		}
 	}
 
 	protected void draw_polyline_dashed(Paint paint, int c[], int order, int oneway)
@@ -1485,7 +1756,7 @@ public class NavitGraphics
 		if (normal)
 		{
 			// normal line
-			if (order > 12)
+			if (order > 13)
 			{
 				paint.setPathEffect(dashed_map_lines__low);
 			}
@@ -1587,8 +1858,64 @@ public class NavitGraphics
 		//		float fx = x;
 		//		float fy = y;
 		//Log.e("NavitGraphics","Text size "+size + " vs " + paint.getTextSize());
-		paint.setTextSize(size / 15);
+		if (Navit.PREF_map_font_size != 2)
+		{
+			if (Navit.PREF_map_font_size == 3)
+			{
+				// large
+				paint.setTextSize((int) ((size / 15) * 1.4));
+			}
+			else if (Navit.PREF_map_font_size == 4)
+			{
+				// extra large
+				paint.setTextSize((int) ((size / 15) * 1.7));
+			}
+			else if (Navit.PREF_map_font_size == 5)
+			{
+				// extra large
+				paint.setTextSize((int) ((size / 15) * 2.2));
+			}
+			else if (Navit.PREF_map_font_size == 1)
+			{
+				// small
+				paint.setTextSize((int) ((size / 15) * 0.72));
+			}
+			else
+			{
+				// other? use normal size
+				paint.setTextSize(size / 15);
+			}
+		}
+		else
+		{
+			// normal size
+			paint.setTextSize(size / 15);
+		}
 		paint.setStyle(Paint.Style.FILL);
+		// FONT ------------------
+		// FONT ------------------
+		if (Navit.PREF_use_custom_font == true)
+		{
+			if (paint.getTypeface() == null)
+			{
+				try
+				{
+					paint.setTypeface(Navit.NavitStreetnameFont);
+				}
+				catch (Exception e)
+				{
+				}
+			}
+		}
+		else
+		{
+			if (paint.getTypeface() != null)
+			{
+				paint.setTypeface(null);
+			}
+		}
+		// FONT ------------------
+		// FONT ------------------
 		Boolean b = paint.isAntiAlias();
 		paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
 		if (dx == 0x10000 && dy == 0)
@@ -2167,7 +2494,7 @@ public class NavitGraphics
 		}
 
 		// paint only every 300ms
-		if (last_paint_OSD + 300 < System.currentTimeMillis())
+		if ((last_paint_OSD + 300) < System.currentTimeMillis())
 		{
 			try
 			{
@@ -2228,10 +2555,896 @@ public class NavitGraphics
 		return ret;
 	}
 
+	static String __n_distance(int i)
+	{
+		String ret = "";
+		if ((i > 0) && (i < 10))
+		{
+			ret = __get_distance(i, 0);
+		}
+		else
+		{
+			switch (i)
+			{
+			case 10:
+				ret = "";
+				break;
+			case 11:
+				ret = "soon";
+				break;
+			case 12:
+				ret = "after %i roads";
+				break;
+			case 13:
+				ret = "now";
+				break;
+			default:
+				ret = "";
+			}
+		}
+		return ret;
+	}
+
+	static String __get_distance(int i, int is_length)
+	{
+		String ret = "";
+
+		if (is_length == 0)
+		{
+			switch (i)
+			{
+			case 1:
+				ret = "in %d m";
+				break;
+			case 2:
+				ret = "in %d feet";
+				break;
+			case 3:
+				ret = "in %d meters";
+				break;
+			case 4:
+				ret = "in %d.%d miles";
+				break;
+			case 5:
+				ret = "in %d.%d kilometers";
+				break;
+			case 6:
+				ret = "in one mile";
+				break;
+			case 7:
+				ret = "in %d miles";
+				break;
+			case 8:
+				ret = "in one kilometer";
+				break;
+			case 9:
+				ret = "in %d kilometer";
+				break;
+			default:
+				ret = "";
+			}
+		}
+		else
+		{
+			switch (i)
+			{
+			case 1:
+				ret = "%d m";
+				break;
+			case 2:
+				ret = "%d feet";
+				break;
+			case 3:
+				ret = "%d meters";
+				break;
+			case 4:
+				ret = "%d.%d miles";
+				break;
+			case 5:
+				ret = "%d.%d kilometers";
+				break;
+			case 6:
+				ret = "one mile";
+				break;
+			case 7:
+				ret = "%d miles";
+				break;
+			case 8:
+				ret = "one kilometer";
+				break;
+			case 9:
+				ret = "%d kilometer";
+				break;
+			default:
+				ret = "";
+			}
+		}
+
+		return ret;
+	}
+
+	static String __direction(int i)
+	{
+		String ret = "";
+
+		switch (i)
+		{
+		case 1:
+			ret = "left";
+			break;
+		case 2:
+			ret = "right";
+			break;
+		default:
+			ret = "";
+		}
+
+		return ret;
+	}
+
+	static String __strength(int i)
+	{
+		String ret = "";
+
+		switch (i)
+		{
+		case 1:
+			ret = "";
+			break;
+		case 2:
+			ret = "slight ";
+			break;
+		case 3:
+			ret = "hard ";
+			break;
+		case 4:
+			ret = "really hard ";
+			break;
+		default:
+			ret = "";
+		}
+
+		return ret;
+	}
+
+	static String __navigation_item_destination(int i)
+	{
+		String ret = "";
+
+		switch (i)
+		{
+		case 1:
+			ret = "";
+			break;
+		case 2:
+			ret = "exit";
+			break;
+		case 3:
+			ret = "into the ramp";
+			break;
+		case 4:
+			ret = "%sinto the street %s%s%s";
+			break;
+		case 5:
+			ret = "%sinto the %s%s%s|male form";
+			break;
+		case 6:
+			ret = "%sinto the %s%s%s|female form";
+			break;
+		case 7:
+			ret = "%sinto the %s%s%s|neutral form";
+			break;
+		case 8:
+			ret = "%sinto the %s";
+			break;
+		default:
+			ret = "";
+		}
+
+		return ret;
+	}
+
+	public static void generate_all_speech_commands()
+	{
+
+		try
+		{
+			NavitGraphics.NavitMsgTv2_.setVisibility(View.VISIBLE);
+			NavitGraphics.NavitMsgTv2_.setEnabled(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		String a = null;
+		String b = null;
+		String a1 = null;
+		String b1 = null;
+		String c = null;
+		String c1 = null;
+		String d = null;
+		String d1 = null;
+		int j;
+		//
+		//
+		//
+		a = "When possible, please turn around";
+		a1 = CallbackLocalizedString(a);
+		NavitGraphics.NavitMsgTv2_.append(a + "\n");
+		NavitGraphics.NavitMsgTv2_.append(a1 + "\n");
+		System.out.println(a);
+		System.out.println(a1);
+		//
+		a = "Enter the roundabout soon";
+		a1 = CallbackLocalizedString(a);
+		NavitGraphics.NavitMsgTv2_.append(a + "\n");
+		NavitGraphics.NavitMsgTv2_.append(a1 + "\n");
+		System.out.println(a);
+		System.out.println(a1);
+		//
+		a = "then you have reached your destination.";
+		a1 = CallbackLocalizedString(a);
+		NavitGraphics.NavitMsgTv2_.append(a + "\n");
+		NavitGraphics.NavitMsgTv2_.append(a1 + "\n");
+		System.out.println(a);
+		System.out.println(a1);
+		//
+		a = "In %s, enter the roundabout";
+		a1 = CallbackLocalizedString(a);
+		for (j = 1; j < 10; j++)
+		{
+			if ((j == 4) || (j == 5))
+			{
+				b = __get_distance(j, 1);
+				b1 = CallbackLocalizedString(b);
+				c = String.format(b, 1, 4);
+				c1 = String.format(b1, 1, 4);
+				d = String.format(a, c);
+				d1 = String.format(a1, c1);
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d);
+				System.out.println(d1);
+			}
+			else
+			{
+				b = __get_distance(j, 1);
+				b1 = CallbackLocalizedString(b);
+				c = String.format(b, 250);
+				c1 = String.format(b1, 250);
+				d = String.format(a, c);
+				d1 = String.format(a1, c1);
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d);
+				System.out.println(d1);
+			}
+		}
+		//
+		a = "Follow the road for the next %s";
+		a1 = CallbackLocalizedString(a);
+		for (j = 1; j < 10; j++)
+		{
+			if ((j == 4) || (j == 5))
+			{
+				b = __get_distance(j, 1);
+				b1 = CallbackLocalizedString(b);
+				c = String.format(b, 1, 4);
+				c1 = String.format(b1, 1, 4);
+				d = String.format(a, c);
+				d1 = String.format(a1, c1);
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d);
+				System.out.println(d1);
+			}
+			else
+			{
+				b = __get_distance(j, 1);
+				b1 = CallbackLocalizedString(b);
+				c = String.format(b, 250);
+				c1 = String.format(b1, 250);
+				d = String.format(a, c);
+				d1 = String.format(a1, c1);
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d);
+				System.out.println(d1);
+			}
+		}
+		//
+		a = "Leave the roundabout at the %s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "first exit");
+		b1 = String.format(a1, CallbackLocalizedString("first exit"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "Leave the roundabout at the %s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "third exit");
+		b1 = String.format(a1, CallbackLocalizedString("third exit"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "then leave the roundabout at the %s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "first exit");
+		b1 = String.format(a1, CallbackLocalizedString("first exit"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "then leave the roundabout at the %s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "third exit");
+		b1 = String.format(a1, CallbackLocalizedString("third exit"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "Take the %1$s road to the %2$s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "first", "left");
+		b1 = String.format(a1, CallbackLocalizedString("first"), CallbackLocalizedString("left"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "Take the %1$s road to the %2$s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "first", "right");
+		b1 = String.format(a1, CallbackLocalizedString("first"), CallbackLocalizedString("right"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "Take the %1$s road to the %2$s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "third", "left");
+		b1 = String.format(a1, CallbackLocalizedString("third"), CallbackLocalizedString("left"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "Take the %1$s road to the %2$s";
+		a1 = CallbackLocalizedString(a);
+		b = String.format(a, "third", "right");
+		b1 = String.format(a1, CallbackLocalizedString("third"), CallbackLocalizedString("right"));
+		NavitGraphics.NavitMsgTv2_.append(b + "\n");
+		NavitGraphics.NavitMsgTv2_.append(b1 + "\n");
+		System.out.println(b);
+		System.out.println(b1);
+		//
+		a = "You have reached your destination %s";
+		a1 = CallbackLocalizedString(a);
+		for (j = 1; j < 14; j++)
+		{
+			if (j == 10)
+			{
+				d = String.format(a, "");
+				d1 = String.format(a1, "");
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d + "\n");
+				System.out.println(d1 + "\n");
+			}
+			else if (j == 12)
+			{
+				b = __n_distance(j);
+				b1 = CallbackLocalizedString(b);
+				c = b.replace("%i", "3");
+				c1 = b1.replace("%i", "3");
+				d = String.format(a, c);
+				d1 = String.format(a1, c1);
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d);
+				System.out.println(d1);
+			}
+			else
+			{
+				b = __n_distance(j);
+				b1 = CallbackLocalizedString(b);
+				d = String.format(a, b);
+				d1 = String.format(a1, b1);
+				try
+				{
+					d = String.format(d, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				try
+				{
+					d1 = String.format(d1, 3, 4, 5);
+				}
+				catch (Exception e)
+				{
+
+				}
+				NavitGraphics.NavitMsgTv2_.append(d + "\n");
+				NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+				System.out.println(d);
+				System.out.println(d1);
+			}
+		}
+		//
+		a = "Turn %1$s%2$s %3$s%4$s";
+		a1 = CallbackLocalizedString(a);
+		String xx = null;
+		String xx1 = null;
+		String yy = null;
+		String yy1 = null;
+		for (j = 1; j < 5; j++)
+		{
+			if (j == 1)
+			{
+				b = __strength(j);
+				b1 = "";
+			}
+			else
+			{
+				b = __strength(j);
+				b1 = CallbackLocalizedString(b);
+			}
+
+			for (int k = 1; k < 3; k++)
+			{
+				c = __direction(k);
+				c1 = CallbackLocalizedString(c);
+
+				for (int m = 1; m < 14; m++)
+				{
+					if (m == 10)
+					{
+						xx = "";
+						xx1 = "";
+					}
+					else if (m == 12)
+					{
+						String zz = __n_distance(m);
+						String zz1 = CallbackLocalizedString(zz);
+						xx = zz.replace("%i", "3");
+						xx1 = zz1.replace("%i", "3");
+					}
+					else
+					{
+						xx = __n_distance(m);
+						xx1 = CallbackLocalizedString(xx);
+					}
+
+					for (int o = 1; o < 9; o++)
+					{
+						if (o == 2)
+						{
+							// leave out "exit"
+							break;
+						}
+
+						if (o == 1)
+						{
+							yy = __navigation_item_destination(o);
+							yy1 = "";
+						}
+						else if (o == 4)
+						{
+							String zz;
+							String zz1;
+							zz = __navigation_item_destination(o);
+							zz1 = CallbackLocalizedString(zz);
+							yy = String.format(zz, " ", "somestreet", " ", "A23");
+							yy1 = String.format(zz1, " ", "blablastrasse", " ", "A23");
+						}
+						else if ((o == 5) || (o == 6) || (o == 7))
+						{
+							String zz;
+							String zz1;
+							zz = __navigation_item_destination(o);
+							zz1 = CallbackLocalizedString(zz);
+							try
+							{
+								zz = zz.substring(0, zz.lastIndexOf("|"));
+							}
+							catch (Exception e)
+							{
+
+							}
+							try
+							{
+								zz1 = zz1.substring(0, zz1.lastIndexOf("|"));
+							}
+							catch (Exception e)
+							{
+
+							}
+							yy = String.format(zz, " ", "somestreet", " ", "A23");
+							yy1 = String.format(zz1, " ", "blablastrasse", " ", "A23");
+						}
+						else if (o == 8)
+						{
+							String zz;
+							String zz1;
+							zz = __navigation_item_destination(o);
+							zz1 = CallbackLocalizedString(zz);
+							yy = String.format(zz, " ", "A23");
+							yy1 = String.format(zz1, " ", "A23");
+						}
+						else
+						{
+							yy = __navigation_item_destination(o);
+							yy1 = " " + CallbackLocalizedString(yy);
+							yy = " " + yy;
+						}
+
+						// apply parts
+						d = String.format(a, b, c, xx, yy);
+						d1 = String.format(a1, b1, c1, xx1, yy1);
+						try
+						{
+							d = String.format(d, 3, 4, 5);
+						}
+						catch (Exception e)
+						{
+
+						}
+						try
+						{
+							d1 = String.format(d1, 3, 4, 5);
+						}
+						catch (Exception e)
+						{
+
+						}
+						NavitGraphics.NavitMsgTv2_.append(d + "\n");
+						NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+						System.out.println(d);
+						System.out.println(d1);
+					}
+				}
+			}
+		}
+		//
+		a = "then turn %1$s%2$s %3$s%4$s";
+		a1 = CallbackLocalizedString(a);
+		xx = null;
+		xx1 = null;
+		yy = null;
+		yy1 = null;
+		for (j = 1; j < 5; j++)
+		{
+			if (j == 1)
+			{
+				b = __strength(j);
+				b1 = "";
+			}
+			else
+			{
+				b = __strength(j);
+				b1 = CallbackLocalizedString(b);
+			}
+
+			for (int k = 1; k < 3; k++)
+			{
+				c = __direction(k);
+				c1 = CallbackLocalizedString(c);
+
+				for (int m = 1; m < 14; m++)
+				{
+					if (m == 10)
+					{
+						xx = "";
+						xx1 = "";
+					}
+					else if (m == 12)
+					{
+						String zz = __n_distance(m);
+						String zz1 = CallbackLocalizedString(zz);
+						xx = zz.replace("%i", "3");
+						xx1 = zz1.replace("%i", "3");
+					}
+					else
+					{
+						xx = __n_distance(m);
+						xx1 = CallbackLocalizedString(xx);
+					}
+
+					for (int o = 1; o < 9; o++)
+					{
+						if (o == 2)
+						{
+							// leave out "exit"
+							break;
+						}
+
+						if (o == 1)
+						{
+							yy = __navigation_item_destination(o);
+							yy1 = "";
+						}
+						else if (o == 4)
+						{
+							String zz;
+							String zz1;
+							zz = __navigation_item_destination(o);
+							zz1 = CallbackLocalizedString(zz);
+							yy = String.format(zz, " ", "somestreet", " ", "A23");
+							yy1 = String.format(zz1, " ", "blablastrasse", " ", "A23");
+						}
+						else if ((o == 5) || (o == 6) || (o == 7))
+						{
+							String zz;
+							String zz1;
+							zz = __navigation_item_destination(o);
+							zz1 = CallbackLocalizedString(zz);
+							try
+							{
+								zz = zz.substring(0, zz.lastIndexOf("|"));
+							}
+							catch (Exception e)
+							{
+
+							}
+							try
+							{
+								zz1 = zz1.substring(0, zz1.lastIndexOf("|"));
+							}
+							catch (Exception e)
+							{
+
+							}
+							yy = String.format(zz, " ", "somestreet", " ", "A23");
+							yy1 = String.format(zz1, " ", "blablastrasse", " ", "A23");
+						}
+						else if (o == 8)
+						{
+							String zz;
+							String zz1;
+							zz = __navigation_item_destination(o);
+							zz1 = CallbackLocalizedString(zz);
+							yy = String.format(zz, " ", "A23");
+							yy1 = String.format(zz1, " ", "A23");
+						}
+						else
+						{
+							yy = __navigation_item_destination(o);
+							yy1 = " " + CallbackLocalizedString(yy);
+							yy = " " + yy;
+						}
+
+						// apply parts
+						d = String.format(a, b, c, xx, yy);
+						d1 = String.format(a1, b1, c1, xx1, yy1);
+						try
+						{
+							d = String.format(d, 3, 4, 5);
+						}
+						catch (Exception e)
+						{
+
+						}
+						try
+						{
+							d1 = String.format(d1, 3, 4, 5);
+						}
+						catch (Exception e)
+						{
+
+						}
+						NavitGraphics.NavitMsgTv2_.append(d + "\n");
+						NavitGraphics.NavitMsgTv2_.append(d1 + "\n");
+						System.out.println(d);
+						System.out.println(d1);
+					}
+				}
+			}
+		}
+		//
+		//
+		//
+
+		/*
+		 * speech commands:
+		 * ================
+		 * 
+		 * 
+		 * When possible, please turn around
+		 * Enter the roundabout soon
+		 * then you have reached your destination.
+		 * 
+		 * In %s, enter the roundabout (get_distance(is_length=1))
+		 * Follow the road for the next %s (get_distance(is_length=1))
+		 * 
+		 * Leave the roundabout at the %s (get_exit_count_str)
+		 * then leave the roundabout at the %s (get_exit_count_str)
+		 * 
+		 * Take the %1$s road to the %2$s (get_count_str(),direction)
+		 * then take the %1$s road to the %2$s (get_count_str(),direction)
+		 * 
+		 * Turn %1$s%2$s %3$s%4$s (strength,direction,distance,navigation_item_destination(" "))
+		 * then turn %1$s%2$s %3$s%4$s (strength,direction,distance,navigation_item_destination(" "))
+		 * 
+		 * You have reached your destination %s (distance)
+		 * 
+		 * 
+		 * 
+		 * distance:
+		 * ""
+		 * soon
+		 * get_distance(is_length=0)
+		 * after %i roads
+		 * now
+		 * 
+		 * 
+		 * direction:
+		 * left
+		 * right
+		 * 
+		 * strength:
+		 * ""
+		 * slight
+		 * hard
+		 * really hard
+		 * 
+		 * navigation_item_destination:
+		 * ============================
+		 * ""
+		 * (prefix)exit
+		 * (prefix)into the ramp
+		 * (prefix)into the street (streetname)(sep)(systematic streetname)
+		 * (prefix)into the (streetname)(sep)(systematic streetname) |male form %s%s%s
+		 * (prefix)into the (streetname)(sep)(systematic streetname) |female form %s%s%s
+		 * (prefix)into the (streetname)(sep)(systematic streetname) |neutral form %s%s%s
+		 * (prefix)into the (systematic streetname) %s
+		 * 
+		 * 
+		 * 
+		 * get_count_str:
+		 * ==============
+		 * first
+		 * second
+		 * fifth
+		 * 
+		 * 
+		 * get_exit_count_str:
+		 * ===================
+		 * first exit
+		 * second exit
+		 * fifth exit
+		 * 
+		 * 
+		 * 
+		 * get_distance:
+		 * =============
+		 * %d m (is_length 1)
+		 * in %d m
+		 * %d feet (is_length 1)
+		 * in %d feet
+		 * %d meters (is_length 1)
+		 * in %d meters
+		 * %d.%d miles (is_length 1)
+		 * in %d.%d miles
+		 * %d.%d kilometers (is_length 1)
+		 * in %d.%d kilometers
+		 * one mile,%d miles (is_length 1)
+		 * in one mile,in %d miles
+		 * one kilometer,%d kilometers (is_length 1)
+		 * in one kilometer,in %d kilometers
+		 */
+
+	}
+
 	/**
 	 * generic message channel to C-code
 	 */
-	public native int CallbackMessageChannel(int i, String s);
+	public static native int CallbackMessageChannel(int i, String s);
 
 	/**
 	 * return search result from C-code
@@ -2359,6 +3572,30 @@ public class NavitGraphics
 	// call C-function to get value --> not used anymore now!!
 	public static native int CallbackDestinationValid();
 
+	public static Handler callback_handler_s = new Handler()
+	{
+		public void handleMessage(Message msg)
+		{
+			if (msg.getData().getInt("Callback") == 18)
+			{
+				CallbackMessageChannel(18, "");
+			}
+			else if (msg.getData().getInt("Callback") == 47)
+			{
+				// get values
+				String s = msg.getData().getString("s");
+				// set routing target to lat,lon
+				CallbackMessageChannel(47, s);
+			}
+			else if (msg.getData().getInt("Callback") == 55)
+			{
+				// set cache size for (map-)files
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(55, s);
+			}
+		}
+	};
+
 	//
 	//
 	//
@@ -2366,6 +3603,18 @@ public class NavitGraphics
 	// i=1 -> pixel a,b (x,y)      -> geo   string "lat(float)#lng(float)"
 	// i=2 -> geo   a,b (lat,lng)  -> pixel string "x(int)#y(int)"
 	public static native String CallbackGeoCalc(int i, float a, float b);
+
+	public static void send_generic_text(int id, String text)
+	{
+		if (id == 1)
+		{
+			// speech textblock
+			if (NavitGraphics.NavitMsgTv2_.getVisibility() == View.VISIBLE)
+			{
+				NavitMsgTv2_.append("TEXT:" + text);
+			}
+		}
+	}
 
 	public static void return_generic_int(int id, int i)
 	{

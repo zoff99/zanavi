@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -21,7 +40,8 @@
 #define NAVIT_NAVIT_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 extern struct gui *main_loop_gui;
 // defined in glib.h.
@@ -32,12 +52,21 @@ typedef struct _GList GList;
 
 extern int allow_gui_internal;
 extern int draw_display_at_speed;
-extern int routing_mode;	// 0-> normal highway rounting
-							// 1-> normal roads routing
-							// 2-> future use
+extern int routing_mode; // 0-> normal highway rounting
+// 1-> normal roads routing
+// 2-> future use
 extern int offline_search_filter_duplicates;
 extern int offline_search_break_searching;
+extern char *navit_maps_dir;
+extern int cancel_drawing_global;
+extern int global_speak_streetnames;
 
+extern int allow_large_mapfiles;
+extern int cache_size_file; /* cache size in bytes */
+extern int draw_polylines_fast; // 1 -> dont draw circles at the end of polylines 0-> do draw circles
+
+extern int limit_order_corrected;
+extern int global_search_street_size_factor;
 
 /* prototypes */
 enum attr_type;
@@ -118,6 +147,12 @@ struct navigation *navit_get_navigation(struct navit *this_);
 struct displaylist *navit_get_displaylist(struct navit *this_);
 void navit_layout_switch(struct navit *n);
 int navit_set_vehicle_by_name(struct navit *n, const char *name);
+
+void navit_set_cursors(struct navit *this_);
+
+#include "vehicle.h"
+int navit_add_vehicle(struct navit *this_, struct vehicle *v);
+
 int navit_set_layout_by_name(struct navit *n, const char *name);
 void navit_disable_suspend(void);
 int navit_block(struct navit *this_, int block);
@@ -127,10 +162,6 @@ void navit_command_add_table(struct navit*this_, struct command_table *commands,
 // extern static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_orientation, int *dir);
 int navit_get_cur_pnt(struct navit *this_, struct point *p);
 
-
-
-
-
 #include "coord.h"
 #include "point.h"
 #include "item.h"
@@ -139,7 +170,8 @@ int navit_get_cur_pnt(struct navit *this_, struct point *p);
 struct coord global_vehicle_pos_onscreen;
 
 //! The navit_vehicule
-struct navit_vehicle {
+struct navit_vehicle
+{
 	int follow;
 	/*! Limit of the follow counter. See navit_add_vehicle */
 	int follow_curr;
@@ -153,7 +185,8 @@ struct navit_vehicle {
 	int animate_cursor;
 };
 
-struct navit {
+struct navit
+{
 	struct attr self;
 	GList *mapsets;
 	GList *layouts;
@@ -182,7 +215,7 @@ struct navit {
 	struct datawindow *roadbook_window;
 	struct map *former_destination;
 	struct point pressed, last, current;
-	int button_pressed,moved,popped,zoomed;
+	int button_pressed, moved, popped, zoomed;
 	int center_timeout;
 	int autozoom_secs;
 	int autozoom_min;
@@ -195,11 +228,11 @@ struct navit {
 	struct pcoord destination;
 	int destination_valid;
 	int blocked;
-	int w,h;
+	int w, h;
 	int drag_bitmap;
 	int use_mousewheel;
 	struct messagelist *messages;
-	struct callback *resize_callback,*button_callback,*motion_callback,*predraw_callback;
+	struct callback *resize_callback, *button_callback, *motion_callback, *predraw_callback;
 	struct vehicleprofile *vehicleprofile;
 	GList *vehicleprofiles;
 	int pitch;
@@ -210,13 +243,17 @@ struct navit {
 	int radius;
 	struct bookmarks *bookmarks;
 	int flags;
-		 /* 1=No graphics ok */
-		 /* 2=No gui ok */
+	/* 1=No graphics ok */
+	/* 2=No gui ok */
 	int border;
 	int imperial;
 };
 
+// global navit struct, needed almost everywhere
+struct navit *global_navit;
 
+// dirty global var for waypoint bitmap
+struct graphics_image *global_img_waypoint;
 
 /* end of prototypes */
 #ifdef __cplusplus

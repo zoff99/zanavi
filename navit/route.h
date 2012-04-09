@@ -103,7 +103,25 @@ struct route {
 };
 
 
-struct route_info;
+/**
+ * @brief Usually represents a destination or position
+ *
+ * This struct usually represents a destination or position
+ */
+struct route_info
+{
+	struct coord c; /**< The actual destination / position */
+	struct coord lp; /**< The nearest point on a street to c */
+	int pos; /**< The position of lp within the coords of the street */
+	int lenpos; /**< Distance between lp and the end of the street */
+	int lenneg; /**< Distance between lp and the start of the street */
+	int lenextra; /**< Distance between lp and c */
+	int percent; /**< ratio of lenneg to lenght of whole street in percent */
+	struct street_data *street; /**< The street lp is on */
+	int street_direction; /**< Direction of vehicle on street -1 = Negative direction, 1 = Positive direction, 0 = Unknown */
+	int dir; /**< Direction to take when following the route -1 = Negative direction, 1 = Positive direction */
+};
+
 struct street_data;
 struct tracking;
 struct vehicleprofile;
@@ -120,6 +138,7 @@ void route_set_position(struct route *this_, struct pcoord *pos);
 void route_set_position_from_tracking(struct route *this_, struct tracking *tracking, enum projection pro);
 struct map_selection *route_rect(int order, struct coord *c1, struct coord *c2, int rel, int abs);
 void route_set_destinations(struct route *this_, struct pcoord *dst, int count, int async);
+void route_add_destination(struct route *this, struct pcoord *dst, int async);
 int route_get_destinations(struct route *this_, struct pcoord *pc, int count);
 void route_set_destination(struct route *this_, struct pcoord *dst, int async);
 void route_remove_waypoint(struct route *this_);
@@ -141,6 +160,8 @@ void route_attr_iter_destroy(struct attr_iter *iter);
 int route_get_attr(struct route *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter);
 void route_init(void);
 void route_destroy(struct route *this_);
+void route_path_destroy(struct route_path *this, int recurse);
+void route_graph_destroy(struct route_graph *this);
 /* end of prototypes */
 #ifdef __cplusplus
 }

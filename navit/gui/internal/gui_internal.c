@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2010 Navit Team
  *
@@ -1585,7 +1604,7 @@ gui_internal_top_bar(struct gui_priv *this)
 		wm=gui_internal_button_new_with_callback(this, NULL,
 			image_new_s(this, "gui_map"), gravity_center|orientation_vertical,
 			gui_internal_cmd_return, NULL);
-		wm->speech=g_strdup(_("Back to map"));
+		wm->speech=g_strdup("Back to map");
 		gui_internal_widget_pack(this, wm);
 		gui_internal_widget_append(w, wm);
 		width-=wm->w;
@@ -1594,7 +1613,7 @@ gui_internal_top_bar(struct gui_priv *this)
 		wh=gui_internal_button_new_with_callback(this, NULL,
 			image_new_s(this, "gui_home"), gravity_center|orientation_vertical,
 			gui_internal_cmd_main_menu, NULL);
-		wh->speech=g_strdup(_("Main Menu"));
+		wh->speech=g_strdup("Main Menu");
 		gui_internal_widget_pack(this, wh);
 		gui_internal_widget_append(w, wh);
 		width-=wh->w;
@@ -2033,7 +2052,7 @@ gui_internal_cmd_add_bookmark2(struct gui_priv *this, struct widget *wm, void *d
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
 	char *name=data;
-	wb=gui_internal_menu(this,_("Add Bookmark"));
+	wb=gui_internal_menu(this,"Add Bookmark");
 	w=gui_internal_box_new(this, gravity_left_top|orientation_vertical|flags_expand|flags_fill);
 	gui_internal_widget_append(wb, w);
 	we=gui_internal_box_new(this, gravity_left_center|orientation_horizontal|flags_fill);
@@ -2060,7 +2079,7 @@ gui_internal_cmd_add_bookmark_folder2(struct gui_priv *this, struct widget *wm, 
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
 	char *name=data;
-	wb=gui_internal_menu(this,_("Add Bookmark folder"));
+	wb=gui_internal_menu(this,"Add Bookmark folder");
 	w=gui_internal_box_new(this, gravity_left_top|orientation_vertical|flags_expand|flags_fill);
 	gui_internal_widget_append(wb, w);
 	we=gui_internal_box_new(this, gravity_left_center|orientation_horizontal|flags_fill);
@@ -2087,7 +2106,7 @@ gui_internal_cmd_rename_bookmark(struct gui_priv *this, struct widget *wm, void 
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
 	char *name=wm->text;
-	wb=gui_internal_menu(this,_("Rename"));
+	wb=gui_internal_menu(this,"Rename");
 	w=gui_internal_box_new(this, gravity_left_top|orientation_vertical|flags_expand|flags_fill);
 	gui_internal_widget_append(wb, w);
 	we=gui_internal_box_new(this, gravity_left_center|orientation_horizontal|flags_fill);
@@ -2405,7 +2424,7 @@ gui_internal_cmd_pois(struct gui_priv *this, struct widget *wm, void *data)
 	dbg(2, "Params: sel = %i, selnb = %i, pagenb = %i, dist = %i\n",
 		param.p.sel, param.p.selnb, param.p.pagenb, param.p.dist);
 
-	wb=gui_internal_menu(this, isel ? isel->name : _("POIs"));
+	wb=gui_internal_menu(this, isel ? isel->name : "POIs");
 	w=gui_internal_box_new(this, gravity_top_center|orientation_vertical|flags_expand|flags_fill);
 	gui_internal_widget_append(wb, w);
 	if (!isel)
@@ -2598,7 +2617,7 @@ gui_internal_cmd_view_attribute_details(struct gui_priv *this, struct widget *wm
 		}
 		if (url) {
 			gui_internal_widget_append(w,
-					wb=gui_internal_button_new_with_callback(this, _("View in Browser"),
+					wb=gui_internal_button_new_with_callback(this, "View in Browser",
 						image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 						gui_internal_cmd_view_in_browser, NULL));
 			wb->name=url;
@@ -2735,13 +2754,13 @@ gui_internal_cmd_position_do(struct gui_priv *this, struct pcoord *pc_in, struct
 				gui_internal_widget_append(w, gui_internal_label_new(this, attr.u.str));
 			if (item_attr_get(item, attr_url_local, &attr)) {
 				gui_internal_widget_append(w,
-					wb=gui_internal_button_new_with_callback(this, _("View in Browser"),
+					wb=gui_internal_button_new_with_callback(this, "View in Browser",
 						image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 						gui_internal_cmd_view_in_browser, NULL));
 				wb->item=wm->item;
 			}
 			gui_internal_widget_append(w,
-				wb=gui_internal_button_new_with_callback(this, _("View Attributes"),
+				wb=gui_internal_button_new_with_callback(this, "View Attributes",
 					image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 					gui_internal_cmd_view_attributes, NULL));
 			wb->item=wm->item;
@@ -2750,7 +2769,7 @@ gui_internal_cmd_position_do(struct gui_priv *this, struct pcoord *pc_in, struct
 	}
 	if (flags & 8) {
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Set as destination"),
+			wbc=gui_internal_button_new_with_callback(this, "Set as destination",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_set_destination, g_strdup(name)));
 		wbc->data_free=g_free_func;
@@ -2758,14 +2777,14 @@ gui_internal_cmd_position_do(struct gui_priv *this, struct pcoord *pc_in, struct
 	}
 	if (flags & 16) {
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Set as position"),
+			wbc=gui_internal_button_new_with_callback(this, "Set as position",
 			image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 			gui_internal_cmd_set_position, wm));
 		wbc->c=pc;
 	}
 	if (flags & 32) {
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Add as bookmark"),
+			wbc=gui_internal_button_new_with_callback(this, "Add as bookmark",
 			image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 			gui_internal_cmd_add_bookmark2, g_strdup(name)));
 		wbc->data_free=g_free_func;
@@ -2775,7 +2794,7 @@ gui_internal_cmd_position_do(struct gui_priv *this, struct pcoord *pc_in, struct
 //POIs are not operational under MSVC yet
 	if (flags & 64) {
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("POIs"),
+			wbc=gui_internal_button_new_with_callback(this, "POIs",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_pois, NULL));
 		wbc->c=pc;
@@ -2788,7 +2807,7 @@ gui_internal_cmd_position_do(struct gui_priv *this, struct pcoord *pc_in, struct
 #endif
 	if (flags & 128) {
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("View on map"),
+			wbc=gui_internal_button_new_with_callback(this, "View on map",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_view_on_map, NULL));
 		wbc->c=pc;
@@ -2855,26 +2874,26 @@ gui_internal_cmd_position_do(struct gui_priv *this, struct pcoord *pc_in, struct
 	}
 	if (flags & 512) {
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Cut Bookmark"),
+			wbc=gui_internal_button_new_with_callback(this, "Cut Bookmark",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_cut_bookmark, NULL));
 		wbc->text=g_strdup(wm->text);
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Copy Bookmark"),
+			wbc=gui_internal_button_new_with_callback(this, "Copy Bookmark",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_copy_bookmark, NULL));
 		wbc->text=g_strdup(wm->text);
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Rename Bookmark"),
+			wbc=gui_internal_button_new_with_callback(this, "Rename Bookmark",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_rename_bookmark, NULL));
 		wbc->text=g_strdup(wm->text);
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Paste Bookmark"),
+			wbc=gui_internal_button_new_with_callback(this, "Paste Bookmark",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_paste_bookmark, NULL));
 		gui_internal_widget_append(w,
-			wbc=gui_internal_button_new_with_callback(this, _("Delete Bookmark"),
+			wbc=gui_internal_button_new_with_callback(this, "Delete Bookmark",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_delete_bookmark, NULL));
 		wbc->text=g_strdup(wm->text);
@@ -2985,7 +3004,7 @@ gui_internal_cmd_bookmarks(struct gui_priv *this, struct widget *wm, void *data)
         plen=strlen(prefix);
 
 	gui_internal_prune_menu_count(this, 1, 0);
-	wb=gui_internal_menu(this, _("Bookmarks"));
+	wb=gui_internal_menu(this, "Bookmarks");
 	wb->background=this->background;
 	w=gui_internal_box_new(this, gravity_top_center|orientation_vertical|flags_expand|flags_fill);
 	w->spy=this->spacing*3;
@@ -3020,13 +3039,13 @@ gui_internal_cmd_bookmarks(struct gui_priv *this, struct widget *wm, void *data)
 		}
 		
 		// Adds the Bookmark folders
-		wbm=gui_internal_button_new_with_callback(this, _("Add Bookmark folder"),
+		wbm=gui_internal_button_new_with_callback(this, "Add Bookmark folder",
 			    image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_add_bookmark_folder2, NULL);
 		gui_internal_widget_append(w, wbm);
 
 		// Pastes the Bookmark
-		wbm=gui_internal_button_new_with_callback(this, _("Paste bookmark"),
+		wbm=gui_internal_button_new_with_callback(this, "Paste bookmark",
 				image_new_xs(this, "gui_active"), gravity_left_center|orientation_horizontal|flags_fill,
 				gui_internal_cmd_paste_bookmark, NULL);
 		gui_internal_widget_append(w, wbm);
@@ -3059,7 +3078,7 @@ gui_internal_cmd_bookmarks(struct gui_priv *this, struct widget *wm, void *data)
 				wbm->c.x=c.x;
 				wbm->c.y=c.y;
 				wbm->c.pro=bookmarks_get_projection(mattr.u.bookmarks);
-				wbm->name=g_strdup_printf(_("Bookmark %s"),label_full);
+				wbm->name=g_strdup_printf("Bookmark %s",label_full);
 				wbm->text=g_strdup(label_full);
 				if (!hassub) {
 					wbm->data=(void*)7;//Mark us as a bookmark
@@ -3905,7 +3924,7 @@ gui_internal_cmd2_setting_layout(struct gui_priv *this, char *function, struct a
 	struct attr_iter *iter;
 
 
-	wb=gui_internal_menu(this, _("Layout"));
+	wb=gui_internal_menu(this, "Layout");
 	w=gui_internal_box_new(this, gravity_top_center|orientation_vertical|flags_expand|flags_fill);
 	w->spy=this->spacing*3;
 	gui_internal_widget_append(wb, w);
@@ -3947,7 +3966,7 @@ gui_internal_cmd2_abort_navigation(struct gui_priv *this, char *function, struct
 static void
 gui_internal_cmd_map_download_do(struct gui_priv *this, struct widget *wm, void *data)
 {
-	char *text=g_strdup_printf(_("Download %s"),wm->name);
+	char *text=g_strdup_printf("Download %s",wm->name);
 	struct widget *w, *wb;
 	struct map *map=data;
 	double bllon,bllat,trlon,trlat;
@@ -4008,7 +4027,7 @@ gui_internal_cmd_map_download(struct gui_priv *this, struct widget *wm, void *da
 	on.type=off.type=attr_active;
 	on.u.num=1;
 	off.u.num=0;
-	wb=gui_internal_menu(this, wm->name?wm->name:_("Map Download"));
+	wb=gui_internal_menu(this, wm->name?wm->name:"Map Download");
 	w=gui_internal_box_new(this, gravity_top_center|orientation_vertical|flags_expand|flags_fill);
 	w->spy=this->spacing*3;
 	gui_internal_widget_append(wb, w);
@@ -4045,7 +4064,7 @@ gui_internal_cmd_map_download(struct gui_priv *this, struct widget *wm, void *da
 		if (bbox && (size=strchr(bbox,'\t'))) 
 			*size++='\0';
 		if (search && !strcmp(buffer, search)) {
-			wma=gui_internal_button_new_with_callback(this, _("Download completely"), NULL, 
+			wma=gui_internal_button_new_with_callback(this, "Download completely", NULL, 
 				gravity_left_center|orientation_horizontal|flags_fill, gui_internal_cmd_map_download_do, map);
 			wma->name=g_strdup(buffer+sp);
 			wma->prefix=g_strdup(bbox);
@@ -6357,7 +6376,7 @@ gui_internal_cmd2_locale(struct gui_priv *this, char *function, struct attr **in
 	char *text;
 
 	graphics_draw_mode(this->gra, draw_mode_begin);
-	menu=gui_internal_menu(this, _("Show Locale"));
+	menu=gui_internal_menu(this, "Show Locale");
 	menu->spx=this->spacing*10;
 	wb=gui_internal_box_new(this, gravity_top_center|orientation_vertical|flags_expand|flags_fill);
 	gui_internal_widget_append(menu, wb);

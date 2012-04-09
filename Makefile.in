@@ -43,7 +43,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_NLS_TRUE@@SUPPORT_WIN32_TRUE@am__append_1 = -DSUBLANG_BENGALI_BANGLADESH=0x03 -DSUBLANG_PUNJABI_PAKISTAN=0x03 -DSUBLANG_ROMANIAN_MOLDOVA=0x03
 @ENABLE_NLS_TRUE@@SHARED_LIBNAVIT_TRUE@@SUPPORT_WIN32CE_TRUE@@SUPPORT_WIN32_TRUE@am__append_2 = -L../navit/support/libc -lsupport_libc
 @ENABLE_NLS_TRUE@@SHARED_LIBNAVIT_TRUE@@SUPPORT_WIN32CE_TRUE@@SUPPORT_WIN32_TRUE@am__append_3 = navit/support/libc
-@ENABLE_NLS_TRUE@@SUPPORT_ANDROID_TRUE@am__append_4 = -Xcompiler -nostartfiles
+@ENABLE_NLS_TRUE@@SUPPORT_ANDROID_TRUE@am__append_4 = -nostartfiles
 @ENABLE_NLS_TRUE@am__append_5 = intl po man
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4

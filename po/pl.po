@@ -1,0 +1,543 @@
+# Polish translations for navit.
+# Copyright (C) 2007, 2008 The Navit Team
+# This file is distributed under the same license as the Navit package.
+# Michael "Mineque" Madej  <mineque@quanteam.pl>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: navit 0.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-03-14 19:08+0100\n"
+"PO-Revision-Date: 2012-01-13 08:18+0000\n"
+"Last-Translator: S0Cool <Unknown>\n"
+"Language-Team: Translators\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
+"X-Generator: Launchpad (build 15060)\n"
+"X-Poedit-Country: POLAND\n"
+"X-Poedit-Language: Polish\n"
+"X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
+
+#: popup.c:325 popup.c:394
+msgid "Set as position"
+msgstr "Ustaw jako pozycję"
+
+#: popup.c:326 popup.c:395
+msgid "Set as destination"
+msgstr "Ustaw jako cel"
+
+#: popup.c:327 popup.c:396
+msgid "Add as bookmark"
+msgstr "Dodaj jako zakładkę"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
+#: navigation.c:340
+msgid "zeroth"
+msgstr "zerowy"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
+#: navigation.c:346
+msgid "first"
+msgstr "pierwszy"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
+#: navigation.c:352
+msgid "second"
+msgstr "drugi"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
+#: navigation.c:358
+msgid "third"
+msgstr "trzeci"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
+#: navigation.c:364
+msgid "fourth"
+msgstr "czwarty"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
+#: navigation.c:370
+msgid "fifth"
+msgstr "piąty"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
+#: navigation.c:376
+msgid "sixth"
+msgstr "szósty"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
+#: navigation.c:382
+msgid "seventh"
+msgstr "siódmej"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
+#: navigation.c:388
+msgid "eighth"
+msgstr "ósmej"
+
+#. TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
+#: navigation.c:394
+msgid "ninth"
+msgstr "dziewiątej"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
+#: navigation.c:409
+msgid "zeroth exit"
+msgstr "zerowym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
+#: navigation.c:415
+msgid "first exit"
+msgstr "pierwszym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
+#: navigation.c:421
+msgid "second exit"
+msgstr "drugim wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
+#: navigation.c:427
+msgid "third exit"
+msgstr "trzecim wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
+#: navigation.c:433
+msgid "fourth exit"
+msgstr "czwartym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
+#: navigation.c:439
+msgid "fifth exit"
+msgstr "piątym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
+#: navigation.c:445
+msgid "sixth exit"
+msgstr "szóstym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
+#: navigation.c:451
+msgid "seventh exit"
+msgstr "siódmym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
+#: navigation.c:457
+msgid "eighth exit"
+msgstr "ósmym wyjeździe"
+
+#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
+#: navigation.c:463
+msgid "ninth exit"
+msgstr "dziewiątym wyjeździe"
+
+#: navigation.c:557
+#, c-format
+msgid "%d m"
+msgstr "%d m"
+
+#: navigation.c:564
+#, c-format
+msgid "in %d m"
+msgstr "za %d m"
+
+#: navigation.c:582
+#, c-format
+msgid "%d feet"
+msgstr "%d stóp"
+
+#: navigation.c:589
+#, c-format
+msgid "in %d feet"
+msgstr "za %d stóp"
+
+#: navigation.c:606
+#, c-format
+msgid "%d meters"
+msgstr "%d metrów"
+
+#: navigation.c:616
+#, c-format
+msgid "in %d meters"
+msgstr "za %d metrów"
+
+#: navigation.c:642
+#, c-format
+msgid "%d.%d miles"
+msgstr "%d.%d mil"
+
+#: navigation.c:649
+#, c-format
+msgid "in %d.%d miles"
+msgstr "za %d.%d mil"
+
+#: navigation.c:660
+#, c-format
+msgid "%d.%d kilometers"
+msgstr "%d.%d kilometrów"
+
+#: navigation.c:668
+#, c-format
+msgid "in %d.%d kilometers"
+msgstr "za %d.%d kilometrów"
+
+#: navigation.c:678
+#, c-format
+msgid "one mile"
+msgid_plural "%d miles"
+msgstr[0] "jedna mila"
+msgstr[1] "%d mile"
+msgstr[2] "%d mil"
+
+#: navigation.c:681
+#, c-format
+msgid "in one mile"
+msgid_plural "in %d miles"
+msgstr[0] "za jedną milę"
+msgstr[1] "za %d mile"
+msgstr[2] "za %d mil"
+
+#: navigation.c:692
+#, c-format
+msgid "one kilometer"
+msgid_plural "%d kilometers"
+msgstr[0] "jeden kilometr"
+msgstr[1] "%d kilometry"
+msgstr[2] "%d kilometrów"
+
+#: navigation.c:701
+#, c-format
+msgid "in one kilometer"
+msgid_plural "in %d kilometers"
+msgstr[0] "za jeden kilometr"
+msgstr[1] "za %d kilometry"
+msgstr[2] "za %d kilometrów"
+
+#: navigation.c:1800
+msgid "exit"
+msgstr "zjazd"
+
+#: navigation.c:1810
+msgid "into the ramp"
+msgstr "na wjazd"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
+#: navigation.c:1872
+#, c-format
+msgid "%sinto the street %s%s%s"
+msgstr "%s w ulicę %s%s%s"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
+#: navigation.c:1892
+#, c-format
+msgid "%sinto the %s%s%s|male form"
+msgstr "%s w %s%s%s|male form"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
+#: navigation.c:1912
+#, c-format
+msgid "%sinto the %s%s%s|female form"
+msgstr "%s w %s%s%s|female form"
+
+#. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
+#: navigation.c:1932
+#, c-format
+msgid "%sinto the %s%s%s|neutral form"
+msgstr "%s w %s%s%s|neutral form"
+
+#. TRANSLATORS: gives the name of the next road to turn into (into the E17)
+#: navigation.c:1951
+#, c-format
+msgid "%sinto the %s"
+msgstr "%s na / w %s"
+
+#. TRANSLATORS: right, as in 'Turn right'
+#: navigation.c:1979
+msgid "right"
+msgstr "w prawo"
+
+#. TRANSLATORS: left, as in 'Turn left'
+#: navigation.c:2034
+msgid "left"
+msgstr "w lewo"
+
+#. TRANSLATORS: Don't forget the ending space
+#. TRANSLATORS: EXAMPLE: turn slight right
+#: navigation.c:2054
+msgid "slight "
+msgstr "lekko "
+
+#. TRANSLATORS: Don't forget the ending space
+#. TRANSLATORS: EXAMPLE: turn hard right
+#: navigation.c:2067
+msgid "hard "
+msgstr "ostro "
+
+#. TRANSLATORS: Don't forget the ending space
+#. TRANSLATORS: EXAMPLE: turn really hard right
+#: navigation.c:2076
+msgid "really hard "
+msgstr "bardzo ostro "
+
+#: navigation.c:2099
+msgid "When possible, please turn around"
+msgstr "Zawróć, gdy będzie to możliwe"
+
+#: navigation.c:2133
+msgid "Enter the roundabout soon"
+msgstr "Wkrótce wjazd na rondo"
+
+#. TRANSLATORS: %s is the distance to the roundabout
+#. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
+#: navigation.c:2145
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "Wjedź na rondo za %s"
+
+#: navigation.c:2157
+#, c-format
+msgid "then leave the roundabout at the %s"
+msgstr "następnie zjedź z ronda na %s"
+
+#. TRANSLATORS: EXAMPLE: Leave the roundabout at the second exit
+#: navigation.c:2167
+#, c-format
+msgid "Leave the roundabout at the %s"
+msgstr "Zjedź z ronda na %s"
+
+#. TRANSLATORS: EXAMPLE: Follow the road for the next 300 meters
+#: navigation.c:2184
+#, c-format
+msgid "Follow the road for the next %s"
+msgstr "Jedź tą drogą %s"
+
+#: navigation.c:2191
+msgid "soon"
+msgstr "wkrótce"
+
+#. TRANSLATORS: First argument is the how manieth street to take, second the direction
+#: navigation.c:2214
+#, c-format
+msgid "Take the %1$s road to the %2$s"
+msgstr "Jedź %1$s drogą w %2$s"
+
+#: navigation.c:2226 navigation.c:2268
+#, c-format
+msgid "after %i roads"
+msgstr "%i skrzyżowanie"
+
+#: navigation.c:2234
+msgid "now"
+msgstr "teraz"
+
+#: navigation.c:2256
+#, c-format
+msgid "then take the %1$s road to the %2$s"
+msgstr "następnie jedź %1$s drogą w %2$s"
+
+#: navigation.c:2281
+msgid "error"
+msgstr "błąd"
+
+#. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+#: navigation.c:2347
+#, c-format
+msgid "Turn %1$s%2$s %3$s%4$s"
+msgstr "Skręć %1$s%2$s %4$s %3$s"
+
+#. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+#: navigation.c:2368
+#, c-format
+msgid "then turn %1$s%2$s %3$s%4$s"
+msgstr "następnie skręć %1$s%2$s %3$s%4$s"
+
+#. TRANSLATORS: EXAMPLE: You have reached your destination in 300 meters
+#: navigation.c:2384
+#, c-format
+msgid "You have reached your destination %s"
+msgstr "Dotarłeś do celu %s"
+
+#: navigation.c:2391
+msgid "then you have reached your destination."
+msgstr "następnie dojechałeś do celu."
+
+#: navit.c:1981 gui/internal/gui_internal.c:2964
+msgid "Position"
+msgstr "Położenie"
+
+#: navit.c:1982
+msgid "Command"
+msgstr "Polecenie"
+
+#: navit.c:1986
+msgid "Length"
+msgstr "Odległość"
+
+#: navit.c:1990 navit.c:2015
+msgid "km"
+msgstr "km"
+
+#: navit.c:1994 navit.c:2019
+msgid "m"
+msgstr "m"
+
+#: navit.c:2000
+msgid "Time"
+msgstr "Czas"
+
+#: navit.c:2012
+msgid "Destination Length"
+msgstr "Odległość do celu"
+
+#: navit.c:2025
+msgid "Destination Time"
+msgstr "Czas do celu"
+
+#: navit.c:2057
+msgid "Roadbook"
+msgstr "Szczegóły trasy"
+
+#: navit.c:3607
+msgid "Waypoint reached"
+msgstr "Osiągnąłeś cel pośredni"
+
+#: navit.c:3617
+msgid "You have reached your destination"
+msgstr "Dotarłeś do celu"
+
+#: gui/internal/gui_internal.c:1732
+msgid "Help"
+msgstr "Pomoc"
+
+#: gui/internal/gui_internal.c:1886
+msgid "Back"
+msgstr "Wróć"
+
+#: gui/internal/gui_internal.c:2732
+msgid "Streets"
+msgstr "Ulice"
+
+#: gui/internal/gui_internal.c:2740
+msgid "House numbers"
+msgstr "Numery domów"
+
+#: gui/internal/gui_internal.c:3852 gui/internal/gui_internal.c:3861
+msgid "House number"
+msgstr "Numer domu"
+
+#: gui/internal/gui_internal.c:3868 gui/internal/gui_internal.c:3877
+msgid "Street"
+msgstr "Ulica"
+
+#: gui/internal/gui_internal.c:3887 gui/internal/gui_internal.c:3916
+msgid "Town"
+msgstr "Miasto"
+
+#: gui/internal/gui_internal.c:3908
+msgid "Country"
+msgstr "Państwo"
+
+#: gui/internal/gui_internal.c:4035
+msgid "Active"
+msgstr "Aktywny"
+
+#: gui/internal/gui_internal.c:4043
+msgid "Download Enabled"
+msgstr "Pobieranie włączone"
+
+#: gui/internal/gui_internal.c:4101
+msgid "Maps"
+msgstr "Mapy"
+
+#: gui/internal/gui_internal.c:4153
+msgid "Show Satellite Status"
+msgstr "Pokaż status satelitów"
+
+#: gui/internal/gui_internal.c:4161
+msgid " Elevation "
+msgstr " Wysokość n.p.m. "
+
+#: gui/internal/gui_internal.c:4162
+msgid " Azimuth "
+msgstr " Azymut "
+
+#: gui/internal/gui_internal.c:4187
+msgid "Show NMEA Data"
+msgstr "Pokaż dane NMEA"
+
+#: gui/internal/gui_internal.c:4306
+msgid "car"
+msgstr "auto"
+
+#: gui/internal/gui_internal.c:4306
+msgid "bike"
+msgstr "rower"
+
+#: gui/internal/gui_internal.c:4306
+msgid "pedestrian"
+msgstr "pieszy"
+
+#: gui/internal/gui_internal.c:4327
+#, c-format
+msgid "Current profile: %s"
+msgstr "Aktualny profil: %s"
+
+#: gui/internal/gui_internal.c:4329
+#, c-format
+msgid "Change profile to: %s"
+msgstr "Zmień profil na: %s"
+
+#: gui/internal/gui_internal.c:4365
+msgid "Set as active"
+msgstr "Ustaw jako aktywny"
+
+#: gui/internal/gui_internal.c:4372
+msgid "Show Satellite status"
+msgstr "Pokaż status satelitów"
+
+#: gui/internal/gui_internal.c:4378
+msgid "Show NMEA data"
+msgstr "Pokaż dane NMEA"
+
+#: gui/internal/gui_internal.c:4404
+msgid "Vehicle"
+msgstr "Pojazd"
+
+#: gui/internal/gui_internal.c:4429
+msgid "Rules"
+msgstr "Reguły"
+
+#: gui/internal/gui_internal.c:4437
+msgid "Lock on road"
+msgstr "Trzymaj się drogi"
+
+#: gui/internal/gui_internal.c:4443
+msgid "Northing"
+msgstr "Północ zawsze na górze"
+
+#: gui/internal/gui_internal.c:4449
+msgid "Map follows Vehicle"
+msgstr "Wyśrodkuj mapę"
+
+#: gui/internal/gui_internal.c:5035
+msgid "Message"
+msgstr "Wiadomość"
+
+#: gui/internal/gui_internal.c:6114
+msgid "Route Description"
+msgstr "Opis trasy"
+
+#: gui/internal/gui_internal.c:6238
+msgid "Height Profile"
+msgstr "Profil wysokości"
+
+#: osd/core/osd_core.c:1882
+msgid "Look out! Camera!"
+msgstr "Uwaga! Fotoradar!"
+
+#: osd/core/osd_core.c:2086
+msgid "Please decrease your speed"
+msgstr "Zwolnij proszę"

@@ -47,6 +47,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
 
 // new TTS, this is used now!
 public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityResult
@@ -228,7 +229,14 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 			if (mTts != null)
 			{
 				mTts.speak(what, TextToSpeech.QUEUE_FLUSH, null);
-				Navit.set_debug_messages3(what);
+				if (NavitGraphics.NavitMsgTv2_.getVisibility() == View.VISIBLE)
+				{
+					Navit.N_NavitGraphics.NavitMsgTv2_.append("SAY:" + what + "\n");
+				}
+				if (Navit.PREF_show_debug_messages)
+				{
+					Navit.set_debug_messages3(what);
+				}
 			}
 		}
 		catch (Exception e)

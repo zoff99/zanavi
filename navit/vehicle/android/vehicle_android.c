@@ -1,3 +1,22 @@
+/**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
 /** @file vehicle_android.c
  * @brief android uses dbus signals
  *
@@ -65,7 +84,7 @@ struct vehicle_priv {
 static void
 vehicle_android_destroy(struct vehicle_priv *priv)
 {
-	// dbg(0,"enter\n");
+	// //DBG dbg(0,"enter\n");
 	g_free(priv);
 }
 
@@ -81,8 +100,9 @@ static int
 vehicle_android_position_attr_get(struct vehicle_priv *priv,
 			       enum attr_type type, struct attr *attr)
 {
-	dbg(1,"enter %s\n",attr_to_name(type));
-	switch (type) {
+	//dbg(1,"enter %s\n",attr_to_name(type));
+	switch (type)
+	{
 #if 0
 	case attr_position_fix_type:
 		attr->u.num = priv->fix_type;
@@ -120,7 +140,7 @@ vehicle_android_position_attr_get(struct vehicle_priv *priv,
 	default:
 		return 0;
 	}
-	dbg(1,"ok\n");
+	//dbg(1,"ok\n");
 	attr->type = type;
 	return 1;
 }
@@ -145,7 +165,7 @@ vehicle_android_callback(struct vehicle_priv *v, jobject location)
 	tnow=(*jnienv)->CallLongMethod(jnienv, location, v->Location_getTime)/1000;
 	tm = gmtime(&tnow);
 	strftime(v->fixiso8601, sizeof(v->fixiso8601), "%Y-%m-%dT%TZ", tm);
-	// dbg(0,"lat %f lon %f\n",v->geo.lat,v->geo.lng);
+	// //DBG dbg(0,"lat %f lon %f\n",v->geo.lat,v->geo.lng);
 	v->have_coords=1;
 
 	// ***** calls: navit.c -> navit_vehicle_update
@@ -174,20 +194,28 @@ vehicle_android_init(struct vehicle_priv *ret)
 	if (!android_find_method(ret->LocationClass, "getAccuracy", "()F", &ret->Location_getAccuracy))
                 return 0;
 	if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitVehicle", &ret->NavitVehicleClass))
+	{
                 return 0;
-        dbg(0,"at 3\n");
-        cid = (*jnienv)->GetMethodID(jnienv, ret->NavitVehicleClass, "<init>", "(Landroid/content/Context;I)V");
-        if (cid == NULL) {
-                dbg(0,"no method found\n");
-                return 0; /* exception thrown */
-        }
-        dbg(0,"at 4 android_activity=%p\n",android_activity);
-        ret->NavitVehicle=(*jnienv)->NewObject(jnienv, ret->NavitVehicleClass, cid, android_activity, (int) ret->cb);
-        dbg(0,"result=%p\n",ret->NavitVehicle);
+	}
+    //DBG dbg(0,"at 3\n");
+    cid = (*jnienv)->GetMethodID(jnienv, ret->NavitVehicleClass, "<init>", "(Landroid/content/Context;I)V");
+    if (cid == NULL)
+	{
+            //DBG dbg(0,"no method found\n");
+            return 0; /* exception thrown */
+    }
+    //DBG dbg(0,"at 4 android_activity=%p\n",android_activity);
+    ret->NavitVehicle=(*jnienv)->NewObject(jnienv, ret->NavitVehicleClass, cid, android_activity, (int) ret->cb);
+    //DBG dbg(0,"result=%p\n",ret->NavitVehicle);
 	if (!ret->NavitVehicle)
+	{
 		return 0;
-        if (ret->NavitVehicle)
-                (*jnienv)->NewGlobalRef(jnienv, ret->NavitVehicle);
+	}
+
+    if (ret->NavitVehicle)
+	{
+            ret->NavitVehicle = (*jnienv)->NewGlobalRef(jnienv, ret->NavitVehicle);
+	}
 
 	return 1;
 }
@@ -207,13 +235,13 @@ vehicle_android_new_android(struct vehicle_methods *meth,
 {
 	struct vehicle_priv *ret;
 
-	dbg(0, "enter\n");
+	//DBG dbg(0, "enter\n");
 	ret = g_new0(struct vehicle_priv, 1);
 	ret->cbl = cbl;
 	ret->cb=callback_new_1(callback_cast(vehicle_android_callback), ret);
 	*meth = vehicle_android_methods;
 	vehicle_android_init(ret);
-	dbg(0, "return\n");
+	//DBG dbg(0, "return\n");
 	return ret;
 }
 
@@ -225,6 +253,6 @@ vehicle_android_new_android(struct vehicle_methods *meth,
 void
 plugin_init(void)
 {
-	// dbg(0, "enter\n");
+	//DBG dbg(0, "enter\n");
 	plugin_register_vehicle_type("android", vehicle_android_new_android);
 }

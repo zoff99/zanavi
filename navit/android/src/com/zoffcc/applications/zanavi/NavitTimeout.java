@@ -48,7 +48,7 @@ public class NavitTimeout implements Runnable
 	{
 		public void handleMessage(Message m)
 		{
-			Log.e("Navit", "Handler received message");
+			//Log.e("Navit", "Handler received message");
 		}
 	};
 	private boolean event_multi;
@@ -59,7 +59,7 @@ public class NavitTimeout implements Runnable
 
 	NavitTimeout(int timeout, boolean multi, int callbackid)
 	{
-		// System.out.println("to=" + timeout + " mulit=" + multi + " cid=" + callbackid);
+		//Log.e("Navit","Create New Event - to=" + timeout + " mulit=" + multi + " cid=" + callbackid);
 		event_timeout = timeout;
 		event_multi = multi;
 		event_callbackid = callbackid;
@@ -68,7 +68,7 @@ public class NavitTimeout implements Runnable
 
 	public void run()
 	{
-		// Log.e("Navit","Handle Event");
+		//Log.e("Navit","Handle Event - to=" + event_timeout + " mulit=" + event_multi + " cid=" + event_callbackid);
 		if (event_multi)
 		{
 			handler.postDelayed(this, event_timeout);
@@ -82,6 +82,7 @@ public class NavitTimeout implements Runnable
 
 	public void remove()
 	{
+		//Log.e("Navit","remove Event - to=" + event_timeout + " mulit=" + event_multi + " cid=" + event_callbackid);
 		handler.removeCallbacks(this);
 	}
 }

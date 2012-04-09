@@ -238,7 +238,9 @@ debug_vprintf(int level, const char *module, const int mlen, const char *functio
 void
 debug_printf(int level, const char *module, const int mlen,const char *function, const int flen, int prefix, const char *fmt, ...)
 {
+// __android_log_print(ANDROID_LOG_ERROR,"navit", "aaa11********");
 #ifdef _DEBUG_BUILD_
+// __android_log_print(ANDROID_LOG_ERROR,"navit", "aaa22********");
 	va_list ap;
 	va_start(ap, fmt);
 	debug_vprintf(level, module, mlen, function, flen, prefix, fmt, ap);

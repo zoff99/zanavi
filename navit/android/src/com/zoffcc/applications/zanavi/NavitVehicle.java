@@ -83,7 +83,7 @@ public class NavitVehicle
 
 	public static native void VehicleCallback(int id, Location location);
 
-	private static SatStatusThread st = null;
+	// private static SatStatusThread st = null;
 
 	private class SatStatusThread extends Thread
 	{
@@ -100,16 +100,19 @@ public class NavitVehicle
 			{
 				try
 				{
-					GpsStatus stat = locationManager.getGpsStatus(gps_status);
-					gps_status = stat;
-					Iterator<GpsSatellite> localIterator = stat.getSatellites().iterator();
-					while (localIterator.hasNext())
+					if (!Navit.DemoVehicle)
 					{
-						GpsSatellite localGpsSatellite = (GpsSatellite) localIterator.next();
-						sats1++;
-						if (localGpsSatellite.usedInFix())
+						GpsStatus stat = locationManager.getGpsStatus(gps_status);
+						gps_status = stat;
+						Iterator<GpsSatellite> localIterator = stat.getSatellites().iterator();
+						while (localIterator.hasNext())
 						{
-							satsInFix1++;
+							GpsSatellite localGpsSatellite = (GpsSatellite) localIterator.next();
+							sats1++;
+							if (localGpsSatellite.usedInFix())
+							{
+								satsInFix1++;
+							}
 						}
 					}
 				}
@@ -153,7 +156,8 @@ public class NavitVehicle
 			{
 				last_f_fix = location.getTime();
 				// if last gps fix was longer than 4 secs. ago, use this fix
-				if (last_p_fix + 4000 < last_f_fix)
+				// and we dont have a GPS lock
+				if ((last_p_fix + 4000 < last_f_fix) && (Navit.satsInFix < 3))
 				{
 					if (Navit.PREF_follow_gps)
 					{
@@ -169,7 +173,10 @@ public class NavitVehicle
 						//System.out.println("send values 1");
 						//Log.e("NavitVehicle", "LocationChanged provider=fast Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
 						last_location = location;
-						VehicleCallback(vehicle_callbackid, location);
+						if (!Navit.DemoVehicle)
+						{
+							VehicleCallback(vehicle_callbackid, location);
+						}
 					}
 				}
 			}
@@ -216,37 +223,6 @@ public class NavitVehicle
 			{
 				last_p_fix = location.getTime();
 				current_accuracy = location.getAccuracy();
-				/*
-				 * gps_extras = location.getExtras();
-				 * Log.e("NavitVehicle", "getExtras 1 size=" + gps_extras.keySet().size());
-				 * if (gps_extras.containsKey("satellites"))
-				 * {
-				 * Bundle b = null;
-				 * try
-				 * {
-				 * Log.e("NavitVehicle", "getExtras 2");
-				 * b = gps_extras.getBundle("satellites");
-				 * Log.e("NavitVehicle", "getExtras 3 size=" + b.keySet().size());
-				 * }
-				 * catch (Exception e)
-				 * {
-				 * 
-				 * }
-				 * String s = "";
-				 * while (s != null)
-				 * {
-				 * try
-				 * {
-				 * s = b.keySet().iterator().next();
-				 * }
-				 * catch (Exception e)
-				 * {
-				 * s = null;
-				 * }
-				 * System.out.println("s=" + s);
-				 * }
-				 * }
-				 */
 
 				if (Navit.PREF_follow_gps)
 				{
@@ -308,8 +284,7 @@ public class NavitVehicle
 
 		/*
 		 * Use 2 LocationProviders, one precise (usually GPS), and one
-		 * not so precise, but possible faster. The fast provider is
-		 * disabled when the precise provider gets its first fix.
+		 * not so precise, but possible faster.
 		 */
 		Criteria highCriteria = null;
 		Criteria lowCriteria = null;
@@ -381,54 +356,6 @@ public class NavitVehicle
 			e.printStackTrace();
 		}
 
-		//		if (Navit.PREF_use_fast_provider)
-		//		{
-		//			try
-		//			{
-		//				// use last know location for startup
-		//				//Log.e("NavitVehicle", "getLastKnownLocation startup (fast)");
-		//				Location l = locationManager.getLastKnownLocation(fastProvider);
-		//				if (l != null)
-		//				{
-		//					if (Navit.PREF_follow_gps)
-		//					{
-		//						Log.e("NavitVehicle", "getLastKnownLocation startup (+2) l=" + l.toString());
-		//						last_location = l;
-		//						VehicleCallback(vehicle_callbackid, l);
-		//					}
-		//				}
-		//			}
-		//			catch (Exception e)
-		//			{
-		//				e.printStackTrace();
-		//			}
-		//		}
-		//		else
-		//		{
-		//			Log.e("NavitVehicle", "pref not set");
-		//		}
-
-		//		try
-		//		{
-		//			// use last know location for startup
-		//			//Log.e("NavitVehicle", "getLastKnownLocation startup (precise)");
-		//			Location l = locationManager.getLastKnownLocation(preciseProvider);
-		//			if (l != null)
-		//			{
-		//				//Log.e("NavitVehicle", "getLastKnownLocation startup (2) l=" + l.toString());
-		//				if (Navit.PREF_follow_gps)
-		//				{
-		//					last_location = l;
-		//					VehicleCallback(vehicle_callbackid, l);
-		//				}
-		//			}
-		//		}
-		//		catch (Exception e)
-		//		{
-		//			e.printStackTrace();
-		//		}
-		//Log.e("NavitVehicle", "getLastKnownLocation ready");
-
 		gps_status_listener_s = new GpsStatus.Listener()
 		{
 			public void onGpsStatusChanged(int event)
@@ -464,23 +391,11 @@ public class NavitVehicle
 						e.printStackTrace();
 					}
 					// Navit.set_debug_messages3_wrapper("sat: " + Navit.satsInFix + "/" + Navit.sats);
-					// System.out.println("Statellites: " + satsInFix + "/" + sats);
+					// System.out.println("Statellites: " + Navit.satsInFix + "/" + Navit.sats);
 					// get new gpsstatus --------
 				}
 			}
 		};
-
-		//		try
-		//		{
-		//			st.stop_me();
-		//		}
-		//		catch (Exception e)
-		//		{
-		//
-		//		}
-		//		st = new SatStatusThread();
-		//		st.start();
-
 	}
 
 	public static void set_mock_location__fast(Location mock_location)
@@ -547,18 +462,21 @@ public class NavitVehicle
 			{
 				if (Navit.PREF_use_fast_provider)
 				{
-					Location l = locationManager_s.getLastKnownLocation(fastProvider_s);
-					if (l != null)
+					if (!Navit.DemoVehicle)
 					{
-						if (l.getAccuracy() > 0)
+						Location l = locationManager_s.getLastKnownLocation(fastProvider_s);
+						if (l != null)
 						{
-							if ((l.getLatitude() != 0) && (l.getLongitude() != 0))
+							if (l.getAccuracy() > 0)
 							{
-								if (Navit.PREF_follow_gps)
+								if ((l.getLatitude() != 0) && (l.getLongitude() != 0))
 								{
-									Log.e("NavitVehicle", "getLastKnownLocation fast (3) l=" + l.toString());
-									last_location = l;
-									VehicleCallback(vehicle_callbackid_, l);
+									if (Navit.PREF_follow_gps)
+									{
+										Log.e("NavitVehicle", "getLastKnownLocation fast (3) l=" + l.toString());
+										last_location = l;
+										VehicleCallback(vehicle_callbackid_, l);
+									}
 								}
 							}
 						}
@@ -582,7 +500,10 @@ public class NavitVehicle
 			{
 				if (Navit.PREF_use_fast_provider)
 				{
-					locationManager_s.requestLocationUpdates(fastProvider_s, 0, 0, fastLocationListener_s);
+					if (!Navit.DemoVehicle)
+					{
+						locationManager_s.requestLocationUpdates(fastProvider_s, 0, 0, fastLocationListener_s);
+					}
 				}
 			}
 		}
@@ -645,6 +566,14 @@ public class NavitVehicle
 			Navit.satsInFix = 0;
 			if (preciseProvider_s != null)
 			{
+				try
+				{
+					locationManager_s.removeGpsStatusListener(gps_status_listener_s);
+				}
+				catch (Exception e3)
+				{
+					e3.printStackTrace();
+				}
 				locationManager_s.addGpsStatusListener(gps_status_listener_s);
 			}
 		}
@@ -652,6 +581,7 @@ public class NavitVehicle
 		{
 			e.printStackTrace();
 		}
+		System.out.println("turn_ON_sat_status");
 	}
 
 	public static void turn_off_sat_status()
@@ -669,6 +599,7 @@ public class NavitVehicle
 		{
 			e.printStackTrace();
 		}
+		System.out.println("turn_off_sat_status");
 	}
 
 	public static void turn_off_fast_provider()
@@ -730,12 +661,18 @@ public class NavitVehicle
 					{
 						float save_speed = last_location.getSpeed();
 						last_location.setSpeed(0.2f);
-						VehicleCallback(vehicle_callbackid_, last_location);
+						if (!Navit.DemoVehicle)
+						{
+							VehicleCallback(vehicle_callbackid_, last_location);
+						}
 						last_location.setSpeed(save_speed);
 					}
 					else
 					{
-						VehicleCallback(vehicle_callbackid_, last_location);
+						if (!Navit.DemoVehicle)
+						{
+							VehicleCallback(vehicle_callbackid_, last_location);
+						}
 					}
 					// !! ugly hack to make map redraw !!
 					// !! ugly hack to make map redraw !!

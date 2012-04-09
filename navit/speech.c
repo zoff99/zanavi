@@ -76,7 +76,7 @@ speech_destroy(struct speech *this_)
 int
 speech_say(struct speech *this_, const char *text)
 {
-	dbg(1, "this_=%p text='%s' calling %p\n", this_, text, this_->meth.say);
+	// dbg(1, "this_=%p text='%s' calling %p\n", this_, text, this_->meth.say);
 	return (this_->meth.say)(this_->priv, text);
 }
 

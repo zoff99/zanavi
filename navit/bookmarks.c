@@ -291,7 +291,7 @@ bookmarks_store_bookmarks_to_file(struct bookmarks *this_,  int limit,int replac
 
 	f=fopen(this_->working_file, replace ? "w+" : "a+");
 	if (f==NULL) {
-		navit_add_message(this_->parent->u.navit,_("Failed to write bookmarks file"));
+		navit_add_message(this_->parent->u.navit,"Failed to write bookmarks file");
 		return FALSE;
 	}
 
@@ -362,7 +362,7 @@ bookmarks_store_bookmarks_to_file(struct bookmarks *this_,  int limit,int replac
 	result=(rename(this_->working_file,this_->bookmark_file)==0);
 	if (!result) 
 	{
-		navit_add_message(this_->parent->u.navit,_("Failed to write bookmarks file"));
+		navit_add_message(this_->parent->u.navit,"Failed to write bookmarks file");
 	}
 	return result;
 }
@@ -418,7 +418,7 @@ bookmarks_set_center_from_file(struct bookmarks *this_, char *file)
 		center = transform_center(this_->trans);
 		pro = transform_get_projection(this_->trans);
 		coord_parse(g_strchomp(line), pro, center);
-		dbg(0,"******** load center from file *********");
+		dbg(0,"******** load center from file *********\n");
 		free(line);
 	}
 	return;
@@ -427,6 +427,8 @@ bookmarks_set_center_from_file(struct bookmarks *this_, char *file)
 void
 bookmarks_write_center_to_file(struct bookmarks *this_, char *file)
 {
+	dbg(0,"EEnter\n");
+
 	FILE *f;
 	enum projection pro;
 	struct coord *center;
@@ -455,13 +457,16 @@ bookmarks_write_center_to_file(struct bookmarks *this_, char *file)
 		pro = transform_get_projection(this_->trans);
 		// + coord_print(pro, center, f);
 		coord_print(pro, &c22, f);
-		dbg(0,"******** write center to file *********");
 		fclose(f);
+		dbg(0,"******** write center to file *********\n");
 	}
 	else
 	{
 		perror(file);
 	}
+
+	dbg(0,"ready\n");
+
 	return;
 }
 

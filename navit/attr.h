@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -53,6 +72,7 @@ enum attr_type {
 #define AF_UNPAVED		(1<<12)
 #define AF_FORD			(1<<13)
 #define AF_UNDERGROUND		(1<<14)
+#define AF_BRIDGE		(1<<15) // NEW !!
 #define AF_DANGEROUS_GOODS	(1<<19)
 #define AF_EMERGENCY_VEHICLES	(1<<20)
 #define AF_TRANSPORT_TRUCK	(1<<21)

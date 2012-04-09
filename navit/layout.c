@@ -25,106 +25,121 @@
 #include "coord.h"
 #include "debug.h"
 
-
 struct layout * layout_new(struct attr *parent, struct attr **attrs)
 {
 	struct layout *l;
-	struct color def_color = {COLOR_BACKGROUND_};
-	struct attr *name_attr,*color_attr,*order_delta_attr,*font_attr,*day_attr,*night_attr,*active_attr;
+	struct color def_color =
+	{ COLOR_BACKGROUND_ };
+	struct attr *name_attr, *color_attr, *order_delta_attr, *font_attr, *day_attr, *night_attr, *active_attr;
 
-	if (! (name_attr=attr_search(attrs, NULL, attr_name)))
+	if (!(name_attr = attr_search(attrs, NULL, attr_name)))
+	{
 		return NULL;
+	}
 	l = g_new0(struct layout, 1);
 	l->name = g_strdup(name_attr->u.str);
-	if ((font_attr=attr_search(attrs, NULL, attr_font))) {
+	if ((font_attr = attr_search(attrs, NULL, attr_font)))
+	{
 		l->font = g_strdup(font_attr->u.str);
 	}
-	if ((day_attr=attr_search(attrs, NULL, attr_daylayout))) {
+	if ((day_attr = attr_search(attrs, NULL, attr_daylayout)))
+	{
 		l->dayname = g_strdup(day_attr->u.str);
 	}
-	if ((night_attr=attr_search(attrs, NULL, attr_nightlayout))) {
+	if ((night_attr = attr_search(attrs, NULL, attr_nightlayout)))
+	{
 		l->nightname = g_strdup(night_attr->u.str);
 	}
-	if ((color_attr=attr_search(attrs, NULL, attr_color)))
+	if ((color_attr = attr_search(attrs, NULL, attr_color)))
+	{
 		l->color = *color_attr->u.color;
+	}
 	else
+	{
 		l->color = def_color;
-	if ((order_delta_attr=attr_search(attrs, NULL, attr_order_delta)))
-		l->order_delta=order_delta_attr->u.num;
-	if ((active_attr=attr_search(attrs, NULL, attr_active)))
+	}
+	if ((order_delta_attr = attr_search(attrs, NULL, attr_order_delta)))
+	{
+		l->order_delta = order_delta_attr->u.num;
+	}
+	if ((active_attr = attr_search(attrs, NULL, attr_active)))
+	{
 		l->active = active_attr->u.num;
+	}
 	return l;
 }
 
-struct attr_iter {
-        GList *last;
+struct attr_iter
+{
+	GList *last;
 };
-
 
 struct attr_iter *
 layout_attr_iter_new(void)
 {
-	return g_new0(struct attr_iter, 1);
+return g_new0(struct attr_iter, 1);
 }
 
-void
-layout_attr_iter_destroy(struct attr_iter *iter)
+void layout_attr_iter_destroy(struct attr_iter *iter)
 {
 	g_free(iter);
 }
 
-int
-layout_get_attr(struct layout *layout, enum attr_type type, struct attr *attr, struct attr_iter *iter)
+int layout_get_attr(struct layout *layout, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
-	GList *cursor,*layer;
-	attr->type=type;
-	switch (type) {
-	case attr_cursor:
-		cursor=layout->cursors;
-		while (cursor) {
-			if (!iter || iter->last == g_list_previous(cursor)) {
-				attr->u.cursor=cursor->data;
-				if (iter)
-					iter->last=cursor;
-				return 1;
+	GList *cursor, *layer;
+	attr->type = type;
+	switch (type)
+	{
+		case attr_cursor:
+			cursor = layout->cursors;
+			while (cursor)
+			{
+				if (!iter || iter->last == g_list_previous(cursor))
+				{
+					attr->u.cursor = cursor->data;
+					if (iter)
+						iter->last = cursor;
+					return 1;
+				}
+				cursor = g_list_next(cursor);
 			}
-			cursor=g_list_next(cursor);
-		}
-		break;
-	case attr_layer:
-		layer=layout->layers;
-		while (layer) {
-			if (!iter || iter->last == g_list_previous(layer)) {
-				attr->u.layer=layer->data;
-				if (iter)
-					iter->last=layer;
-				return 1;
+			break;
+		case attr_layer:
+			layer = layout->layers;
+			while (layer)
+			{
+				if (!iter || iter->last == g_list_previous(layer))
+				{
+					attr->u.layer = layer->data;
+					if (iter)
+						iter->last = layer;
+					return 1;
+				}
+				layer = g_list_next(layer);
 			}
-			layer=g_list_next(layer);
-		}
-		break;
-	case attr_active:
-		attr->u.num=layout->active;
-		break;
-	default:
-		break;
+			break;
+		case attr_active:
+			attr->u.num = layout->active;
+			break;
+		default:
+			break;
 	}
 	return 0;
 }
 
-
-int
-layout_add_attr(struct layout *layout, struct attr *attr)
+int layout_add_attr(struct layout *layout, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_cursor:
-		layout->cursors = g_list_append(layout->cursors, attr->u.cursor);
-		return 1;
-	case attr_layer:
-		layout->layers = g_list_append(layout->layers, attr->u.layer);
-		return 1;
-	default:
-		return 0;
+	switch (attr->type)
+	{
+		case attr_cursor:
+			layout->cursors = g_list_append(layout->cursors, attr->u.cursor);
+			return 1;
+		case attr_layer:
+			layout->layers = g_list_append(layout->layers, attr->u.layer);
+			return 1;
+		default:
+			return 0;
 	}
 }
 
@@ -135,25 +150,24 @@ layout_add_attr(struct layout *layout, struct attr *attr)
  * @param name The name
  * @returns A pointer to cursor with the given name or the name default or NULL.
  * @author Ralph Sennhauser (10/2009)
-*/
+ */
 struct cursor *
 layout_get_cursor(struct layout *this_, char *name)
 {
 	GList *c;
-	struct cursor *d=NULL;
+	struct cursor *d = NULL;
 
-	c=g_list_first(this_->cursors);
-	while (c) {
-		if (! strcmp(((struct cursor *)c->data)->name, name))
+	c = g_list_first(this_->cursors);
+	while (c)
+	{
+		if (!strcmp(((struct cursor *) c->data)->name, name))
 			return c->data;
-		if (! strcmp(((struct cursor *)c->data)->name, "default"))
-			d=c->data;
-		c=g_list_next(c);
+		if (!strcmp(((struct cursor *) c->data)->name, "default"))
+			d = c->data;
+		c = g_list_next(c);
 	}
 	return d;
 }
-
-
 
 struct cursor *
 cursor_new(struct attr *parent, struct attr **attrs)
@@ -161,130 +175,131 @@ cursor_new(struct attr *parent, struct attr **attrs)
 	struct attr *w, *h, *name, *interval, *sequence_range;
 	struct cursor *this;
 
-	w=attr_search(attrs, NULL, attr_w);
-	h=attr_search(attrs, NULL, attr_h);
-	if (! w || ! h)
+	w = attr_search(attrs, NULL, attr_w);
+	h = attr_search(attrs, NULL, attr_h);
+	if (!w || !h)
 		return NULL;
 
 	this=g_new0(struct cursor,1);
-	this->w=w->u.num;
-	this->h=h->u.num;
-	name=attr_search(attrs, NULL, attr_name);
+	this->w = w->u.num;
+	this->h = h->u.num;
+	name = attr_search(attrs, NULL, attr_name);
 	if (name)
-		this->name=g_strdup(name->u.str);
+		this->name = g_strdup(name->u.str);
 	else
-		this->name=g_strdup("default");
-	interval=attr_search(attrs, NULL, attr_interval);
+		this->name = g_strdup("default");
+	interval = attr_search(attrs, NULL, attr_interval);
 	if (interval)
-		this->interval=interval->u.num;
-	sequence_range=attr_search(attrs, NULL, attr_sequence_range);
-	if (sequence_range) {
+		this->interval = interval->u.num;
+	sequence_range = attr_search(attrs, NULL, attr_sequence_range);
+	if (sequence_range)
+	{
 		struct range *r=g_new0(struct range,1);
-		r->min=sequence_range->u.range.min;
-		r->max=sequence_range->u.range.max;
-		this->sequence_range=r;
+		r->min = sequence_range->u.range.min;
+		r->max = sequence_range->u.range.max;
+		this->sequence_range = r;
 	}
-	else {
-		this->sequence_range=NULL;
+	else
+	{
+		this->sequence_range = NULL;
 	}
-	dbg(2,"ret=%p\n", this);
+	dbg(2, "ret=%p\n", this);
 	return this;
 }
 
-void
-cursor_destroy(struct cursor *this_)
+void cursor_destroy(struct cursor *this_)
 {
 	if (this_->sequence_range)
 		g_free(this_->sequence_range);
-	if (this_->name) {
+	if (this_->name)
+	{
 		g_free(this_->name);
 	}
 	g_free(this_);
 }
 
-int
-cursor_add_attr(struct cursor *this_, struct attr *attr)
+int cursor_add_attr(struct cursor *this_, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_itemgra:
-		this_->attrs=attr_generic_add_attr(this_->attrs, attr);
-		return 1;
-	default:
-		break;
+	switch (attr->type)
+	{
+		case attr_itemgra:
+			this_->attrs = attr_generic_add_attr(this_->attrs, attr);
+			return 1;
+		default:
+			break;
 	}
 	return 0;
 }
 
-static int
-layer_set_attr_do(struct layer *l, struct attr *attr, int init)
+static int layer_set_attr_do(struct layer *l, struct attr *attr, int init)
 {
-	switch (attr->type) {
-	case attr_active:
-		l->active = attr->u.num;
-		return 1;
-	case attr_details:
-		l->details = attr->u.num;
-		return 1;
-	case attr_name:
-		g_free(l->name);
-		l->name = g_strdup(attr->u.str);
-		return 1;
-	default:
-		return 0;
+	switch (attr->type)
+	{
+		case attr_active:
+			l->active = attr->u.num;
+			return 1;
+		case attr_details:
+			l->details = attr->u.num;
+			return 1;
+		case attr_name:
+			g_free(l->name);
+			l->name = g_strdup(attr->u.str);
+			return 1;
+		default:
+			return 0;
 	}
 }
-
-
 
 struct layer * layer_new(struct attr *parent, struct attr **attrs)
 {
 	struct layer *l;
 
 	l = g_new0(struct layer, 1);
-	l->active=1;
-	for (;*attrs; attrs++) {
+	l->active = 1;
+	for (; *attrs; attrs++)
+	{
 		layer_set_attr_do(l, *attrs, 1);
 	}
 	return l;
 }
 
-int
-layer_get_attr(struct layer *layer, enum attr_type type, struct attr *attr, struct attr_iter *iter)
+int layer_get_attr(struct layer *layer, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
-	attr->type=type;
-	switch(type) {
-	case attr_active:
-		attr->u.num=layer->active;
-		return 1;
-	case attr_details:
-		attr->u.num=layer->details;
-		return 1;
-	case attr_name:
-		if (layer->name) {
-			attr->u.str=layer->name;
+	attr->type = type;
+	switch (type)
+	{
+		case attr_active:
+			attr->u.num = layer->active;
 			return 1;
-		}
-		break;
-	default:
-		return 0;
+		case attr_details:
+			attr->u.num = layer->details;
+			return 1;
+		case attr_name:
+			if (layer->name)
+			{
+				attr->u.str = layer->name;
+				return 1;
+			}
+			break;
+		default:
+			return 0;
 	}
 	return 0;
 }
 
-int
-layer_add_attr(struct layer *layer, struct attr *attr)
+int layer_add_attr(struct layer *layer, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_itemgra:
-		layer->itemgras = g_list_append(layer->itemgras, attr->u.itemgra);
-		return 1;
-	default:
-		return 0;
+	switch (attr->type)
+	{
+		case attr_itemgra:
+			layer->itemgras = g_list_append(layer->itemgras, attr->u.itemgra);
+			return 1;
+		default:
+			return 0;
 	}
 }
 
-int
-layer_set_attr(struct layer *layer, struct attr *attr)
+int layer_set_attr(struct layer *layer, struct attr *attr)
 {
 	return layer_set_attr_do(layer, attr, 0);
 }
@@ -295,148 +310,158 @@ struct itemgra * itemgra_new(struct attr *parent, struct attr **attrs)
 	struct attr *order, *item_types, *speed_range, *angle_range, *sequence_range;
 	enum item_type *type;
 	struct range defrange;
-	
+
 	itm = g_new0(struct itemgra, 1);
-	order=attr_search(attrs, NULL, attr_order);
-	item_types=attr_search(attrs, NULL, attr_item_types);
-	speed_range=attr_search(attrs, NULL, attr_speed_range);
-	angle_range=attr_search(attrs, NULL, attr_angle_range);
-	sequence_range=attr_search(attrs, NULL, attr_sequence_range);
-	defrange.min=0;
-	defrange.max=32767;
-	if (order) 
-		itm->order=order->u.range;
-	else 
-		itm->order=defrange;
-	if (speed_range) 
-		itm->speed_range=speed_range->u.range;
-	else 
-		itm->speed_range=defrange;
-	if (angle_range) 
-		itm->angle_range=angle_range->u.range;
-	else 
-		itm->angle_range=defrange;
-	if (sequence_range) 
-		itm->sequence_range=sequence_range->u.range;
-	else 
-		itm->sequence_range=defrange;
-	if (item_types) {
-		type=item_types->u.item_types;
-		while (type && *type != type_none) {
-			itm->type=g_list_append(itm->type, GINT_TO_POINTER(*type));
+	order = attr_search(attrs, NULL, attr_order);
+	item_types = attr_search(attrs, NULL, attr_item_types);
+	speed_range = attr_search(attrs, NULL, attr_speed_range);
+	angle_range = attr_search(attrs, NULL, attr_angle_range);
+	sequence_range = attr_search(attrs, NULL, attr_sequence_range);
+	defrange.min = 0;
+	defrange.max = 32767;
+	if (order)
+		itm->order = order->u.range;
+	else
+		itm->order = defrange;
+	if (speed_range)
+		itm->speed_range = speed_range->u.range;
+	else
+		itm->speed_range = defrange;
+	if (angle_range)
+		itm->angle_range = angle_range->u.range;
+	else
+		itm->angle_range = defrange;
+	if (sequence_range)
+		itm->sequence_range = sequence_range->u.range;
+	else
+		itm->sequence_range = defrange;
+	if (item_types)
+	{
+		type = item_types->u.item_types;
+		while (type && *type != type_none)
+		{
+			itm->type = g_list_append(itm->type, GINT_TO_POINTER(*type));
 			type++;
 		}
 	}
 	return itm;
 }
-int
-itemgra_add_attr(struct itemgra *itemgra, struct attr *attr)
+int itemgra_add_attr(struct itemgra *itemgra, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_polygon:
-	case attr_polyline:
-	case attr_circle:
-	case attr_text:
-	case attr_icon:
-	case attr_image:
-	case attr_arrows:
-		itemgra->elements = g_list_append(itemgra->elements, attr->u.element);
-		return 1;
-	default:
-		dbg(0,"unknown: %s\n", attr_to_name(attr->type));
-		return 0;
+	switch (attr->type)
+	{
+		case attr_polygon:
+		case attr_polyline:
+		case attr_circle:
+		case attr_text:
+		case attr_icon:
+		case attr_image:
+		case attr_arrows:
+			itemgra->elements = g_list_append(itemgra->elements, attr->u.element);
+			return 1;
+		default:
+			dbg(0, "unknown: %s\n", attr_to_name(attr->type));
+			return 0;
 	}
 }
 
-static void
-element_set_color(struct element *e, struct attr **attrs)
+static void element_set_color(struct element *e, struct attr **attrs)
 {
 	struct attr *color;
-	color=attr_search(attrs, NULL, attr_color);
+	color = attr_search(attrs, NULL, attr_color);
 	if (color)
-		e->color=*color->u.color;
+		e->color = *color->u.color;
 }
 
-
-static void
-element_set_background_color(struct color *c, struct attr **attrs)
+static void element_set_background_color(struct color *c, struct attr **attrs)
 {
 	struct attr *color;
-	color=attr_search(attrs, NULL, attr_background_color);
+	color = attr_search(attrs, NULL, attr_background_color);
 	if (color)
-		*c=*color->u.color;
+		*c = *color->u.color;
 }
 
-
-static void
-element_set_text_size(struct element *e, struct attr **attrs)
+static void element_set_text_size(struct element *e, struct attr **attrs)
 {
 	struct attr *text_size;
-	text_size=attr_search(attrs, NULL, attr_text_size);
+	text_size = attr_search(attrs, NULL, attr_text_size);
 	if (text_size)
-		e->text_size=text_size->u.num;
+		e->text_size = text_size->u.num;
 }
 
-static void
-element_set_polyline_width(struct element *e, struct attr **attrs)
+static void element_set_polyline_width(struct element *e, struct attr **attrs)
 {
 	struct attr *width;
-	width=attr_search(attrs, NULL, attr_width);
+	width = attr_search(attrs, NULL, attr_width);
 	if (width)
-		e->u.polyline.width=width->u.num;
+		e->u.polyline.width = width->u.num;
 }
 
-static void
-element_set_polyline_directed(struct element *e, struct attr **attrs)
+static void element_set_polyline_directed(struct element *e, struct attr **attrs)
 {
 	struct attr *directed;
-	directed=attr_search(attrs, NULL, attr_directed);
+	directed = attr_search(attrs, NULL, attr_directed);
 	if (directed)
-		e->u.polyline.directed=directed->u.num;
+		e->u.polyline.directed = directed->u.num;
 }
 
-static void
-element_set_polyline_dash(struct element *e, struct attr **attrs)
+static void element_set_polyline_dash(struct element *e, struct attr **attrs)
 {
 	struct attr *dash;
 	int i;
 
-	dash=attr_search(attrs, NULL, attr_dash);
-	if (dash) {
-		for (i=0; i<4; i++) {
+	dash = attr_search(attrs, NULL, attr_dash);
+	if (dash)
+	{
+		/*
+		for (i = 0; i < 4; i++)
+		{
 			if (!dash->u.dash[i])
+			{
 				break;
+			}
+			dbg(0,"1 i=%d d=%d\n", i, dash->u.dash[i]);
+			//e->u.polyline.dash_table[i] = atoi(dash->u.dash[i]);
 			e->u.polyline.dash_table[i] = dash->u.dash[i];
 		}
-		e->u.polyline.dash_num=i;
+		*/
+		i=0;
+		if (!dash->u.dash[i])
+		{
+		}
+		else
+		{
+			e->u.polyline.dash_table[i] = dash->u.dash[i];
+			//dbg(0,"1 i=%d d=%d\n", i, dash->u.dash[i]);
+			e->u.polyline.dash_num = (i + 1);
+		}
 	}
 }
 
-static void
-element_set_polyline_offset(struct element *e, struct attr **attrs)
+static void element_set_polyline_offset(struct element *e, struct attr **attrs)
 {
 	struct attr *offset;
-	offset=attr_search(attrs, NULL, attr_offset);
+	offset = attr_search(attrs, NULL, attr_offset);
 	if (offset)
-		e->u.polyline.offset=offset->u.num;
+	{
+		e->u.polyline.offset = offset->u.num;
+	}
 }
 
-static void
-element_set_circle_width(struct element *e, struct attr **attrs)
+static void element_set_circle_width(struct element *e, struct attr **attrs)
 {
 	struct attr *width;
-	width=attr_search(attrs, NULL, attr_width);
+	width = attr_search(attrs, NULL, attr_width);
 	if (width)
-		e->u.circle.width=width->u.num;
+		e->u.circle.width = width->u.num;
 }
 
-static void
-element_set_circle_radius(struct element *e, struct attr **attrs)
+static void element_set_circle_radius(struct element *e, struct attr **attrs)
 {
 	struct attr *radius;
-	radius=attr_search(attrs, NULL, attr_radius);
+	radius = attr_search(attrs, NULL, attr_radius);
 	if (radius)
-		e->u.circle.radius=radius->u.num;
+		e->u.circle.radius = radius->u.num;
 }
 
 struct polygon *
@@ -444,36 +469,38 @@ polygon_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
 	e = g_new0(struct element, 1);
-	e->type=element_polygon;
+	e->type = element_polygon;
 	element_set_color(e, attrs);
 
-	return (struct polygon *)e;
+	return (struct polygon *) e;
 }
 
 struct polyline *
 polyline_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
-	
+
 	e = g_new0(struct element, 1);
-	e->type=element_polyline;
+	e->type = element_polyline;
 	element_set_color(e, attrs);
 	element_set_polyline_width(e, attrs);
 	element_set_polyline_directed(e, attrs);
 	element_set_polyline_dash(e, attrs);
 	element_set_polyline_offset(e, attrs);
-	return (struct polyline *)e;
+	return (struct polyline *) e;
 }
 
 struct circle *
 circle_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
-	struct color color_black = {COLOR_BLACK_};
-	struct color color_white = {COLOR_WHITE_};
+	struct color color_black =
+	{ COLOR_BLACK_ };
+	struct color color_white =
+	{ COLOR_WHITE_ };
 
 	e = g_new0(struct element, 1);
-	e->type=element_circle;
+	e->type = element_circle;
 	e->color = color_black;
 	e->u.circle.background_color = color_white;
 	element_set_color(e, attrs);
@@ -482,52 +509,54 @@ circle_new(struct attr *parent, struct attr **attrs)
 	element_set_circle_width(e, attrs);
 	element_set_circle_radius(e, attrs);
 
-	return (struct circle *)e;
+	return (struct circle *) e;
 }
 
 struct text *
 text_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
-	struct color color_black = {COLOR_BLACK_};
-	struct color color_white = {COLOR_WHITE_};
-	
+	struct color color_black =
+	{ COLOR_BLACK_ };
+	struct color color_white =
+	{ COLOR_WHITE_ };
+
 	e = g_new0(struct element, 1);
-	e->type=element_text;
+	e->type = element_text;
 	element_set_text_size(e, attrs);
 	e->color = color_black;
 	e->u.text.background_color = color_white;
 	element_set_color(e, attrs);
 	element_set_background_color(&e->u.text.background_color, attrs);
 
-	return (struct text *)e;
+	return (struct text *) e;
 }
 
 struct icon *
 icon_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
-	struct attr *src,*w,*h,*rotation;
-	src=attr_search(attrs, NULL, attr_src);
-	if (! src)
+	struct attr *src, *w, *h, *rotation;
+	src = attr_search(attrs, NULL, attr_src);
+	if (!src)
 		return NULL;
 
-	e = g_malloc0(sizeof(*e)+strlen(src->u.str)+1);
-	e->type=element_icon;
-	e->u.icon.src=(char *)(e+1);
-	if ((w=attr_search(attrs, NULL, attr_w)))
-		e->u.icon.width=w->u.num;
+	e = g_malloc0(sizeof(*e) + strlen(src->u.str) + 1);
+	e->type = element_icon;
+	e->u.icon.src = (char *) (e + 1);
+	if ((w = attr_search(attrs, NULL, attr_w)))
+		e->u.icon.width = w->u.num;
 	else
-		e->u.icon.width=-1;
-	if ((h=attr_search(attrs, NULL, attr_h)))
-		e->u.icon.height=h->u.num;
+		e->u.icon.width = -1;
+	if ((h = attr_search(attrs, NULL, attr_h)))
+		e->u.icon.height = h->u.num;
 	else
-		e->u.icon.height=-1;
-	if ((rotation=attr_search(attrs, NULL, attr_rotation)))
-		e->u.icon.rotation=rotation->u.num;
-	strcpy(e->u.icon.src,src->u.str);
+		e->u.icon.height = -1;
+	if ((rotation = attr_search(attrs, NULL, attr_rotation)))
+		e->u.icon.rotation = rotation->u.num;
+	strcpy(e->u.icon.src, src->u.str);
 
-	return (struct icon *)e;	
+	return (struct icon *) e;
 }
 
 struct image *
@@ -536,9 +565,9 @@ image_new(struct attr *parent, struct attr **attrs)
 	struct element *e;
 
 	e = g_malloc0(sizeof(*e));
-	e->type=element_image;
+	e->type = element_image;
 
-	return (struct image *)e;	
+	return (struct image *) e;
 }
 
 struct arrows *
@@ -546,20 +575,20 @@ arrows_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
 	e = g_malloc0(sizeof(*e));
-	e->type=element_arrows;
+	e->type = element_arrows;
 	element_set_color(e, attrs);
-	return (struct arrows *)e;	
+	return (struct arrows *) e;
 }
 
-int
-element_add_attr(struct element *e, struct attr *attr)
+int element_add_attr(struct element *e, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_coord:
-		e->coord=g_realloc(e->coord,(e->coord_count+1)*sizeof(struct coord));
-		e->coord[e->coord_count++]=*attr->u.coord;
-		return 1;
-	default:
-		return 0;
+	switch (attr->type)
+	{
+		case attr_coord:
+			e->coord = g_realloc(e->coord, (e->coord_count + 1) * sizeof(struct coord));
+			e->coord[e->coord_count++] = *attr->u.coord;
+			return 1;
+		default:
+			return 0;
 	}
 }

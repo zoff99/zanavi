@@ -94,18 +94,6 @@ mapset_add_attr(struct mapset *ms, struct attr *attr)
 	}
 }
 
-// copied from map.c !!!!!!!!!
-// copied from map.c !!!!!!!!!
-struct map {
-	struct map_methods meth;			/**< Structure with pointers to the map plugin's functions */
-	struct map_priv *priv;				/**< Private data of the map, only known to the map plugin */
-	struct attr **attrs;				/**< Attributes of this map */
-	struct callback_list *attr_cbl;		/**< List of callbacks that are called when attributes change */
-	int refcount;
-};
-// copied from map.c !!!!!!!!!
-// copied from map.c !!!!!!!!!
-
 int
 mapset_add_attr_name(struct mapset *ms, struct attr *attr)
 {
@@ -122,11 +110,9 @@ mapset_add_attr_name(struct mapset *ms, struct attr *attr)
 		m=attr->u.map;
 		struct attr *map_file_name=attr_search(m->attrs, NULL, attr_data);
 		map_name.type=attr_name;
-		// map_name.u.str="_ms_sdcard_map";
 		map_name.u.str=g_strconcat("_ms_sdcard_map:",map_file_name->u.str,NULL);
-		// map_name.u.str=g_strdup(map_file_name->u.str);
 
-		dbg(0,"====== map name=%s",map_name.u.str);
+		dbg(0,"====== map name1=%s",map_name.u.str);
 		map_set_attr(attr->u.map, &map_name);
 
 		return 1;
@@ -135,6 +121,32 @@ mapset_add_attr_name(struct mapset *ms, struct attr *attr)
 	}
 }
 
+int
+mapset_add_attr_name_str(struct mapset *ms, struct attr *attr,char *map_name_str)
+{
+	struct attr map_name;
+
+	dbg(0,"****** ADD MAP from sdcard - with name str ******");
+	switch (attr->type) {
+	case attr_map:
+		ms->maps=g_list_append(ms->maps, attr->u.map);
+		map_ref(attr->u.map);
+
+		struct map *m;
+		m=g_new0(struct map, 1);
+		m=attr->u.map;
+		struct attr *map_file_name=attr_search(m->attrs, NULL, attr_data);
+		map_name.type=attr_name;
+		map_name.u.str=g_strconcat("_ms_sdcard_map:",map_name_str,NULL);
+
+		dbg(0,"====== map name2=%s",map_name.u.str);
+		map_set_attr(attr->u.map, &map_name);
+
+		return 1;
+	default:
+		return 0;
+	}
+}
 
 int
 mapset_remove_attr(struct mapset *ms, struct attr *attr)
@@ -280,7 +292,7 @@ struct map * mapset_next(struct mapset_handle *msh, int active)
  * @return The next map
  */
 struct map * 
-mapset_get_map_by_name(struct mapset *ms, char*map_name)
+mapset_get_map_by_name(struct mapset *ms, char *map_name)
 {
 	struct mapset_handle*msh;
 	struct map*curr_map;

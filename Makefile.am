@@ -14,7 +14,7 @@ endif
 endif
 endif
 if SUPPORT_ANDROID
-XCFLAGS+=-Xcompiler -nostartfiles
+XCFLAGS+=-nostartfiles
 endif
 export XCFLAGS
 SUBDIRS+=intl po man

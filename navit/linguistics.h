@@ -1,5 +1,6 @@
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 char *linguistics_expand_special(char *str, int mode);
 char *linguistics_next_word(char *str);

@@ -21,7 +21,8 @@
 #define NAVIT_GUI_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 struct navit;
 struct gui_priv;
@@ -32,19 +33,25 @@ struct graphics;
 struct coord;
 struct pcoord;
 
-struct gui_methods {
-	struct menu_priv *(*menubar_new)(struct gui_priv *priv, struct menu_methods *meth);
-	struct menu_priv *(*popup_new)(struct gui_priv *priv, struct menu_methods *meth);
+struct gui_methods
+{
+	struct menu_priv *(*menubar_new)(struct gui_priv *priv,
+			struct menu_methods *meth);
+	struct menu_priv *(*popup_new)(struct gui_priv *priv,
+			struct menu_methods *meth);
 	int (*set_graphics)(struct gui_priv *priv, struct graphics *gra);
 	int (*run_main_loop)(struct gui_priv *priv);
-	struct datawindow_priv *(*datawindow_new)(struct gui_priv *priv, char *name, struct callback *click, struct callback *close, struct datawindow_methods *meth);
-	int (*add_bookmark)(struct gui_priv *priv, struct pcoord *c, char *description);
+	struct datawindow_priv *(*datawindow_new)(struct gui_priv *priv,
+			char *name, struct callback *click, struct callback *close,
+			struct datawindow_methods *meth);
+	int (*add_bookmark)(struct gui_priv *priv, struct pcoord *c,
+			char *description);
 	void (*disable_suspend)(struct gui_priv *priv);
-	int (*get_attr)(struct gui_priv *priv, enum attr_type type, struct attr *attr);
+	int (*get_attr)(struct gui_priv *priv, enum attr_type type,
+			struct attr *attr);
 	int (*add_attr)(struct gui_priv *priv, struct attr *attr);
 	int (*set_attr)(struct gui_priv *priv, struct attr *attr);
 };
-
 
 /* prototypes */
 enum attr_type;
@@ -57,12 +64,14 @@ struct gui;
 struct menu;
 struct pcoord;
 struct gui *gui_new(struct attr *parent, struct attr **attrs);
-int gui_get_attr(struct gui *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter);
+int gui_get_attr(struct gui *this_, enum attr_type type, struct attr *attr,
+		struct attr_iter *iter);
 int gui_set_attr(struct gui *this_, struct attr *attr);
 int gui_add_attr(struct gui *this_, struct attr *attr);
 struct menu *gui_menubar_new(struct gui *gui);
 struct menu *gui_popup_new(struct gui *gui);
-struct datawindow *gui_datawindow_new(struct gui *gui, char *name, struct callback *click, struct callback *close);
+struct datawindow *gui_datawindow_new(struct gui *gui, char *name,
+		struct callback *click, struct callback *close);
 int gui_add_bookmark(struct gui *gui, struct pcoord *c, char *description);
 int gui_set_graphics(struct gui *this_, struct graphics *gra);
 void gui_disable_suspend(struct gui *this_);

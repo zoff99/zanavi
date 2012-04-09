@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2009 Navit Team
  *
@@ -23,7 +42,8 @@
 #include "item.h"
 #include "color.h"
 
-struct element {
+struct element
+{
 	enum { element_point, element_polyline, element_polygon, element_circle, element_text, element_icon, element_image, element_arrows } type;
 	struct color color;
 	int text_size;
@@ -31,12 +51,14 @@ struct element {
 		struct element_point {
 			char stub;
 		} point;
-		struct element_polyline {
+		struct element_polyline
+		{
 			int width;
 			int directed;
 			int dash_num;
 			int offset;
-			unsigned char dash_table[4];
+			//unsigned char dash_table[4];
+			short dash_table[4];
 		} polyline;
 		struct element_polygon {
 			char stub;
