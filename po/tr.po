@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-14 19:08+0100\n"
-"PO-Revision-Date: 2011-12-01 12:42+0000\n"
-"Last-Translator: Bekir DURAK <by.jigs4w@gmail.com>\n"
+"POT-Creation-Date: 2012-05-04 15:19+0200\n"
+"PO-Revision-Date: 2012-05-09 17:34+0000\n"
+"Last-Translator: A.C. <ac58@live.nl>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -69,17 +69,17 @@ msgstr "altıncı"
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
 #: navigation.c:382
 msgid "seventh"
-msgstr ""
+msgstr "yedinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
 #: navigation.c:388
 msgid "eighth"
-msgstr ""
+msgstr "sekizinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
 #: navigation.c:394
 msgid "ninth"
-msgstr ""
+msgstr "dokuzuncu"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
 #: navigation.c:409
@@ -119,17 +119,17 @@ msgstr "altıncı çıkış"
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
 #: navigation.c:451
 msgid "seventh exit"
-msgstr ""
+msgstr "yedinci çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
 #: navigation.c:457
 msgid "eighth exit"
-msgstr ""
+msgstr "sekizinci çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
 #: navigation.c:463
 msgid "ninth exit"
-msgstr ""
+msgstr "dokuzuncu çıkış"
 
 #: navigation.c:557
 #, c-format
@@ -139,7 +139,7 @@ msgstr "%d m"
 #: navigation.c:564
 #, c-format
 msgid "in %d m"
-msgstr "%d m'de"
+msgstr "%d m sonra"
 
 #: navigation.c:582
 #, c-format
@@ -259,13 +259,13 @@ msgstr "Sola"
 #. TRANSLATORS: EXAMPLE: turn slight right
 #: navigation.c:2054
 msgid "slight "
-msgstr ""
+msgstr "hafif "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn hard right
 #: navigation.c:2067
 msgid "hard "
-msgstr ""
+msgstr "sert "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn really hard right
@@ -355,49 +355,49 @@ msgstr "Hedefinize ulaştınız, %s"
 msgid "then you have reached your destination."
 msgstr "ardından hedefinize ulaşacaksınız"
 
-#: navit.c:1981 gui/internal/gui_internal.c:2964
+#: navit.c:2037 gui/internal/gui_internal.c:2964
 msgid "Position"
 msgstr "Konum"
 
-#: navit.c:1982
+#: navit.c:2038
 msgid "Command"
 msgstr "Komut"
 
-#: navit.c:1986
+#: navit.c:2042
 msgid "Length"
 msgstr "Uzaklık"
 
-#: navit.c:1990 navit.c:2015
+#: navit.c:2046 navit.c:2071
 msgid "km"
 msgstr "km"
 
-#: navit.c:1994 navit.c:2019
+#: navit.c:2050 navit.c:2075
 msgid "m"
 msgstr "m"
 
-#: navit.c:2000
+#: navit.c:2056
 msgid "Time"
 msgstr "Zaman"
 
-#: navit.c:2012
+#: navit.c:2068
 msgid "Destination Length"
 msgstr "Hedef Uzaklığı"
 
-#: navit.c:2025
+#: navit.c:2081
 msgid "Destination Time"
 msgstr "Varış Zamanı"
 
-#: navit.c:2057
+#: navit.c:2113
 msgid "Roadbook"
 msgstr "Yol Haritası"
 
-#: navit.c:3607
+#: navit.c:3683
 msgid "Waypoint reached"
 msgstr ""
 
-#: navit.c:3617
+#: navit.c:3693
 msgid "You have reached your destination"
-msgstr ""
+msgstr "Hedefinize ulaştınız"
 
 #: gui/internal/gui_internal.c:1732
 msgid "Help"
@@ -433,7 +433,7 @@ msgstr "Ülke"
 
 #: gui/internal/gui_internal.c:4035
 msgid "Active"
-msgstr ""
+msgstr "Etkin"
 
 #: gui/internal/gui_internal.c:4043
 msgid "Download Enabled"
@@ -527,8 +527,8 @@ msgstr "Yükseklik Profili"
 
 #: osd/core/osd_core.c:1882
 msgid "Look out! Camera!"
-msgstr ""
+msgstr "Dikkat! Kamera!"
 
 #: osd/core/osd_core.c:2086
 msgid "Please decrease your speed"
-msgstr ""
+msgstr "Lütfen hızınızı düşürünüz"

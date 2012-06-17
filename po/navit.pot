@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZANavi 1.0.0\n"
 "Report-Msgid-Bugs-To: Zoff <zoff@zanavi.cc>\n"
-"POT-Creation-Date: 2012-03-14 19:27+0100\n"
+"POT-Creation-Date: 2012-05-15 19:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: zoff99 <zoff@zanavi.cc>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
@@ -354,47 +354,47 @@ msgstr ""
 msgid "then you have reached your destination."
 msgstr ""
 
-#: navit.c:1981 gui/internal/gui_internal.c:2964
+#: navit.c:2038 gui/internal/gui_internal.c:2964
 msgid "Position"
 msgstr ""
 
-#: navit.c:1982
+#: navit.c:2039
 msgid "Command"
 msgstr ""
 
-#: navit.c:1986
+#: navit.c:2043
 msgid "Length"
 msgstr ""
 
-#: navit.c:1990 navit.c:2015
+#: navit.c:2047 navit.c:2072
 msgid "km"
 msgstr ""
 
-#: navit.c:1994 navit.c:2019
+#: navit.c:2051 navit.c:2076
 msgid "m"
 msgstr ""
 
-#: navit.c:2000
+#: navit.c:2057
 msgid "Time"
 msgstr ""
 
-#: navit.c:2012
+#: navit.c:2069
 msgid "Destination Length"
 msgstr ""
 
-#: navit.c:2025
+#: navit.c:2082
 msgid "Destination Time"
 msgstr ""
 
-#: navit.c:2057
+#: navit.c:2114
 msgid "Roadbook"
 msgstr ""
 
-#: navit.c:3607
+#: navit.c:3684
 msgid "Waypoint reached"
 msgstr ""
 
-#: navit.c:3617
+#: navit.c:3694
 msgid "You have reached your destination"
 msgstr ""
 

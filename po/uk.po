@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-14 19:08+0100\n"
-"PO-Revision-Date: 2011-11-27 12:16+0000\n"
+"POT-Creation-Date: 2012-05-04 15:19+0200\n"
+"PO-Revision-Date: 2012-05-15 21:04+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -26,7 +26,7 @@ msgstr "Встановити як початкове положення"
 
 #: popup.c:326 popup.c:395
 msgid "Set as destination"
-msgstr "Встановити як місце призначення"
+msgstr "Встановити як пункт призначення"
 
 #: popup.c:327 popup.c:396
 msgid "Add as bookmark"
@@ -35,52 +35,52 @@ msgstr "Додати як закладку"
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
 #: navigation.c:340
 msgid "zeroth"
-msgstr "нульовий"
+msgstr "номер нуль"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
 #: navigation.c:346
 msgid "first"
-msgstr "перший"
+msgstr "номер один"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
 #: navigation.c:352
 msgid "second"
-msgstr "другий"
+msgstr "номер два"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
 #: navigation.c:358
 msgid "third"
-msgstr "третій"
+msgstr "номер три"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
 #: navigation.c:364
 msgid "fourth"
-msgstr "четвертий"
+msgstr "номер чотири"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
 #: navigation.c:370
 msgid "fifth"
-msgstr "п’ятий"
+msgstr "номер п’ять"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
 #: navigation.c:376
 msgid "sixth"
-msgstr "шостий"
+msgstr "номер шість"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
 #: navigation.c:382
 msgid "seventh"
-msgstr ""
+msgstr "номер сім"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
 #: navigation.c:388
 msgid "eighth"
-msgstr ""
+msgstr "номер вісім"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
 #: navigation.c:394
 msgid "ninth"
-msgstr ""
+msgstr "номер дев’ять"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
 #: navigation.c:409
@@ -120,17 +120,17 @@ msgstr "шостий виїзд"
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
 #: navigation.c:451
 msgid "seventh exit"
-msgstr ""
+msgstr "сьомий виїзд"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
 #: navigation.c:457
 msgid "eighth exit"
-msgstr ""
+msgstr "восьмий виїзд"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
 #: navigation.c:463
 msgid "ninth exit"
-msgstr ""
+msgstr "дев’ятий виїзд"
 
 #: navigation.c:557
 #, c-format
@@ -145,12 +145,12 @@ msgstr "за %d м"
 #: navigation.c:582
 #, c-format
 msgid "%d feet"
-msgstr ""
+msgstr "%d футів"
 
 #: navigation.c:589
 #, c-format
 msgid "in %d feet"
-msgstr ""
+msgstr "через %d футів"
 
 #: navigation.c:606
 #, c-format
@@ -165,12 +165,12 @@ msgstr "за %d метрів"
 #: navigation.c:642
 #, c-format
 msgid "%d.%d miles"
-msgstr ""
+msgstr "%d.%d миль"
 
 #: navigation.c:649
 #, c-format
 msgid "in %d.%d miles"
-msgstr ""
+msgstr "через %d.%d миль"
 
 #: navigation.c:660
 #, c-format
@@ -264,19 +264,19 @@ msgstr "ліворуч"
 #. TRANSLATORS: EXAMPLE: turn slight right
 #: navigation.c:2054
 msgid "slight "
-msgstr ""
+msgstr "трохи "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn hard right
 #: navigation.c:2067
 msgid "hard "
-msgstr ""
+msgstr "різко "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn really hard right
 #: navigation.c:2076
 msgid "really hard "
-msgstr ""
+msgstr "дуже різко "
 
 #: navigation.c:2099
 msgid "When possible, please turn around"
@@ -284,7 +284,7 @@ msgstr "Якщо це можливо, то розверніться"
 
 #: navigation.c:2133
 msgid "Enter the roundabout soon"
-msgstr ""
+msgstr "Скоро в’їзд на коло"
 
 #. TRANSLATORS: %s is the distance to the roundabout
 #. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
@@ -360,49 +360,49 @@ msgstr "Ви досягли місця призначення %s"
 msgid "then you have reached your destination."
 msgstr "і тоді Ви прибудете в місце призначення."
 
-#: navit.c:1981 gui/internal/gui_internal.c:2964
+#: navit.c:2037 gui/internal/gui_internal.c:2964
 msgid "Position"
 msgstr "Позиція"
 
-#: navit.c:1982
+#: navit.c:2038
 msgid "Command"
 msgstr "Команда"
 
-#: navit.c:1986
+#: navit.c:2042
 msgid "Length"
 msgstr "Довжина"
 
-#: navit.c:1990 navit.c:2015
+#: navit.c:2046 navit.c:2071
 msgid "km"
 msgstr "км"
 
-#: navit.c:1994 navit.c:2019
+#: navit.c:2050 navit.c:2075
 msgid "m"
 msgstr "м"
 
-#: navit.c:2000
+#: navit.c:2056
 msgid "Time"
 msgstr "Час"
 
-#: navit.c:2012
+#: navit.c:2068
 msgid "Destination Length"
 msgstr "Відстань до місця призначення"
 
-#: navit.c:2025
+#: navit.c:2081
 msgid "Destination Time"
 msgstr "Час до місця призначення"
 
-#: navit.c:2057
+#: navit.c:2113
 msgid "Roadbook"
 msgstr "Атлас доріг"
 
-#: navit.c:3607
+#: navit.c:3683
 msgid "Waypoint reached"
-msgstr ""
+msgstr "Досягнуто точки маршруту"
 
-#: navit.c:3617
+#: navit.c:3693
 msgid "You have reached your destination"
-msgstr ""
+msgstr "Ви дісталися місця призначення"
 
 #: gui/internal/gui_internal.c:1732
 msgid "Help"
@@ -438,11 +438,11 @@ msgstr "Країна"
 
 #: gui/internal/gui_internal.c:4035
 msgid "Active"
-msgstr ""
+msgstr "Активно"
 
 #: gui/internal/gui_internal.c:4043
 msgid "Download Enabled"
-msgstr ""
+msgstr "Скачування дозволено"
 
 #: gui/internal/gui_internal.c:4101
 msgid "Maps"
@@ -532,8 +532,8 @@ msgstr "Профіль висот"
 
 #: osd/core/osd_core.c:1882
 msgid "Look out! Camera!"
-msgstr ""
+msgstr "Обережно! Камера!"
 
 #: osd/core/osd_core.c:2086
 msgid "Please decrease your speed"
-msgstr ""
+msgstr "Будь ласка, зменшіть швидкість"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-03-14 19:08+0100\n"
+"POT-Creation-Date: 2012-05-04 15:19+0200\n"
 "PO-Revision-Date: 2011-12-01 13:33+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Hindi <hi@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 
 #: popup.c:325 popup.c:394
 msgid "Set as position"
@@ -356,47 +356,47 @@ msgstr ""
 msgid "then you have reached your destination."
 msgstr ""
 
-#: navit.c:1981 gui/internal/gui_internal.c:2964
+#: navit.c:2037 gui/internal/gui_internal.c:2964
 msgid "Position"
 msgstr ""
 
-#: navit.c:1982
+#: navit.c:2038
 msgid "Command"
 msgstr ""
 
-#: navit.c:1986
+#: navit.c:2042
 msgid "Length"
 msgstr ""
 
-#: navit.c:1990 navit.c:2015
+#: navit.c:2046 navit.c:2071
 msgid "km"
 msgstr ""
 
-#: navit.c:1994 navit.c:2019
+#: navit.c:2050 navit.c:2075
 msgid "m"
 msgstr ""
 
-#: navit.c:2000
+#: navit.c:2056
 msgid "Time"
 msgstr ""
 
-#: navit.c:2012
+#: navit.c:2068
 msgid "Destination Length"
 msgstr ""
 
-#: navit.c:2025
+#: navit.c:2081
 msgid "Destination Time"
 msgstr ""
 
-#: navit.c:2057
+#: navit.c:2113
 msgid "Roadbook"
 msgstr ""
 
-#: navit.c:3607
+#: navit.c:3683
 msgid "Waypoint reached"
 msgstr ""
 
-#: navit.c:3617
+#: navit.c:3693
 msgid "You have reached your destination"
 msgstr ""
 

@@ -113,6 +113,7 @@ cache_new(int id_size, int size)
 	cache->entry_size = cache->id_size * sizeof(int) + sizeof(struct cache_entry);
 	cache->size = size;
 
+	dbg(0, "_c id_size=%d\n", id_size);
 	dbg(0, "_c size=%d\n", size);
 
 	switch (id_size)
@@ -212,7 +213,8 @@ cache_entry_new(struct cache *cache, void *id, int size)
 {
 	struct cache_entry *ret;
 	size += cache->entry_size;
-	cache->misses += size;
+	// cache->misses += size;
+	cache->misses += 1;
 	ret = (struct cache_entry *) g_slice_alloc0(size);
 	ret->size = size;
 	ret->usage = 1;
@@ -328,7 +330,8 @@ cache_lookup(struct cache *cache, void *id)
 	// dbg(1,"found 0x%x 0x%x 0x%x 0x%x 0x%x\n", entry->id[0], entry->id[1], entry->id[2], entry->id[3], entry->id[4]);
 	if (entry->where == &cache->t1 || entry->where == &cache->t2)
 	{
-		cache->hits += entry->size;
+		// cache->hits += entry->size;
+		cache->hits += 1;
 #ifdef DEBUG_CACHE
 		if (entry->where == &cache->t1)
 		{
@@ -418,15 +421,30 @@ cache_insert_new(struct cache *cache, void *id, int size)
 void cache_stats(struct cache *cache)
 {
 	unsigned long c_ratio = 0;
+	//if ((cache->hits + cache->misses) > 0)
+	//{
+	//	c_ratio = (long) (cache->hits) * (long) (100L);
+	//	//dbg(0,"1 c_ratio=%lu\n", c_ratio);
+	//	c_ratio = c_ratio / (long) (cache->hits + cache->misses);
+	//	//dbg(0,"2 c_ratio=%lu\n", c_ratio);
+	//
+	//	dbg(0, "hits %d misses %lu hitratio %d size %d entry_size %d id_size %d T1 target %d\n", cache->hits, cache->misses, c_ratio, cache->size, cache->entry_size, cache->id_size, cache->t1_target);
+	//	// dbg(0,"T1:%d B1:%d T2:%d B2:%d\n", cache->t1.size, cache->b1.size, cache->t2.size, cache->b2.size);
+	//
+	//	// if numbers are too big, reset them
+	//	if ((cache->hits > 1000000000) || (cache->misses > 1000000000))
+	//	{
+	//		cache->hits = 0;
+	//		cache->misses = 0;
+	//	}
+	//}
+
 	if ((cache->hits + cache->misses) > 0)
 	{
 		c_ratio = (long) (cache->hits) * (long) (100L);
-		//dbg(0,"1 c_ratio=%lu\n", c_ratio);
 		c_ratio = c_ratio / (long) (cache->hits + cache->misses);
-		//dbg(0,"2 c_ratio=%lu\n", c_ratio);
 
-		dbg(0, "hits %d misses %lu hitratio %d size %d entry_size %d id_size %d T1 target %d\n", cache->hits, cache->misses, c_ratio, cache->size, cache->entry_size, cache->id_size, cache->t1_target);
-		// dbg(0,"T1:%d B1:%d T2:%d B2:%d\n", cache->t1.size, cache->b1.size, cache->t2.size, cache->b2.size);
+		dbg(0, "hits %lu misses %lu hitratio %d size %d entry_size %d id_size %d T1 target %d\n", cache->hits, cache->misses, c_ratio, cache->size, cache->entry_size, cache->id_size, cache->t1_target);
 
 		// if numbers are too big, reset them
 		if ((cache->hits > 1000000000) || (cache->misses > 1000000000))
@@ -435,6 +453,9 @@ void cache_stats(struct cache *cache)
 			cache->misses = 0;
 		}
 	}
+
+
+
 }
 
 void cache_dump(struct cache *cache)

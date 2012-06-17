@@ -58,10 +58,13 @@ public class NavitAndroidOverlay extends ImageView
 	public RectF follow_button_rect = new RectF(-100, 1, 1, 1);
 	public RectF zoomin_button_rect = new RectF(-100, 1, 1, 1);
 	public RectF zoomout_button_rect = new RectF(-100, 1, 1, 1);
+	public RectF mapdrawing_button_rect = new RectF(-100, 1, 1, 1);
 	public static int zoomin_ltx = 0;
 	public static int zoomin_lty = 0;
 	public static int zoomout_ltx = 0;
 	public static int zoomout_lty = 0;
+	public static int mapdrawing_ltx = 0;
+	public static int mapdrawing_lty = 0;
 	public int mCanvasHeight = 1;
 	public int mCanvasWidth = 1;
 	public static float draw_factor = 1.0f;
@@ -91,7 +94,7 @@ public class NavitAndroidOverlay extends ImageView
 
 		public void run()
 		{
-			//Log.e("Navit", "BubbleThread started");
+			// Log.e("Navit", "BubbleThread started");
 			while (this.running)
 			{
 				if ((System.currentTimeMillis() - this.bubble_showing_since) > bubble_max_showing_timespan)
@@ -136,7 +139,7 @@ public class NavitAndroidOverlay extends ImageView
 		//Log.e("Navit", "NavitAndroidOverlay -> show_bubble");
 		if (!this.draw_bubble)
 		{
-			this.confirmed_bubble = false;
+			confirmed_bubble = false;
 			this.draw_bubble = true;
 			this.bubble_showing_since = System.currentTimeMillis();
 			bubble_thread = new BubbleThread(this);
@@ -163,7 +166,7 @@ public class NavitAndroidOverlay extends ImageView
 	public void hide_bubble()
 	{
 		// Log.e("NavitGraphics", "NavitAndroidOverlay -> hide_bubble");
-		this.confirmed_bubble = false;
+		confirmed_bubble = false;
 		this.draw_bubble = false;
 		this.bubble_showing_since = 0L;
 		try
@@ -218,7 +221,7 @@ public class NavitAndroidOverlay extends ImageView
 
 		if (action == MotionEvent.ACTION_DOWN)
 		{
-			if ((this.draw_bubble) && (!this.confirmed_bubble))
+			if ((this.draw_bubble) && (!confirmed_bubble))
 			{
 				int dx = (int) ((20 / 1.5f) * draw_factor);
 				int dy = (int) ((-100 / 1.5f) * draw_factor);
@@ -228,14 +231,22 @@ public class NavitAndroidOverlay extends ImageView
 				if (box_rect.contains(x, y))
 				{
 					// bubble touched to confirm destination
-					this.confirmed_bubble = true;
+					confirmed_bubble = true;
 					// draw confirmed bubble
 					this.postInvalidate();
+					String dest_name = "Point on Screen";
 
 					// remeber recent dest.
 					try
 					{
-						Navit.remember_destination_xy("Point on Screen", this.bubble_001.x, this.bubble_001.y);
+						dest_name = NavitGraphics.CallbackGeoCalc(5, this.bubble_001.x, this.bubble_001.y);
+						// System.out.println("x:"+dest_name+":y");
+						if ((dest_name.equals(" ")) || (dest_name == null))
+						{
+							dest_name = "Point on Screen";
+						}
+
+						Navit.remember_destination_xy(dest_name, this.bubble_001.x, this.bubble_001.y);
 					}
 					catch (Exception e)
 					{
@@ -290,6 +301,42 @@ public class NavitAndroidOverlay extends ImageView
 					// toggle follow mode
 					Navit.toggle_follow_button();
 					this.postInvalidate();
+					// consume the event
+					return true;
+				}
+			}
+			else if (this.mapdrawing_button_rect.contains(x, y))
+			{
+				if (NavitGraphics.in_map)
+				{
+					try
+					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						if (NavitGraphics.MAP_DISPLAY_OFF)
+						{
+							NavitGraphics.MAP_DISPLAY_OFF = false;
+							b.putInt("Callback", 63);
+						}
+						else
+						{
+							NavitGraphics.MAP_DISPLAY_OFF = true;
+							b.putInt("Callback", 62);
+						}
+						msg.setData(b);
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+						// redraw map
+						Message msg2 = new Message();
+						Bundle b2 = new Bundle();
+						b2.putInt("Callback", 64);
+						msg2.setData(b2);
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg2);
+
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 					// consume the event
 					return true;
 				}
@@ -473,28 +520,52 @@ public class NavitAndroidOverlay extends ImageView
 		int h_1 = (int) ((200f / 1.5f) * draw_factor);
 		this.follow_button_rect = new RectF(this.mCanvasWidth - Navit.follow_current.getWidth() - w_1, this.mCanvasHeight - Navit.follow_current.getHeight() - h_1, this.mCanvasWidth - w_1, this.mCanvasHeight - h_1);
 
+		/*
+		 * int w_2 = (int) ((0 / 1.5f) * draw_factor) + 5;
+		 * int h_2 = (int) ((0f / 1.5f) * draw_factor) + 5;
+		 * int h_button_zoom = Navit.zoomin.getHeight();
+		 * zoomin_ltx = w_2;
+		 * zoomin_lty = h_2;
+		 * this.zoomin_button_rect = new RectF(w_2, h_2, Navit.zoomin.getWidth() + w_2, h_button_zoom + h_2);
+		 */
+
 		int w_2 = (int) ((0 / 1.5f) * draw_factor) + 5;
-		int h_2 = (int) ((0f / 1.5f) * draw_factor) + 5;
+		int h_2 = (int) ((70f / 1.5f) * draw_factor) + 5 + 25;
 		int h_button_zoom = Navit.zoomin.getHeight();
 		zoomin_ltx = w_2;
 		zoomin_lty = h_2;
 		this.zoomin_button_rect = new RectF(w_2, h_2, Navit.zoomin.getWidth() + w_2, h_button_zoom + h_2);
+
 		w_2 = (int) ((0 / 1.5f) * draw_factor) + 5;
-		h_2 = (int) ((70f / 1.5f) * draw_factor) + 5 + 25;
+		h_2 = (int) ((2 * 70f / 1.5f) * draw_factor) + 5 + 25 + 25;
 		zoomout_ltx = w_2;
 		zoomout_lty = h_2;
 		this.zoomout_button_rect = new RectF(w_2, h_2, Navit.zoomout.getWidth() + w_2, h_button_zoom + h_2);
 
+		int mapdrawing_width = 75;
+		int mapdrawing_height = 75;
+		w_2 = (int) (((this.mCanvasWidth - mapdrawing_width) / 1.5f) * draw_factor) - 5;
+		h_2 = (int) ((70f / 1.5f) * draw_factor) + 5 + 25;
+		mapdrawing_ltx = w_2;
+		mapdrawing_lty = h_2;
+		this.mapdrawing_button_rect = new RectF(w_2, h_2, mapdrawing_width + w_2, mapdrawing_height + h_2);
 	}
 
 	public void onDraw(Canvas c)
 	{
+		// ************!!!!!!!!!!!!! optimze me !!!!!!!!!!!*************
+		// ************!!!!!!!!!!!!! optimze me !!!!!!!!!!!*************
+		// ************!!!!!!!!!!!!! optimze me !!!!!!!!!!!*************
+		// ************!!!!!!!!!!!!! optimze me !!!!!!!!!!!*************
+		// ************!!!!!!!!!!!!! optimze me !!!!!!!!!!!*************
+		// ************!!!!!!!!!!!!! optimze me !!!!!!!!!!!*************
+
 		//Log.e("NavitGraphics", "NavitAndroidOverlay -> onDraw");
 		//System.out.println("NavitAndroidOverlay -> onDraw");
 
 		if (this.draw_bubble)
 		{
-			if ((System.currentTimeMillis() - this.bubble_showing_since) > this.bubble_max_showing_timespan)
+			if ((System.currentTimeMillis() - this.bubble_showing_since) > bubble_max_showing_timespan)
 			{
 				// bubble has been showing too log, hide it
 				this.hide_bubble();
@@ -626,11 +697,16 @@ public class NavitAndroidOverlay extends ImageView
 			paint.setStyle(Style.STROKE);
 			paint.setColor(Color.GRAY);
 			paint.setAlpha(30);
-			c.drawRoundRect((RectF) this.zoomin_button_rect, 10, 10, paint);
+			paint.setStrokeWidth(2);
+			c.drawRoundRect(this.zoomin_button_rect, 10, 10, paint);
 			//paint.setStyle(Style.STROKE);
 			//paint.setColor(Color.GRAY);
 			//paint.setAlpha(30);
-			c.drawRoundRect((RectF) this.zoomout_button_rect, 10, 10, paint);
+			c.drawRoundRect(this.zoomout_button_rect, 10, 10, paint);
+			c.drawRoundRect(this.mapdrawing_button_rect, 10, 10, paint);
+			paint.setStrokeWidth(10);
+			paint.setAlpha(80);
+			c.drawLine(this.mapdrawing_button_rect.left + 10, this.mapdrawing_button_rect.bottom - 10, this.mapdrawing_button_rect.right - 10, this.mapdrawing_button_rect.top + 10, paint);
 		}
 
 		if (NavitGraphics.in_map)

@@ -162,6 +162,7 @@ void route_init(void);
 void route_destroy(struct route *this_);
 void route_path_destroy(struct route_path *this, int recurse);
 void route_graph_destroy(struct route_graph *this);
+void route_path_update(struct route *this, int cancel, int async);
 /* end of prototypes */
 #ifdef __cplusplus
 }

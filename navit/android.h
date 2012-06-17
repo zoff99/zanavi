@@ -18,6 +18,9 @@ struct jni_object
 
 #else
 
+typedef int jobject;
+typedef int jmethodID;
+
 struct jni_object
 {
 	int dummy;

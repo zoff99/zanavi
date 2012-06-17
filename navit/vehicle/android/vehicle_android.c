@@ -54,7 +54,8 @@
 #include "android.h"
 #include "vehicle.h"
 
-struct vehicle_priv {
+struct vehicle_priv
+{
 	struct callback_list *cbl;
 	struct coord_geo geo;
 	double speed;
@@ -75,16 +76,24 @@ struct vehicle_priv {
 	jmethodID Location_getLatitude, Location_getLongitude, Location_getSpeed, Location_getBearing, Location_getAltitude, Location_getTime, Location_getAccuracy;
 };
 
+// global vars
+struct vehicle_priv *priv_global_android = NULL;
+// global vars
+
+
 /**
  * @brief Free the android_vehicle
  * 
  * @param priv
  * @returns nothing
  */
-static void
-vehicle_android_destroy(struct vehicle_priv *priv)
+static void vehicle_android_destroy(struct vehicle_priv *priv)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	// //DBG dbg(0,"enter\n");
+	priv_global_android = NULL;
 	g_free(priv);
 }
 
@@ -96,126 +105,176 @@ vehicle_android_destroy(struct vehicle_priv *priv)
  * @param attr
  * @returns true/false
  */
-static int
-vehicle_android_position_attr_get(struct vehicle_priv *priv,
-			       enum attr_type type, struct attr *attr)
+static int vehicle_android_position_attr_get(struct vehicle_priv *priv, enum attr_type type, struct attr *attr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//dbg(1,"enter %s\n",attr_to_name(type));
 	switch (type)
 	{
 #if 0
-	case attr_position_fix_type:
+		case attr_position_fix_type:
 		attr->u.num = priv->fix_type;
 		break;
 #endif
-	case attr_position_height:
-		attr->u.numd = &priv->height;
-		break;
-	case attr_position_speed:
-		attr->u.numd = &priv->speed;
-		break;
-	case attr_position_direction:
-		attr->u.numd = &priv->direction;
-		break;
-	case attr_position_radius:
-		attr->u.numd = &priv->radius;
-		break;
+		case attr_position_height:
+			attr->u.numd = &priv->height;
+			break;
+		case attr_position_speed:
+			attr->u.numd = &priv->speed;
+			break;
+		case attr_position_direction:
+			attr->u.numd = &priv->direction;
+			break;
+		case attr_position_radius:
+			attr->u.numd = &priv->radius;
+			break;
 
 #if 0
-	case attr_position_qual:
-		attr->u.num = priv->sats;
-		break;
-	case attr_position_sats_used:
-		attr->u.num = priv->sats_used;
-		break;
+			case attr_position_qual:
+			attr->u.num = priv->sats;
+			break;
+			case attr_position_sats_used:
+			attr->u.num = priv->sats_used;
+			break;
 #endif
-	case attr_position_coord_geo:
-		attr->u.coord_geo = &priv->geo;
-		if (!priv->have_coords)
+		case attr_position_coord_geo:
+			attr->u.coord_geo = &priv->geo;
+			if (!priv->have_coords)
+				return 0;
+			break;
+		case attr_position_time_iso8601:
+			attr->u.str = priv->fixiso8601;
+			break;
+		default:
 			return 0;
-		break;
-	case attr_position_time_iso8601:
-		attr->u.str=priv->fixiso8601;
-		break;
-	default:
-		return 0;
 	}
 	//dbg(1,"ok\n");
 	attr->type = type;
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return 1;
 }
 
-struct vehicle_methods vehicle_android_methods = {
-	vehicle_android_destroy,
-	vehicle_android_position_attr_get,
-};
-
-static void
-vehicle_android_callback(struct vehicle_priv *v, jobject location)
+static void vehicle_android_update_location_direct(jobject location)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	clock_t s_ = debug_measure_start();
+#endif
+
 	time_t tnow;
 	struct tm *tm;
 
+	struct vehicle_priv *v = priv_global_android;
+
+	//dbg(0,"jnienv=%p\n", jnienv);
+	//dbg(0,"priv_global_android=%p\n", priv_global_android);
+	//dbg(0,"v=%p\n", v);
+	//dbg(0,"location=%p\n", location);
+
+	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
+	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
+	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	v->geo.lat = (*jnienv)->CallDoubleMethod(jnienv, location, v->Location_getLatitude);
 	v->geo.lng = (*jnienv)->CallDoubleMethod(jnienv, location, v->Location_getLongitude);
-	v->speed = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getSpeed)*3.6;  // convert from m/s -> km/h
+	v->speed = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getSpeed) * 3.6; // convert from m/s -> km/h
 	v->direction = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getBearing);
 	v->height = (*jnienv)->CallDoubleMethod(jnienv, location, v->Location_getAltitude);
 	v->radius = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getAccuracy);
-	tnow=(*jnienv)->CallLongMethod(jnienv, location, v->Location_getTime)/1000;
+	tnow = (*jnienv)->CallLongMethod(jnienv, location, v->Location_getTime) / 1000;
+	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
+	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
+	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
+
+
 	tm = gmtime(&tnow);
 	strftime(v->fixiso8601, sizeof(v->fixiso8601), "%Y-%m-%dT%TZ", tm);
 	// //DBG dbg(0,"lat %f lon %f\n",v->geo.lat,v->geo.lng);
-	v->have_coords=1;
+	v->have_coords = 1;
+
+	// remove globalref again
+	(*jnienv)->DeleteGlobalRef(jnienv, location);
 
 	// ***** calls: navit.c -> navit_vehicle_update
+	// xxx stupid callback stuff -> remove me!!  xxx
 	callback_list_call_attr_0(v->cbl, attr_position_coord_geo);
+
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	debug_mrp(__PRETTY_FUNCTION__, debug_measure_end(s_));
+#endif
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 }
 
-static int
-vehicle_android_init(struct vehicle_priv *ret)
+struct vehicle_methods vehicle_android_methods =
+{ vehicle_android_destroy, vehicle_android_position_attr_get, NULL, vehicle_android_update_location_direct};
+
+static int vehicle_android_init(struct vehicle_priv *ret)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	jmethodID cid;
 
+	//dbg(0,"priv_global_android=%p\n", priv_global_android);
+
 	if (!android_find_class_global("android/location/Location", &ret->LocationClass))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getLatitude", "()D", &ret->Location_getLatitude))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getLongitude", "()D", &ret->Location_getLongitude))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getSpeed", "()F", &ret->Location_getSpeed))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getBearing", "()F", &ret->Location_getBearing))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getAltitude", "()D", &ret->Location_getAltitude))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getTime", "()J", &ret->Location_getTime))
-                return 0;
+		return 0;
 	if (!android_find_method(ret->LocationClass, "getAccuracy", "()F", &ret->Location_getAccuracy))
-                return 0;
+		return 0;
 	if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitVehicle", &ret->NavitVehicleClass))
 	{
-                return 0;
+		return 0;
 	}
-    //DBG dbg(0,"at 3\n");
-    cid = (*jnienv)->GetMethodID(jnienv, ret->NavitVehicleClass, "<init>", "(Landroid/content/Context;I)V");
-    if (cid == NULL)
+
+	//dbg(0,"jnienv=%p\n", jnienv);
+
+	//DBG dbg(0,"at 3\n");
+	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitVehicleClass, "<init>", "(Landroid/content/Context;I)V");
+	if (cid == NULL)
 	{
-            //DBG dbg(0,"no method found\n");
-            return 0; /* exception thrown */
-    }
-    //DBG dbg(0,"at 4 android_activity=%p\n",android_activity);
-    ret->NavitVehicle=(*jnienv)->NewObject(jnienv, ret->NavitVehicleClass, cid, android_activity, (int) ret->cb);
-    //DBG dbg(0,"result=%p\n",ret->NavitVehicle);
+		//DBG dbg(0,"no method found\n");
+		return 0;
+	}
+	//DBG dbg(0,"at 4 android_activity=%p\n",android_activity);
+	ret->NavitVehicle = (*jnienv)->NewObject(jnienv, ret->NavitVehicleClass, cid, android_activity, (int) ret->cb);
+	//DBG dbg(0,"result=%p\n",ret->NavitVehicle);
 	if (!ret->NavitVehicle)
 	{
 		return 0;
 	}
 
-    if (ret->NavitVehicle)
+	if (ret->NavitVehicle)
 	{
-            ret->NavitVehicle = (*jnienv)->NewGlobalRef(jnienv, ret->NavitVehicle);
+		ret->NavitVehicle = (*jnienv)->NewGlobalRef(jnienv, ret->NavitVehicle);
 	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
 
 	return 1;
 }
@@ -229,19 +288,27 @@ vehicle_android_init(struct vehicle_priv *ret)
  * @returns vehicle_priv
  */
 static struct vehicle_priv *
-vehicle_android_new_android(struct vehicle_methods *meth,
-	       		struct callback_list *cbl,
-		       	struct attr **attrs)
+vehicle_android_new_android(struct vehicle_methods *meth, struct callback_list *cbl, struct attr **attrs)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct vehicle_priv *ret;
 
 	//DBG dbg(0, "enter\n");
 	ret = g_new0(struct vehicle_priv, 1);
 	ret->cbl = cbl;
-	ret->cb=callback_new_1(callback_cast(vehicle_android_callback), ret);
+	// *********** // ret->cb = callback_new_1(callback_cast(vehicle_android_callback), ret);
 	*meth = vehicle_android_methods;
+	priv_global_android = ret;
+	//dbg(0,"priv_global_android=%p\n", priv_global_android);
 	vehicle_android_init(ret);
 	//DBG dbg(0, "return\n");
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return ret;
 }
 
@@ -250,9 +317,17 @@ vehicle_android_new_android(struct vehicle_methods *meth,
  * 
  * @returns nothing
  */
-void
-plugin_init(void)
+void plugin_init(void)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0, "enter\n");
 	plugin_register_vehicle_type("android", vehicle_android_new_android);
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 }
+

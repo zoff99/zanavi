@@ -103,12 +103,14 @@ static int vehicle_demo_position_attr_get(struct vehicle_priv *priv, enum attr_t
 static int vehicle_demo_set_attr(struct vehicle_priv *priv, struct attr *attr)
 {
 	if (attr->type == attr_navit)
+	{
 		priv->navit = attr->u.navit;
+	}
 	return 1;
 }
 
 struct vehicle_methods vehicle_demo_methods =
-{ vehicle_demo_destroy, vehicle_demo_position_attr_get, vehicle_demo_set_attr, };
+{ vehicle_demo_destroy, vehicle_demo_position_attr_get, vehicle_demo_set_attr, NULL, };
 
 static void vehicle_demo_timer(struct vehicle_priv *priv)
 {

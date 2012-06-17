@@ -63,6 +63,7 @@ struct display_context
 
 //#define HASH_SIZE_GRAPHICS_ 1024
 #define HASH_SIZE_GRAPHICS_ 2048 // inc. hash size for layer items
+
 struct hash_entry
 {
 	enum item_type type;

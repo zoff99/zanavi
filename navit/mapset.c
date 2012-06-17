@@ -40,11 +40,13 @@
  *
  * This structure holds a complete mapset
  */
-struct mapset {
+struct mapset
+{
 	GList *maps; /**< Linked list of all the maps in the mapset */
 };
 
-struct attr_iter {
+struct attr_iter
+{
 	GList *last;
 };
 
@@ -55,6 +57,9 @@ struct attr_iter {
  */
 struct mapset *mapset_new(struct attr *parent, struct attr **attrs)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct mapset *ms;
 
 	ms=g_new0(struct mapset, 1);
@@ -62,16 +67,20 @@ struct mapset *mapset_new(struct attr *parent, struct attr **attrs)
 	return ms;
 }
 
-
 struct attr_iter *
 mapset_attr_iter_new(void)
 {
-	return g_new0(struct attr_iter, 1);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+return g_new0(struct attr_iter, 1);
 }
 
-void
-mapset_attr_iter_destroy(struct attr_iter *iter)
+void mapset_attr_iter_destroy(struct attr_iter *iter)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	g_free(iter);
 }
 
@@ -81,109 +90,125 @@ mapset_attr_iter_destroy(struct attr_iter *iter)
  * @param ms The mapset to add the map to
  * @param m The map to be added
  */
-int
-mapset_add_attr(struct mapset *ms, struct attr *attr)
+int mapset_add_attr(struct mapset *ms, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_map:
-		ms->maps=g_list_append(ms->maps, attr->u.map);
-		map_ref(attr->u.map);
-		return 1;
-	default:
-		return 0;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	switch (attr->type)
+	{
+		case attr_map:
+			ms->maps = g_list_append(ms->maps, attr->u.map);
+			map_ref(attr->u.map);
+			return 1;
+		default:
+			return 0;
 	}
 }
 
-int
-mapset_add_attr_name(struct mapset *ms, struct attr *attr)
+int mapset_add_attr_name(struct mapset *ms, struct attr *attr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr map_name;
 
-	dbg(0,"****** ADD MAP from sdcard ******");
-	switch (attr->type) {
-	case attr_map:
-		ms->maps=g_list_append(ms->maps, attr->u.map);
-		map_ref(attr->u.map);
+	dbg(0, "****** ADD MAP from sdcard ******");
+	switch (attr->type)
+	{
+		case attr_map:
+			ms->maps = g_list_append(ms->maps, attr->u.map);
+			map_ref(attr->u.map);
 
-		struct map *m;
-		m=g_new0(struct map, 1);
-		m=attr->u.map;
-		struct attr *map_file_name=attr_search(m->attrs, NULL, attr_data);
-		map_name.type=attr_name;
-		map_name.u.str=g_strconcat("_ms_sdcard_map:",map_file_name->u.str,NULL);
+			struct map *m;
+			m=g_new0(struct map, 1);
+			m = attr->u.map;
+			struct attr *map_file_name = attr_search(m->attrs, NULL, attr_data);
+			map_name.type = attr_name;
+			map_name.u.str = g_strconcat("_ms_sdcard_map:", map_file_name->u.str, NULL);
 
-		dbg(0,"====== map name1=%s",map_name.u.str);
-		map_set_attr(attr->u.map, &map_name);
+			dbg(0, "====== map name1=%s", map_name.u.str);
+			map_set_attr(attr->u.map, &map_name);
 
-		return 1;
-	default:
-		return 0;
+			return 1;
+		default:
+			return 0;
 	}
 }
 
-int
-mapset_add_attr_name_str(struct mapset *ms, struct attr *attr,char *map_name_str)
+int mapset_add_attr_name_str(struct mapset *ms, struct attr *attr, char *map_name_str)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr map_name;
 
-	dbg(0,"****** ADD MAP from sdcard - with name str ******");
-	switch (attr->type) {
-	case attr_map:
-		ms->maps=g_list_append(ms->maps, attr->u.map);
-		map_ref(attr->u.map);
+	dbg(0, "****** ADD MAP from sdcard - with name str ******");
+	switch (attr->type)
+	{
+		case attr_map:
+			ms->maps = g_list_append(ms->maps, attr->u.map);
+			map_ref(attr->u.map);
 
-		struct map *m;
-		m=g_new0(struct map, 1);
-		m=attr->u.map;
-		struct attr *map_file_name=attr_search(m->attrs, NULL, attr_data);
-		map_name.type=attr_name;
-		map_name.u.str=g_strconcat("_ms_sdcard_map:",map_name_str,NULL);
+			struct map *m;
+			m=g_new0(struct map, 1);
+			m = attr->u.map;
+			struct attr *map_file_name = attr_search(m->attrs, NULL, attr_data);
+			map_name.type = attr_name;
+			map_name.u.str = g_strconcat("_ms_sdcard_map:", map_name_str, NULL);
 
-		dbg(0,"====== map name2=%s",map_name.u.str);
-		map_set_attr(attr->u.map, &map_name);
+			dbg(0, "====== map name2=%s", map_name.u.str);
+			map_set_attr(attr->u.map, &map_name);
 
-		return 1;
-	default:
-		return 0;
+			return 1;
+		default:
+			return 0;
 	}
 }
 
-int
-mapset_remove_attr(struct mapset *ms, struct attr *attr)
+int mapset_remove_attr(struct mapset *ms, struct attr *attr)
 {
-	switch (attr->type) {
-	case attr_map:
-		ms->maps=g_list_remove(ms->maps, attr->u.map);
-		return 1;
-	default:
-		return 0;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	switch (attr->type)
+	{
+		case attr_map:
+			ms->maps = g_list_remove(ms->maps, attr->u.map);
+			return 1;
+		default:
+			return 0;
 	}
 }
 
-int
-mapset_get_attr(struct mapset *ms, enum attr_type type, struct attr *attr, struct attr_iter *iter)
+int mapset_get_attr(struct mapset *ms, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	GList *map;
-	map=ms->maps;
-	attr->type=type;
-	switch (type) {
-	case attr_map:
-		while (map) {
-			if (!iter || iter->last == g_list_previous(map)) {
-				attr->u.map=map->data;
-				if (iter)
-					iter->last=map;
-				return 1;
+	map = ms->maps;
+	attr->type = type;
+	switch (type)
+	{
+		case attr_map:
+			while (map)
+			{
+				if (!iter || iter->last == g_list_previous(map))
+				{
+					attr->u.map = map->data;
+					if (iter)
+						iter->last = map;
+					return 1;
+				}
+				map = g_list_next(map);
 			}
-			map=g_list_next(map);
-		}
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
 	}
 	return 0;
 }
-
 
 #if 0
 static void mapset_maps_free(struct mapset *ms)
@@ -202,11 +227,15 @@ static void mapset_maps_free(struct mapset *ms)
  */
 void mapset_destroy(struct mapset *ms)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	GList *map;
-	map=ms->maps;
-	while (map) {
+	map = ms->maps;
+	while (map)
+	{
 		map_destroy(map->data);
-		map=g_list_next(map);
+		map = g_list_next(map);
 	}
 	g_free(ms);
 }
@@ -217,8 +246,9 @@ void mapset_destroy(struct mapset *ms)
  * This struct is used for a mapset that is in use. With this it is possible to iterate
  * all maps in a mapset.
  */
-struct mapset_handle {
-	GList *l;	/**< Pointer to the current (next) map */
+struct mapset_handle
+{
+	GList *l; /**< Pointer to the current (next) map */
 };
 
 /**
@@ -233,11 +263,14 @@ struct mapset_handle {
 struct mapset_handle *
 mapset_open(struct mapset *ms)
 {
-	struct mapset_handle *ret=NULL;
-	if(ms)
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	struct mapset_handle *ret = NULL;
+	if (ms)
 	{
 		ret=g_new(struct mapset_handle, 1);
-		ret->l=ms->maps;
+		ret->l = ms->maps;
 	}
 
 	return ret;
@@ -255,23 +288,29 @@ mapset_open(struct mapset *ms)
  */
 struct map * mapset_next(struct mapset_handle *msh, int active)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct map *ret;
 	struct attr active_attr;
 
-	for (;;) {
+	for (;;)
+	{
 		if (!msh || !msh->l)
 			return NULL;
-		ret=msh->l->data;
-		msh->l=g_list_next(msh->l);
+		ret = msh->l->data;
+		msh->l = g_list_next(msh->l);
 		if (!active)
-			return ret;			
-		if (active == 2 && map_get_attr(ret, attr_route_active, &active_attr, NULL)) {
+			return ret;
+		if (active == 2 && map_get_attr(ret, attr_route_active, &active_attr, NULL))
+		{
 			if (active_attr.u.num)
 				return ret;
 			else
 				continue;
 		}
-		if (active == 3 && map_get_attr(ret, attr_search_active, &active_attr, NULL)) {
+		if (active == 3 && map_get_attr(ret, attr_search_active, &active_attr, NULL))
+		{
 			if (active_attr.u.num)
 				return ret;
 			else
@@ -291,20 +330,27 @@ struct map * mapset_next(struct mapset_handle *msh, int active)
  * @param map_name the map name used by the search
  * @return The next map
  */
-struct map * 
+struct map *
 mapset_get_map_by_name(struct mapset *ms, char *map_name)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct mapset_handle*msh;
 	struct map*curr_map;
 	struct attr map_attr;
-	if( !ms || !map_name ) {
+	if (!ms || !map_name)
+	{
 		return NULL;
 	}
-	msh=mapset_open(ms);
-	while ((curr_map=mapset_next(msh, 1))) {
+	msh = mapset_open(ms);
+	while ((curr_map = mapset_next(msh, 1)))
+	{
 		//get map name
-		if(map_get_attr(curr_map,attr_name, &map_attr,NULL)) {
-			if( ! strcmp(map_attr.u.str, map_name)) {
+		if (map_get_attr(curr_map, attr_name, &map_attr, NULL))
+		{
+			if (!strcmp(map_attr.u.str, map_name))
+			{
 				break;
 			}
 		}
@@ -317,9 +363,11 @@ mapset_get_map_by_name(struct mapset *ms, char *map_name)
  *
  * @param msh Mapset handle to be closed
  */
-void 
-mapset_close(struct mapset_handle *msh)
+void mapset_close(struct mapset_handle *msh)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	g_free(msh);
 }
 
@@ -330,12 +378,13 @@ mapset_close(struct mapset_handle *msh)
  *
  * @sa For a more detailed description see the documentation of mapset_search_new().
  */
-struct mapset_search {
-	GList *map;					/**< The list of maps to be searched within */
-	struct map_search *ms;		/**< A map search struct for the map currently active */
-	struct item *item;			/**< "Superior" item. */
-	struct attr *search_attr;	/**< Attribute to be searched for. */
-	int partial;				/**< Indicates if one would like to have partial matches */
+struct mapset_search
+{
+	GList *map; /**< The list of maps to be searched within */
+	struct map_search *ms; /**< A map search struct for the map currently active */
+	struct item *item; /**< "Superior" item. */
+	struct attr *search_attr; /**< Attribute to be searched for. */
+	int partial; /**< Indicates if one would like to have partial matches */
 };
 
 /**
@@ -360,16 +409,19 @@ struct mapset_search {
 struct mapset_search *
 mapset_search_new(struct mapset *ms, struct item *item, struct attr *search_attr, int partial)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct mapset_search *this;
 	//dbg(0,"enter(%p,%p,%p,%d)\n", ms, item, search_attr, partial);
 	this=g_new0(struct mapset_search,1);
-	if(this != NULL && ms!=NULL )
-        {
-		this->map=ms->maps;
-		this->item=item;
-		this->search_attr=search_attr;
-		this->partial=partial;
-		this->ms=map_search_new(this->map->data, item, search_attr, partial);
+	if (this != NULL && ms != NULL)
+	{
+		this->map = ms->maps;
+		this->item = item;
+		this->search_attr = search_attr;
+		this->partial = partial;
+		this->ms = map_search_new(this->map->data, item, search_attr, partial);
 		return this;
 	}
 	else
@@ -391,17 +443,23 @@ mapset_search_new(struct mapset *ms, struct item *item, struct attr *search_attr
 struct item *
 mapset_search_get_item(struct mapset_search *this_)
 {
-	struct item *ret=NULL;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	struct item *ret = NULL;
 	struct attr active_attr;
 
-	while ((this_) && (!this_->ms || !(ret=map_search_get_item(this_->ms)))) { /* The current map has no more items to be returned */
+	while ((this_) && (!this_->ms || !(ret = map_search_get_item(this_->ms))))
+	{ /* The current map has no more items to be returned */
 		if (this_->search_attr->type >= attr_country_all && this_->search_attr->type <= attr_country_name)
 			break;
-		for (;;) {
-			this_->map=g_list_next(this_->map);
-			if (! this_->map)
+		for (;;)
+		{
+			this_->map = g_list_next(this_->map);
+			if (!this_->map)
 				break;
-			if (map_get_attr(this_->map->data, attr_search_active, &active_attr, NULL)) {
+			if (map_get_attr(this_->map->data, attr_search_active, &active_attr, NULL))
+			{
 				if (!active_attr.u.num)
 					continue;
 			}
@@ -410,10 +468,10 @@ mapset_search_get_item(struct mapset_search *this_)
 			if (active_attr.u.num)
 				break;
 		}
-		if (! this_->map)
+		if (!this_->map)
 			break;
 		map_search_destroy(this_->ms);
-		this_->ms=map_search_new(this_->map->data, this_->item, this_->search_attr, this_->partial);
+		this_->ms = map_search_new(this_->map->data, this_->item, this_->search_attr, this_->partial);
 	}
 	return ret;
 }
@@ -423,10 +481,13 @@ mapset_search_get_item(struct mapset_search *this_)
  *
  * @param this The mapset search to be destroyed
  */
-void
-mapset_search_destroy(struct mapset_search *this_)
+void mapset_search_destroy(struct mapset_search *this_)
 {
-	if (this_) {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	if (this_)
+	{
 		map_search_destroy(this_->ms);
 		g_free(this_);
 	}

@@ -39,6 +39,7 @@
 #ifndef NAVIT_NAVIT_H
 #define NAVIT_NAVIT_H
 
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -52,13 +53,14 @@ typedef struct _GList GList;
 
 extern int allow_gui_internal;
 extern int draw_display_at_speed;
-extern int routing_mode; // 0-> normal highway rounting
+extern int routing_mode; // 0-> normal highway routing
 // 1-> normal roads routing
 // 2-> future use
 extern int offline_search_filter_duplicates;
 extern int offline_search_break_searching;
 extern char *navit_maps_dir;
 extern int cancel_drawing_global;
+extern int disable_map_drawing;
 extern int global_speak_streetnames;
 
 extern int allow_large_mapfiles;
@@ -66,7 +68,17 @@ extern int cache_size_file; /* cache size in bytes */
 extern int draw_polylines_fast; // 1 -> dont draw circles at the end of polylines 0-> do draw circles
 
 extern int limit_order_corrected;
+extern int shift_order;
 extern int global_search_street_size_factor;
+extern int enable_water_from_relations;
+extern int hold_drawing;
+
+extern long long draw_lines_count_2;
+extern long long draw_lines_count_3;
+extern long long draw_lines_count_4;
+
+extern int mapdraw_time[11 + 5];
+extern int cur_mapdraw_time_index;
 
 /* prototypes */
 enum attr_type;
@@ -147,6 +159,8 @@ struct navigation *navit_get_navigation(struct navit *this_);
 struct displaylist *navit_get_displaylist(struct navit *this_);
 void navit_layout_switch(struct navit *n);
 int navit_set_vehicle_by_name(struct navit *n, const char *name);
+void navit_layer_set_active(struct navit *this, char *name, int active, int draw);
+void navit_motion(void *data, struct point *p);
 
 void navit_set_cursors(struct navit *this_);
 

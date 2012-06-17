@@ -15,6 +15,10 @@
 		<xsl:text>&#x0A;        </xsl:text>
 		<osd type="text" label="${{navigation.item[1].length[named]}}" x="0" y="{round(-20*number($OSD_SIZE_))}" w="{round(60*number($OSD_SIZE_))}" h="{round(20*number($OSD_SIZE_))}" font_size="{round(200*number($OSD_SIZE_))}" osd_configuration="1"/>
 		<xsl:text>&#x0A;        </xsl:text>
+		<osd type="text" label="${{navigation.item[1].street_name}}" x="-60" y="0" w="60" h="40" font_size="200" osd_configuration="1"/>
+		<xsl:text>&#x0A;        </xsl:text>
+		<osd type="text" label="${{navigation.item[1].street_name_systematic}}" x="-60" y="0" w="60" h="40" font_size="200" osd_configuration="1"/>
+		<xsl:text>&#x0A;        </xsl:text>
 		<osd type="button" src="gui_zoom_in_{round(48*number($OSD_SIZE_))}_{round(48*number($OSD_SIZE_))}.png" command="zoom_in()" x="0" y="0" osd_configuration="1"/>
 		<xsl:text>&#x0A;        </xsl:text>
 		<osd type="button" src="gui_zoom_out_{round(48*number($OSD_SIZE_))}_{round(48*number($OSD_SIZE_))}.png" command="zoom_out()" x="0" y="{round(53*number($OSD_SIZE_))}" osd_configuration="1"/>

@@ -46,7 +46,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
 static int debug_socket=-1;
 static struct sockaddr_in debug_sin;
 #endif
@@ -238,9 +237,7 @@ debug_vprintf(int level, const char *module, const int mlen, const char *functio
 void
 debug_printf(int level, const char *module, const int mlen,const char *function, const int flen, int prefix, const char *fmt, ...)
 {
-// __android_log_print(ANDROID_LOG_ERROR,"navit", "aaa11********");
 #ifdef _DEBUG_BUILD_
-// __android_log_print(ANDROID_LOG_ERROR,"navit", "aaa22********");
 	va_list ap;
 	va_start(ap, fmt);
 	debug_vprintf(level, module, mlen, function, flen, prefix, fmt, ap);
@@ -432,7 +429,41 @@ debug_free_func(void *ptr)
 	debug_free("unknown",0,"unknown",ptr);
 }
 
-void debug_finished(void) {
+clock_t
+debug_measure_start(void)
+{
+	clock_t start = clock();
+	return start;
+}
+
+clock_t
+debug_measure_end(clock_t start_time)
+{
+	clock_t diff_time = clock() - start_time;
+	return diff_time;
+}
+
+int
+debug_measure_end_tsecs(clock_t start_time)
+{
+	clock_t diff_time = clock() - start_time;
+	return (int)( ((double)diff_time / (double)CLOCKS_PER_SEC)*1000 );
+}
+
+void
+debug_measure_result_str(clock_t diff, char *buffer)
+{
+	sprintf(buffer, "elapsed: %fs\n", (diff / CLOCKS_PER_SEC));
+}
+
+void
+debug_mrp(const char* function_name, clock_t diff)
+{
+	dbg(0, "el:(%s) %fs\n", function_name, (double)((double)diff / (double)CLOCKS_PER_SEC));
+}
+
+void debug_finished(void)
+{
 	debug_dump_mallocs();
 	g_free(gdb_program);
 	g_hash_table_destroy(debug_hash);

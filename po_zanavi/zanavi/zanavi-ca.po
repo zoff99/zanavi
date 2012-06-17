@@ -1,0 +1,571 @@
+# Catalan translation for zanavi
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the zanavi package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: zanavi\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-05-15 19:29+0200\n"
+"PO-Revision-Date: 2012-04-15 00:45+0000\n"
+"Last-Translator: pataquets <Unknown>\n"
+"Language-Team: Catalan <ca@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
+
+#: NavitMapPreviewActivity.java:198
+msgid "Use as destination"
+msgstr ""
+
+#: NavitMapPreviewActivity.java:212
+msgid "back"
+msgstr "enrere"
+
+#: NavitMapPreviewActivity.java:226
+msgid "show destination on map"
+msgstr "mostrar destinació al mapa"
+
+#: NavitMapPreviewActivity.java:243
+msgid "touch map to zoom"
+msgstr "toqueu el mapa per ampliar"
+
+#: NavitMapDownloader.java:476 NavitMapDownloader.java:1373
+#: NavitMapDownloader.java:1387 NavitMapDownloader.java:1419
+msgid "Error downloading map!"
+msgstr "Error descarregant mapa!"
+
+#: NavitMapDownloader.java:577 NavitMapDownloader.java:1321
+#: NavitMapDownloader.java:1490 NavitMapDownloader.java:1623
+#: NavitMapDownloader.java:2024 NavitMapDownloader.java:2137
+#: NavitMapDownloader.java:2315 NavitMapDownloader.java:2329
+msgid "Mapdownload"
+msgstr ""
+
+#: NavitMapDownloader.java:611 NavitMapDownloader.java:1322
+msgid "downloading"
+msgstr "descarregant"
+
+#: NavitMapDownloader.java:611
+msgid "ETA"
+msgstr ""
+
+#: NavitMapDownloader.java:714
+msgid "Error downloading map, resuming"
+msgstr "Error descarregant mapa, continuant"
+
+#: NavitMapDownloader.java:1404
+msgid "Map already up to date"
+msgstr ""
+
+#: NavitMapDownloader.java:1491 NavitMapDownloader.java:2025
+msgid "Creating outputfile, long time"
+msgstr ""
+
+#: NavitMapDownloader.java:1556
+msgid "MD5 mismatch"
+msgstr ""
+
+#: NavitMapDownloader.java:1624
+msgid "ready"
+msgstr "preparat"
+
+#: NavitMapDownloader.java:2138
+msgid "Creating outputfile, wait"
+msgstr ""
+
+#: NavitMapDownloader.java:2316 NavitMapDownloader.java:2330
+msgid "generating MD5 checksum"
+msgstr ""
+
+#. . english text: Welcome to ZANavi
+#: Navit.java:875
+msgid "__INFO_BOX_TITLE__"
+msgstr ""
+
+#: Navit.java:901
+msgid "Ok"
+msgstr ""
+
+#: Navit.java:910
+msgid "More info"
+msgstr "Més informació"
+
+#. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
+#: Navit.java:940
+msgid "__INFO_BOX_TEXT__"
+msgstr ""
+
+#: Navit.java:1919
+msgid "address search (online)"
+msgstr "cerca adreça (en línia)"
+
+#: Navit.java:1920
+msgid "address search (offline)"
+msgstr ""
+
+#: Navit.java:1923
+msgid "Stop Navigation"
+msgstr "Atura la navegació"
+
+#: Navit.java:1924
+msgid "Zoom to Route"
+msgstr ""
+
+#. . TRANSLATORS: it means: "show current target in google maps"
+#. . TRANSLATORS: please keep this text short, to fit in the android menu!
+#: Navit.java:1927
+msgid "Target in gmaps"
+msgstr "Destinació a gmaps"
+
+#. . TRANSLATORS: text to translate is: exit ZANavi
+#: Navit.java:1930
+msgid "exit navit"
+msgstr ""
+
+#: Navit.java:1931
+msgid "toggle POI"
+msgstr ""
+
+#: Navit.java:1932
+msgid "Settings"
+msgstr "Configuració"
+
+#: Navit.java:1935
+msgid "Coord Dialog"
+msgstr ""
+
+#: Navit.java:1939
+msgid "Announcer Off"
+msgstr ""
+
+#: Navit.java:1943
+msgid "Announcer On"
+msgstr ""
+
+#: Navit.java:1946
+msgid "Recent destinations"
+msgstr "Destinacions recents"
+
+#: Navit.java:1947
+msgid "download maps"
+msgstr "descarregar mapes"
+
+#: Navit.java:1948
+msgid "delete maps"
+msgstr "esborrar mapes"
+
+#: Navit.java:1949
+msgid "show Maps age"
+msgstr ""
+
+#: Navit.java:1950
+msgid "convert GPX file"
+msgstr ""
+
+#: Navit.java:1955
+msgid "Demo Vehicle"
+msgstr "Vehicle Demo"
+
+#: Navit.java:1956
+msgid "Speech Texts"
+msgstr ""
+
+#: Navit.java:1957
+msgid "Nav. Commands"
+msgstr ""
+
+#: Navit.java:1961
+msgid "online Help"
+msgstr ""
+
+#: Navit.java:2024
+msgid "No address found"
+msgstr ""
+
+#: Navit.java:2118 Navit.java:2132 Navit.java:4519
+msgid "Enter: City and Street"
+msgstr ""
+
+#: Navit.java:2594
+msgid "No search string entered"
+msgstr ""
+
+#: Navit.java:2724 Navit.java:2949
+msgid "setting destination to"
+msgstr ""
+
+#: Navit.java:2738 Navit.java:2963
+msgid "new Waypoint"
+msgstr ""
+
+#: Navit.java:3139 Navit.java:3194
+msgid "getting search results"
+msgstr ""
+
+#: Navit.java:3140 Navit.java:3195
+msgid "searching ..."
+msgstr "cercant ..."
+
+#: Navit.java:3293 NavitGraphics.java:3515
+msgid "loading search results"
+msgstr ""
+
+#: Navit.java:3294 NavitGraphics.java:3516
+msgid "towns"
+msgstr ""
+
+#: Navit.java:3294 NavitGraphics.java:3516
+msgid "Streets"
+msgstr "Carrers"
+
+#: Navit.java:3317
+msgid "No Results found!"
+msgstr ""
+
+#. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+#: Navit.java:3645 Navit.java:3671
+msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:35
+msgid "__PREF__title__use_fast_provider"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:37
+msgid "__PREF__summ__use_fast_provider"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:39
+msgid "__PREF__title__follow_gps"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:41
+msgid "__PREF__summ__follow_gps"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:43
+msgid "__PREF__title__show_vehicle_in_center"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:45
+msgid "__PREF__summ__show_vehicle_in_center"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:47
+msgid "__PREF__title__use_compass_heading_base"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:49
+msgid "__PREF__summ__use_compass_heading_base"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:51
+msgid "__PREF__title__use_compass_heading_always"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:53
+msgid "__PREF__summ__use_compass_heading_always"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:55
+msgid "__PREF__title__use_compass_heading_fast"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:57
+msgid "__PREF__summ__use_compass_heading_fast"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:59
+msgid "__PREF__title__use_imperial"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:61
+msgid "__PREF__summ__use_imperial"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:63
+msgid "__PREF__title__show_3d_map"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:65
+msgid "__PREF__summ__show_3d_map"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:67
+msgid "__PREF__title__use_anti_aliasing"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:69
+msgid "__PREF__summ__use_anti_aliasing"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:71
+msgid "__PREF__title__gui_oneway_arrows"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:73
+msgid "__PREF__summ__gui_oneway_arrows"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:75
+msgid "__PREF__title__show_debug_messages"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:77
+msgid "__PREF__summ__show_debug_messages"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:79
+msgid "__PREF__title__navit_lang"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:81
+msgid "__PREF__summ__navit_lang"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:83
+msgid "__PREF__title__use_lock_on_roads"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:85
+msgid "__PREF__summ__use_lock_on_roads"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:87
+msgid "__PREF__title__use_route_highways"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:89
+msgid "__PREF__summ__use_route_highways"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:91
+msgid "__PREF__title__save_zoomlevel"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:93
+msgid "__PREF__summ__save_zoomlevel"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:95
+msgid "__PREF__title__show_sat_status"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:97
+msgid "__PREF__summ__show_sat_status"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:99
+msgid "__PREF__title__use_agps"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:101
+msgid "__PREF__summ__use_agps"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:103
+msgid "__PREF__title__enable_debug_functions"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:105
+msgid "__PREF__summ__enable_debug_functions"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:107
+msgid "__PREF__title__speak_street_names"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:109
+msgid "__PREF__summ__speak_street_names"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:111
+msgid "__PREF__title__map_font_size"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:113
+msgid "__PREF__summ__map_font_size"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:115
+msgid "__PREF__title__use_custom_font"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:117
+msgid "__PREF__summ__use_custom_font"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:119
+msgid "__PREF__title__cancel_map_drawing_timeout"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:121
+msgid "__PREF__summ__cancel_map_drawing_timeout"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:123
+msgid "__PREF__title__mapcache"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:125
+msgid "__PREF__summ__mapcache"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:127
+msgid "__PREF__title__drawatorder"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:129
+msgid "__PREF__summ__drawatorder"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:131
+msgid "__PREF__title__streetsearch_r"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:133
+msgid "__PREF__summ__streetsearch_r"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:135
+msgid "__PREF__title__route_style"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:137
+msgid "__PREF__summ__route_style"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:162
+msgid "__PREF__title__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:164
+msgid "__PREF__summ__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:166
+msgid "__PREF__dialogtitle__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:168
+msgid "__PREF__dialogcancel__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:170
+msgid "__PREF__dialogok__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:172
+msgid "__PREF__dialogmsg__map_directory"
+msgstr ""
+
+#: NavitRecentDestinationActivity.java:61
+msgid "delete Destination"
+msgstr "esborra destinació"
+
+#: NavitRecentDestinationActivity.java:61
+msgid "rename Destination"
+msgstr ""
+
+#: NavitRecentDestinationActivity.java:182
+msgid "Rename Destination"
+msgstr ""
+
+#: NavitAddressSearchActivity.java:89
+msgid "Enter Destination"
+msgstr ""
+
+#: NavitAddressSearchActivity.java:96
+msgid "partial match"
+msgstr ""
+
+#: NavitAddressSearchActivity.java:103
+msgid "hide duplicates"
+msgstr "amaga duplicats"
+
+#: NavitAddressSearchActivity.java:110
+msgid "search full mapfile [BETA]"
+msgstr "cerca en tot el mapa [BETA]"
+
+#: NavitAddressSearchActivity.java:148
+msgid "Search"
+msgstr "Cerca"
+
+#: NavitSpeech2.java:132
+msgid ""
+"Language is not available for TTS! Using your phone's default settings"
+msgstr ""
+
+#: NavitSpeech2.java:149
+msgid "Using Voice for:"
+msgstr ""
+
+#: NavitAndroidOverlay.java:661
+msgid "drive here"
+msgstr "anar aquí"
+
+#: NavitAndroidOverlay.java:714
+msgid "wait ..."
+msgstr "espereu ..."

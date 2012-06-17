@@ -82,6 +82,13 @@
 
 // above what "order" level to show only prerendered map
 #define ORDER_USE_PRERENDERED_MAP 0
+// minimun (line legth * 32) squared (in pixel) to show text label
+#define MIN_LINE_LENGTH_FOR_TEXT_2 409600
+// minimun (line legth * 32) squared (in pixel) to show text label -> for middle segments of streets
+#define MIN_LINE_LENGTH_FOR_TEXT_MIDDLE_2 1638400
+
+#define ORDER_LEVEL_FOR_STREET_SIMPLIFY 9
+#define STREET_SIMPLIFY	24
 
 struct graphics
 {
@@ -177,7 +184,9 @@ static void clear_hash(struct displaylist *dl)
 {
 	int i;
 	for (i = 0; i < HASH_SIZE_GRAPHICS_; i++)
+	{
 		dl->hash_entries[i].type = type_none;
+	}
 }
 
 static struct hash_entry *
@@ -197,7 +206,6 @@ get_hash_entry(struct displaylist *dl, enum item_type type)
 		}
 		hashidx = (hashidx + 1) & (HASH_SIZE_GRAPHICS_ - 1);
 	}
-
 	while (offset-- > 0);
 
 	return NULL;
@@ -972,12 +980,17 @@ static void display_add(struct hash_entry *entry, struct item *item, int count, 
 		for (i = 0; i < label_count; i++)
 		{
 			if (label[i])
+			{
 				len += strlen(label[i]) + 1;
+			}
 			else
+			{
 				len++;
+			}
 		}
 	}
 	p = g_malloc(len);
+	// dbg(0,"malloc len:%d\n", len);
 
 	di = (struct displayitem *) p;
 	p += sizeof(*di) + count * sizeof(*c);
@@ -993,7 +1006,9 @@ static void display_add(struct hash_entry *entry, struct item *item, int count, 
 				p += strlen(label[i]) + 1;
 			}
 			else
+			{
 				*p++ = '\0';
+			}
 		}
 	}
 	else
@@ -1016,23 +1031,29 @@ static void label_line(struct graphics *gra, struct graphics_gc *fg, struct grap
 {
 	int i, x, y, tl, tlm, th, thm, tlsq, l;
 	float lsq;
-	double dx, dy;
+	// double dx, dy;
+	float dx, dy;
 	struct point p_t;
 	struct point pb[5];
 
 	if (gra->meth.get_text_bbox)
 	{
 		gra->meth.get_text_bbox(gra->priv, font->priv, label, 0x10000, 0x0, pb, 1);
+		// tl -> text length
 		tl = (pb[2].x - pb[0].x);
+		// th -> text height
 		th = (pb[0].y - pb[1].y);
 	}
 	else
 	{
+		// tl -> text length
 		tl = strlen(label) * 4;
+		// th -> text height
 		th = 8;
 	}
 	tlm = tl * 32;
 	thm = th * 36;
+	// tlsq -> (text length * 32) squared
 	tlsq = tlm * tlm;
 	for (i = 0; i < count - 1; i++)
 	{
@@ -1040,30 +1061,38 @@ static void label_line(struct graphics *gra, struct graphics_gc *fg, struct grap
 		dx *= 32;
 		dy = p[i + 1].y - p[i].y;
 		dy *= 32;
+		// lsq -> (line length * 32) squared
 		lsq = dx * dx + dy * dy;
 		if (lsq > tlsq)
 		{
-			l = (int) sqrtf(lsq);
-			x = p[i].x;
-			y = p[i].y;
-			if (dx < 0)
+			if (((int)lsq > MIN_LINE_LENGTH_FOR_TEXT_MIDDLE_2) || ( ( (i==0)||(i==(count-2)) && ((int)lsq > (int)MIN_LINE_LENGTH_FOR_TEXT_2) )  ))
 			{
-				dx = -dx;
-				dy = -dy;
-				x = p[i + 1].x;
-				y = p[i + 1].y;
+				// segments in the middle of the "way" need to be longer for streetname to be drawn
+				// l -> line length
+				l = (int) sqrtf_fast2(lsq);
+				x = p[i].x;
+				y = p[i].y;
+				if (dx < 0)
+				{
+					dx = -dx;
+					dy = -dy;
+					x = p[i + 1].x;
+					y = p[i + 1].y;
+				}
+				x += (l - tlm) * dx / l / 64;
+				y += (l - tlm) * dy / l / 64;
+				x -= dy * thm / l / 64;
+				y += dx * thm / l / 64;
+				p_t.x = x;
+				p_t.y = y;
+	#if 0
+				//DBG dbg(0,"display_text: '%s', %d, %d, %d, %d %d\n", label, x, y, dx*0x10000/l, dy*0x10000/l, l);
+	#endif
+				if (x < gra->r.rl.x && x + tl > gra->r.lu.x && y + tl > gra->r.lu.y && y - tl < gra->r.rl.y)
+				{
+					gra->meth.draw_text(gra->priv, fg->priv, bg ? bg->priv : NULL, font->priv, label, &p_t, dx * 0x10000 / l, dy * 0x10000 / l);
+				}
 			}
-			x += (l - tlm) * dx / l / 64;
-			y += (l - tlm) * dy / l / 64;
-			x -= dy * thm / l / 64;
-			y += dx * thm / l / 64;
-			p_t.x = x;
-			p_t.y = y;
-#if 0
-			//DBG dbg(0,"display_text: '%s', %d, %d, %d, %d %d\n", label, x, y, dx*0x10000/l, dy*0x10000/l, l);
-#endif
-			if (x < gra->r.rl.x && x + tl > gra->r.lu.x && y + tl > gra->r.lu.y && y - tl < gra->r.rl.y)
-				gra->meth.draw_text(gra->priv, fg->priv, bg ? bg->priv : NULL, font->priv, label, &p_t, dx * 0x10000 / l, dy * 0x10000 / l);
 		}
 	}
 }
@@ -1377,6 +1406,10 @@ static void calc_offsets(int wi, int l, int dx, int dy, struct offset *res)
 	}
 }
 
+
+// this func. is not obsolete!! and unused!!!!
+// this func. is not obsolete!! and unused!!!!
+// this func. is not obsolete!! and unused!!!!
 static void graphics_draw_polyline_as_polygon(struct graphics *gra, struct graphics_gc *gc, struct point *pnt, int count, int *width, int step, int fill, int order, int oneway)
 {
 	int maxpoints = 200;
@@ -1541,6 +1574,11 @@ static void graphics_draw_polyline_as_polygon(struct graphics *gra, struct graph
 		fowo = fow;
 	}
 }
+// this func. is not obsolete!! and unused!!!!
+// this func. is not obsolete!! and unused!!!!
+// this func. is not obsolete!! and unused!!!!
+
+
 
 struct wpoint
 {
@@ -1561,6 +1599,148 @@ static int clipcode(struct wpoint *p, struct point_rect *r)
 	return code;
 }
 
+#define	DONT_INTERSECT    0
+#define	DO_INTERSECT      1
+#define COLLINEAR         2
+#define SAME_SIGNS( a, b )	\
+		(((long) ((unsigned long) a ^ (unsigned long) b)) >= 0 )
+
+static int lines_intersect(int x1, int y1,   /* First line segment */
+		     int x2, int y2,
+
+		     int x3, int y3,   /* Second line segment */
+		     int x4, int y4,
+
+		     int *x,
+		     int *y         /* Output value:
+		                * point of intersection */
+               )
+{
+    int a1, a2, b1, b2, c1, c2; /* Coefficients of line eqns. */
+    int r1, r2, r3, r4;         /* 'Sign' values */
+    int denom, offset, num;     /* Intermediate values */
+
+    /* Compute a1, b1, c1, where line joining points 1 and 2
+     * is "a1 x  +  b1 y  +  c1  =  0".
+     */
+
+    a1 = y2 - y1;
+    b1 = x1 - x2;
+    c1 = x2 * y1 - x1 * y2;
+
+    /* Compute r3 and r4.
+     */
+    r3 = a1 * x3 + b1 * y3 + c1;
+    r4 = a1 * x4 + b1 * y4 + c1;
+
+    /* Check signs of r3 and r4.  If both point 3 and point 4 lie on
+     * same side of line 1, the line segments do not intersect.
+     */
+    if ( r3 != 0 &&
+         r4 != 0 &&
+         SAME_SIGNS( r3, r4 ))
+	{
+        return ( DONT_INTERSECT );
+	}
+
+    /* Compute a2, b2, c2 */
+    a2 = y4 - y3;
+    b2 = x3 - x4;
+    c2 = x4 * y3 - x3 * y4;
+
+    /* Compute r1 and r2 */
+    r1 = a2 * x1 + b2 * y1 + c2;
+    r2 = a2 * x2 + b2 * y2 + c2;
+
+    /* Check signs of r1 and r2.  If both point 1 and point 2 lie
+     * on same side of second line segment, the line segments do
+     * not intersect.
+     */
+    if ( r1 != 0 &&
+         r2 != 0 &&
+         SAME_SIGNS( r1, r2 ))
+	{
+        return ( DONT_INTERSECT );
+	}
+
+    /* Line segments intersect: compute intersection point. 
+     */
+
+    denom = a1 * b2 - a2 * b1;
+    if ( denom == 0 )
+	{
+        return ( COLLINEAR );
+	}
+    offset = denom < 0 ? - denom / 2 : denom / 2;
+
+    /* The denom/2 is to get rounding instead of truncating.  It
+     * is added or subtracted to the numerator, depending upon the
+     * sign of the numerator.
+     */
+	/*
+    num = b1 * c2 - b2 * c1;
+    *x = ( num < 0 ? num - offset : num + offset ) / denom;
+    num = a2 * c1 - a1 * c2;
+    *y = ( num < 0 ? num - offset : num + offset ) / denom;
+	*/
+
+    return ( DO_INTERSECT );
+} /* lines_intersect */
+
+
+static int clip_line_aprox(struct wpoint *p1, struct wpoint *p2, struct point_rect *r)
+{
+	int code1, code2;
+	code1 = clipcode(p1, r);
+	code2 = clipcode(p2, r);
+	if (code1 & code2)
+	{
+		// line completely invisible!
+		return 0;
+	}
+	else if ((code1 == 0)&&(code2 == 0))
+	{
+		// line completely visible!
+		return 1;
+	}
+	else if ((code1 == 0)||(code2 == 0))
+	{
+		// at least 1 point of line is visible
+		return 2;
+	}
+	else
+	{
+		int xx;
+		int yy;
+		// top
+		int ret_ = lines_intersect(p1->x,p1->y,p2->x,p2->y,r->lu.x,r->lu.y,r->rl.x,r->lu.y,&xx,&yy);
+		if (ret_ == DO_INTERSECT)
+		{
+			return 3;
+		}
+		// bottom
+		ret_ = lines_intersect(p1->x,p1->y,p2->x,p2->y,r->lu.x,r->rl.y,r->rl.x,r->rl.y,&xx,&yy);
+		if (ret_ == DO_INTERSECT)
+		{
+			return 3;
+		}
+		// left
+		ret_ = lines_intersect(p1->x,p1->y,p2->x,p2->y,r->lu.x,r->lu.y,r->lu.x,r->rl.y,&xx,&yy);
+		if (ret_ == DO_INTERSECT)
+		{
+			return 3;
+		}
+		// right
+		ret_ = lines_intersect(p1->x,p1->y,p2->x,p2->y,r->rl.x,r->lu.y,r->rl.x,r->rl.y,&xx,&yy);
+		if (ret_ == DO_INTERSECT)
+		{
+			return 3;
+		}
+	}
+	// not visible
+	return 0;
+}
+
 static int clip_line(struct wpoint *p1, struct wpoint *p2, struct point_rect *r)
 {
 	int code1, code2, ret = 1;
@@ -1577,7 +1757,9 @@ static int clip_line(struct wpoint *p1, struct wpoint *p2, struct point_rect *r)
 	while (code1 || code2)
 	{
 		if (code1 & code2)
+		{
 			return 0;
+		}
 		if (code1 & 1)
 		{
 			p1->y += (r->lu.x - p1->x) * dy / dx;
@@ -1634,66 +1816,105 @@ static int clip_line(struct wpoint *p1, struct wpoint *p2, struct point_rect *r)
 	return ret;
 }
 
+
 static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics_gc *gc, struct point *pa, int count, int *width, int step, int poly, int order, int oneway)
 {
 	struct point *p = g_alloca(sizeof(struct point) * (count + 1));
-	int *w = g_alloca(sizeof(int) * (count * step + 1));
 	struct wpoint p1, p2;
-	int i, code, out = 0;
+	int i;
+	int code;
 	int wmax;
+	int out = 0;
+	const int max_segs = 20;
 	struct point_rect r = gra->r;
 
-	wmax = width[0];
-	if (step)
+	// check if whole line is within a 2x2 pixel square
+	if (order < 11)
 	{
-		for (i = 1; i < count; i++)
+		const int max_dist = 2*2;
+		int need_draw = 0;
+		int diff;
+		for (i = 0; i < count; i++)
 		{
-			if (width[i * step] > wmax)
-				wmax = width[i * step];
+			if (i > 0)
+			{
+				p2.x = pa[i].x;
+				p2.y = pa[i].y;
+				diff = (p2.x - p1.x) * (p2.y - p1.y);
+				if (diff < 0)
+				{
+					diff = -diff;
+				}
+
+				if (diff > max_dist)
+				{
+					// line is bigger, so we need to draw it
+					need_draw = 1;
+					break;
+				}
+			}
+			else
+			{
+				p1.x = pa[i - 1].x;
+				p1.y = pa[i - 1].y;
+			}
+		}
+
+		if (need_draw == 0)
+		{
+			// dont draw this line
+			return;
 		}
 	}
-	if (wmax <= 0)
-	{
-		return;
-	}
-	r.lu.x -= wmax;
-	r.lu.y -= wmax;
-	r.rl.x += wmax;
-	r.rl.y += wmax;
+
+	// calc visible area on screen
+	wmax=width[0];
+	r.lu.x-=wmax;
+	r.lu.y-=wmax;
+	r.rl.x+=wmax;
+	r.rl.y+=wmax;
 
 	for (i = 0; i < count; i++)
 	{
-		if (i)
+		if (i > 0)
 		{
 			p1.x = pa[i - 1].x;
 			p1.y = pa[i - 1].y;
-			p1.w = width[(i - 1) * step];
 			p2.x = pa[i].x;
 			p2.y = pa[i].y;
-			p2.w = width[i * step];
-			/* 0 = invisible, 1 = completely visible, 3 = start point clipped, 5 = end point clipped, 7 both points clipped */
-			code = clip_line(&p1, &p2, &r);
+			/* 0 = invisible, 1 = completely visible, 2,3 = at least part of line visible */
+			code=clip_line_aprox(&p1, &p2, &r);
 
-			if (((code == 1 || code == 5) && i == 1) || (code & 2))
+			if (code > 0)
 			{
-				p[out].x = p1.x;
-				p[out].y = p1.y;
-				w[out * step] = p1.w;
-				out++;
-			}
-
-			if (code)
-			{
-				p[out].x = p2.x;
-				p[out].y = p2.y;
-				w[out * step] = p2.w;
-				out++;
-			}
-
-			if (i == count - 1 || (code & 4))
-			{
-				if (out > 1)
+				if (out == 0)
 				{
+					p[out].x=p1.x;
+					p[out].y=p1.y;
+					out++;
+				}
+				p[out].x=p2.x;
+				p[out].y=p2.y;
+				out++;
+
+				if ((out <= max_segs) && (i < (count - 1)))
+				{
+					// ok gather more line segs
+					continue;
+				}
+			}
+			else // (code == 0)
+			{
+				if (out == 0)
+				{
+					// first visible line seg not yet found, search on ...
+					continue;
+				}
+			}
+
+			// PAINT --- LINE SEGMENTS ------------
+			// PAINT --- LINE SEGMENTS ------------
+
 					if ((poly == 1) || (poly == 0))
 					{
 						// normal street
@@ -1705,14 +1926,15 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 						//else
 						//{
 							// draw as line
-							// dbg(0,"w=%d", width[i]);
 							gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i]);
+							//draw_lines_count_3++;
 						//}
 
 						// one way arrow
-						if (oneway > 0)
+						if ((oneway > 0) && (order > 13))
 						{
 							gra->meth.draw_lines2(gra->priv, gc->priv, p, out, order, oneway);
+							//draw_lines_count_2++;
 						}
 					}
 					else if (poly == 2)
@@ -1728,14 +1950,17 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 						//}
 						//else
 						//{
+
 							// draw as line
 							gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i], 1);
+							//draw_lines_count_4++;
 						//}
 
 						// one way arrow
-						if (oneway > 0)
+						if ((oneway > 0) && (order > 13))
 						{
 							gra->meth.draw_lines2(gra->priv, gc->priv, p, out, order, oneway);
+							//draw_lines_count_2++;
 						}
 					}
 					else if (poly == 3)
@@ -1744,11 +1969,13 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 						// ******* street has bridge ********
 						// ******* street has bridge ********
 						gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i], 2);
+						//draw_lines_count_4++;
 
 						// one way arrow
-						if (oneway > 0)
+						if ((oneway > 0) && (order > 13))
 						{
 							gra->meth.draw_lines2(gra->priv, gc->priv, p, out, order, oneway);
+							//draw_lines_count_2++;
 						}
 					}
 					// --> now NOT used anymore!!
@@ -1757,19 +1984,24 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 						// OLD // gra->meth.draw_lines2(gra->priv, gc->priv, p, out, order, 0);
 
 						gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i]);
+						//draw_lines_count_3++;
 
 						// one way arrow
-						if (oneway > 0)
+						if ((oneway > 0) && (order > 13))
 						{
 							gra->meth.draw_lines2(gra->priv, gc->priv, p, out, order, oneway);
+							//draw_lines_count_2++;
 						}
 					}
-					out = 0;
-				}
-			}
+
+			out = 0; // reset point counter after painting
+			// PAINT --- LINE SEGMENTS ------------
+			// PAINT --- LINE SEGMENTS ------------
+			// PAINT --- LINE SEGMENTS ------------
 		}
 	}
 }
+
 
 static int is_inside(struct point *p, struct point_rect *r, int edge)
 {
@@ -1998,7 +2230,7 @@ static int limit_count(struct coord *c, int count)
 	return count;
 }
 
-static void displayitem_draw(struct displayitem *di, void *dummy, struct display_context *dc, int order, int allow_dashed)
+static void displayitem_draw(struct displayitem *di, void *dummy, struct display_context *dc, int order, int allow_dashed, int run_type)
 {
 	////DBG dbg(0,"ooo enter ooo\n");
 
@@ -2011,10 +2243,55 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 	struct point p;
 	char *path;
 
-	// //DBG dbg(0,"enter\n");
+	//if (run_type > 100) dbg(0,"enter\n");
 
 	while (di)
 	{
+		if (run_type != 99)
+		{
+			if (run_type == 1)
+			{
+				if (di->item.flags & AF_UNDERGROUND)
+				{
+					// next item
+					di = di->next;
+					continue;
+				}
+				else if (di->item.flags & AF_BRIDGE)
+				{
+					// next item
+					di = di->next;
+					continue;
+				}
+			}
+			else if (run_type == 2)
+			{
+				// tunnel
+				if (di->item.flags & AF_UNDERGROUND)
+				{
+				}
+				else
+				{
+					// next item
+					di = di->next;
+					continue;
+				}
+			}
+			else if (run_type == 3)
+			{
+				// bridge
+				if (di->item.flags & AF_BRIDGE)
+				{
+				}
+				else
+				{
+					// next item
+					di = di->next;
+					continue;
+				}
+			}
+		}
+
 		int i, count = di->count, mindist = dc->mindist;
 
 		if (!gc)
@@ -2032,6 +2309,13 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		{
 			mindist = 0;
 		}
+		if (dc->type == type_border_country)
+		{
+			if (order < 10)
+			{
+				mindist = 3;
+			}
+		}
 		if (dc->e->type == element_polyline)
 		{
 			count = transform(dc->trans, dc->pro, di->c, pa, count, mindist, e->u.polyline.width, width);
@@ -2039,9 +2323,6 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		else
 		{
 			count = transform(dc->trans, dc->pro, di->c, pa, count, mindist, 0, NULL);
-			//struct coord *c9191;
-			//c9191 = di->c;
-			//dbg(0,"di->c %i %i pa %d %d \n",c9191->x, c9191->y, pa->x, pa->y);
 		}
 
 		switch (e->type)
@@ -2078,7 +2359,6 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 				}
 
 				// -------- apply dashes -------
-				//if (e->u.polyline.width > 0 && e->u.polyline.dash_num > 0)
 				if (e->u.polyline.dash_num > 0)
 				{
 					graphics_gc_set_dashes(gra, gc, e->u.polyline.width, e->u.polyline.offset, e->u.polyline.dash_table, e->u.polyline.dash_num, order);
@@ -2087,12 +2367,21 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 
 				for (i = 0; i < count; i++)
 				{
-					if (width[i] < 2)
+					if (width[i] < 1)
 					{
-						width[i] = 2;
+						width[i] = 1;
 					}
 				}
-				graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway);
+
+				if (dc->type == type_border_country)
+				{
+					graphics_draw_polyline_clipped(gra, gc, pa, count, width, 99, poly, order, oneway);
+				}
+				else
+				{
+					graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway);
+					// graphics_draw_polyline_clipped(gra, gc, pa, count, width, 99, poly, order, oneway);
+				}
 
 				// -------- cancel dashes -------
 				if (e->u.polyline.dash_num > 0)
@@ -2101,6 +2390,7 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 					dummy_1[0]=0;
 					graphics_gc_set_dashes(gra, gc, e->u.polyline.width, e->u.polyline.offset, dummy_1, e->u.polyline.dash_num, order);
 				}
+				//if (run_type > 100) dbg(0,"gg005\n");
 				// -------- cancel dashes -------
 			}
 				break;
@@ -2141,6 +2431,8 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			case element_text:
 				if (count && di->label)
 				{
+					//if (run_type > 100) dbg(0,"gg006\n");
+
 					struct graphics_font *font = get_font(gra, e->text_size);
 					struct graphics_gc *gc_background = dc->gc_background;
 
@@ -2194,7 +2486,7 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 						}
 						else
 						{
-							dbg(0, "-- ICON MISSING -- failed to load icon '%s'\n", path);
+							// missing icon // dbg(0, "-- ICON MISSING -- failed to load icon '%s'\n", path);
 						}
 						g_free(path);
 					}
@@ -2227,6 +2519,9 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		}
 		di = di->next;
 	}
+
+	//if (run_type > 100) dbg(0,"gg099\n");
+
 }
 /**
  * FIXME
@@ -2234,14 +2529,19 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
  * @returns <>
  * @author Martin Schaller (04/2008)
  */
-static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *display_list, struct itemgra *itm)
+static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *display_list, struct itemgra *itm, int run_type)
 {
-	//dbg(0,"Enter\n");
+	// dbg(0,"Enter\n");
 
 	struct element *e;
 	GList *es, *types;
 	struct display_context *dc = &display_list->dc;
 	struct hash_entry *entry;
+	int draw_it = 1;
+
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	clock_t s_ = debug_measure_start();
+#endif
 
 	es = itm->elements;
 	while (es)
@@ -2252,20 +2552,47 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 		types = itm->type;
 		while (types)
 		{
+			draw_it = 1;
+
 			dc->type = GPOINTER_TO_INT(types->data);
-			// dbg(0,"**type=%d\n", dc->type);
-			entry = get_hash_entry(display_list, dc->type);
-			if (entry && entry->di)
+			//dbg(0,"**type=%d\n", dc->type);
+
+			if (dc->type == type_poly_water_from_relations)
 			{
-				//dbg(0,"++type=%s\n", item_to_name(dc->type));
-				displayitem_draw(entry->di, NULL, dc, display_list->order, 1);
-				//dbg(0,"**+gc free\n");
-				display_context_free(dc);
+				// ok "poly_water_from_relations" is found, now what?
+				if (enable_water_from_relations == 0)
+				{
+					draw_it = 0;
+				}
+			}
+
+			if (draw_it == 1)
+			{
+				entry = get_hash_entry(display_list, dc->type);
+				if (entry && entry->di)
+				{
+					//dbg(0,"++type=%s\n", item_to_name(dc->type));
+					//if (!strcmp(item_to_name(dc->type), "border_country"))
+					//{
+					//	displayitem_draw(entry->di, NULL, dc, display_list->order, 1, 101);
+					//}
+					//else
+					//{
+						displayitem_draw(entry->di, NULL, dc, display_list->order, 1, run_type);
+					//}
+					//dbg(0,"**+gc free\n");
+					display_context_free(dc);
+				}
 			}
 			types = g_list_next(types);
+			draw_it = 1;
 		}
 		es = g_list_next(es);
 	}
+
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	debug_mrp("xdisplay_draw_elements:", debug_measure_end(s_));
+#endif
 }
 
 void graphics_draw_itemgra(struct graphics *gra, struct itemgra *itm, struct transformation *t, char *label)
@@ -2305,7 +2632,9 @@ void graphics_draw_itemgra(struct graphics *gra, struct itemgra *itm, struct tra
 				di->count = max_coord;
 			}
 			else
+			{
 				di->count = e->coord_count;
+			}
 			memcpy(di->c, e->coord, di->count * sizeof(struct coord));
 		}
 		else
@@ -2316,7 +2645,7 @@ void graphics_draw_itemgra(struct graphics *gra, struct itemgra *itm, struct tra
 		}
 		dc.e = e;
 		di->next = NULL;
-		displayitem_draw(di, NULL, &dc, transform_get_scale(t), 0);
+		displayitem_draw(di, NULL, &dc, transform_get_scale(t), 0, 99);
 		display_context_free(&dc);
 		es = g_list_next(es);
 	}
@@ -2334,12 +2663,19 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 
 	GList *itms;
 	struct itemgra *itm;
-	int order_corrected = order;
+
+	int run_type = 0;	// 99 -> normal
+						//  1 -> normal streets (except tunnels and bridges)
+						//  2 -> tunnel
+						//  3 -> bridge
+
+	int order_corrected = order + shift_order;
 	if (order_corrected < limit_order_corrected)
 	{
 		order_corrected = limit_order_corrected;
 	}
-	int order_corrected_2 = order;
+
+	int order_corrected_2 = order + shift_order;
 	if (order < 0)
 	{
 		order_corrected_2 = 0;
@@ -2347,33 +2683,134 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 
 	//dbg(0,"layer name=%s\n", lay->name);
 
-	itms = lay->itemgras;
-	while (itms)
+	if ((strncmp("streets_1", lay->name, 9) == 0))
 	{
-		// stop drawing is requested
-		if (cancel_drawing_global == 1)
+		//dbg(0,"MT:7.3.1 - tunnel start\n");
+		//draw_lines_count_2 = 0;
+		//draw_lines_count_3 = 0;
+		//draw_lines_count_4 = 0;
+
+		run_type = 2;
+		itms = lay->itemgras;
+		while (itms)
 		{
-			//DBG dbg(0, "** STOP MD 002 **\n");
-			break;
+			// stop drawing is requested
+			if (cancel_drawing_global == 1)
+			{
+				//DBG dbg(0, "** STOP MD 002 **\n");
+				break;
+			}
+
+			itm = itms->data;
+			//if (order_corrected >= itm->order.min && order_corrected <= itm->order.max)
+			if (order_corrected_2 >= itm->order.min && order_corrected_2 <= itm->order.max)
+			{
+				xdisplay_draw_elements(gra, display_list, itm, run_type);
+			}
+			itms = g_list_next(itms);
 		}
 
-		itm = itms->data;
-		//if (order_corrected >= itm->order.min && order_corrected <= itm->order.max)
-		if (order_corrected_2 >= itm->order.min && order_corrected_2 <= itm->order.max)
+		//dbg(0,"lines count2=%lld\n", draw_lines_count_2);
+		//dbg(0,"lines count3=%lld\n", draw_lines_count_3);
+		//dbg(0,"lines count4=%lld\n", draw_lines_count_4);
+		//draw_lines_count_2 = 0;
+		//draw_lines_count_3 = 0;
+		//draw_lines_count_4 = 0;
+		//dbg(0,"MT:7.3.2 - streets start\n");
+
+		run_type = 1;
+		itms = lay->itemgras;
+		while (itms)
 		{
-			xdisplay_draw_elements(gra, display_list, itm);
+			// stop drawing is requested
+			if (cancel_drawing_global == 1)
+			{
+				//DBG dbg(0, "** STOP MD 002 **\n");
+				break;
+			}
+
+			itm = itms->data;
+			//if (order_corrected >= itm->order.min && order_corrected <= itm->order.max)
+			if (order_corrected_2 >= itm->order.min && order_corrected_2 <= itm->order.max)
+			{
+				xdisplay_draw_elements(gra, display_list, itm, run_type);
+			}
+			itms = g_list_next(itms);
 		}
-		itms = g_list_next(itms);
+
+		/*
+		dbg(0,"lines count2=%lld\n", draw_lines_count_2);
+		dbg(0,"lines count3=%lld\n", draw_lines_count_3);
+		dbg(0,"lines count4=%lld\n", draw_lines_count_4);
+		draw_lines_count_2 = 0;
+		draw_lines_count_3 = 0;
+		draw_lines_count_4 = 0;
+		dbg(0,"MT:7.3.3 - bridges start\n");
+		*/
+
+		run_type = 3;
+		itms = lay->itemgras;
+		while (itms)
+		{
+			// stop drawing is requested
+			if (cancel_drawing_global == 1)
+			{
+				//DBG dbg(0, "** STOP MD 002 **\n");
+				break;
+			}
+
+			itm = itms->data;
+			//if (order_corrected >= itm->order.min && order_corrected <= itm->order.max)
+			if (order_corrected_2 >= itm->order.min && order_corrected_2 <= itm->order.max)
+			{
+				xdisplay_draw_elements(gra, display_list, itm, run_type);
+			}
+			itms = g_list_next(itms);
+		}
+
+		/*
+		dbg(0,"lines count2=%lld\n", draw_lines_count_2);
+		dbg(0,"lines count3=%lld\n", draw_lines_count_3);
+		dbg(0,"lines count4=%lld\n", draw_lines_count_4);
+		draw_lines_count_2 = 0;
+		draw_lines_count_3 = 0;
+		draw_lines_count_4 = 0;
+		dbg(0,"MT:7.3.4 - ready\n");
+		*/
+
+	}
+	else
+	{
+		run_type = 99;
+		itms = lay->itemgras;
+		while (itms)
+		{
+			// stop drawing is requested
+			if (cancel_drawing_global == 1)
+			{
+				//DBG dbg(0, "** STOP MD 002 **\n");
+				break;
+			}
+
+			itm = itms->data;
+			//if (order_corrected >= itm->order.min && order_corrected <= itm->order.max)
+			if (order_corrected_2 >= itm->order.min && order_corrected_2 <= itm->order.max)
+			{
+				xdisplay_draw_elements(gra, display_list, itm, run_type);
+			}
+			itms = g_list_next(itms);
+		}
 	}
 
-	if (strncmp("streets__tunnel", lay->name, 15) == 0)
-	{
-	}
-	else if (strncmp("streets__bridge", lay->name, 15) == 0)
-	{
-	}
+	//if (strncmp("streets__tunnel", lay->name, 15) == 0)
+	//{
+	//}
+	//else if (strncmp("streets__bridge", lay->name, 15) == 0)
+	//{
+	//}
+
 	// dirty hack to draw "waypoint(s)" ---------------------------
-	else if (strncmp("Internal", lay->name, 8) == 0)
+	if (strncmp("Internal", lay->name, 8) == 0)
 	{
 		if (global_navit->route)
 		{
@@ -2434,9 +2871,6 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 	GList *lays;
 	struct layer *lay;
 
-	////DBG dbg(0,"draw prerender map for drag!!\n");
-
-
 	int draw_vector_map = 1;
 
 	// if zoomed out too much then use prerendered map tiles
@@ -2445,24 +2879,13 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 		draw_vector_map = 0;
 	}
 
-	////DBG dbg(0,"ooo %d %d %d\n",display_list->order_hashed,ORDER_USE_PRERENDERED_MAP,draw_vector_map);
-	////DBG dbg(0,"ooo xxx ooo2\n");
-
 	if (!draw_vector_map)
 	{
 		// draw prerendered big mapimage --- HERE ---
-
-		////DBG dbg(0,"###### order=%d\n",display_list->order);
 		struct transformation *t;
 		t = display_list->dc.trans;
-		////DBG dbg(0,"###### screen center x=%d\n",t->screen_center.x);
-		////DBG dbg(0,"###### screen center y=%d\n",t->screen_center.y);
-
 		struct coord *cp;
 		cp = transform_get_center(t);
-		////DBG dbg(0,"###### t center x=%d\n",cp->x);
-		////DBG dbg(0,"###### t center y=%d\n",cp->y);
-
 		struct attr attr;
 		struct config
 		{
@@ -2471,47 +2894,26 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 		}*config;
 		struct point p;
 		int valid = 0;
-		// config_get_attr(config, attr_navit, &attr, NULL);
 		if (global_navit)
 		{
 			if ((global_navit->vehicle) && (global_navit->vehicle->vehicle))
 			{
-				////DBG dbg(0,"###### v x=%d\n",p.x);
-				////DBG dbg(0,"###### v y=%d\n",p.y);
+				//int a, s;
+				//struct point pnt2;
+				//vehicle_get_cursor_data(global_navit->vehicle->vehicle, &pnt2, &a, &s);
 
-				////DBG dbg(0,"###### v2 x=%d\n",global_vehicle_pos_onscreen.x);
-				////DBG dbg(0,"###### v2 y=%d\n",global_vehicle_pos_onscreen.y);
-
-				////DBG dbg(0,"### vf x=%d\n",global_navit->vehicle->last.x);
-				////DBG dbg(0,"### vf y=%d\n",global_navit->vehicle->last.y);
-
-				////DBG dbg(0,"### vff x=%d\n",global_navit->vehicle->coord.x);
-				////DBG dbg(0,"### vff y=%d\n",global_navit->vehicle->coord.y);
-
-				int a, s;
-				struct point pnt2;
-				vehicle_get_cursor_data(global_navit->vehicle->vehicle, &pnt2, &a, &s);
-				////DBG dbg(0,"### vf 2 x=%d\n",pnt2.x);
-				////DBG dbg(0,"### vf 2 y=%d\n",pnt2.y);
-				//global_vehicle_pos_onscreen.x=pnt2.x;
-				//global_vehicle_pos_onscreen.y=pnt2.y;
-
-
-				struct attr pos_attr;
-				if (vehicle_get_attr(global_navit->vehicle->vehicle, attr_position_coord_geo, &pos_attr, NULL))
-				{
-					////DBG dbg(0,"1 lat=%f, lng=%f\n",pos_attr.u.coord_geo->lat,pos_attr.u.coord_geo->lng);
-				}
+				//struct attr pos_attr;
+				//if (vehicle_get_attr(global_navit->vehicle->vehicle, attr_position_coord_geo, &pos_attr, NULL))
+				//{
+				//	////DBG dbg(0,"1 lat=%f, lng=%f\n",pos_attr.u.coord_geo->lat,pos_attr.u.coord_geo->lng);
+				//}
 
 				valid = 1;
 			}
 		}
 
-		////DBG dbg(0,"###### yaw=%d\n",-t->yaw);
 		struct coord *c;
 		c = &(t->map_center);
-		////DBG dbg(0,"###### map center x=%d\n",c->x);
-		////DBG dbg(0,"###### map center y=%d\n",c->y);
 
 		enum projection pro = transform_get_projection(global_navit->trans_cursor);
 		struct coord_geo g22;
@@ -2519,53 +2921,22 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 		struct point mcenter_pnt;
 		c22 = &(t->map_center);
 		transform_to_geo(projection_mg, c22, &g22);
-		////DBG dbg(0,"2 lat=%f, lng=%f\n",g22.lat,g22.lng);
 		transform(global_navit->trans, pro, c22, &mcenter_pnt, 1, 0, 0, NULL);
-		////DBG dbg(0,"xxx 5 44444xxxx=%d\n",mcenter_pnt.x);
-		////DBG dbg(0,"yyy 5 44444yyyy=%d\n",mcenter_pnt.y);
-
 
 		struct coord c99;
 		struct coord_geo g99;
 		struct point cursor_pnt;
 		struct point p99;
+		long my_scale;
 
-		/*
-		 g99.lat=79.0;
-		 g99.lng=-170.0;
-		 transform_from_geo(pro, &g99, &c99);
-		 //DBG dbg(0,"left top lat=%f, lng=%f, x=%d y=%d\n",g99.lat,g99.lng,c99.x,c99.y);
-		 ////DBG dbg(0,"left top lat=%f, lng=%f, x=%f y=%f\n",g99.lat,g99.lng,c99.x,c99.y);
-		 ////DBG dbg(0,"0x%x,0x%x\n",c99.x,c99.y);
-		 transform(global_navit->trans, pro, &c99, &cursor_pnt, 1, 0, 0, NULL);
-		 //DBG dbg(0,"xxxxxxx=%d\n",cursor_pnt.x);
-		 //DBG dbg(0,"yyyyyyy=%d\n",cursor_pnt.y);
-
-		 g99.lat=-79.0;
-		 g99.lng=170.0;
-		 transform_from_geo(pro, &g99, &c99);
-		 //DBG dbg(0,"right bottom lat=%f, lng=%f, x=%d y=%d\n",g99.lat,g99.lng,c99.x,c99.y);
-		 ////DBG dbg(0,"right bottom lat=%f, lng=%f, x=%f y=%f\n",g99.lat,g99.lng,c99.x,c99.y);
-		 transform(global_navit->trans, pro, &c99, &cursor_pnt, 1, 0, 0, NULL);
-		 //DBG dbg(0,"xxxxxxx=%d\n",cursor_pnt.x);
-		 //DBG dbg(0,"yyyyyyy=%d\n",cursor_pnt.y);
-		 */
+		my_scale = transform_get_scale(global_navit->trans);
 
 		g99.lat = 0.0;
 		g99.lng = 0.0;
+		// g99.lat = 80.0;
+		// g99.lng = -174.0;
 		transform_from_geo(pro, &g99, &c99);
-		////DBG dbg(0,"center center lat=%f, lng=%f, x=%d y=%d\n",g99.lat,g99.lng,c99.x,c99.y);
-		////DBG dbg(0,"center center lat=%f, lng=%f, x=%f y=%f\n",g99.lat,g99.lng,c99.x,c99.y);
 		transform(global_navit->trans, pro, &c99, &cursor_pnt, 1, 0, 0, NULL);
-		////DBG dbg(0,"xxx44444xxxx=%d\n",cursor_pnt.x);
-		////DBG dbg(0,"yyy44444yyyy=%d\n",cursor_pnt.y);
-
-		//struct coord *c77;
-		//c77=&(t->map_center);
-		//transform(global_navit->trans, pro, &c77, &cursor_pnt, 1, 0, 0, NULL);
-		////DBG dbg(0,"---> cx=%d\n",cursor_pnt.x);
-		////DBG dbg(0,"---> cy=%d\n",cursor_pnt.y);
-
 
 		// now really draw it
 		struct graphics *gra22 = display_list->dc.gra;
@@ -2574,13 +2945,11 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 		{
 			gc22 = graphics_gc_new(gra22);
 		}
-		// graphics_draw_bigmap(gra22, gc22, -t->yaw, display_list->order, g22.lat, g22.lng, c->x, c->y, t->screen_center.x, t->screen_center.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
-		graphics_draw_bigmap(gra22, gc22, -t->yaw, display_list->order, g22.lat, g22.lng, cursor_pnt.x, cursor_pnt.y, mcenter_pnt.x, mcenter_pnt.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
+		// graphics_draw_bigmap(gra22, gc22, -t->yaw, display_list->order, g22.lat, g22.lng, cursor_pnt.x, cursor_pnt.y, mcenter_pnt.x, mcenter_pnt.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
+		graphics_draw_bigmap(gra22, gc22, -t->yaw, (int)(my_scale / 100), g22.lat, g22.lng, cursor_pnt.x, cursor_pnt.y, mcenter_pnt.x, mcenter_pnt.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
 	}
 
-	////DBG dbg(0, "XXXXXYYYYYYY Draw: 001\n");
-
-	// reset value;
+	// reset value; --> not sure here, maybe it should NOT be reset here!!!???
 	cancel_drawing_global = 0;
 
 	lays = l->layers;
@@ -2596,15 +2965,12 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 		// stop drawing is requested
 		if (cancel_drawing_global == 1)
 		{
-			//DBG dbg(0, "** STOP MD 003 **\n");
 			break;
 		}
 	}
 
 	// reset value;
 	cancel_drawing_global = 0;
-
-	////DBG dbg(0, "XXXXXYYYYYYY Draw: 002\n");
 
 #ifdef HAVE_API_ANDROID
 	android_return_generic_int(2, 1);
@@ -2624,7 +2990,7 @@ static void displaylist_update_layers(struct displaylist *displaylist, GList *la
 {
 	////DBG dbg(0,"ooo enter ooo\n");
 
-	int order_corrected = order;
+	int order_corrected = order + shift_order;
 	//int saved=displaylist->order;
 	if (order < limit_order_corrected)
 	{
@@ -2668,6 +3034,40 @@ static void displaylist_update_hash(struct displaylist *displaylist)
 
 static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 {
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	//dbg(0,"enter\n");
+
+#ifdef HAVE_API_ANDROID
+	// ---- disable map view -----
+	// ---- disable map view -----
+	// ---- disable map view -----
+	if (disable_map_drawing == 1)
+	{
+		android_return_generic_int(2, 0);
+
+		//dbg(0,"set:0:displaylist->busy=%d\n",displaylist->busy);
+		displaylist->busy = 0;
+
+		//dbg(0,"return 001\n");
+		return;
+	}
+	// ---- disable map view -----
+	// ---- disable map view -----
+	// ---- disable map view -----
+#endif
+
+
+
+	clock_t s_;
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	s_ = debug_measure_start();
+#endif
+
+
 	struct item *item;
 	int count, max = displaylist->dc.maxlen, workload = 0;
 	struct coord *ca = g_alloca(sizeof(struct coord) * max);
@@ -2677,9 +3077,9 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	int mapset_counter = 0;
 	int mapset_need_draw = 0;
 
-	//DBG dbg(0,"ooo enter ooo %d\n",displaylist->order);
+	// dbg(0,"ooo enter ooo %d\n",displaylist->order);
 
-	int order_corrected = displaylist->order;
+	int order_corrected = displaylist->order + shift_order;
 	int saved = displaylist->order;
 	if (order_corrected < limit_order_corrected)
 	{
@@ -2691,158 +3091,15 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 		displaylist_update_hash(displaylist);
 		displaylist->order_hashed = displaylist->order;
 		displaylist->layout_hashed = displaylist->layout;
-
-		// //DBG dbg(0,"-----====> order (zoom) = %d",displaylist->order);
-		// //DBG dbg(0,"-----====> order (zoom) = %d",displaylist->order_hashed);
-		// TODO // give new order (zoom) back to Java // TODO
 	}
 
-	//profile(0, NULL);
 	pro = transform_get_projection(displaylist->dc.trans);
-
-	// //DBG dbg(0,"ooo xxx ooo1\n");
-	// //DBG dbg(0,"ooo %d %d %d\n",displaylist->order_hashed,ORDER_USE_PRERENDERED_MAP,draw_vector_map);
 
 	// if zoomed out too much then use prerendered map tiles
 	if (displaylist->order_hashed < ORDER_USE_PRERENDERED_MAP)
 	{
 		draw_vector_map = 0;
 	}
-
-	// //DBG dbg(0,"ooo %d %d %d\n",displaylist->order_hashed,ORDER_USE_PRERENDERED_MAP,draw_vector_map);
-	// //DBG dbg(0,"ooo xxx ooo2\n");
-
-	if (!draw_vector_map)
-	{
-		// draw prerendered big mapimage --- HERE ---
-
-		////DBG dbg(0,"###### order=%d\n",displaylist->order_hashed);
-		struct transformation *t;
-		t = displaylist->dc.trans;
-		////DBG dbg(0,"###### screen center x=%d\n",t->screen_center.x);
-		////DBG dbg(0,"###### screen center y=%d\n",t->screen_center.y);
-
-		struct coord *cp;
-		cp = transform_get_center(t);
-		////DBG dbg(0,"###### t center x=%d\n",cp->x);
-		////DBG dbg(0,"###### t center y=%d\n",cp->y);
-
-		struct attr attr;
-		struct config
-		{
-			struct attr **attrs;
-			struct callback_list *cbl;
-		}*config;
-		struct point p;
-		int valid = 0;
-		// config_get_attr(config, attr_navit, &attr, NULL);
-		if (global_navit)
-		{
-			if ((global_navit->vehicle) && (global_navit->vehicle->vehicle))
-			{
-				////DBG dbg(0,"###### v x=%d\n",p.x);
-				////DBG dbg(0,"###### v y=%d\n",p.y);
-
-				////DBG dbg(0,"###### v2 x=%d\n",global_vehicle_pos_onscreen.x);
-				////DBG dbg(0,"###### v2 y=%d\n",global_vehicle_pos_onscreen.y);
-
-				////DBG dbg(0,"### vf x=%d\n",global_navit->vehicle->last.x);
-				////DBG dbg(0,"### vf y=%d\n",global_navit->vehicle->last.y);
-
-				////DBG dbg(0,"### vff x=%d\n",global_navit->vehicle->coord.x);
-				////DBG dbg(0,"### vff y=%d\n",global_navit->vehicle->coord.y);
-
-				int a, s;
-				struct point pnt2;
-				vehicle_get_cursor_data(global_navit->vehicle->vehicle, &pnt2, &a, &s);
-				////DBG dbg(0,"### vf 2 x=%d\n",pnt2.x);
-				////DBG dbg(0,"### vf 2 y=%d\n",pnt2.y);
-				//global_vehicle_pos_onscreen.x=pnt2.x;
-				//global_vehicle_pos_onscreen.y=pnt2.y;
-
-				struct attr pos_attr;
-				if (vehicle_get_attr(global_navit->vehicle->vehicle, attr_position_coord_geo, &pos_attr, NULL))
-				{
-					////DBG dbg(0,"1 lat=%f, lng=%f\n",pos_attr.u.coord_geo->lat,pos_attr.u.coord_geo->lng);
-				}
-
-				valid = 1;
-			}
-		}
-
-		//DBG dbg(0,"###### yaw=%d\n",-t->yaw);
-		struct coord *c;
-		c = &(t->map_center);
-		//DBG dbg(0,"###### map center x=%d\n",c->x);
-		//DBG dbg(0,"###### map center y=%d\n",c->y);
-
-		enum projection pro = transform_get_projection(global_navit->trans_cursor);
-		struct coord_geo g22;
-		struct coord *c22;
-		struct point mcenter_pnt;
-		c22 = &(t->map_center);
-		transform_to_geo(projection_mg, c22, &g22);
-		////DBG dbg(0,"2 lat=%f, lng=%f\n",g22.lat,g22.lng);
-		transform(global_navit->trans, pro, c22, &mcenter_pnt, 1, 0, 0, NULL);
-		////DBG dbg(0,"xxx 5 33333xxxx=%d\n",mcenter_pnt.x);
-		////DBG dbg(0,"yyy 5 33333yyyy=%d\n",mcenter_pnt.y);
-
-
-		struct coord c99;
-		struct coord_geo g99;
-		struct point cursor_pnt;
-		struct point p99;
-
-		/*
-		 g99.lat=79.0;
-		 g99.lng=-170.0;
-		 transform_from_geo(pro, &g99, &c99);
-		 //DBG dbg(0,"left top lat=%f, lng=%f, x=%d y=%d\n",g99.lat,g99.lng,c99.x,c99.y);
-		 ////DBG dbg(0,"left top lat=%f, lng=%f, x=%f y=%f\n",g99.lat,g99.lng,c99.x,c99.y);
-		 ////DBG dbg(0,"0x%x,0x%x\n",c99.x,c99.y);
-		 transform(global_navit->trans, pro, &c99, &cursor_pnt, 1, 0, 0, NULL);
-		 //DBG dbg(0,"xxxxxxx=%d\n",cursor_pnt.x);
-		 //DBG dbg(0,"yyyyyyy=%d\n",cursor_pnt.y);
-
-		 g99.lat=-79.0;
-		 g99.lng=170.0;
-		 transform_from_geo(pro, &g99, &c99);
-		 //DBG dbg(0,"right bottom lat=%f, lng=%f, x=%d y=%d\n",g99.lat,g99.lng,c99.x,c99.y);
-		 ////DBG dbg(0,"right bottom lat=%f, lng=%f, x=%f y=%f\n",g99.lat,g99.lng,c99.x,c99.y);
-		 transform(global_navit->trans, pro, &c99, &cursor_pnt, 1, 0, 0, NULL);
-		 //DBG dbg(0,"xxxxxxx=%d\n",cursor_pnt.x);
-		 //DBG dbg(0,"yyyyyyy=%d\n",cursor_pnt.y);
-		 */
-
-		g99.lat = 0.0;
-		g99.lng = 0.0;
-		transform_from_geo(pro, &g99, &c99);
-		////DBG dbg(0,"center center lat=%f, lng=%f, x=%d y=%d\n",g99.lat,g99.lng,c99.x,c99.y);
-		////DBG dbg(0,"center center lat=%f, lng=%f, x=%f y=%f\n",g99.lat,g99.lng,c99.x,c99.y);
-		transform(global_navit->trans, pro, &c99, &cursor_pnt, 1, 0, 0, NULL);
-		////DBG dbg(0,"xxxx333xxx=%d\n",cursor_pnt.x);
-		////DBG dbg(0,"yyyy333yyy=%d\n",cursor_pnt.y);
-
-		//struct coord *c77;
-		//c77=&(t->map_center);
-		//transform(global_navit->trans, pro, &c77, &cursor_pnt, 1, 0, 0, NULL);
-		////DBG dbg(0,"---> cx=%d\n",cursor_pnt.x);
-		////DBG dbg(0,"---> cy=%d\n",cursor_pnt.y);
-
-
-		// now really draw it
-		struct graphics *gra22 = displaylist->dc.gra;
-		struct graphics_gc *gc22 = displaylist->dc.gc;
-		if (!gc22)
-		{
-			gc22 = graphics_gc_new(gra22);
-		}
-		//DBG dbg(0,"graphics_draw_bigmap s\n");
-		graphics_draw_bigmap(gra22, gc22, -t->yaw, displaylist->order, g22.lat, g22.lng, cursor_pnt.x, cursor_pnt.y, mcenter_pnt.x, mcenter_pnt.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
-		//DBG dbg(0,"graphics_draw_bigmap e\n");
-	}
-
-	//DBG dbg(0,"xxx uuu xxx\n");
 
 	displaylist->order = order_corrected;
 
@@ -2874,13 +3131,13 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 			if (map_get_attr(displaylist->m, attr_name, &map_name_attr, NULL))
 			{
-				// //DBG dbg(0,"map name=%s",map_name_attr.u.str);
+				//dbg(0,"#+* start reading map file #+*=%s\n",map_name_attr.u.str);
 				if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
 				{
 					if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/borders.bin", map_name_attr.u.str, 41) == 0)
 					{
 						// if its the countryborder map, always draw it
-						mapset_need_draw = 0; // --> now dont even draw borders on low zoom level, we have prerendered image
+						mapset_need_draw = 0; // now dont even draw border map!!
 					}
 					else
 					{
@@ -2914,8 +3171,18 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 				//dbg(0, "XXXXXYYYYYYY Draw: A.01\n");
 
+
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				//dbg(0,"#+* start reading map file #+*\n");
+				int _item_counter_ = 0;
 				while ((item = map_rect_get_item(displaylist->mr)))
 				{
+					_item_counter_++;
+
 					int label_count = 0;
 					char *labels[2];
 					struct hash_entry *entry;
@@ -2933,6 +3200,11 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 						{
 							// restore order :-)
 							displaylist->order = saved;
+
+							//dbg(0,"set:0:displaylist->busy=%d\n",displaylist->busy);
+							displaylist->busy = 0;
+
+							//dbg(0,"return 002\n");
 							return;
 						}
 						else
@@ -2968,7 +3240,9 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					//dbg(0, "XXXXXYYYYYYY Draw: A.item2\n");
 
 					if (displaylist->dc.pro != pro)
+					{
 						transform_from_to_count(ca, displaylist->dc.pro, ca, pro, count);
+					}
 
 					if (count == max)
 					{
@@ -3057,17 +3331,29 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 						map_convert_free(labels[1]);
 					}
 
-					workload++;
-
+					//workload++;
+					/*
 					if (workload == displaylist->workload)
 					{
 						// restore order :-)
 						displaylist->order = saved;
 						// reset value;
 						cancel_drawing_global = 0;
+
+						dbg(0,"set:0:displaylist->busy=%d\n",displaylist->busy);
+						displaylist->busy = 0;
+
+						dbg(0,"return 003\n");
 						return;
 					}
+					*/
 				} // while item=map_rect_get_item
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+				// ------ READ all items in this map rectangle ---------
+
 
 				////DBG dbg(0, "XXXXXYYYYYYY Draw: A.02\n");
 
@@ -3084,6 +3370,14 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 		displaylist->sel = NULL;
 		displaylist->m = NULL;
 	} // while ----
+
+
+
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	debug_mrp("do_draw:load", debug_measure_end(s_));
+#endif
+	s_ = debug_measure_start();
+
 
 	//DBG dbg(0, "XXXXXYYYYYYY Draw: 004\n");
 
@@ -3104,7 +3398,8 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	displaylist->idle_ev = NULL;
 	callback_destroy(displaylist->idle_cb);
 	displaylist->idle_cb = NULL;
-	displaylist->busy = 0;
+	//dbg(0,"set:0:displaylist->busy=%d\n",displaylist->busy);
+	//displaylist->busy = 0;
 
 	// graphics_process_selection(displaylist->dc.gra, displaylist);
 
@@ -3124,8 +3419,39 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 			}
 		}
 		//DBG dbg(0,"call graphics_displaylist_draw 3")
+		//dbg(0,"# MT:002 #\n");
 		graphics_displaylist_draw(displaylist->dc.gra, displaylist, displaylist->dc.trans, displaylist->layout, flags2);
+		//dbg(0,"# MT:003 #\n");
 	}
+
+#ifdef NAVIT_MEASURE_TIME_DEBUG
+	debug_mrp("do_draw:draw", debug_measure_end(s_));
+#endif
+
+#ifdef HAVE_API_ANDROID
+	if (cur_mapdraw_time_index < 11)
+	{
+		mapdraw_time[cur_mapdraw_time_index] = debug_measure_end_tsecs(s_);
+		// dbg(0,"maptime: %d\n", mapdraw_time[cur_mapdraw_time_index]);
+		cur_mapdraw_time_index++;
+	}
+
+	if (cur_mapdraw_time_index > 10)
+	{
+		cur_mapdraw_time_index = 0;
+		int jk;
+		int mean_time = 0;
+		for (jk=0;jk<11;jk++)
+		{
+			mean_time = mean_time + mapdraw_time[jk];
+		}
+		android_return_generic_int(6, (int)((float)mean_time / (float)10));
+	}
+#endif
+
+
+	//dbg(0,"set:0:displaylist->busy=%d\n",displaylist->busy);
+	displaylist->busy = 0;
 
 	//DBG dbg(0, "XXXXXYYYYYYY Draw: 006\n");
 
@@ -3135,7 +3461,9 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 	map_rect_destroy(displaylist->mr);
 	if (!route_selection)
+	{
 		map_selection_destroy(displaylist->sel);
+	}
 	mapset_close(displaylist->msh);
 	displaylist->mr = NULL;
 	displaylist->sel = NULL;
@@ -3144,7 +3472,13 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	//profile(1, "callback\n");
 	callback_call_1(displaylist->cb, cancel);
 	//profile(0, "end\n");
-	//DBG dbg(0,"leave\n");
+
+	//dbg(0,"leave\n");
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 }
 
 /**
@@ -3155,13 +3489,34 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
  */
 void graphics_displaylist_draw(struct graphics *gra, struct displaylist *displaylist, struct transformation *trans, struct layout *l, int flags)
 {
-	//DBG dbg(0,"ooo enter ooo\n");
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	// dbg(0,"ooo enter ooo flags=%d\n", flags);
 
 	int order = transform_get_order(trans);
 	displaylist->dc.trans = trans;
 	displaylist->dc.gra = gra;
-	displaylist->dc.mindist = transform_get_scale(trans) / 2;
-	//DBG dbg(0,"1\n");
+
+
+	// *********DISABLED*******
+	// *********DISABLED*******
+	// *********DISABLED*******
+	// set min. distanct of 2 points on line at which a point will be left out when zoomed out too much!!
+	// *********DISABLED******* displaylist->dc.mindist = transform_get_scale(trans) / 2;
+	//dbg(0,"mindist would be:%d\n", (int)(transform_get_scale(trans) / 2));
+	displaylist->dc.mindist = 0;
+	if (order < 13)
+	{
+		displaylist->dc.mindist = transform_get_scale(trans);
+	}
+	// *********DISABLED*******
+	// *********DISABLED*******
+	// *********DISABLED*******
+
+
+
 	// FIXME find a better place to set the background color
 	if (l)
 	{
@@ -3169,60 +3524,55 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 		graphics_gc_set_foreground(gra->gc[0], &l->color);
 		gra->default_font = g_strdup(l->font);
 	}
-	//DBG dbg(0,"2\n");
 	graphics_background_gc(gra, gra->gc[0]);
 	if (flags & 1)
 	{
-		//DBG dbg(0,"3\n");
+		// calls -> navit.c navit_predraw --> draw all vehicles
 		callback_list_call_attr_0(gra->cbl, attr_predraw);
-		//DBG dbg(0,"4\n");
 	}
 	gra->meth.draw_mode(gra->priv, (flags & 8) ? draw_mode_begin_clear : draw_mode_begin);
-	//DBG dbg(0,"5\n");
 	if (!(flags & 2))
 	{
-		//DBG dbg(0,"6\n");
 		// clear the display/screen/whatever here
 		gra->meth.draw_rectangle(gra->priv, gra->gc[0]->priv, &gra->r.lu, gra->r.rl.x - gra->r.lu.x, gra->r.rl.y - gra->r.lu.y);
-		//DBG dbg(0,"7\n");
 	}
 	if (l)
 	{
-		//DBG dbg(0,"8\n");
-		// //DBG dbg(0,"o , l->d = %d , %d\n",order,l->order_delta);
+		// draw the mapitems
+		// dbg(0,"o , l->d = %d , %d\n",order,l->order_delta);
 		xdisplay_draw(displaylist, gra, l, order + l->order_delta);
-		//DBG dbg(0,"9\n");
 	}
 	if (flags & 1)
 	{
-		//DBG dbg(0,"10\n");
 		callback_list_call_attr_0(gra->cbl, attr_postdraw);
-		//DBG dbg(0,"11\n");
 	}
 	if (!(flags & 4))
 	{
-		//DBG dbg(0,"12\n");
 		gra->meth.draw_mode(gra->priv, draw_mode_end);
-		//DBG dbg(0,"13\n");
 	}
 
-	//DBG dbg(0,"leave\n");
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 }
 
 static void graphics_load_mapset(struct graphics *gra, struct displaylist *displaylist, struct mapset *mapset, struct transformation *trans, struct layout *l, int async, struct callback *cb, int flags)
 {
 	int order = transform_get_order(trans);
 
-	//DBG dbg(0,"enter displaylist->busy=%d\n",displaylist->busy);
-	////DBG dbg(0,"async=%d\n",async);
+	//dbg(0,"enter displaylist->busy=%d\n",displaylist->busy);
+	//dbg(0,"async=%d\n",async);
 	if (displaylist->busy)
 	{
 		if (async == 1)
 		{
+			//dbg(0,"**draw 1.a\n");
 			return;
 		}
-		//DBG dbg(0,"**draw 1");
-		do_draw(displaylist, 1, flags);
+		///dbg(0,"**draw 1\n");
+		return;
+		//do_draw(displaylist, 1, flags);
 	}
 	xdisplay_free(displaylist);
 
@@ -3238,9 +3588,13 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
 		order += l->order_delta;
 	}
 	displaylist->order = order;
+	//dbg(0,"set:1:displaylist->busy=%d\n",displaylist->busy);
 	displaylist->busy = 1;
 	displaylist->layout = l;
 
+
+// ---------- DISABLED ------ no more async!!
+/*
 	if (async)
 	{
 		//DBG dbg(0,"§§async");
@@ -3257,6 +3611,27 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
 		//DBG dbg(0,"@@sync");
 		do_draw(displaylist, 0, flags);
 	}
+*/
+
+
+	if (async)
+	{
+		if (! displaylist->idle_cb)
+		{
+			//dbg(0,"**draw 2.b1\n");
+			displaylist->idle_cb=callback_new_3(callback_cast(do_draw), displaylist, 0, flags);
+			//dbg(0,"**draw 2.b2\n");
+		}
+		//dbg(0,"**draw 2.b3\n");
+		// displaylist->idle_ev=
+		event_add_idle(1000, displaylist->idle_cb);
+		//dbg(0,"**draw 2.b4\n");
+	}
+	else
+	{
+		//dbg(0,"**draw 2.b5\n");
+		do_draw(displaylist, 0, flags);
+	}
 }
 
 /**
@@ -3267,7 +3642,7 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
  */
 void graphics_draw(struct graphics *gra, struct displaylist *displaylist, struct mapset *mapset, struct transformation *trans, struct layout *l, int async, struct callback *cb, int flags)
 {
-	//DBG dbg(0,"ooo enter ooo\n");
+	//dbg(0,"ooo enter ooo\n");
 
 	graphics_load_mapset(gra, displaylist, mapset, trans, l, async, cb, flags);
 }
@@ -3364,6 +3739,7 @@ struct displaylist * graphics_displaylist_new(void)
 	struct displaylist *ret=g_new0(struct displaylist, 1);
 
 	ret->dc.maxlen = 16384;
+	ret->busy = 0;
 
 	return ret;
 }

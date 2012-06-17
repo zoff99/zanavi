@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-14 19:08+0100\n"
+"POT-Creation-Date: 2012-05-04 15:19+0200\n"
 "PO-Revision-Date: 2011-11-27 12:08+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Estonian <et@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -357,47 +357,47 @@ msgstr "Sa oled jõudnud sihtpunkti %s"
 msgid "then you have reached your destination."
 msgstr ""
 
-#: navit.c:1981 gui/internal/gui_internal.c:2964
+#: navit.c:2037 gui/internal/gui_internal.c:2964
 msgid "Position"
 msgstr ""
 
-#: navit.c:1982
+#: navit.c:2038
 msgid "Command"
 msgstr "Käsk"
 
-#: navit.c:1986
+#: navit.c:2042
 msgid "Length"
 msgstr "Pikkus"
 
-#: navit.c:1990 navit.c:2015
+#: navit.c:2046 navit.c:2071
 msgid "km"
 msgstr "km"
 
-#: navit.c:1994 navit.c:2019
+#: navit.c:2050 navit.c:2075
 msgid "m"
 msgstr "m"
 
-#: navit.c:2000
+#: navit.c:2056
 msgid "Time"
 msgstr "Aeg"
 
-#: navit.c:2012
+#: navit.c:2068
 msgid "Destination Length"
 msgstr "Sihtkoha kaugus"
 
-#: navit.c:2025
+#: navit.c:2081
 msgid "Destination Time"
 msgstr "Kohalejõudmise aeg"
 
-#: navit.c:2057
+#: navit.c:2113
 msgid "Roadbook"
 msgstr "Teekonna raamat"
 
-#: navit.c:3607
+#: navit.c:3683
 msgid "Waypoint reached"
 msgstr ""
 
-#: navit.c:3617
+#: navit.c:3693
 msgid "You have reached your destination"
 msgstr ""
 

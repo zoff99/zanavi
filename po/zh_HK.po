@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-14 19:08+0100\n"
-"PO-Revision-Date: 2011-11-27 11:10+0000\n"
-"Last-Translator: Walter Cheuk <wwycheuk@gmail.com>\n"
+"POT-Creation-Date: 2012-05-04 15:19+0200\n"
+"PO-Revision-Date: 2012-05-28 21:09+0000\n"
+"Last-Translator: FUNG KA LUEN <luen_2@hotmail.com>\n"
 "Language-Team: Chinese (Hong Kong) <zh_HK@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -119,17 +119,17 @@ msgstr "第六個出口"
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
 #: navigation.c:451
 msgid "seventh exit"
-msgstr ""
+msgstr "第七個出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
 #: navigation.c:457
 msgid "eighth exit"
-msgstr ""
+msgstr "第八個出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
 #: navigation.c:463
 msgid "ninth exit"
-msgstr ""
+msgstr "第九個出口"
 
 #: navigation.c:557
 #, c-format
@@ -144,12 +144,12 @@ msgstr "在 %d 米內"
 #: navigation.c:582
 #, c-format
 msgid "%d feet"
-msgstr ""
+msgstr "%d 尺"
 
 #: navigation.c:589
 #, c-format
 msgid "in %d feet"
-msgstr ""
+msgstr "在 %d 尺"
 
 #: navigation.c:606
 #, c-format
@@ -164,12 +164,12 @@ msgstr "在 %d 米內"
 #: navigation.c:642
 #, c-format
 msgid "%d.%d miles"
-msgstr ""
+msgstr "%d%d 里"
 
 #: navigation.c:649
 #, c-format
 msgid "in %d.%d miles"
-msgstr ""
+msgstr "在 %d%d 里"
 
 #: navigation.c:660
 #, c-format
@@ -185,15 +185,13 @@ msgstr "在 %d.%d 千米內"
 #, c-format
 msgid "one mile"
 msgid_plural "%d miles"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d 里"
 
 #: navigation.c:681
 #, c-format
 msgid "in one mile"
 msgid_plural "in %d miles"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "在 %d 里內"
 
 #: navigation.c:692
 #, c-format
@@ -259,19 +257,19 @@ msgstr "左"
 #. TRANSLATORS: EXAMPLE: turn slight right
 #: navigation.c:2054
 msgid "slight "
-msgstr ""
+msgstr "少少 "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn hard right
 #: navigation.c:2067
 msgid "hard "
-msgstr ""
+msgstr "大 "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn really hard right
 #: navigation.c:2076
 msgid "really hard "
-msgstr ""
+msgstr "很大 "
 
 #: navigation.c:2099
 msgid "When possible, please turn around"
@@ -279,7 +277,7 @@ msgstr "如可以請掉頭"
 
 #: navigation.c:2133
 msgid "Enter the roundabout soon"
-msgstr ""
+msgstr "快進入迴旋處"
 
 #. TRANSLATORS: %s is the distance to the roundabout
 #. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
@@ -355,49 +353,49 @@ msgstr "已到達目的地 %s"
 msgid "then you have reached your destination."
 msgstr "然後會到達目的地"
 
-#: navit.c:1981 gui/internal/gui_internal.c:2964
+#: navit.c:2037 gui/internal/gui_internal.c:2964
 msgid "Position"
 msgstr "位置"
 
-#: navit.c:1982
+#: navit.c:2038
 msgid "Command"
 msgstr "指令"
 
-#: navit.c:1986
+#: navit.c:2042
 msgid "Length"
 msgstr "距離"
 
-#: navit.c:1990 navit.c:2015
+#: navit.c:2046 navit.c:2071
 msgid "km"
 msgstr "千米"
 
-#: navit.c:1994 navit.c:2019
+#: navit.c:2050 navit.c:2075
 msgid "m"
 msgstr "米"
 
-#: navit.c:2000
+#: navit.c:2056
 msgid "Time"
 msgstr "時間"
 
-#: navit.c:2012
+#: navit.c:2068
 msgid "Destination Length"
 msgstr "抵達目的地距離"
 
-#: navit.c:2025
+#: navit.c:2081
 msgid "Destination Time"
 msgstr "抵達目的地時間"
 
-#: navit.c:2057
+#: navit.c:2113
 msgid "Roadbook"
 msgstr ""
 
-#: navit.c:3607
+#: navit.c:3683
 msgid "Waypoint reached"
 msgstr ""
 
-#: navit.c:3617
+#: navit.c:3693
 msgid "You have reached your destination"
-msgstr ""
+msgstr "已到目的地"
 
 #: gui/internal/gui_internal.c:1732
 msgid "Help"
@@ -437,7 +435,7 @@ msgstr ""
 
 #: gui/internal/gui_internal.c:4043
 msgid "Download Enabled"
-msgstr ""
+msgstr "已可下載"
 
 #: gui/internal/gui_internal.c:4101
 msgid "Maps"
@@ -449,7 +447,7 @@ msgstr "顯示衛星狀況"
 
 #: gui/internal/gui_internal.c:4161
 msgid " Elevation "
-msgstr ""
+msgstr " 海拔 "
 
 #: gui/internal/gui_internal.c:4162
 msgid " Azimuth "
@@ -483,7 +481,7 @@ msgstr "將設定組合改為：%s"
 
 #: gui/internal/gui_internal.c:4365
 msgid "Set as active"
-msgstr ""
+msgstr "建設定成有效"
 
 #: gui/internal/gui_internal.c:4372
 msgid "Show Satellite status"
@@ -503,7 +501,7 @@ msgstr "規則"
 
 #: gui/internal/gui_internal.c:4437
 msgid "Lock on road"
-msgstr ""
+msgstr "只在車路上"
 
 #: gui/internal/gui_internal.c:4443
 msgid "Northing"
@@ -527,8 +525,8 @@ msgstr ""
 
 #: osd/core/osd_core.c:1882
 msgid "Look out! Camera!"
-msgstr ""
+msgstr "小心！有快相機！"
 
 #: osd/core/osd_core.c:2086
 msgid "Please decrease your speed"
-msgstr ""
+msgstr "請減速"

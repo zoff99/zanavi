@@ -30,4 +30,5 @@ PLUGIN_TYPE(osd, (struct navit *nav, struct osd_methods *meth, struct attr **att
 PLUGIN_TYPE(speech, (struct speech_methods *meth, struct attr **attrs, struct attr *parent)) 
 PLUGIN_TYPE(vehicle, (struct vehicle_methods *meth, struct callback_list *cbl, struct attr **attrs)) 
 PLUGIN_TYPE(event, (struct event_methods *meth)) 
-PLUGIN_TYPE(font, (void *meth)) 
+PLUGIN_TYPE(font, (void *meth))
+

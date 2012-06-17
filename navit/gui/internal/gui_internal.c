@@ -3622,7 +3622,7 @@ gui_internal_keyboard_do(struct gui_priv *this, struct widget *wkbdb, int mode)
 	if (mode >= 40 && mode < 48) {
 		KEY("А"); KEY("Б"); KEY("В"); KEY("Г"); KEY("Д"); KEY("Е"); KEY("Ж"); KEY("З"); KEY("И");
 		KEY("Й"); KEY("К"); KEY("Л"); KEY("М"); KEY("Н"); KEY("О"); KEY("П"); KEY("Р"); KEY("С");
-		KEY("Т"); KEY("У"); KEY("Ф"); KEY("Х"); KEY("Ц"); KEY("Ч"); KEY("Ш"); KEY("Щ"); KEY("Ъ"); 
+		KEY("Т"); KEY("У"); KEY("Ф"); KEY("Х"); KEY("Ц"); KEY("Ч"); KEY("Ш"); KEY("Щ"); KEY("Ъ");
 		KEY("Ы"); KEY("Ь"); KEY("Э"); KEY("Ю"); KEY("Я"); KEY("Ё"); KEY("І"); KEY("Ї"); KEY("Ў");
 		SPACER(); SPACER(); SPACER();
 		gui_internal_keyboard_key(this, wkbd, space," ",max_w,max_h);
@@ -4467,10 +4467,14 @@ static void gui_internal_motion(void *data, struct point *p)
 	if (!this->pressed)
 		return;
 	this->current=*p;
+
+	// -------- DISABLED ------
+	/*
 	if(!this->motion_timeout_callback)
 		this->motion_timeout_callback=callback_new_1(callback_cast(gui_internal_highlight), this);
 	if(!this->motion_timeout_event)
 		this->motion_timeout_event=event_add_timeout(100,0, this->motion_timeout_callback);
+	*/
 }
 
 static const char *

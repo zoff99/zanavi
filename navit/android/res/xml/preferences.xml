@@ -3,12 +3,12 @@
 
     <PreferenceCategory android:title="Position" >
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="use_fast_provider"
             android:summary="Use GSM/3g/Wireless networks for getting position"
             android:title="GSM/3g/Wireless" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="use_agps"
             android:summary="Use aGPS (assisted GPS) to get a faster fix (uses Internet)"
             android:title="aGPS" />
@@ -74,6 +74,13 @@
             android:key="speak_street_names"
             android:summary="Say Streetnames when navigating. on foreign languages streetnames may sound strange!"
             android:title="speak Streetnames" />
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/route_styleArray"
+            android:entryValues="@array/route_styleValues"
+            android:key="route_style"
+            android:summary="Paint Route on map in different styles"
+            android:title="Route Style" />
     </PreferenceCategory>
     <PreferenceCategory android:title="GUI" >
         <CheckBoxPreference
@@ -92,7 +99,7 @@
             android:summary="draw with AntiAlias, map is faster when this is OFF"
             android:title="AntiAlias" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="use_custom_font"
             android:summary="use ZANavi custom font"
             android:title="use custom Font" />
@@ -126,7 +133,7 @@
             android:summary="Cachesize for Mapdrawing"
             android:title="Cache for Map" />
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="2"
             android:entries="@array/streetsearchrArray"
             android:entryValues="@array/streetsearchrValues"
             android:key="streetsearch_r"
@@ -134,7 +141,7 @@
             android:title="Searchradius" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="gui_oneway_arrows"
             android:summary="show oneway street arrows [BETA]"
             android:title="OneWay Arrows" />

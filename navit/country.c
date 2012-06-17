@@ -374,7 +374,8 @@ static int
 match(struct country_search *this_, enum attr_type type, const char *name)
 {
 	int ret;
-	char *s1, *s2;
+	char *s1 = NULL;
+	char *s2 = NULL; 
 	if (!name)
 		return 0;
 	if (this_->search.type != type && this_->search.type != attr_country_all)

@@ -90,6 +90,7 @@ static void vehicle_log_textfile(struct vehicle *this_, struct log *log);
 static void vehicle_log_binfile(struct vehicle *this_, struct log *log);
 static int vehicle_add_log(struct vehicle *this_, struct log *log);
 void vehicle_remove_cursor(struct vehicle *this_);
+extern int hold_drawing; // in navit.c
 
 /**
  * Creates a new vehicle
@@ -97,6 +98,9 @@ void vehicle_remove_cursor(struct vehicle *this_);
 struct vehicle *
 vehicle_new(struct attr *parent, struct attr **attrs)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct vehicle *this_;
 	struct attr *source;
 	struct vehicle_priv *(*vehicletype_new)(struct vehicle_methods * meth, struct callback_list * cbl, struct attr ** attrs);
@@ -175,6 +179,9 @@ vehicle_new(struct attr *parent, struct attr **attrs)
  */
 void vehicle_destroy(struct vehicle *this_)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	if (this_->animate_callback)
 	{
 		callback_destroy(this_->animate_callback);
@@ -197,6 +204,9 @@ void vehicle_destroy(struct vehicle *this_)
 struct attr_iter *
 vehicle_attr_iter_new(void)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 return (struct attr_iter *)g_new0(void *,1);
 }
 
@@ -207,6 +217,9 @@ return (struct attr_iter *)g_new0(void *,1);
  */
 void vehicle_attr_iter_destroy(struct attr_iter *iter)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	g_free(iter);
 }
 
@@ -220,13 +233,18 @@ void vehicle_attr_iter_destroy(struct attr_iter *iter)
  */
 int vehicle_get_attr(struct vehicle *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	////DBG dbg(0,"enter\n");
 	int ret;
 	if (this_->meth.position_attr_get)
 	{
 		ret = this_->meth.position_attr_get(this_->priv, type, attr);
 		if (ret)
+		{
 			return ret;
+		}
 	}
 	if (type == attr_log_gpx_desc)
 	{
@@ -234,6 +252,11 @@ int vehicle_get_attr(struct vehicle *this_, enum attr_type type, struct attr *at
 		return 1;
 	}
 	////DBG dbg(0,"before return\n");
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return attr_generic_get_attr(this_->attrs, NULL, type, attr, iter);
 }
 
@@ -246,16 +269,33 @@ int vehicle_get_attr(struct vehicle *this_, enum attr_type type, struct attr *at
  */
 int vehicle_set_attr(struct vehicle *this_, struct attr *attr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	int ret = 1;
 	if (this_->meth.set_attr)
+	{
+		//dbg(0,"xx 1\n");
 		ret = this_->meth.set_attr(this_->priv, attr);
+		//dbg(0,"xx 1.1\n");
+	}
+
 	if (ret == 1 && attr->type == attr_log_gpx_desc)
 	{
 		g_free(this_->gpx_desc);
 		this_->gpx_desc = attr->u.str;
 	}
+
 	if (ret == 1 && attr->type != attr_navit && attr->type != attr_pdl_gps_update)
+	{
+		dbg(0,"xx 3\n");
 		this_->attrs = attr_generic_set_attr(this_->attrs, attr);
+	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return ret != 0;
 }
 
@@ -267,6 +307,9 @@ int vehicle_set_attr(struct vehicle *this_, struct attr *attr)
  */
 int vehicle_add_attr(struct vehicle *this_, struct attr *attr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	int ret = 1;
 	switch (attr->type)
 	{
@@ -285,7 +328,14 @@ int vehicle_add_attr(struct vehicle *this_, struct attr *attr)
 			break;
 	}
 	if (ret)
+	{
 		this_->attrs = attr_generic_add_attr(this_->attrs, attr);
+	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return ret;
 }
 
@@ -298,6 +348,9 @@ int vehicle_add_attr(struct vehicle *this_, struct attr *attr)
  */
 int vehicle_remove_attr(struct vehicle *this_, struct attr *attr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct callback *cb;
 	switch (attr->type)
 	{
@@ -330,6 +383,9 @@ int vehicle_remove_attr(struct vehicle *this_, struct attr *attr)
  */
 void vehicle_set_cursor(struct vehicle *this_, struct cursor *cursor, int overwrite)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct point sc;
 	if (this_->cursor_fixed && !overwrite)
 	{
@@ -372,10 +428,18 @@ void vehicle_set_cursor(struct vehicle *this_, struct cursor *cursor, int overwr
 	transform_set_screen_center(this_->trans, &sc);
 
 	this_->cursor = cursor;
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 }
 
 void vehicle_remove_cursor(struct vehicle *this_)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct point sc;
 
 	if (this_->animate_callback)
@@ -410,6 +474,15 @@ void vehicle_remove_cursor(struct vehicle *this_)
  */
 void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt, int lazy, int angle, int speed)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	if (hold_drawing > 0)
+	{
+		return;
+	}
+
 	if (angle < 0)
 		angle += 360;
 	//// dbg(1, "enter this=%p gra=%p pnt=%p lazy=%d dir=%d speed=%d\n", this_, gra,
@@ -437,11 +510,15 @@ void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt
 			graphics_background_gc(this_->gra, this_->bg);
 		}
 	}
+
 	vehicle_draw_do(this_, lazy);
 }
 
 int vehicle_get_cursor_data(struct vehicle *this, struct point *pnt, int *angle, int *speed)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	*pnt = this->cursor_pnt;
 	*angle = this->angle;
 	*speed = this->speed;
@@ -450,6 +527,15 @@ int vehicle_get_cursor_data(struct vehicle *this, struct point *pnt, int *angle,
 
 static void vehicle_draw_do(struct vehicle *this_, int lazy)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	if (hold_drawing > 0)
+	{
+		return;
+	}
+
 	struct point p;
 	struct cursor *cursor = this_->cursor;
 	int speed = this_->speed;
@@ -511,6 +597,9 @@ static void vehicle_draw_do(struct vehicle *this_, int lazy)
  */
 static void vehicle_log_nmea(struct vehicle *this_, struct log *log)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr pos_attr;
 	if (!this_->meth.position_attr_get)
 		return;
@@ -521,6 +610,9 @@ static void vehicle_log_nmea(struct vehicle *this_, struct log *log)
 
 void vehicle_log_gpx_add_tag(char *tag, char **logstr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	char *ext_start = "\t<extensions>\n";
 	char *ext_end = "\t</extensions>\n";
 	char *trkpt_end = "</trkpt>";
@@ -565,6 +657,9 @@ void vehicle_log_gpx_add_tag(char *tag, char **logstr)
  */
 static void vehicle_log_gpx(struct vehicle *this_, struct log *log)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr attr, *attrp, fix_attr;
 	enum attr_type *attr_types;
 	char *logstr;
@@ -651,6 +746,9 @@ static void vehicle_log_gpx(struct vehicle *this_, struct log *log)
  */
 static void vehicle_log_textfile(struct vehicle *this_, struct log *log)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr pos_attr, fix_attr;
 	char *logstr;
 	if (!this_->meth.position_attr_get)
@@ -675,6 +773,9 @@ static void vehicle_log_textfile(struct vehicle *this_, struct log *log)
  */
 static void vehicle_log_binfile(struct vehicle *this_, struct log *log)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr pos_attr, fix_attr;
 	int *buffer;
 	int *buffer_new;
@@ -742,6 +843,9 @@ static void vehicle_log_binfile(struct vehicle *this_, struct log *log)
  */
 static int vehicle_add_log(struct vehicle *this_, struct log *log)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct callback *cb;
 	struct attr type_attr;
 	if (!log_get_attr(log, attr_type, &type_attr, NULL))
@@ -781,5 +885,16 @@ static int vehicle_add_log(struct vehicle *this_, struct log *log)
 	g_hash_table_insert(this_->log_to_cb, log, cb);
 	callback_list_add(this_->cbl, cb);
 	return 0;
+}
+
+void vehicle_update_(struct vehicle *this_, jobject location)
+{
+#ifdef HAVE_API_ANDROID
+	if (this_->meth.update_location_direct)
+	{
+		// dbg(0,"location=%p\n", location);
+		this_->meth.update_location_direct(location);
+	}
+#endif
 }
 

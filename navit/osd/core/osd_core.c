@@ -2535,7 +2535,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 			if (vehicle_attr.u.vehicle) {
 				if (vehicle_get_attr(vehicle_attr.u.vehicle, oti->attr_typ, &attr, NULL)) {
 					value=osd_text_format_attr(&attr, oti->format, imperial);
-					id_string=g_strdup_printf("vehicle:text:");
+					id_string=g_strdup_printf("vehicle:%s:", attr_to_name(oti->attr_typ));
 				}
 			}
 		}
@@ -2581,7 +2581,13 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 					if (tracking_get_attr(tracking, oti->attr_typ, &attr, NULL))
 					{
 						value=osd_text_format_attr(&attr, oti->format, imperial);
-						id_string=g_strdup_printf("tracking:text:");
+						id_string=g_strdup_printf("tracking:%s:", attr_to_name(oti->attr_typ));
+					}
+					else
+					{
+						// send blank value
+						value=g_strdup_printf("");
+						id_string=g_strdup_printf("tracking:%s:", attr_to_name(oti->attr_typ));
 					}
 				}
 			}

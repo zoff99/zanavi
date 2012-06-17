@@ -71,7 +71,7 @@ transform_setup_matrix(struct transformation *t)
 	int scale=t->scale;
 	int order_dir=-1;
 
-	dbg(1,"yaw=%d pitch=%d center=0x%x,0x%x\n", t->yaw, t->pitch, t->map_center.x, t->map_center.y);
+	//dbg(1,"yaw=%d pitch=%d center=0x%x,0x%x\n", t->yaw, t->pitch, t->map_center.x, t->map_center.y);
 	t->znear=1 << POST_SHIFT;
 	t->zfar=300*t->znear;
 	t->scale_shift=0;
@@ -89,10 +89,10 @@ transform_setup_matrix(struct transformation *t)
 		scale >>= 1;
 	}
 	fac=(1 << POST_SHIFT) * (1 << t->scale_shift) / t->scale;
-	dbg(1,"scale_shift=%d order=%d scale=%f fac=%f\n", t->scale_shift, t->order,t->scale,fac);
-	
-        t->m00=rollc*yawc*fac;
-        t->m01=rollc*yaws*fac;
+	//dbg(1,"scale_shift=%d order=%d scale=%f fac=%f\n", t->scale_shift, t->order,t->scale,fac);
+
+    t->m00=rollc*yawc*fac;
+    t->m01=rollc*yaws*fac;
 	t->m02=-rolls*fac;
 	t->m10=(pitchs*rolls*yawc-pitchc*yaws)*(-fac);
 	t->m11=(pitchs*rolls*yaws+pitchc*yawc)*(-fac);
@@ -103,10 +103,11 @@ transform_setup_matrix(struct transformation *t)
 
 	t->offx=t->screen_center.x;
 	t->offy=t->screen_center.y;
-	if (t->pitch) {
+	if (t->pitch)
+	{
 		t->ddd=1;
 		t->offz=t->screen_dist;
-		dbg(1,"near %d far %d\n",t->znear,t->zfar);
+		//dbg(1,"near %d far %d\n",t->znear,t->zfar);
 		t->xscale=t->xscale3d;
 		t->yscale=t->yscale3d;
 		t->wscale=t->wscale3d;
@@ -396,18 +397,24 @@ transform(struct transformation *t, enum projection pro, struct coord *c, struct
 	int zlimit=t->znear;
 	int visible, visibleo=-1;
 	int i,j = 0,k=0;
-	dbg(1,"count=%d\n", count);
-	for (i=0; i < count; i++) {
-		if (pro == t->pro) {
+	//dbg(1,"count=%d\n", count);
+	for (i=0; i < count; i++)
+	{
+		if (pro == t->pro)
+		{
 			xc=c[i].x;
 			yc=c[i].y;
-		} else {
+		}
+		else
+		{
 			transform_to_geo(pro, &c[i], &g);
 			transform_from_geo(t->pro, &g, &c1);
 			xc=c1.x;
 			yc=c1.y;
 		}
-		if (i != 0 && i != count-1 && mindist) {
+
+		if (i != 0 && i != count-1 && mindist)
+		{
 			if (xc > c[k].x-mindist && xc < c[k].x+mindist && yc > c[k].y-mindist && yc < c[k].y+mindist &&
 				(c[i+1].x != c[0].x || c[i+1].y != c[0].y))
 				continue;
@@ -427,40 +434,50 @@ transform(struct transformation *t, enum projection pro, struct coord *c, struct
 		xcn=xc*t->m00+yc*t->m01+HOG(*t)*t->m02;
 		ycn=xc*t->m10+yc*t->m11+HOG(*t)*t->m12;
 
-		if (t->ddd) {
+		if (t->ddd)
+		{
 			zc=(xc*t->m20+yc*t->m21+HOG(*t)*t->m22);
 			zct=zc;
 			zc+=t->offz << POST_SHIFT;
-			dbg(1,"zc=%d\n", zc);
-			dbg(1,"zc(%d)=xc(%d)*m20(%d)+yc(%d)*m21(%d)\n", (xc*t->m20+yc*t->m21), xc, t->m20, yc, t->m21);
+			//dbg(1,"zc=%d\n", zc);
+			//dbg(1,"zc(%d)=xc(%d)*m20(%d)+yc(%d)*m21(%d)\n", (xc*t->m20+yc*t->m21), xc, t->m20, yc, t->m21);
 			/* visibility */
 			visible=(zc < zlimit ? 0:1);
-			dbg(1,"visible=%d old %d\n", visible, visibleo);
-			if (visible != visibleo && visibleo != -1) { 
-				dbg(1,"clipping (%d,%d,%d)-(%d,%d,%d) (%d,%d,%d)\n", xcn, ycn, zc, xco, yco, zco, xco-xcn, yco-ycn, zco-zc);
-				if (zco != zc) {
+			//dbg(1,"visible=%d old %d\n", visible, visibleo);
+			if (visible != visibleo && visibleo != -1)
+			{
+				//dbg(1,"clipping (%d,%d,%d)-(%d,%d,%d) (%d,%d,%d)\n", xcn, ycn, zc, xco, yco, zco, xco-xcn, yco-ycn, zco-zc);
+				if (zco != zc)
+				{
 					xcn=xcn+(long long)(xco-xcn)*(zlimit-zc)/(zco-zc);
 					ycn=ycn+(long long)(yco-ycn)*(zlimit-zc)/(zco-zc);
 				}
-				dbg(1,"result (%d,%d,%d) * %d / %d\n", xcn,ycn,zc,zlimit-zc,zco-zc);
+				//dbg(1,"result (%d,%d,%d) * %d / %d\n", xcn,ycn,zc,zlimit-zc,zco-zc);
 				zc=zlimit;
 				xco=xcn;
 				yco=ycn;
 				zco=zc;
 				if (visible)
+				{
 					i--;
+				}
 				visibleo=visible;
-			} else {
+			}
+			else
+			{
 				xco=xcn;
 				yco=ycn;
 				zco=zc;
 				visibleo=visible;
+
 				if (! visible)
+				{
 					continue;
+				}
 			}
-			dbg(1,"zc=%d\n", zc);
-			dbg(1,"xcn %d ycn %d\n", xcn, ycn);
-			dbg(1,"%d,%d %d\n",xc,yc,zc);
+			//dbg(1,"zc=%d\n", zc);
+			//dbg(1,"xcn %d ycn %d\n", xcn, ycn);
+			//dbg(1,"%d,%d %d\n",xc,yc,zc);
 #if 0
 			dbg(0,"%d/%d=%d %d/%d=%d\n",xcn,xc,xcn/xc,ycn,yc,ycn/yc);
 #endif
@@ -474,21 +491,30 @@ transform(struct transformation *t, enum projection pro, struct coord *c, struct
 #if 0
 			dbg(1,"%d,%d %d\n",xc,yc,zc);
 #endif
-		} else {
+		}
+		else
+		{
 			xc=xcn;
 			yc=ycn;
 			xc>>=POST_SHIFT;
 			yc>>=POST_SHIFT;
 		}
+
 		xc+=t->offx;
 		yc+=t->offy;
 		p[j].x=xc;
 		p[j].y=yc;
-		if (width_return) {
-			if (t->ddd) 
+
+		if (width_return)
+		{
+			if (t->ddd)
+			{
 				width_return[j]=width*t->wscale/zc;
-			else 
+			}
+			else
+			{
 				width_return[j]=width;
+			}
 		}
 		j++;
 	}
@@ -1150,18 +1176,32 @@ transform_distance_polyline_sq(struct coord *c, int count, struct coord *ref, st
 	int i,dist,distn;
 	struct coord lp;
 	if (count < 2)
+	{
+		// dbg(0,"1\n");
 		return INT_MAX;
+	}
 	if (pos)
+	{
 		*pos=0;
+	}
+
 	dist=transform_distance_line_sq(&c[0], &c[1], ref, lpnt);
-	for (i=2 ; i < count ; i++) {
+	// dbg(0,"dist:%d\n", dist);
+
+	for (i = 2; i < count; i++)
+	{
 		distn=transform_distance_line_sq(&c[i-1], &c[i], ref, &lp);
-		if (distn < dist) {
+		if (distn < dist)
+		{
 			dist=distn;
 			if (lpnt)
+			{
 				*lpnt=lp;
+			}
 			if (pos)
+			{
 				*pos=i-1;
+			}
 		}
 	}
 	return dist;

@@ -657,7 +657,7 @@ attr_from_line(char *line, char *name, int *pos, char *val_ret, char *name_ret)
 	int len=0,quoted;
 	char *p,*e,*n;
 
-	dbg(1,"get_tag %s from %s\n", name, line); 
+	// dbg(1,"get_tag %s from %s\n", name, line); 
 	if (name)
 		len=strlen(name);
 	if (pos) 

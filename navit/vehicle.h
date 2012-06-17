@@ -27,10 +27,20 @@ extern "C" {
 struct point;
 struct vehicle_priv;
 
-struct vehicle_methods {
+#ifdef HAVE_API_ANDROID
+#include <jni.h>
+#endif
+
+#ifndef HAVE_API_ANDROID
+typedef int jobject;
+#endif
+
+struct vehicle_methods
+{
 	void (*destroy)(struct vehicle_priv *priv);
 	int (*position_attr_get)(struct vehicle_priv *priv, enum attr_type type, struct attr *attr);
 	int (*set_attr)(struct vehicle_priv *priv, struct attr *attr);
+	void (*update_location_direct)(jobject location);
 };
 
 /* prototypes */
@@ -53,6 +63,9 @@ void vehicle_set_cursor(struct vehicle *this_, struct cursor *cursor, int overwr
 void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt, int lazy, int angle, int speed);
 int vehicle_get_cursor_data(struct vehicle *this_, struct point *pnt, int *angle, int *speed);
 void vehicle_log_gpx_add_tag(char *tag, char **logstr);
+
+void vehicle_update_(struct vehicle *this_, jobject location);
+
 /* end of prototypes */
 
 #ifdef __cplusplus

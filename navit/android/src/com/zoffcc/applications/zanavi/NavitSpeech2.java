@@ -247,7 +247,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 
 	public static void stop_me()
 	{
-		Log.e("NavitSpeech2", "shutdown");
+		// Log.e("NavitSpeech2", "shutdown");
 		try
 		{
 			mTts.shutdown();

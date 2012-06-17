@@ -349,12 +349,16 @@ tracking_get_attr(struct tracking *_this, enum attr_type type, struct attr *attr
 	struct item *item;
 	struct map_rect *mr;
 	int result=0;
-	dbg(1,"enter %s\n",attr_to_name(type));
-	if (_this->attr) {
+	// dbg(1,"enter %s\n",attr_to_name(type));
+
+	if (_this->attr)
+	{
 		attr_free(_this->attr);
 		_this->attr=NULL;
 	}
-	switch (type) {
+
+	switch (type)
+	{
 	case attr_position_valid:
 		attr->u.num=_this->valid;
 		return 1;
@@ -368,7 +372,8 @@ tracking_get_attr(struct tracking *_this, enum attr_type type, struct attr *attr
 		attr->u.num=_this->street_direction;
 		return 1;
 	case attr_position_coord_geo:
-		if (!_this->coord_geo_valid) {
+		if (!_this->coord_geo_valid)
+		{
 			struct coord c;
 			c.x=_this->curr_out.x;
 			c.y=_this->curr_out.y;
@@ -388,7 +393,8 @@ tracking_get_attr(struct tracking *_this, enum attr_type type, struct attr *attr
 		item=&_this->curr_line->street->item;
 		mr=map_rect_new(item->map,NULL);
 		item=map_rect_get_item_byid(mr, item->id_hi, item->id_lo);
-		if (item_attr_get(item, type, attr)) {
+		if (item_attr_get(item, type, attr))
+		{
 			_this->attr=attr_dup(attr);
 			*attr=*_this->attr;
 			result=1;

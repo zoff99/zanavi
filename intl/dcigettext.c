@@ -144,6 +144,15 @@ extern int errno;
 # endif
 # define tfind __tfind
 #else
+//
+// # zoff ####
+// # zoff ####
+#ifdef HAVE_API_ANDROID
+# define HAVE_GETCWD
+#endif
+// # zoff ####
+// # zoff ####
+//
 # if !defined HAVE_GETCWD
 char *getwd ();
 #  define getcwd(buf, max) getwd (buf)
@@ -154,6 +163,9 @@ char *getwd ();
 char *getcwd ();
 #  endif
 # endif
+
+
+
 # ifndef HAVE_STPCPY
 static char *stpcpy (char *dest, const char *src);
 # endif

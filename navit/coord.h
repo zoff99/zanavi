@@ -142,6 +142,10 @@ struct attr;
 struct coord;
 struct coord_rect;
 struct pcoord;
+
+float sqrtf_fast2(float x2);
+float sqrtf_fast(float number2);
+
 struct coord *coord_get(unsigned char **p);
 struct coord *coord_new(int x, int y);
 struct coord *coord_new_from_attrs(struct attr *parent, struct attr **attrs);

@@ -1,11 +1,11 @@
-/*
+/**
  * 
- * Enhanced by Zoff (c) 2011
+ * Enhanced by Zoff (c) 2011 - 2012
  * zoff@zanavi.cc
  * 
  */
 
-/*
+/**
  * Copyright (c) 2010, Jeffrey F. Cole
  * All rights reserved.
  *
@@ -40,7 +40,9 @@ package net.technologichron.manacalc;
 
 import android.content.Context;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -202,6 +204,7 @@ public class NumberPicker extends LinearLayout
 		{
 			public boolean onKey(View v, int arg1, KeyEvent event)
 			{
+				//System.out.println("xx222222222222");
 				int backupValue = value;
 				try
 				{
@@ -212,6 +215,34 @@ public class NumberPicker extends LinearLayout
 					value = backupValue;
 				}
 				return false;
+			}
+		});
+
+		valueText.addTextChangedListener(new TextWatcher()
+		{
+			@Override
+			public void afterTextChanged(Editable s)
+			{
+				//System.out.println("xxxxxxxx111");
+				int backupValue = value;
+				try
+				{
+					value = Integer.parseInt(valueText.getText().toString());
+				}
+				catch (NumberFormatException nfe)
+				{
+					value = backupValue;
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after)
+			{
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
 			}
 		});
 

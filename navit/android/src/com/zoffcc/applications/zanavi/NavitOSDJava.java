@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,6 +41,9 @@ public class NavitOSDJava extends ImageView
 
 	private static Boolean show_scale = false;
 
+	private static Boolean one_shot = false;
+	private static long last_paint_me = 0L;
+
 	static Bitmap compass_b = null;
 	static Canvas compass_c = null;
 	static int compass_radius = 0;
@@ -76,6 +79,8 @@ public class NavitOSDJava extends ImageView
 	static Canvas nt_c = null;
 	static int nt_lt_x = 0;
 	static int nt_lt_y = 0;
+	static int nt_lt_xB = 0;
+	static int nt_lt_yB = 0;
 	static int nt_text_start_x = 0;
 	static int nt_text_start_y = 0;
 	static int nt_w = 0;
@@ -111,6 +116,22 @@ public class NavitOSDJava extends ImageView
 	static int nextt_lt_y = 0;
 	static int nextt_w = 0;
 	static int nextt_h = 0;
+	static int nextt_lt_xB = 0;
+	static int nextt_lt_yB = 0;
+	static int nextt_wB = 0;
+	static int nextt_hB = 0;
+
+	static int nextt_str_ltx = 0;
+	static int nextt_str_lty = 0;
+	static int nextt_str_ltxB = 0;
+	static int nextt_str_ltyB = 0;
+	static int nextt_str_w = 0;
+	static int nextt_str_h = 0;
+	static int nextt_str_wB = 0;
+	static int nextt_str_hB = 0;
+	static int nextt_str_font_size = 0;
+	static int nextt_str_start_x = 0;
+	static int nextt_str_start_y = 0;
 
 	static int sat_status_lt_x = 0;
 	static int sat_status_lt_y = 0;
@@ -230,11 +251,47 @@ public class NavitOSDJava extends ImageView
 		scale_text_start_y = (int) (30 * real_factor);
 		scale_font_size = (int) (24 * real_factor);
 
+		// next turn icons
 		nextt_w = (int) (100 * real_factor);
 		nextt_h = (int) (100 * real_factor);
 		nextt_lt_x = (int) (10 * real_factor);
 		nextt_lt_y = (int) (mCanvasHeight - 50 * real_factor) - nextt_h - 5;
+		// next turn icons
 
+		// next turn icons -- BIG --
+		int smaller_size = mCanvasWidth;
+		float shrink_factor = 0.65f;
+		if (mCanvasWidth > mCanvasHeight)
+		{
+			// phone is turned in landscape-mode
+			smaller_size = mCanvasHeight;
+			shrink_factor = 0.43f;
+		}
+
+		nextt_wB = (int) (smaller_size * shrink_factor);
+		nextt_hB = (int) (smaller_size * shrink_factor);
+		nextt_lt_xB = (int) ((mCanvasWidth - nextt_wB) / 2);
+		nextt_lt_yB = (int) (60 * real_factor);
+		// next turn icons -- BIG --
+
+		// next turn streetname --
+		nextt_str_w = mCanvasWidth;
+		nextt_str_h = (int) (65 * real_factor);
+		nextt_str_ltx = 0;
+		nextt_str_lty = 20;
+		nextt_str_font_size = (int) (41 * real_factor);
+		nextt_str_start_x = 8;
+		nextt_str_start_y = (int) (46 * real_factor);
+		// next turn streetname --
+
+		// next turn streetname -- BIG --
+		nextt_str_wB = mCanvasWidth;
+		nextt_str_hB = (int) (65 * real_factor);
+		nextt_str_ltxB = 0;
+		nextt_str_ltyB = nextt_lt_yB + nextt_hB + 4;
+		// next turn streetname -- BIG --
+
+		// next turn in XX m --
 		nt_w = (int) (100 * real_factor);
 		nt_h = (int) (40 * real_factor);
 		nt_lt_x = (int) (10 * real_factor);
@@ -242,6 +299,12 @@ public class NavitOSDJava extends ImageView
 		nt_text_start_x = (int) (20 * real_factor);
 		nt_text_start_y = (int) (30 * real_factor);
 		nt_font_size = (int) (24 * real_factor);
+		// next turn in XX m --
+
+		// next turn in XX m -- BIG --
+		nt_lt_xB = nextt_lt_xB;
+		nt_lt_yB = nextt_lt_yB - nt_h - 4;
+		// next turn in XX m -- BIG --
 
 		if (compass_b != null)
 		{
@@ -289,6 +352,28 @@ public class NavitOSDJava extends ImageView
 
 	public static void draw_real()
 	{
+		//if (!NavitGraphics.MAP_DISPLAY_OFF)
+		//{
+		/*
+		 * if ((last_paint_me + 100) < System.currentTimeMillis())
+		 * {
+		 * try
+		 * {
+		 * last_paint_me = System.currentTimeMillis();
+		 * }
+		 * catch (Exception r)
+		 * {
+		 * //r.printStackTrace();
+		 * }
+		 * }
+		 * else
+		 * {
+		 * return;
+		 * }
+		 */
+		//}
+		//System.out.println("draw real 1");
+
 		try
 		{
 			compass_c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -304,39 +389,44 @@ public class NavitOSDJava extends ImageView
 			int dest_valid = NavitGraphics.CallbackDestinationValid2();
 
 			did_draw_circle = false;
-			if (Navit.OSD_compass.angle_north_valid)
+			if (!NavitGraphics.MAP_DISPLAY_OFF)
 			{
-				paint.setColor(Color.BLACK);
-				paint.setStyle(Paint.Style.STROKE);
-				paint.setStrokeWidth(2);
-				paint.setAntiAlias(true);
-				compass_c.drawCircle(compass_center_x, compass_center_y, compass_radius, paint);
-				did_draw_circle = true;
-				int end_x = (int) ((float) Math.sin((float) Math.toRadians(Navit.OSD_compass.angle_north)) * compass_radius);
-				int end_y = (int) ((float) Math.cos((float) Math.toRadians(Navit.OSD_compass.angle_north)) * compass_radius);
-				// System.out.println("x " + end_x + " y " + end_y);
-				compass_c.drawLine(compass_center_x - end_x, compass_center_y + end_y, compass_center_x, compass_center_y, paint);
-				paint.setColor(Color.RED);
-				paint.setStrokeWidth(4);
-				compass_c.drawLine(compass_center_x + end_x, compass_center_y - end_y, compass_center_x, compass_center_y, paint);
-			}
-			if ((Navit.OSD_compass.angle_target_valid) && (dest_valid > 0))
-			{
-				paint.setColor(Color.BLACK);
-				paint.setStyle(Paint.Style.STROKE);
-				paint.setStrokeWidth(2);
-				paint.setAntiAlias(true);
-				if (!did_draw_circle)
+
+				if (Navit.OSD_compass.angle_north_valid)
 				{
+					paint.setColor(Color.BLACK);
+					paint.setStyle(Paint.Style.STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
 					compass_c.drawCircle(compass_center_x, compass_center_y, compass_radius, paint);
 					did_draw_circle = true;
+					int end_x = (int) ((float) Math.sin((float) Math.toRadians(Navit.OSD_compass.angle_north)) * compass_radius);
+					int end_y = (int) ((float) Math.cos((float) Math.toRadians(Navit.OSD_compass.angle_north)) * compass_radius);
+					// System.out.println("x " + end_x + " y " + end_y);
+					compass_c.drawLine(compass_center_x - end_x, compass_center_y + end_y, compass_center_x, compass_center_y, paint);
+					paint.setColor(Color.RED);
+					paint.setStrokeWidth(4);
+					compass_c.drawLine(compass_center_x + end_x, compass_center_y - end_y, compass_center_x, compass_center_y, paint);
 				}
-				int end_x = (int) ((float) Math.sin((float) Math.toRadians(Navit.OSD_compass.angle_target)) * compass_radius);
-				int end_y = (int) ((float) Math.cos((float) Math.toRadians(Navit.OSD_compass.angle_target)) * compass_radius);
-				// System.out.println("x " + end_x + " y " + end_y);
-				paint.setColor(Color.GREEN);
-				compass_c.drawLine(compass_center_x, compass_center_y, compass_center_x + end_x, compass_center_y - end_y, paint);
+				if ((Navit.OSD_compass.angle_target_valid) && (dest_valid > 0))
+				{
+					paint.setColor(Color.BLACK);
+					paint.setStyle(Paint.Style.STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					if (!did_draw_circle)
+					{
+						compass_c.drawCircle(compass_center_x, compass_center_y, compass_radius, paint);
+						did_draw_circle = true;
+					}
+					int end_x = (int) ((float) Math.sin((float) Math.toRadians(Navit.OSD_compass.angle_target)) * compass_radius);
+					int end_y = (int) ((float) Math.cos((float) Math.toRadians(Navit.OSD_compass.angle_target)) * compass_radius);
+					// System.out.println("x " + end_x + " y " + end_y);
+					paint.setColor(Color.GREEN);
+					compass_c.drawLine(compass_center_x, compass_center_y, compass_center_x + end_x, compass_center_y - end_y, paint);
+				}
 			}
+
 			if ((Navit.OSD_compass.direct_distance_to_target_valid) && (dest_valid > 0))
 			{
 				paint.setColor(Color.argb(140, 136, 136, 136));
@@ -384,18 +474,36 @@ public class NavitOSDJava extends ImageView
 			}
 			if ((Navit.OSD_nextturn.nextturn_distance_valid) && (dest_valid > 0))
 			{
-				paint.setColor(Color.argb(140, 136, 136, 136));
-				paint.setStyle(Paint.Style.FILL_AND_STROKE);
-				paint.setStrokeWidth(2);
-				paint.setAntiAlias(true);
-				nt_c.drawRoundRect(new RectF(0, 0, nt_w, nt_h), 10, 10, paint);
+				if (NavitGraphics.MAP_DISPLAY_OFF)
+				{
+					paint.setColor(Color.argb(255, 20, 20, 230));
+					paint.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					nt_c.drawRoundRect(new RectF(0, 0, nt_w, nt_h), 10, 10, paint);
 
-				paint.setColor(Color.BLACK);
-				paint.setStrokeWidth(3);
-				paint.setStyle(Paint.Style.FILL);
-				paint.setTextSize(nt_font_size);
-				paint.setAntiAlias(true);
-				nt_c.drawText(Navit.OSD_nextturn.nextturn_distance, nt_text_start_x, nt_text_start_y, paint);
+					paint.setColor(Color.WHITE);
+					paint.setStrokeWidth(3);
+					paint.setStyle(Paint.Style.FILL);
+					paint.setTextSize(nt_font_size);
+					paint.setAntiAlias(true);
+					nt_c.drawText(Navit.OSD_nextturn.nextturn_distance, nt_text_start_x, nt_text_start_y, paint);
+				}
+				else
+				{
+					paint.setColor(Color.argb(140, 136, 136, 136));
+					paint.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					nt_c.drawRoundRect(new RectF(0, 0, nt_w, nt_h), 10, 10, paint);
+
+					paint.setColor(Color.BLACK);
+					paint.setStrokeWidth(3);
+					paint.setStyle(Paint.Style.FILL);
+					paint.setTextSize(nt_font_size);
+					paint.setAntiAlias(true);
+					nt_c.drawText(Navit.OSD_nextturn.nextturn_distance, nt_text_start_x, nt_text_start_y, paint);
+				}
 			}
 
 			if (show_scale)
@@ -423,10 +531,16 @@ public class NavitOSDJava extends ImageView
 			e.printStackTrace();
 		}
 
+		if (NavitGraphics.MAP_DISPLAY_OFF)
+		{
+			one_shot = true;
+		}
 	}
 
 	public void onDraw(Canvas c)
 	{
+		//System.out.println("draw real 2");
+
 		try
 		{
 			c.drawBitmap(compass_b, compass_lt_x, compass_lt_y, null);
@@ -474,7 +588,14 @@ public class NavitOSDJava extends ImageView
 
 		try
 		{
-			c.drawBitmap(nt_b, nt_lt_x, nt_lt_y, null);
+			if (NavitGraphics.MAP_DISPLAY_OFF)
+			{
+				c.drawBitmap(nt_b, nt_lt_xB, nt_lt_yB, null);
+			}
+			else
+			{
+				c.drawBitmap(nt_b, nt_lt_x, nt_lt_y, null);
+			}
 		}
 		catch (Exception e)
 		{
@@ -483,15 +604,96 @@ public class NavitOSDJava extends ImageView
 
 		try
 		{
+			if ((Navit.OSD_nextturn.nextturn_streetname != null) || (Navit.PREF_follow_gps))
+			{
+				if (NavitGraphics.MAP_DISPLAY_OFF)
+				{
+					paint.setColor(Color.argb(255, 20, 20, 230));
+					paint.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					c.drawRoundRect(new RectF(nextt_str_ltxB, nextt_str_ltyB, nextt_str_ltxB + nextt_str_wB, nextt_str_ltyB + nextt_str_hB), 10, 10, paint);
+					paint.setColor(Color.WHITE);
+					paint.setStrokeWidth(3);
+					paint.setStyle(Paint.Style.FILL);
+					if (Navit.OSD_nextturn.nextturn_streetname.length() > (nextt_str_ltxB + nextt_str_wB) / 25)
+					{
+						paint.setTextSize((int) (nextt_str_font_size * 0.70));
+					}
+					else
+					{
+						paint.setTextSize(nextt_str_font_size);
+					}
+					paint.setAntiAlias(true);
+					c.drawText(Navit.OSD_nextturn.nextturn_streetname_systematic + " " + Navit.OSD_nextturn.nextturn_streetname, nextt_str_ltxB + nextt_str_start_x, nextt_str_ltyB + nextt_str_start_y, paint);
+				}
+				else
+				{
+					paint.setColor(Color.argb(140, 136, 136, 136));
+					paint.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					c.drawRoundRect(new RectF(nextt_str_ltxB, nextt_str_lty, nextt_str_ltx + nextt_str_w, nextt_str_lty + nextt_str_h), 10, 10, paint);
+					paint.setColor(Color.BLACK);
+					paint.setStrokeWidth(3);
+					paint.setStyle(Paint.Style.FILL);
+					if (Navit.OSD_nextturn.nextturn_streetname.length() > (nextt_str_ltxB + nextt_str_wB) / 25)
+					{
+						paint.setTextSize((int) (nextt_str_font_size * 0.70));
+					}
+					else
+					{
+						paint.setTextSize(nextt_str_font_size);
+					}
+					paint.setAntiAlias(true);
+					c.drawText(Navit.OSD_nextturn.nextturn_streetname_systematic + " " + Navit.OSD_nextturn.nextturn_streetname, nextt_str_ltx + nextt_str_start_x, nextt_str_lty + nextt_str_start_y, paint);
+				}
+			}
+			else
+			{
+				paint.setColor(Color.argb(0, 0, 0, 0));
+				paint.setStyle(Paint.Style.FILL);
+				paint.setStrokeWidth(3);
+				paint.setAntiAlias(false);
+				if (NavitGraphics.MAP_DISPLAY_OFF)
+				{
+					c.drawRect(new RectF(nextt_str_ltxB, nextt_str_ltyB, nextt_str_ltxB + nextt_str_wB, nextt_str_ltyB + nextt_str_hB), paint);
+				}
+				else
+				{
+					c.drawRect(new RectF(nextt_str_ltx, nextt_str_lty, nextt_str_ltx + nextt_str_w, nextt_str_lty + nextt_str_h), paint);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+
+		}
+
+		try
+		{
 			if ((Navit.OSD_nextturn.nextturn_image_valid) && (NavitGraphics.CallbackDestinationValid2() > 0))
 			{
-				paint.setColor(Color.argb(140, 136, 136, 136));
-				paint.setStyle(Paint.Style.FILL_AND_STROKE);
-				paint.setStrokeWidth(2);
-				paint.setAntiAlias(true);
-				c.drawRoundRect(new RectF(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h), 10, 10, paint);
-				Rect dst = new Rect(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h);
-				c.drawBitmap(Navit.OSD_nextturn.nextturn_image, null, dst, null);
+				if (NavitGraphics.MAP_DISPLAY_OFF)
+				{
+					paint.setColor(Color.argb(255, 20, 20, 230));
+					paint.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					c.drawRoundRect(new RectF(nextt_lt_xB, nextt_lt_yB, nextt_lt_xB + nextt_wB, nextt_lt_yB + nextt_hB), 10, 10, paint);
+					Rect dst = new Rect(nextt_lt_xB, nextt_lt_yB, nextt_lt_xB + nextt_wB, nextt_lt_yB + nextt_hB);
+					c.drawBitmap(Navit.OSD_nextturn.nextturn_image, null, dst, null);
+				}
+				else
+				{
+					paint.setColor(Color.argb(140, 136, 136, 136));
+					paint.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint.setStrokeWidth(2);
+					paint.setAntiAlias(true);
+					c.drawRoundRect(new RectF(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h), 10, 10, paint);
+					Rect dst = new Rect(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h);
+					c.drawBitmap(Navit.OSD_nextturn.nextturn_image, null, dst, null);
+				}
 				// c.drawBitmap(Navit.OSD_nextturn.nextturn_image, nextt_lt_x, nextt_lt_y, null);
 			}
 			else
@@ -500,7 +702,14 @@ public class NavitOSDJava extends ImageView
 				paint.setStyle(Paint.Style.FILL);
 				paint.setStrokeWidth(3);
 				paint.setAntiAlias(false);
-				c.drawRect(new RectF(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h), paint);
+				if (NavitGraphics.MAP_DISPLAY_OFF)
+				{
+					c.drawRect(new RectF(nextt_lt_xB, nextt_lt_yB, nextt_lt_xB + nextt_wB, nextt_lt_yB + nextt_hB), paint);
+				}
+				else
+				{
+					c.drawRect(new RectF(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h), paint);
+				}
 				//c.clipRect(nextt_lt_x, nextt_lt_y, nextt_lt_x + nextt_w, nextt_lt_y + nextt_h);
 				//c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 			}
@@ -546,6 +755,34 @@ public class NavitOSDJava extends ImageView
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+
+		if (!Navit.PREF_follow_gps)
+		{
+			if (!NavitGraphics.MAP_DISPLAY_OFF)
+			{
+				// show cross hair
+				paint.setColor(Color.DKGRAY);
+				paint.setStyle(Paint.Style.STROKE);
+				paint.setStrokeWidth(1);
+				paint.setAntiAlias(true);
+				int wm = mCanvasWidth / 2;
+				int hm = mCanvasHeight / 2;
+				c.drawLine(wm - 8, hm, wm - 35, hm, paint);
+				c.drawLine(wm + 8, hm, wm + 35, hm, paint);
+				c.drawLine(wm, hm - 8, wm, hm - 35, paint);
+				c.drawLine(wm, hm + 8, wm, hm + 35, paint);
+			}
+		}
+
+		if (NavitGraphics.MAP_DISPLAY_OFF)
+		{
+			if (one_shot)
+			{
+				//System.out.println("one shot");
+				one_shot = false;
+				this.postInvalidate();
+			}
 		}
 	}
 

@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -278,7 +297,7 @@ static struct route_path *route_path_new(struct route_graph *this,
 static void route_process_street_graph(struct route_graph *this,
 		struct item *item, struct vehicleprofile *profile);
 //static void route_graph_destroy(struct route_graph *this);
-static void route_path_update(struct route *this, int cancel, int async);
+void route_path_update(struct route *this, int cancel, int async);
 static int route_time_seg(struct vehicleprofile *profile,
 		struct route_segment_data *over, struct route_traffic_distortion *dist);
 static void route_graph_flood(struct route_graph *this, struct route_info *dst,
@@ -780,7 +799,7 @@ static void route_path_update_done(struct route *this, int new_graph)
 	else
 	{
 		route_status.u.num = route_status_not_found;
-		dbg(0, "try harder\n");
+		// dbg(0, "try harder\n");
 		// Try to rebuild the graph with smaller roads
 		if (this->try_harder == 0)
 		{
@@ -805,7 +824,7 @@ static void route_path_update_done(struct route *this, int new_graph)
  *
  * @param this The route to update
  */
-static void route_path_update(struct route *this, int cancel, int async)
+void route_path_update(struct route *this, int cancel, int async)
 {
 	//dbg(1, "enter %d\n", cancel);
 	if (!this->pos || !this->destinations)
@@ -2019,6 +2038,8 @@ static int route_value_seg(struct vehicleprofile *profile,
 static void route_process_traffic_distortion(struct route_graph *this,
 		struct item *item)
 {
+	//dbg(0,"EEnter\n");
+
 	struct route_graph_point *s_pnt, *e_pnt;
 	struct coord c, l;
 	struct attr delay_attr, maxspeed_attr;
@@ -2037,16 +2058,22 @@ static void route_process_traffic_distortion(struct route_graph *this,
 		{
 			l = c;
 		}
+
 		e_pnt = route_graph_add_point(this, &l);
 		s_pnt->flags |= RP_TRAFFIC_DISTORTION;
 		e_pnt->flags |= RP_TRAFFIC_DISTORTION;
+
 		if (item_attr_get(item, attr_maxspeed, &maxspeed_attr))
 		{
 			data.flags |= AF_SPEED_LIMIT;
 			data.maxspeed = maxspeed_attr.u.num;
 		}
+
 		if (item_attr_get(item, attr_delay, &delay_attr))
+		{
 			data.len = delay_attr.u.num;
+		}
+		//dbg(0,"add traffic distortion segment, speed=%d\n", data.maxspeed);
 		route_graph_add_segment(this, s_pnt, e_pnt, &data);
 	}
 }
@@ -2863,7 +2890,9 @@ static void route_graph_build_idle(struct route_graph *rg,
 			}
 		}
 		if (item->type == type_traffic_distortion)
+		{
 			route_process_traffic_distortion(rg, item);
+		}
 		else if (item->type == type_street_turn_restriction_no || item->type
 				== type_street_turn_restriction_only)
 			route_process_turn_restriction(rg, item);
@@ -2902,17 +2931,21 @@ route_graph_build(struct mapset *ms, struct coord *c, int count,
 	ret->h = mapset_open(ms);
 	ret->done_cb = done_cb;
 	ret->busy = 1;
+
 	if (route_graph_build_next_map(ret))
 	{
+
+// ------ xxxxxx ----
 		if (async)
 		{
-			ret->idle_cb = callback_new_2(
-					callback_cast(route_graph_build_idle), ret, profile);
+			ret->idle_cb = callback_new_2(callback_cast(route_graph_build_idle), ret, profile);
 			ret->idle_ev = event_add_idle(50, ret->idle_cb);
 		}
 	}
 	else
+	{
 		route_graph_build_done(ret, 0);
+	}
 
 	return ret;
 }
@@ -2955,12 +2988,16 @@ static void route_graph_update(struct route *this, struct callback *cb,
 		c[i++] = dst->c;
 		tmp = g_list_next(tmp);
 	}
+
 	this->graph = route_graph_build(this->ms, c, i, this->route_graph_done_cb,
 			async, this->vehicleprofile, this->try_harder);
+
 	if (!async)
 	{
 		while (this->graph->busy)
+		{
 			route_graph_build_idle(this->graph, this->vehicleprofile);
+		}
 	}
 }
 
@@ -2981,10 +3018,7 @@ street_get_data(struct item *item)
 
 	do
 	{
-		ret1 = g_realloc(
-				ret,
-				sizeof(struct street_data) + (count + step)
-						* sizeof(struct coord));
+		ret1 = g_realloc(ret, sizeof(struct street_data) + (count + step)	* sizeof(struct coord));
 		if (!ret1)
 		{
 			if (ret)
@@ -2997,8 +3031,7 @@ street_get_data(struct item *item)
 	}
 	while (c && c == step);
 
-	ret1 = g_realloc(ret,
-			sizeof(struct street_data) + count * sizeof(struct coord));
+	ret1 = g_realloc(ret, sizeof(struct street_data) + count * sizeof(struct coord));
 	if (ret1)
 		ret = ret1;
 	ret->item = *item;

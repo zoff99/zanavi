@@ -105,10 +105,12 @@ speech_android_init(struct speech_priv *ret)
 	jmethodID cid;
 	char *class="com/zoffcc/applications/zanavi/NavitSpeech2";
 
-	if (ret->flags & 1) 
-	{
-		class="com/zoffcc/applications/zanavi/NavitSpeech";
-	}
+	// obsolete ----------
+	//if (ret->flags & 1)
+	//{
+	//	class="com/zoffcc/applications/zanavi/NavitSpeech";
+	//}
+	// obsolete ----------
 
 	if (!android_find_class_global(class, &ret->NavitSpeechClass))
 	{
@@ -155,10 +157,16 @@ speech_android_new(struct speech_methods *meth, struct attr **attrs, struct attr
 		g_free(this);
 		this=NULL;
 	}
+
 	if (android_version < 4)
+	{
 		this->flags=3;
+	}
+
 	if ((flags = attr_search(attrs, NULL, attr_flags)))
+	{
 		this->flags=flags->u.num;
+	}
 	
 	return this;
 }
@@ -169,3 +177,4 @@ plugin_init(void)
 {
 	plugin_register_speech_type("android", speech_android_new);
 }
+

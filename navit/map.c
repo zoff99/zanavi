@@ -51,8 +51,6 @@
 #include "callback.h"
 #include "country.h"
 
-
-
 /**
  * @brief Opens a new map
  *
@@ -70,51 +68,56 @@
 struct map *
 map_new(struct attr *parent, struct attr **attrs)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct map *m;
 	struct map_priv *(*maptype_new)(struct map_methods *meth, struct attr **attrs, struct callback_list *cbl);
-	struct attr *type=attr_search(attrs, NULL, attr_type);
+	struct attr *type = attr_search(attrs, NULL, attr_type);
 
-	if (! type)
+	if (!type)
 	{
-		dbg(0,"missing type\n");
+		dbg(0, "missing type\n");
 		return NULL;
 	}
 	//dbg(0,"type='%s'\n", type->u.str);
-	maptype_new=plugin_get_map_type(type->u.str);
-	if (! maptype_new)
+	maptype_new = plugin_get_map_type(type->u.str);
+	if (!maptype_new)
 	{
-		dbg(0,"invalid type '%s'\n", type->u.str);
+		dbg(0, "invalid type '%s'\n", type->u.str);
 		return NULL;
 	}
 	//dbg(0,"MM 1");
 
 	m=g_new0(struct map, 1);
-	m->attrs=attr_list_dup(attrs);
-	m->attr_cbl=callback_list_new();
+	m->attrs = attr_list_dup(attrs);
+	m->attr_cbl = callback_list_new();
 	//dbg(0,"MM 2");
-	m->priv=maptype_new(&m->meth, attrs, m->attr_cbl);
+	m->priv = maptype_new(&m->meth, attrs, m->attr_cbl);
 	//dbg(0,"MM 3");
-	if (! m->priv)
+	if (!m->priv)
 	{
 		m->refcount = 1;
 		//dbg(0,"MM 4");
 		map_destroy(m);
 		//dbg(0,"MM 5");
-		m=NULL;
+		m = NULL;
 	}
-	else {
+	else
+	{
 		m->refcount = 0;
 	}
 	//dbg(0,"MM 6");
 	return m;
 }
 
-void
-map_ref(struct map* m)
+void map_ref(struct map* m)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	m->refcount++;
 }
-
 
 /**
  * @brief Gets an attribute from a map
@@ -125,14 +128,16 @@ map_ref(struct map* m)
  * @param iter (NOT IMPLEMENTED) Used to iterate through all attributes of a type. Set this to NULL to get the first attribute, set this to an attr_iter to get the next attribute
  * @return True if the attribute type was found, false if not
  */
-int
-map_get_attr(struct map *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter)
+int map_get_attr(struct map *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
-	int ret=0;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	int ret = 0;
 	if (this_->meth.map_get_attr)
-		ret=this_->meth.map_get_attr(this_->priv, type, attr);
+		ret = this_->meth.map_get_attr(this_->priv, type, attr);
 	if (!ret)
-		ret=attr_generic_get_attr(this_->attrs, NULL, type, attr, iter);
+		ret = attr_generic_get_attr(this_->attrs, NULL, type, attr, iter);
 	return ret;
 }
 
@@ -147,10 +152,12 @@ map_get_attr(struct map *this_, enum attr_type type, struct attr *attr, struct a
  * @param attr The attribute to set
  * @return True if the attr could be set, false otherwise
  */
-int
-map_set_attr(struct map *this_, struct attr *attr)
+int map_set_attr(struct map *this_, struct attr *attr)
 {
-	this_->attrs=attr_generic_set_attr(this_->attrs, attr);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	this_->attrs = attr_generic_set_attr(this_->attrs, attr);
 	if (this_->meth.map_set_attr)
 		this_->meth.map_set_attr(this_->priv, attr);
 	callback_list_call_attr_2(this_->attr_cbl, attr->type, this_, attr);
@@ -166,9 +173,11 @@ map_set_attr(struct map *this_, struct attr *attr)
  * @param this_ The map to associate the callback with
  * @param cb The callback to add
  */
-void
-map_add_callback(struct map *this_, struct callback *cb)
+void map_add_callback(struct map *this_, struct callback *cb)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	callback_list_add(this_->attr_cbl, cb);
 }
 
@@ -181,12 +190,13 @@ map_add_callback(struct map *this_, struct callback *cb)
  * @param this_ The map to remove the callback from
  * @param cb The callback to remove
  */
-void
-map_remove_callback(struct map *this_, struct callback *cb)
+void map_remove_callback(struct map *this_, struct callback *cb)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	callback_list_remove(this_->attr_cbl, cb);
 }
-
 
 /**
  * @brief Checks if strings from a map have to be converted
@@ -194,9 +204,11 @@ map_remove_callback(struct map *this_, struct callback *cb)
  * @param this_ Map to be checked for the need to convert strings
  * @return True if strings from the map have to be converted, false otherwise
  */
-int
-map_requires_conversion(struct map *this_)
+int map_requires_conversion(struct map *this_)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	return (this_->meth.charset != NULL && strcmp(this_->meth.charset, "utf-8"));
 }
 
@@ -210,7 +222,10 @@ map_requires_conversion(struct map *this_)
 char *
 map_convert_string(struct map *this_, char *str)
 {
-	return g_convert(str, -1,"utf-8",this_->meth.charset,NULL,NULL,NULL);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	return g_convert(str, -1, "utf-8", this_->meth.charset, NULL, NULL, NULL);
 }
 
 /**
@@ -218,9 +233,11 @@ map_convert_string(struct map *this_, char *str)
  *
  * @param str The string to be freed
  */
-void
-map_convert_free(char *str)
+void map_convert_free(char *str)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	g_free(str);
 }
 
@@ -230,9 +247,11 @@ map_convert_free(char *str)
  * @param this_ The map to return the projection of
  * @return The projection of the map
  */
-enum projection
-map_projection(struct map *this_)
+enum projection map_projection(struct map *this_)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	return this_->meth.pro;
 }
 
@@ -242,15 +261,19 @@ map_projection(struct map *this_)
  * @param this_ The map to set the projection of
  * @param pro The projection to be set
  */
-void
-map_set_projection(struct map *this_, enum projection pro)
+void map_set_projection(struct map *this_, enum projection pro)
 {
-	this_->meth.pro=pro;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	this_->meth.pro = pro;
 }
 
-void
-map_destroy_do(struct map *m)
+void map_destroy_do(struct map *m)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	if (m->priv)
 		m->meth.map_destroy(m->priv);
 	attr_list_free(m->attrs);
@@ -263,16 +286,20 @@ map_destroy_do(struct map *m)
  *
  * @param m The map to be destroyed
  */
-void
-map_destroy(struct map *m)
+void map_destroy(struct map *m)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	if (!m)
 		return;
 
-	if(0<m->refcount) {
+	if (0 < m->refcount)
+	{
 		m->refcount--;
 	}
-	if(0 == m->refcount) {
+	if (0 == m->refcount)
+	{
 		map_destroy_do(m);
 	}
 }
@@ -291,6 +318,9 @@ map_destroy(struct map *m)
 struct map_rect *
 map_rect_new(struct map *m, struct map_selection *sel)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct map_rect *mr;
 
 #if 0
@@ -301,11 +331,12 @@ map_rect_new(struct map *m, struct map_selection *sel)
 	//	dbg(0,"map_rect_new 0x%x,0x%x-0x%x,0x%x\n", sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y);
 	//}
 	mr=g_new0(struct map_rect, 1);
-	mr->m=m;
-	mr->priv=m->meth.map_rect_new(m->priv, sel);
-	if (! mr->priv) {
+	mr->m = m;
+	mr->priv = m->meth.map_rect_new(m->priv, sel);
+	if (!mr->priv)
+	{
 		g_free(mr);
-		mr=NULL;
+		mr = NULL;
 	}
 
 	return mr;
@@ -323,13 +354,16 @@ map_rect_new(struct map *m, struct map_selection *sel)
 struct item *
 map_rect_get_item(struct map_rect *mr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct item *ret;
 	dbg_assert(mr != NULL);
 	dbg_assert(mr->m != NULL);
 	dbg_assert(mr->m->meth.map_rect_get_item != NULL);
-	ret=mr->m->meth.map_rect_get_item(mr->priv);
+	ret = mr->m->meth.map_rect_get_item(mr->priv);
 	if (ret)
-		ret->map=mr->m;
+		ret->map = mr->m;
 	return ret;
 }
 
@@ -344,13 +378,16 @@ map_rect_get_item(struct map_rect *mr)
 struct item *
 map_rect_get_item_byid(struct map_rect *mr, int id_hi, int id_lo)
 {
-	struct item *ret=NULL;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	struct item *ret = NULL;
 	dbg_assert(mr != NULL);
 	dbg_assert(mr->m != NULL);
 	if (mr->m->meth.map_rect_get_item_byid)
-		ret=mr->m->meth.map_rect_get_item_byid(mr->priv, id_hi, id_lo);
+		ret = mr->m->meth.map_rect_get_item_byid(mr->priv, id_hi, id_lo);
 	if (ret)
-		ret->map=mr->m;
+		ret->map = mr->m;
 	return ret;
 }
 
@@ -359,10 +396,13 @@ map_rect_get_item_byid(struct map_rect *mr, int id_hi, int id_lo)
  *
  * @param mr The map rect to be destroyed
  */
-void
-map_rect_destroy(struct map_rect *mr)
+void map_rect_destroy(struct map_rect *mr)
 {
-	if (mr) {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	if (mr)
+	{
 		mr->m->meth.map_rect_destroy(mr->priv);
 		g_free(mr);
 	}
@@ -374,10 +414,11 @@ map_rect_destroy(struct map_rect *mr)
  * This structure holds information about a search performed on a map. This can be
  * used as "handle" to retrieve items from a search.
  */
-struct map_search {
-        struct map *m;
-        struct attr search_attr;
-        void *priv;
+struct map_search
+{
+	struct map *m;
+	struct attr search_attr;
+	void *priv;
 };
 
 /**
@@ -387,7 +428,7 @@ struct map_search {
  * map plugin.
  *
  * The OSM/binfile plugin currently supports: attr_town_name, attr_street_name
- * The MG plugin currently supports: ttr_town_postal, attr_town_name, attr_street_name
+ * The MG plugin currently supports: attr_town_postal, attr_town_name, attr_street_name
  *
  * If you enable partial matches bear in mind that the search matches only the begin of the
  * strings - a search for a street named "street" would match to "streetfoo", but not to
@@ -412,26 +453,38 @@ struct map_search {
 struct map_search *
 map_search_new(struct map *m, struct item *item, struct attr *search_attr, int partial)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct map_search *this_;
-	dbg(1,"enter(%p,%p,%p,%d)\n", m, item, search_attr, partial);
-	dbg(1,"0x%x 0x%x 0x%x\n", attr_country_all, search_attr->type, attr_country_name);
+	dbg(1, "enter(%p,%p,%p,%d)\n", m, item, search_attr, partial);
+	dbg(1, "0x%x 0x%x 0x%x\n", attr_country_all, search_attr->type, attr_country_name);
 	this_=g_new0(struct map_search,1);
-	this_->m=m;
-	this_->search_attr=*search_attr;
+	this_->m = m;
+	this_->search_attr = *search_attr;
 	if ((search_attr->type >= attr_country_all && search_attr->type <= attr_country_name) || search_attr->type == attr_country_id)
-		this_->priv=country_search_new(&this_->search_attr, partial);
-	else {
-		if (m->meth.map_search_new) {
+	{
+		this_->priv = country_search_new(&this_->search_attr, partial);
+	}
+	else
+	{
+		if (m->meth.map_search_new)
+		{
 			if (m->meth.charset)
-				this_->search_attr.u.str=g_convert(this_->search_attr.u.str, -1,m->meth.charset,"utf-8",NULL,NULL,NULL);
-			this_->priv=m->meth.map_search_new(m->priv, item, &this_->search_attr, partial);
-			if (! this_->priv) {
-				g_free(this_);
-				this_=NULL;
+			{
+				this_->search_attr.u.str = g_convert(this_->search_attr.u.str, -1, m->meth.charset, "utf-8", NULL, NULL, NULL);
 			}
-		} else {
+			this_->priv = m->meth.map_search_new(m->priv, item, &this_->search_attr, partial);
+			if (!this_->priv)
+			{
+				g_free(this_);
+				this_ = NULL;
+			}
+		}
+		else
+		{
 			g_free(this_);
-			this_=NULL;
+			this_ = NULL;
 		}
 	}
 	return this_;
@@ -450,15 +503,18 @@ map_search_new(struct map *m, struct item *item, struct attr *search_attr, int p
 struct item *
 map_search_get_item(struct map_search *this_)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct item *ret;
 
-	if (! this_)
+	if (!this_)
 		return NULL;
 	if ((this_->search_attr.type >= attr_country_all && this_->search_attr.type <= attr_country_name) || this_->search_attr.type == attr_country_id)
 		return country_search_get_item(this_->priv);
-	ret=this_->m->meth.map_search_get_item(this_->priv);
+	ret = this_->m->meth.map_search_get_item(this_->priv);
 	if (ret)
-		ret->map=this_->m;
+		ret->map = this_->m;
 	return ret;
 }
 
@@ -467,16 +523,19 @@ map_search_get_item(struct map_search *this_)
  *
  * @param this_ The map search struct to be destroyed
  */
-void
-map_search_destroy(struct map_search *this_)
+void map_search_destroy(struct map_search *this_)
 {
-	if (! this_)
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	if (!this_)
 		return;
 	if (this_->search_attr.type >= attr_country_all && this_->search_attr.type <= attr_country_name)
 		country_search_destroy(this_->priv);
-	else {
+	else
+	{
 		if (this_->m->meth.charset)
-				g_free(this_->search_attr.u.str);
+			g_free(this_->search_attr.u.str);
 		this_->m->meth.map_search_destroy(this_->priv);
 	}
 	g_free(this_);
@@ -493,13 +552,16 @@ map_search_destroy(struct map_search *this_)
 struct map_selection *
 map_selection_rect_new(struct pcoord *center, int distance, int order)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct map_selection *ret=g_new0(struct map_selection, 1);
-	ret->order=order;
-	ret->range=item_range_all;
-	ret->u.c_rect.lu.x=center->x-distance;
-	ret->u.c_rect.lu.y=center->y+distance;
-	ret->u.c_rect.rl.x=center->x+distance;
-	ret->u.c_rect.rl.y=center->y-distance;
+	ret->order = order;
+	ret->range = item_range_all;
+	ret->u.c_rect.lu.x = center->x - distance;
+	ret->u.c_rect.lu.y = center->y + distance;
+	ret->u.c_rect.rl.x = center->x + distance;
+	ret->u.c_rect.rl.y = center->y - distance;
 	return ret;
 }
 
@@ -517,18 +579,23 @@ map_selection_rect_new(struct pcoord *center, int distance, int order)
 struct map_selection *
 map_selection_dup_pro(struct map_selection *sel, enum projection from, enum projection to)
 {
-	struct map_selection *next,**last;
-	struct map_selection *ret=NULL;
-	last=&ret;
-	while (sel) {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	struct map_selection *next, **last;
+	struct map_selection *ret = NULL;
+	last = &ret;
+	while (sel)
+	{
 		next = g_new(struct map_selection, 1);
-		*next=*sel;
-		if (from != projection_none || to != projection_none) {
+		*next = *sel;
+		if (from != projection_none || to != projection_none)
+		{
 			transform_from_to(&sel->u.c_rect.lu, from, &next->u.c_rect.lu, to);
 			transform_from_to(&sel->u.c_rect.rl, from, &next->u.c_rect.rl, to);
 		}
-		*last=next;
-		last=&next->next;
+		*last = next;
+		last = &next->next;
 		sel = sel->next;
 	}
 	return ret;
@@ -543,6 +610,9 @@ map_selection_dup_pro(struct map_selection *sel, enum projection from, enum proj
 struct map_selection *
 map_selection_dup(struct map_selection *sel)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	return map_selection_dup_pro(sel, projection_none, projection_none);
 }
 
@@ -551,11 +621,14 @@ map_selection_dup(struct map_selection *sel)
  *
  * @param sel The map selection to be destroyed
  */
-void
-map_selection_destroy(struct map_selection *sel)
+void map_selection_destroy(struct map_selection *sel)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct map_selection *next;
-	while (sel) {
+	while (sel)
+	{
 		next = sel->next;
 		g_free(sel);
 		sel = next;
@@ -572,26 +645,30 @@ map_selection_destroy(struct map_selection *sel)
  * @param item The item that the rectangle should be built around
  * @return True if the rectangle is within the selection, false otherwise
  */
-int
-map_selection_contains_item_rect(struct map_selection *sel, struct item *item)
+int map_selection_contains_item_rect(struct map_selection *sel, struct item *item)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct coord c;
 	struct coord_rect r;
-	int count=0;
-	while (item_coord_get(item, &c, 1)) {
-		if (! count) {
-			r.lu=c;
-			r.rl=c;
-		} else
+	int count = 0;
+	while (item_coord_get(item, &c, 1))
+	{
+		if (!count)
+		{
+			r.lu = c;
+			r.rl = c;
+		}
+		else
 			coord_rect_extend(&r, &c);
 		count++;
 	}
-	if (! count)
+	if (!count)
 		return 0;
 	return map_selection_contains_rect(sel, &r);
 
 }
-
 
 /**
  * @brief Checks if a selection contains a item range
@@ -605,20 +682,24 @@ map_selection_contains_item_rect(struct map_selection *sel, struct item *item)
  * @return True if there is a match, false otherwise
  */
 
-int
-map_selection_contains_item_range(struct map_selection *sel, int follow, struct item_range *range, int count)
+int map_selection_contains_item_range(struct map_selection *sel, int follow, struct item_range *range, int count)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	int i;
-	if (! sel)
+	if (!sel)
 		return 1;
-	while (sel) {
-		for (i = 0 ; i < count ; i++) {
+	while (sel)
+	{
+		for (i = 0; i < count; i++)
+		{
 			if (item_range_intersects_range(&sel->range, &range[i]))
 				return 1;
 		}
-		if (! follow)
+		if (!follow)
 			break;
-		sel=sel->next;
+		sel = sel->next;
 	}
 	return 0;
 }
@@ -633,22 +714,23 @@ map_selection_contains_item_range(struct map_selection *sel, int follow, struct 
  * @return True if there is a match, false otherwise
  */
 
-int
-map_selection_contains_item(struct map_selection *sel, int follow, enum item_type type)
+int map_selection_contains_item(struct map_selection *sel, int follow, enum item_type type)
 {
-	if (! sel)
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	if (!sel)
 		return 1;
-	while (sel) {
+	while (sel)
+	{
 		if (item_range_contains_item(&sel->range, type))
 			return 1;
-		if (! follow)
+		if (!follow)
 			break;
-		sel=sel->next;
+		sel = sel->next;
 	}
 	return 0;
 }
-
-
 
 /**
  * @brief Checks if a pointer points to the private data of a map
@@ -657,51 +739,64 @@ map_selection_contains_item(struct map_selection *sel, int follow, enum item_typ
  * @param priv The private data that should be checked.
  * @return True if priv is the private data of map
  */
-int
-map_priv_is(struct map *map, struct map_priv *priv)
+int map_priv_is(struct map *map, struct map_priv *priv)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	return (map->priv == priv);
 }
 
-void
-map_dump_filedesc(struct map *map, FILE *out)
+void map_dump_filedesc(struct map *map, FILE *out)
 {
-	struct map_rect *mr=map_rect_new(map, NULL);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	struct map_rect *mr = map_rect_new(map, NULL);
 	struct item *item;
 
-	while ((item = map_rect_get_item(mr))) 
+	while ((item = map_rect_get_item(mr)))
 		item_dump_filedesc(item, map, out);
 	map_rect_destroy(mr);
 }
 
-void
-map_dump_file(struct map *map, const char *file)
+void map_dump_file(struct map *map, const char *file)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	FILE *f;
-	f=fopen(file,"w");
-	if (f) {
+	f = fopen(file, "w");
+	if (f)
+	{
 		map_dump_filedesc(map, f);
 		fclose(f);
-	} else 
-		dbg(0,"failed to open file '%s'\n",file);
+	}
+	else
+		dbg(0, "failed to open file '%s'\n", file);
 }
 
-void
-map_dump(struct map *map)
+void map_dump(struct map *map)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	map_dump_filedesc(map, stdout);
 }
 
-struct item * 
+struct item *
 map_rect_create_item(struct map_rect *mr, enum item_type type_)
 {
-	if(mr && mr->priv && mr->m) {
-		return mr->m->meth.map_rect_create_item(mr->priv, type_) ;
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	if (mr && mr->priv && mr->m)
+	{
+		return mr->m->meth.map_rect_create_item(mr->priv, type_);
 	}
-	else {
+	else
+	{
 		return NULL;
 	}
 }
-
-
 

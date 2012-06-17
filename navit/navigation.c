@@ -334,61 +334,81 @@ static char *get_count_str(int n)
 	{
 		case 0:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:zeroth\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
 			return _("zeroth"); // Not sure if this exists, neither if it will ever be needed
 		case 1:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:first\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
 			return _("first");
 		case 2:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:second\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
 			return _("second");
 		case 3:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:third\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
 			return _("third");
 		case 4:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:fourth\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
 			return _("fourth");
 		case 5:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:fifth\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
 			return _("fifth");
 		case 6:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:sixth\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
 			return _("sixth");
 		case 7:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:seventh\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
 			return _("seventh");
 		case 8:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:eighth\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
 			return _("eighth");
 		case 9:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:ninth\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
 			return _("ninth");
@@ -403,61 +423,81 @@ static char *get_exit_count_str(int n)
 	{
 		case 0:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:zeroth exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
 			return _("zeroth exit"); // Not sure if this exists, neither if it will ever be needed
 		case 1:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:first exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
 			return _("first exit");
 		case 2:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:second exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
 			return _("second exit");
 		case 3:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:third exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
 			return _("third exit");
 		case 4:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:fourth exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
 			return _("fourth exit");
 		case 5:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:fifth exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
 			return _("fifth exit");
 		case 6:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:sixth exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
 			return _("sixth exit");
 		case 7:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:seventh exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
 			return _("seventh exit");
 		case 8:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:eighth exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
 			return _("eighth exit");
 		case 9:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:ninth exit\n");
+#endif
 #endif
 			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
 			return _("ninth exit");
@@ -552,14 +592,18 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 		if (is_length)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:%d m\n");
+#endif
 #endif
 			return g_strdup_printf(_("%d m"), dist);
 		}
 		else
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:in %d m\n");
+#endif
 #endif
 			return g_strdup_printf(_("in %d m"), dist);
 		}
@@ -577,14 +621,18 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 			if (is_length)
 			{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:%d feet\n");
+#endif
 #endif
 				return g_strdup_printf(_("%d feet"), dist);
 			}
 			else
 			{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:in %d feet\n");
+#endif
 #endif
 				return g_strdup_printf(_("in %d feet"), dist);
 			}
@@ -598,20 +646,24 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 			if (is_length)
 			{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:%d meters\n");
 				gchar* xy=g_strdup_printf("+*#1:%d\n", dist);
 				android_send_generic_text(1,xy);
 				g_free(xy);
+#endif
 #endif
 				return g_strdup_printf(_("%d meters"), dist);
 			}
 			else
 			{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:in %d meters\n");
 				gchar* xy=g_strdup_printf("+*#1:%d\n", dist);
 				android_send_generic_text(1,xy);
 				g_free(xy);
+#endif
 #endif
 				return g_strdup_printf(_("in %d meters"), dist);
 			}
@@ -637,14 +689,18 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 				if (is_length)
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:%d.%d miles\n");
+#endif
 #endif
 					return g_strdup_printf(_("%d.%d miles"), dist / 1000, rem);
 				}
 				else
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:in %d.%d miles\n");
+#endif
 #endif
 					return g_strdup_printf(_("in %d.%d miles"), dist / 1000,
 							rem);
@@ -655,7 +711,9 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 				if (is_length)
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:%d.%d kilometers\n");
+#endif
 #endif
 					return g_strdup_printf(_("%d.%d kilometers"), dist / 1000,
 							rem);
@@ -663,7 +721,9 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 				else
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:in %d.%d kilometers\n");
+#endif
 #endif
 					return g_strdup_printf(_("in %d.%d kilometers"),
 							dist / 1000, rem);
@@ -686,7 +746,9 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 		if (is_length)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:one kilometer|%d kilometers\n");
+#endif
 #endif
 			return g_strdup_printf(
 					ngettext("one kilometer", "%d kilometers", dist / 1000),
@@ -695,7 +757,9 @@ get_distance(struct navigation *nav, int dist, enum attr_type type,
 		else
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:in one kilometer|in %d kilometers\n");
+#endif
 #endif
 			return g_strdup_printf(
 					ngettext("in one kilometer", "in %d kilometers",
@@ -1792,20 +1856,24 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 				== type_highway_land)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:exit\n");
 			gchar* xy=g_strdup_printf("+*#1:%s\n", prefix);
 			android_send_generic_text(1,xy);
 			g_free(xy);
+#endif
 #endif
 			return g_strdup_printf("%s%s", prefix, _("exit")); /* %FIXME Can this even be reached?  and "exit" is the wrong text anyway ! */
 		}
 		else
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:into the ramp\n");
 			gchar* xy=g_strdup_printf("+*#1:%s\n", prefix);
 			android_send_generic_text(1,xy);
 			g_free(xy);
+#endif
 #endif
 			return g_strdup_printf("%s%s", prefix, _("into the ramp"));
 		}
@@ -1854,6 +1922,7 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 		{
 			case -1:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:%sinto the street %s%s%s\n");
 				xy=g_strdup_printf("+*#1:%s\n", prefix);
 				android_send_generic_text(1,xy);
@@ -1868,12 +1937,14 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 				android_send_generic_text(1,xy);
 				g_free(xy);
 #endif
+#endif
 				// TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
 				ret = g_strdup_printf(_("%sinto the street %s%s%s"), prefix,
 						n1, sep, name2);
 				break;
 			case 1:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:%sinto the %s%s%s|male form\n");
 				xy=g_strdup_printf("+*#1:%s\n", prefix);
 				android_send_generic_text(1,xy);
@@ -1888,12 +1959,14 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 				android_send_generic_text(1,xy);
 				g_free(xy);
 #endif
+#endif
 				// TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
 				ret = g_strdup_printf(_("%sinto the %s%s%s|male form"), prefix,
 						name1, sep, name2);
 				break;
 			case 2:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:%sinto the %s%s%s|female form\n");
 				xy=g_strdup_printf("+*#1:%s\n", prefix);
 				android_send_generic_text(1,xy);
@@ -1908,12 +1981,14 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 				android_send_generic_text(1,xy);
 				g_free(xy);
 #endif
+#endif
 				// TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
 				ret = g_strdup_printf(_("%sinto the %s%s%s|female form"),
 						prefix, name1, sep, name2);
 				break;
 			case 3:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:%sinto the %s%s%s|neutral form\n");
 				xy=g_strdup_printf("+*#1:%s\n", prefix);
 				android_send_generic_text(1,xy);
@@ -1928,6 +2003,7 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 				android_send_generic_text(1,xy);
 				g_free(xy);
 #endif
+#endif
 				// TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
 				ret = g_strdup_printf(_("%sinto the %s%s%s|neutral form"),
 						prefix, name1, sep, name2);
@@ -1939,6 +2015,7 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 	else
 	{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 		android_send_generic_text(1,"+*#O:sinto the %s\n");
 		gchar* xy=g_strdup_printf("+*#1:%s\n", prefix);
 		android_send_generic_text(1,xy);
@@ -1946,6 +2023,7 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm,
 		xy=g_strdup_printf("+*#1:%s\n", n2);
 		android_send_generic_text(1,xy);
 		g_free(xy);
+#endif
 #endif
 		// TRANSLATORS: gives the name of the next road to turn into (into the E17)
 		ret = g_strdup_printf(_("%sinto the %s"), prefix, n2);
@@ -2028,7 +2106,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 	if (delta < 0)
 	{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 		android_send_generic_text(1,"+*#O:left\n");
+#endif
 #endif
 		// TRANSLATORS: left, as in 'Turn left'
 		dir = _("left");
@@ -2038,7 +2118,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 	{
 		// dir = right
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 		android_send_generic_text(1,"+*#O:right\n");
+#endif
 #endif
 	}
 
@@ -2047,7 +2129,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		if (delta < 45)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:slight \n");
+#endif
 #endif
 			// TRANSLATORS: Don't forget the ending space
 			// TRANSLATORS: EXAMPLE: turn slight right
@@ -2060,7 +2144,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		else if (delta < 165)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:hard \n");
+#endif
 #endif
 			// TRANSLATORS: Don't forget the ending space
 			// TRANSLATORS: EXAMPLE: turn hard right
@@ -2069,7 +2155,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		else if (delta < 180)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:really hard \n");
+#endif
 #endif
 			// TRANSLATORS: Don't forget the ending space
 			// TRANSLATORS: EXAMPLE: turn really hard right
@@ -2094,7 +2182,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		if (nav->turn_around && nav->turn_around == nav->turn_around_limit)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:When possible, please turn around\n");
+#endif
 #endif
 			return g_strdup(_("When possible, please turn around"));
 		}
@@ -2128,17 +2218,21 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		{
 			case 2:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:Enter the roundabout soon\n");
+#endif
 #endif
 				return g_strdup(_("Enter the roundabout soon"));
 			case 1:
 				d = get_distance(nav, distance, type, 1);
 
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:In %s, enter the roundabout\n");
 				xy=g_strdup_printf("+*#1:%s\n", d);
 				android_send_generic_text(1,xy);
 				g_free(xy);
+#endif
 #endif
 				// TRANSLATORS: %s is the distance to the roundabout
 				// TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
@@ -2147,10 +2241,12 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 				return ret;
 			case -2:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:then leave the roundabout at the %s\n");
 				xy=g_strdup_printf("+*#1:%s\n", get_exit_count_str(count_roundabout));
 				android_send_generic_text(1,xy);
 				g_free(xy);
+#endif
 #endif
 				// TRANSLATORS: EXAMPLE: ... then leave the roundabout at the second exit
 				return g_strdup_printf(
@@ -2158,10 +2254,12 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 						get_exit_count_str(count_roundabout));
 			case 0:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:Leave the roundabout at the %s\n");
 				xy=g_strdup_printf("+*#1:%s\n", get_exit_count_str(count_roundabout));
 				android_send_generic_text(1,xy);
 				g_free(xy);
+#endif
 #endif
 				// TRANSLATORS: EXAMPLE: Leave the roundabout at the second exit
 				return g_strdup_printf(_("Leave the roundabout at the %s"),
@@ -2175,10 +2273,12 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 			d = get_distance(nav, distance, type, 1);
 
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:Follow the road for the next %s\n");
 			gchar* xy=g_strdup_printf("+*#1:%s\n", d);
 			android_send_generic_text(1,xy);
 			g_free(xy);
+#endif
 #endif
 			// TRANSLATORS: EXAMPLE: Follow the road for the next 300 meters
 			ret = g_strdup_printf(_("Follow the road for the next %s"), d);
@@ -2186,7 +2286,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 			return ret;
 		case 2:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:soon\n");
+#endif
 #endif
 			d = g_strdup(_("soon"));
 			break;
@@ -2202,6 +2304,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 				if (get_count_str(skip_roads + 1))
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:Take the %1$s road to the %2$s\n");
 					gchar* xy=g_strdup_printf("+*#1:%s\n", get_count_str(skip_roads + 1));
 					android_send_generic_text(1,xy);
@@ -2209,6 +2312,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 					xy=g_strdup_printf("+*#1:%s\n", dir);
 					android_send_generic_text(1,xy);
 					g_free(xy);
+#endif
 #endif
 					// TRANSLATORS: First argument is the how manieth street to take, second the direction
 					ret = g_strdup_printf(_("Take the %1$s road to the %2$s"),
@@ -2218,10 +2322,12 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 				else
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:after %i roads\n");
 					gchar* xy=g_strdup_printf("+*#1:%i\n", skip_roads);
 					android_send_generic_text(1,xy);
 					g_free(xy);
+#endif
 #endif
 					d = g_strdup_printf(_("after %i roads"), skip_roads);
 				}
@@ -2229,7 +2335,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 			else
 			{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:now\n");
+#endif
 #endif
 				d = g_strdup(_("now"));
 			}
@@ -2244,6 +2352,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 				if (get_count_str(skip_roads + 1))
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:then take the %1$s road to the %2$s\n");
 					gchar* xy=g_strdup_printf("+*#1:%s\n", get_count_str(skip_roads + 1));
 					android_send_generic_text(1,xy);
@@ -2251,6 +2360,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 					xy=g_strdup_printf("+*#1:%s\n", dir);
 					android_send_generic_text(1,xy);
 					g_free(xy);
+#endif
 #endif
 					ret = g_strdup_printf(
 							_("then take the %1$s road to the %2$s"),
@@ -2260,10 +2370,12 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 				else
 				{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:after %i roads\n");
 					gchar* xy=g_strdup_printf("+*#1:%i\n", skip_roads);
 					android_send_generic_text(1,xy);
 					g_free(xy);
+#endif
 #endif
 					d = g_strdup_printf(_("after %i roads"), skip_roads);
 				}
@@ -2276,7 +2388,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 			break;
 		default:
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:error\n");
+#endif
 #endif
 			d = g_strdup(_("error"));
 	}
@@ -2329,6 +2443,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		if (level != -2)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:Turn %1$s%2$s %3$s%4$s\n");
 			gchar* xy=g_strdup_printf("+*#1:%s\n", strength);
 			android_send_generic_text(1,xy);
@@ -2343,6 +2458,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 			android_send_generic_text(1,xy);
 			g_free(xy);
 #endif
+#endif
 			// TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 			ret = g_strdup_printf(_("Turn %1$s%2$s %3$s%4$s"), strength, dir,
 					d, destination ? destination : "");
@@ -2350,6 +2466,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		else
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:then turn %1$s%2$s %3$s%4$s\n");
 			gchar* xy=g_strdup_printf("+*#1:%s\n", strength);
 			android_send_generic_text(1,xy);
@@ -2364,6 +2481,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 			android_send_generic_text(1,xy);
 			g_free(xy);
 #endif
+#endif
 			// TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 			ret = g_strdup_printf(_("then turn %1$s%2$s %3$s%4$s"), strength,
 					dir, d, destination ? destination : "");
@@ -2375,10 +2493,12 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		if (!connect)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:You have reached your destination %s\n");
 			gchar* xy=g_strdup_printf("+*#1:%s\n", d);
 			android_send_generic_text(1,xy);
 			g_free(xy);
+#endif
 #endif
 			// TRANSLATORS: EXAMPLE: You have reached your destination in 300 meters
 			ret = g_strdup_printf(_("You have reached your destination %s"), d);
@@ -2386,7 +2506,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm,
 		else
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:then you have reached your destination.\n");
+#endif
 #endif
 			ret = g_strdup_printf(_("then you have reached your destination."));
 		}
@@ -2429,7 +2551,9 @@ show_next_maneuvers(struct navigation *nav, struct navigation_itm *itm,
 	if (cmd->itm->told)
 	{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 		android_send_generic_text(1,"+*#C1:*CANCEL*\n");
+#endif
 #endif
 		return g_strdup("");
 	}
@@ -2494,7 +2618,9 @@ show_next_maneuvers(struct navigation *nav, struct navigation_itm *itm,
 		if (time <= speech_time)
 		{
 #ifdef HAVE_API_ANDROID
+#ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#C2:*CANCEL*\n");
+#endif
 #endif
 			cur->itm->told = 1;
 		}

@@ -333,7 +333,9 @@ static void draw_lines3(struct graphics_priv *gra, struct graphics_gc_priv *gc, 
 	int i;
 	jintArray points;
 	if (count <= 0)
+	{
 		return;
+	}
 	points = (*jnienv)->NewIntArray(jnienv, count * 2);
 	for (i = 0; i < count; i++)
 	{
@@ -551,6 +553,8 @@ static void get_text_bbox(struct graphics_priv *gr, struct graphics_font_priv *f
 {
 	////DBG dbg(0,"EEnter\n");
 
+	// this is a rough estimate!! otherwise java methods would be called, and thats too slow!
+
 	int len = g_utf8_strlen(text, -1);
 	int xMin = 0;
 	int yMin = 0;
@@ -596,13 +600,17 @@ static struct graphics_methods graphics_methods =
 { graphics_destroy, draw_mode, draw_lines, draw_lines2, draw_lines3, draw_lines4, draw_lines_dashed, draw_polygon, draw_polygon2, draw_rectangle, draw_circle, draw_text, draw_image, draw_bigmap, send_osd_values, draw_image_warp, draw_restore, draw_drag, font_new, gc_new, background_gc, overlay_new, image_new, get_data,
 		image_free, get_text_bbox, overlay_disable, overlay_resize, set_attr, };
 
+/*
 static void resize_callback(struct graphics_priv *gra, int w, int h)
 {
 	//DBG dbg(0,"EEnter\n");
 	// //DBG dbg(0,"w=%d h=%d ok\n",w,h);
-	callback_list_call_attr_2(gra->cbl, attr_resize, (void *) w, (void *) h);
+	// callback_list_call_attr_2(gra->cbl, attr_resize, (void *) w, (void *) h);
+	navit_resize(attr_resize, this_);
 }
+*/
 
+/*
 static void motion_callback(struct graphics_priv *gra, int x, int y)
 {
 	//DBG dbg(0,"EEnter\n");
@@ -612,13 +620,17 @@ static void motion_callback(struct graphics_priv *gra, int x, int y)
 	p.y = y;
 	callback_list_call_attr_1(gra->cbl, attr_motion, (void *) &p);
 }
+*/
 
+/*
 static void keypress_callback(struct graphics_priv *gra, char *s)
 {
 	//DBG dbg(0,"EEnter\n");
 	callback_list_call_attr_1(gra->cbl, attr_keypress, s);
 }
+*/
 
+/*
 static void button_callback(struct graphics_priv *gra, int pressed, int button, int x, int y)
 {
 	//DBG dbg(0,"EEnter\n");
@@ -629,6 +641,7 @@ static void button_callback(struct graphics_priv *gra, int pressed, int button, 
 	// //DBG dbg(0,"XXXXXXXYYYYYYYYY\n");
 	callback_list_call_attr_3(gra->cbl, attr_button, (void *) pressed, (void *) button, (void *) &p);
 }
+*/
 
 static int set_activity(jobject graphics)
 {
@@ -744,32 +757,48 @@ static int graphics_android_init(struct graphics_priv *ret, struct graphics_priv
 	}
 	//DBG dbg(0, "g result=%p\n", ret->Paint);
 
+	/*
 	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitGraphicsClass, "setSizeChangedCallback", "(I)V");
 	if (cid == NULL)
 	{
 		//DBG dbg(0, "no SetResizeCallback method found\n");
-		return 0; /* exception thrown */
+		return 0;
 	}
 	cb = callback_new_1(callback_cast(resize_callback), ret);
 	(*jnienv)->CallVoidMethod(jnienv, ret->NavitGraphics, cid, (int) cb);
+	*/
 
+	/*
 	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitGraphicsClass, "setButtonCallback", "(I)V");
 	if (cid == NULL)
 	{
 		//DBG dbg(0, "no SetButtonCallback method found\n");
-		return 0; /* exception thrown */
+		return 0;
 	}
 	cb = callback_new_1(callback_cast(button_callback), ret);
 	(*jnienv)->CallVoidMethod(jnienv, ret->NavitGraphics, cid, (int) cb);
+	*/
 
+	/*
 	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitGraphicsClass, "setMotionCallback", "(I)V");
 	if (cid == NULL)
 	{
 		//DBG dbg(0, "no SetMotionCallback method found\n");
-		return 0; /* exception thrown */
+		return 0;
 	}
 	cb = callback_new_1(callback_cast(motion_callback), ret);
 	(*jnienv)->CallVoidMethod(jnienv, ret->NavitGraphics, cid, (int) cb);
+	*/
+
+	// sets the graphics object for the JAVA code  (this is bad, please fix me!!)
+	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitGraphicsClass, "NavitSetGrObj", "()V");
+	if (cid == NULL)
+	{
+		//DBG dbg(0, "no SetMotionCallback method found\n");
+		return 0;
+	}
+	(*jnienv)->CallVoidMethod(jnienv, ret->NavitGraphics, cid);
+
 
 	// public Bitmap rotate_and_scale_bitmap(Bitmap in, int w, int h, int angle)
 
@@ -783,14 +812,16 @@ static int graphics_android_init(struct graphics_priv *ret, struct graphics_priv
 	//	return 0; /* exception thrown */
 	//}
 
+	/*
 	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitGraphicsClass, "setKeypressCallback", "(I)V");
 	if (cid == NULL)
 	{
 		//DBG dbg(0, "no SetKeypressCallback method found\n");
-		return 0; /* exception thrown */
+		return 0;
 	}
 	cb = callback_new_1(callback_cast(keypress_callback), ret);
 	(*jnienv)->CallVoidMethod(jnienv, ret->NavitGraphics, cid, (int) cb);
+	*/
 
 	if (!find_method(ret->NavitGraphicsClass, "draw_polyline", "(Landroid/graphics/Paint;[I)V", &ret->NavitGraphics_draw_polyline))
 		return 0;
@@ -828,8 +859,10 @@ static int graphics_android_init(struct graphics_priv *ret, struct graphics_priv
 		return 0;
 	if (!find_method(ret->NavitGraphicsClass, "overlay_resize", "(IIIIII)V", &ret->NavitGraphics_overlay_resize))
 		return 0;
+	/*
 	if (!find_method(ret->NavitGraphicsClass, "SetCamera", "(I)V", &ret->NavitGraphics_SetCamera))
 		return 0;
+	*/
 
 	//DBG dbg(0,"99\n");
 #if 0
@@ -906,12 +939,12 @@ overlay_new(struct graphics_priv *gr, struct graphics_methods *meth, struct poin
 
 static void event_android_main_loop_run(void)
 {
-	//DBG dbg(0, "enter\n");
+	dbg(0, "enter\n");
 }
 
 static void event_android_main_loop_quit(void)
 {
-	//DBG dbg(0, "enter\n");
+	dbg(0, "enter\n");
 	// ******* exit(0);
 	(*jnienv)->CallVoidMethod(jnienv, android_activity, Navit_exit);
 }
@@ -960,11 +993,13 @@ static void event_android_remove_watch(struct event_watch *ev)
 static struct event_timeout *
 event_android_add_timeout(int timeout, int multi, struct callback *cb)
 {
-	//DBG dbg(0,"EEnter\n");
+	//dbg(0,"EEnter\n");
+
+	// timeout -> delay in milliseconds
 
 	jobject ret;
 	ret = (*jnienv)->NewObject(jnienv, NavitTimeoutClass, NavitTimeout_init, timeout, multi, (int) cb);
-	////DBG dbg(0, "result for %d,%d,%p\n", timeout, multi, cb);
+	//dbg(0, "result for %d,%d,%p\n", timeout, multi, cb);
 
 	if (ret)
 	{
@@ -972,18 +1007,18 @@ event_android_add_timeout(int timeout, int multi, struct callback *cb)
 		ret = (*jnienv)->NewGlobalRef(jnienv, ret);
 		//DBG dbg(0,"g ret=%p\n",ret);
 	}
-	//DBG dbg(0,"leave\n");
+	//dbg(0,"leave\n");
 	return (struct event_timeout *) ret;
 }
 
 static void event_android_remove_timeout(struct event_timeout *to)
 {
-	//DBG dbg(0,"EEnter\n");
+	//dbg(0,"EEnter\n");
 
 	if (to)
 	{
 		// //DBG dbg(0, "remove %p\n", to);
-		//DBG dbg(0, "remove\n");
+		//dbg(0, "remove\n");
 		jobject obj = (jobject) to;
 		(*jnienv)->CallVoidMethod(jnienv, obj, NavitTimeout_remove);
 		// ICS (*jnienv)->DeleteGlobalRef(jnienv, obj);
@@ -993,7 +1028,14 @@ static void event_android_remove_timeout(struct event_timeout *to)
 static struct event_idle *
 event_android_add_idle(int priority, struct callback *cb)
 {
-	//DBG dbg(0,"EEnter\n");
+	// ----------------------------------------------------
+	// ----------------------------------------------------
+	// "priority" param is now misused here as "multi"
+	// priority == 1000 -> set multi = 0
+	// ----------------------------------------------------
+	// ----------------------------------------------------
+
+	//dbg(0,"EEnter\n");
 
 #if 0
 	jobject ret;
@@ -1004,7 +1046,15 @@ event_android_add_idle(int priority, struct callback *cb)
 	(*jnienv)->NewGlobalRef(jnienv, ret);
 	return (struct event_idle *)ret;
 #endif
-	return (struct event_idle *) event_android_add_timeout(1, 1, cb);
+	// ----- xxxxxxxx ------
+	if (priority == 1000)
+	{
+		return (struct event_idle *) event_android_add_timeout(10, 0, cb);
+	}
+	else
+	{
+		return (struct event_idle *) event_android_add_timeout(10, 1, cb);
+	}
 }
 
 static void event_android_remove_idle(struct event_idle *ev)
@@ -1068,7 +1118,7 @@ event_android_new(struct event_methods *meth)
 	Navit_disableSuspend = (*jnienv)->GetMethodID(jnienv, NavitClass, "disableSuspend", "()V");
 	if (Navit_disableSuspend == NULL)
 		return NULL;
-	Navit_exit = (*jnienv)->GetMethodID(jnienv, NavitClass, "exit", "()V");
+	Navit_exit = (*jnienv)->GetMethodID(jnienv, NavitClass, "exit2", "()V");
 	if (Navit_exit == NULL)
 		return NULL;
 	//DBG dbg(0,"ok\n");

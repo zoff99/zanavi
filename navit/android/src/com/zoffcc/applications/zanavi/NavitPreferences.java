@@ -131,6 +131,10 @@ public class NavitPreferences extends PreferenceActivity
 		x = Navit.get_text("__PREF__title__streetsearch_r");
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__streetsearch_r");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__title__route_style");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__summ__route_style");
 		//
 		// dummy for xgettext
 	}
@@ -174,6 +178,13 @@ public class NavitPreferences extends PreferenceActivity
 			e.printStackTrace();
 		}
 
+		// need to add "route_style" !!!!!!
+		// need to add "route_style" !!!!!!
+		// need to add "route_style" !!!!!!
+		// need to add "route_style" !!!!!!
+		// need to add "route_style" !!!!!!
+		// need to add "route_style" !!!!!!
+		// need to add "route_style" !!!!!!
 		String[] PrefTransTexts = new String[] { "use_fast_provider", "follow_gps", "show_vehicle_in_center", "use_compass_heading_base", "use_compass_heading_always", "use_compass_heading_fast", "use_imperial", "show_3d_map", "use_anti_aliasing", "gui_oneway_arrows", "show_debug_messages", "navit_lang", "use_lock_on_roads", "use_route_highways", "save_zoomlevel", "show_sat_status", "use_agps", "enable_debug_functions", "speak_street_names", "use_custom_font", "map_font_size", "drawatorder",
 				"streetsearch_r", "cancel_map_drawing_timeout", "mapcache", "draw_polyline_circles" };
 

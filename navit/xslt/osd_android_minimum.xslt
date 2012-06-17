@@ -14,6 +14,7 @@
 			</xsl:choose>
 		</xsl:variable>
 		<osd type="scale" enabled="yes" use_overlay="1" x="0" y="0" w="200" h="20" font_size="150" osd_configuration="1"/>
+		<xsl:text>&#x0A;        </xsl:text>
 		<osd type="compass" enabled="yes" x="{round(-60*number($OSD_SIZE_)*number($OSD_FACTOR_))}" y="{round(-80*number($OSD_SIZE_)*number($OSD_FACTOR_))}" w="{round(60*number($OSD_SIZE_)*number($OSD_FACTOR_))}" h="{round(80*number($OSD_SIZE_)*number($OSD_FACTOR_))}" font_size="{round(200*number($OSD_SIZE_)*number($OSD_FACTOR_))}" osd_configuration="1"/>
 		<xsl:text>&#x0A;        </xsl:text>
 		<osd type="text" label="${{navigation.item.destination_length[named]}}" x="{round(-60*number($OSD_SIZE_)*number($OSD_FACTOR_))}" y="0" w="{round(60*number($OSD_SIZE_)*number($OSD_FACTOR_))}" h="{round(40*number($OSD_SIZE_)*number($OSD_FACTOR_))}" font_size="{round(200*number($OSD_SIZE_)*number($OSD_FACTOR_))}" osd_configuration="1"/>

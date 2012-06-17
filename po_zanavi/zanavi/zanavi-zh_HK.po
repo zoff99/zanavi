@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-03-14 19:27+0100\n"
-"PO-Revision-Date: 2012-04-07 15:11+0000\n"
-"Last-Translator: zoff99 <Unknown>\n"
+"POT-Creation-Date: 2012-05-15 19:29+0200\n"
+"PO-Revision-Date: 2012-05-28 11:08+0000\n"
+"Last-Translator: FUNG KA LUEN <luen_2@hotmail.com>\n"
 "Language-Team: Chinese (Hong Kong) <zh_HK@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 
 #: NavitMapPreviewActivity.java:198
 msgid "Use as destination"
@@ -33,198 +33,206 @@ msgstr "於地圖顯示目的地"
 msgid "touch map to zoom"
 msgstr "觸碰地圖放大"
 
-#: NavitMapDownloader.java:475 NavitMapDownloader.java:1564
-#: NavitMapDownloader.java:1955 NavitMapDownloader.java:1969
-#: NavitMapDownloader.java:2001
+#: NavitMapDownloader.java:476 NavitMapDownloader.java:1373
+#: NavitMapDownloader.java:1387 NavitMapDownloader.java:1419
 msgid "Error downloading map!"
 msgstr "下載地圖時出錯！"
 
-#: NavitMapDownloader.java:576 NavitMapDownloader.java:1325
-#: NavitMapDownloader.java:1734 NavitMapDownloader.java:1872
-#: NavitMapDownloader.java:1903 NavitMapDownloader.java:2069
-#: NavitMapDownloader.java:2202 NavitMapDownloader.java:2599
-#: NavitMapDownloader.java:2712 NavitMapDownloader.java:2890
-#: NavitMapDownloader.java:2904
+#: NavitMapDownloader.java:577 NavitMapDownloader.java:1321
+#: NavitMapDownloader.java:1490 NavitMapDownloader.java:1623
+#: NavitMapDownloader.java:2024 NavitMapDownloader.java:2137
+#: NavitMapDownloader.java:2315 NavitMapDownloader.java:2329
 msgid "Mapdownload"
-msgstr ""
+msgstr "地圖下載"
 
-#: NavitMapDownloader.java:610 NavitMapDownloader.java:1326
-#: NavitMapDownloader.java:1747 NavitMapDownloader.java:1904
+#: NavitMapDownloader.java:611 NavitMapDownloader.java:1322
 msgid "downloading"
 msgstr "下載"
 
-#: NavitMapDownloader.java:610 NavitMapDownloader.java:1747
+#: NavitMapDownloader.java:611
 msgid "ETA"
 msgstr ""
 
-#: NavitMapDownloader.java:713 NavitMapDownloader.java:1793
+#: NavitMapDownloader.java:714
 msgid "Error downloading map, resuming"
 msgstr "下載地圖時出錯，正在重新下載"
 
-#: NavitMapDownloader.java:1499 NavitMapDownloader.java:1986
+#: NavitMapDownloader.java:1404
 msgid "Map already up to date"
 msgstr "已是最新地圖"
 
-#: NavitMapDownloader.java:1873 NavitMapDownloader.java:2203
-msgid "ready"
-msgstr "就緒"
-
-#: NavitMapDownloader.java:2070 NavitMapDownloader.java:2600
+#: NavitMapDownloader.java:1491 NavitMapDownloader.java:2025
 msgid "Creating outputfile, long time"
 msgstr "建立輸出檔，要很長時間"
 
-#: NavitMapDownloader.java:2135
+#: NavitMapDownloader.java:1556
 msgid "MD5 mismatch"
 msgstr "MD5 不符"
 
-#: NavitMapDownloader.java:2713
+#: NavitMapDownloader.java:1624
+msgid "ready"
+msgstr "就緒"
+
+#: NavitMapDownloader.java:2138
 msgid "Creating outputfile, wait"
 msgstr "建立輸出檔，請稍候"
 
-#: NavitMapDownloader.java:2891 NavitMapDownloader.java:2905
+#: NavitMapDownloader.java:2316 NavitMapDownloader.java:2330
 msgid "generating MD5 checksum"
 msgstr "產生 MD5 checksum"
 
 #. . english text: Welcome to ZANavi
-#: Navit.java:864
+#: Navit.java:875
 msgid "__INFO_BOX_TITLE__"
 msgstr "歡迎使用 ZANavi"
 
-#: Navit.java:890
+#: Navit.java:901
 msgid "Ok"
 msgstr "好"
 
-#: Navit.java:899
+#: Navit.java:910
 msgid "More info"
 msgstr "更多資訊"
 
 #. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
-#: Navit.java:929
+#: Navit.java:940
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
 "這是你首次使用 ZANavi！\\n\\n一開始先在選單選「下載地圖」\\n並為當前地區下載地圖。\\n此舉會下載一個大檔案，故請\\"
 "n確保你的手機收費不會太高！\\n\\n地圖資料：\\nCC-BY-SA OpenStreetMap Project\\n\\n詳情\\"
 "n請瀏覽我們的網站\\nhttp://zanavi.cc\\n\\n Have fun using ZANavi."
 
-#: Navit.java:1753
+#: Navit.java:1919
 msgid "address search (online)"
 msgstr "搜尋地址 (網上)"
 
-#: Navit.java:1754
+#: Navit.java:1920
 msgid "address search (offline)"
 msgstr "搜尋地址 (網下)"
 
-#: Navit.java:1757
+#: Navit.java:1923
 msgid "Stop Navigation"
 msgstr "停止導航"
 
-#: Navit.java:1758
+#: Navit.java:1924
 msgid "Zoom to Route"
 msgstr "放大至路線"
 
 #. . TRANSLATORS: it means: "show current target in google maps"
 #. . TRANSLATORS: please keep this text short, to fit in the android menu!
-#: Navit.java:1761
+#: Navit.java:1927
 msgid "Target in gmaps"
-msgstr ""
+msgstr "用 Google 地圖顯示目標"
 
 #. . TRANSLATORS: text to translate is: exit ZANavi
-#: Navit.java:1764
+#: Navit.java:1930
 msgid "exit navit"
 msgstr "結束 ZANavi"
 
-#: Navit.java:1765
+#: Navit.java:1931
 msgid "toggle POI"
 msgstr "切換 POI"
 
-#: Navit.java:1766
+#: Navit.java:1932
 msgid "Settings"
 msgstr "設定"
 
-#: Navit.java:1770
+#: Navit.java:1935
+msgid "Coord Dialog"
+msgstr ""
+
+#: Navit.java:1939
 msgid "Announcer Off"
 msgstr "Announcer 關"
 
-#: Navit.java:1774
+#: Navit.java:1943
 msgid "Announcer On"
 msgstr "Announcer 開"
 
-#: Navit.java:1777
+#: Navit.java:1946
 msgid "Recent destinations"
 msgstr "最近的目的地"
 
-#: Navit.java:1778
+#: Navit.java:1947
 msgid "download maps"
 msgstr "下載地圖"
 
-#: Navit.java:1779
+#: Navit.java:1948
 msgid "delete maps"
 msgstr "刪除地圖"
 
-#: Navit.java:1784
+#: Navit.java:1949
+msgid "show Maps age"
+msgstr "顯示地圖建立日期表"
+
+#: Navit.java:1950
+msgid "convert GPX file"
+msgstr "轉換成GPX檔案"
+
+#: Navit.java:1955
 msgid "Demo Vehicle"
 msgstr "Demo 車輛"
 
-#: Navit.java:1785
+#: Navit.java:1956
 msgid "Speech Texts"
 msgstr "話音文字"
 
-#: Navit.java:1786
+#: Navit.java:1957
 msgid "Nav. Commands"
 msgstr "導航指令"
 
-#: Navit.java:1790
+#: Navit.java:1961
 msgid "online Help"
 msgstr "網上求助"
 
-#: Navit.java:1833
+#: Navit.java:2024
 msgid "No address found"
 msgstr "沒有地址"
 
-#: Navit.java:1918 Navit.java:1932 Navit.java:4085
+#: Navit.java:2118 Navit.java:2132 Navit.java:4519
 msgid "Enter: City and Street"
 msgstr "輸入：城市及街道"
 
-#: Navit.java:2327
+#: Navit.java:2594
 msgid "No search string entered"
 msgstr "未輸入搜尋文字"
 
-#: Navit.java:2457 Navit.java:2565
+#: Navit.java:2724 Navit.java:2949
 msgid "setting destination to"
 msgstr "將目的地設為"
 
-#: Navit.java:2471 Navit.java:2579
+#: Navit.java:2738 Navit.java:2963
 msgid "new Waypoint"
 msgstr "新 Waypoint"
 
-#: Navit.java:2755 Navit.java:2810
+#: Navit.java:3139 Navit.java:3194
 msgid "getting search results"
 msgstr "取得搜尋結果"
 
-#: Navit.java:2756 Navit.java:2811
+#: Navit.java:3140 Navit.java:3195
 msgid "searching ..."
 msgstr "搜尋 ..."
 
-#: Navit.java:2909 NavitGraphics.java:3502
+#: Navit.java:3293 NavitGraphics.java:3515
 msgid "loading search results"
 msgstr "載入搜尋結果"
 
-#: Navit.java:2910 NavitGraphics.java:3503
+#: Navit.java:3294 NavitGraphics.java:3516
 msgid "towns"
 msgstr "市鎮"
 
-#: Navit.java:2910 NavitGraphics.java:3503
+#: Navit.java:3294 NavitGraphics.java:3516
 msgid "Streets"
 msgstr "街道"
 
-#: Navit.java:2932
+#: Navit.java:3317
 msgid "No Results found!"
 msgstr "無結果！"
 
 #. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
-#: Navit.java:3260 Navit.java:3286
+#: Navit.java:3645 Navit.java:3671
 msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
-msgstr ""
+msgstr "地圖 資料(c) OpenStreetMap contributors, CC-BY-SA"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:35
@@ -477,32 +485,42 @@ msgid "__PREF__summ__streetsearch_r"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:158
-msgid "__PREF__title__map_directory"
+#: NavitPreferences.java:135
+msgid "__PREF__title__route_style"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:160
-msgid "__PREF__summ__map_directory"
+#: NavitPreferences.java:137
+msgid "__PREF__summ__route_style"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:162
-msgid "__PREF__dialogtitle__map_directory"
+msgid "__PREF__title__map_directory"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:164
-msgid "__PREF__dialogcancel__map_directory"
+msgid "__PREF__summ__map_directory"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:166
-msgid "__PREF__dialogok__map_directory"
+msgid "__PREF__dialogtitle__map_directory"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:168
+msgid "__PREF__dialogcancel__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:170
+msgid "__PREF__dialogok__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:172
 msgid "__PREF__dialogmsg__map_directory"
 msgstr ""
 
@@ -541,16 +559,16 @@ msgstr "搜尋"
 #: NavitSpeech2.java:132
 msgid ""
 "Language is not available for TTS! Using your phone's default settings"
-msgstr ""
+msgstr "非TTS支持的語言！請用電話的原本設定"
 
 #: NavitSpeech2.java:149
 msgid "Using Voice for:"
-msgstr ""
+msgstr "用語音"
 
-#: NavitAndroidOverlay.java:607
+#: NavitAndroidOverlay.java:661
 msgid "drive here"
-msgstr ""
+msgstr "駕車到這裡"
 
-#: NavitAndroidOverlay.java:655
+#: NavitAndroidOverlay.java:714
 msgid "wait ..."
 msgstr "稍候 ..."

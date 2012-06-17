@@ -1207,7 +1207,7 @@ gboolean config_load(const char *filename, xmlerror **error)
 
 	initStatic();
 
-	//dbg(1, "enter filename='%s'\n", filename);
+	dbg(0, "XML-----XML-----enter filename='%s'\n", filename);
 	memset(&document, 0, sizeof(document));
 	document.href = filename;
 	document.user_data = &curr;
@@ -1217,7 +1217,7 @@ gboolean config_load(const char *filename, xmlerror **error)
 		g_set_error(error, G_MARKUP_ERROR, G_MARKUP_ERROR_PARSE, "element '%s' not closed", curr->element);
 		result = FALSE;
 	}
-	//dbg(1, "return %d\n", result);
+	dbg(0, "XML-----XML-----return %d\n", result);
 	return result;
 }
 

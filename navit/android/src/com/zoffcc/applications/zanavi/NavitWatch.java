@@ -24,11 +24,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-public class NavitWatch implements Runnable {
+public class NavitWatch implements Runnable
+{
 	private Thread thread;
-	private static Handler handler =new Handler() {
-		public void handleMessage(Message m) {
-			Log.e("NavitWatch","Handler received message");
+	private static Handler handler = new Handler()
+	{
+		public void handleMessage(Message m)
+		{
+			Log.e("NavitWatch", "Handler received message");
 		}
 	};
 	private boolean removed;
@@ -37,17 +40,20 @@ public class NavitWatch implements Runnable {
 	private int watch_callbackid;
 	private boolean callback_pending;
 	private Runnable callback_runnable;
+
 	public native void poll(int fd, int cond);
+
 	public native void WatchCallback(int id);
 
-	NavitWatch(int fd, int cond, int callbackid) 
+	NavitWatch(int fd, int cond, int callbackid)
 	{
 		// Log.e("NavitWatch","Creating new thread for "+fd+" "+cond+" from current thread " + java.lang.Thread.currentThread().getName());
-		watch_fd=fd;
-		watch_cond=cond;
-		watch_callbackid=callbackid;
-		final NavitWatch navitwatch=this;
-		callback_runnable = new Runnable() {
+		watch_fd = fd;
+		watch_cond = cond;
+		watch_callbackid = callbackid;
+		final NavitWatch navitwatch = this;
+		callback_runnable = new Runnable()
+		{
 			public void run()
 			{
 				navitwatch.callback();
@@ -56,45 +62,49 @@ public class NavitWatch implements Runnable {
 		thread = new Thread(this, "poll thread");
 		thread.start();
 	}
+
 	public void run()
 	{
-		for (;;) {
+		for (;;)
+		{
 			// Log.e("NavitWatch","Polling "+watch_fd+" "+watch_cond + " from " + java.lang.Thread.currentThread().getName());
 			poll(watch_fd, watch_cond);
 			// Log.e("NavitWatch","poll returned");
-			if (removed)
-				break;
-			callback_pending=true;
-			handler.post(callback_runnable);	
-			try {
+			if (removed) break;
+			callback_pending = true;
+			handler.post(callback_runnable);
+			try
+			{
 				// Log.e("NavitWatch","wait");
-				synchronized(this) {
-					if (callback_pending) 
-						this.wait();
+				synchronized (this)
+				{
+					if (callback_pending) this.wait();
 				}
 				// Log.e("NavitWatch","wait returned");
-			} catch (Exception e) {
-				Log.e("NavitWatch","Exception "+e.getMessage());
 			}
-			if (removed)
-				break;
+			catch (Exception e)
+			{
+				Log.e("NavitWatch", "Exception " + e.getMessage());
+			}
+			if (removed) break;
 		}
 	}
+
 	public void callback()
 	{
 		// Log.e("NavitWatch","Calling Callback");
-		if (!removed)
-			WatchCallback(watch_callbackid);
-		synchronized(this) {
-			callback_pending=false;
+		if (!removed) WatchCallback(watch_callbackid);
+		synchronized (this)
+		{
+			callback_pending = false;
 			// Log.e("NavitWatch","Waking up");
 			this.notify();
 		}
 	}
+
 	public void remove()
 	{
-		removed=true;
+		removed = true;
 		thread.interrupt();
 	}
 }
-

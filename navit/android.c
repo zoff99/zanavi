@@ -56,34 +56,148 @@ jmethodID DrawMapPreview_text = NULL;
 
 struct attr attr;
 
-struct config
-{
+
+
+
+
+
+
+// ------------------------- COPIED STUFF --- this is generally bad ------------------
+// ------------------------- COPIED STUFF --- this is generally bad ------------------
+// ------------------------- COPIED STUFF --- this is generally bad ------------------
+
+
+// copyied from config_.c !!! (always keep in sync!!!)
+struct config {
 	struct attr **attrs;
 	struct callback_list *cbl;
-}*config;
+} *config;
 
-struct gui_config_settings
-{
+
+// copied from gui_internal.c (always keep in sync!!!)
+struct gui_config_settings {
+  int font_size;
+  int icon_xs;
+  int icon_s;
+  int icon_l;
+  int spacing;
+};
+
+
+// dummy def!!
+struct gui_internal_methods {
 	int dummy;
 };
 
-struct gui_internal_data
-{
+// dummy def!!
+struct gui_internal_widget_methods {
 	int dummy;
 };
 
-struct route_data
-{
-	int dummy;
+
+// forward def
+struct gui_priv;
+
+// copied from gui_internal.h (always keep in sync!!!)
+struct gui_internal_data {
+	struct gui_priv *priv;
+	struct gui_internal_methods *gui;
+	struct gui_internal_widget_methods *widget;
 };
 
-struct widget
-{
-	int dummy;
+// copied from gui_internal.c (always keep in sync!!!)
+struct route_data {
+  struct widget * route_table;
+  int route_showing;
+
 };
 
-struct gui_priv
-{
+// copied from gui_internal.h (always keep in sync!!!)
+enum flags {
+	gravity_none=0x00,
+	gravity_left=1,
+	gravity_xcenter=2,
+	gravity_right=4,
+	gravity_top=8,
+	gravity_ycenter=16,
+	gravity_bottom=32,
+	gravity_left_top=gravity_left|gravity_top,
+	gravity_top_center=gravity_xcenter|gravity_top,
+	gravity_right_top=gravity_right|gravity_top,
+	gravity_left_center=gravity_left|gravity_ycenter,
+	gravity_center=gravity_xcenter|gravity_ycenter,
+	gravity_right_center=gravity_right|gravity_ycenter,
+	gravity_left_bottom=gravity_left|gravity_bottom,
+	gravity_bottom_center=gravity_xcenter|gravity_bottom,
+	gravity_right_bottom=gravity_right|gravity_bottom,
+	flags_expand=0x100,
+	flags_fill=0x200,
+	orientation_horizontal=0x10000,
+	orientation_vertical=0x20000,
+	orientation_horizontal_vertical=0x40000,
+};
+
+// copied from gui_internal.h (always keep in sync!!!)
+enum widget_type {
+	widget_box=1,
+	widget_button,
+	widget_label,
+	widget_image,
+	widget_table,
+	widget_table_row
+};
+
+// copied from gui_internal.c (always keep in sync!!!)
+struct widget {
+	enum widget_type type;
+	struct graphics_gc *background,*text_background;
+	struct graphics_gc *foreground_frame;
+	struct graphics_gc *foreground;
+	char *text;
+	struct graphics_image *img;
+	void (*func)(struct gui_priv *priv, struct widget *widget, void *data);
+	int reason;
+	int datai;
+	void *data;
+	void (*data_free)(void *data);
+	void (*free) (struct gui_priv *this_, struct widget * w);
+	char *prefix;
+	char *name;
+	char *speech;
+	char *command;
+	struct pcoord c;
+	struct item item;
+	int selection_id;
+	int state;
+	struct point p;
+	int wmin,hmin;
+	int w,h;
+	int textw,texth;
+	int font_idx;
+	int bl,br,bt,bb,spx,spy;
+	int border;
+	int packed;
+	int cols;
+	enum flags flags;
+	int flags2;
+	void *instance;
+	int (*set_attr)(void *, struct attr *);
+	int (*get_attr)(void *, enum attr_type, struct attr *, struct attr_iter *);
+	void (*remove_cb)(void *, struct callback *cb);
+	struct callback *cb;
+	struct attr on;
+	struct attr off;
+	int deflt;
+	int is_on;
+	int redraw;
+	struct menu_data *menu_data;
+	struct form *form;
+	GList *children;
+};
+
+
+// copied from gui_internal.c !!!!!! (always keep in sync!!!)
+struct gui_priv {
 	struct navit *nav;
 	struct attr self;
 	struct window *win;
@@ -99,25 +213,15 @@ struct gui_priv
 	int font_size;
 	int fullscreen;
 	struct graphics_font *fonts[3];
-	/**
-	 * The size (in pixels) that xs style icons should be scaled to.
-	 * This icon size can be too small to click it on some devices.
-	 */
 	int icon_xs;
-	/**
-	 * The size (in pixels) that s style icons (small) should be scaled to
-	 */
 	int icon_s;
-	/**
-	 * The size (in pixels) that l style icons should be scaled to
-	 */
 	int icon_l;
 	int pressed;
 	struct widget *widgets;
 	int widgets_count;
 	int redraw;
 	struct widget root;
-	struct widget *highlighted, *editable;
+	struct widget *highlighted,*editable;
 	struct widget *highlighted_menu;
 	int clickp_valid, vehicle_valid;
 	struct pcoord clickp, vehiclep;
@@ -130,31 +234,21 @@ struct gui_priv
 	int speech;
 	int keyboard;
 	int keyboard_required;
-	/**
-	 * The setting information read from the configuration file.
-	 * values of -1 indicate no value was specified in the config file.
-	 */
 	struct gui_config_settings config;
 	struct event_idle *idle;
-	struct callback *motion_cb, *button_cb, *resize_cb, *keypress_cb, *window_closed_cb, *idle_cb, *motion_timeout_callback;
+	struct callback *motion_cb,*button_cb,*resize_cb,*keypress_cb,*window_closed_cb,*idle_cb, *motion_timeout_callback;
 	struct event_timeout *motion_timeout_event;
 	struct point current;
-
 	struct callback * vehicle_cb;
-	/**
-	 * Stores information about the route.
-	 */
 	struct route_data route_data;
-
 	struct gui_internal_data data;
 	struct callback_list *cbl;
 	int flags;
 	int cols;
 	struct attr osd_configuration;
 	int pitch;
-	int flags_town, flags_street, flags_house_number;
+	int flags_town,flags_street,flags_house_number;
 	int radius;
-	/* html */
 	char *html_text;
 	int html_depth;
 	struct widget *html_container;
@@ -163,12 +257,18 @@ struct gui_priv
 	char *href;
 	int html_anchor_found;
 	struct form *form;
-	struct html
-	{
+	struct html {
 		int skip;
-		enum html_tag
-		{
-			html_tag_none, html_tag_a, html_tag_h1, html_tag_html, html_tag_img, html_tag_script, html_tag_form, html_tag_input, html_tag_div,
+		enum html_tag {
+			html_tag_none,
+			html_tag_a,
+			html_tag_h1,
+			html_tag_html,
+			html_tag_img,
+			html_tag_script,
+			html_tag_form,
+			html_tag_input,
+			html_tag_div,
 		} tag;
 		char *command;
 		char *name;
@@ -179,8 +279,22 @@ struct gui_priv
 	} html[10];
 };
 
+
+// ------------------------- COPIED STUFF --- this is generally bad ------------------
+// ------------------------- COPIED STUFF --- this is generally bad ------------------
+// ------------------------- COPIED STUFF --- this is generally bad ------------------
+
+
+
+
+
+
+
 static void gui_internal_search_list_set_default_country2(struct gui_priv *this)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct attr search_attr, country_name, country_iso2, *country_attr;
 	struct item *item;
 	struct country_search *cs;
@@ -240,6 +354,9 @@ struct navit *global_navit;
 
 int android_find_class_global(char *name, jclass *ret)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	*ret = (*jnienv)->FindClass(jnienv, name);
 	if (!*ret)
 	{
@@ -255,6 +372,9 @@ int android_find_class_global(char *name, jclass *ret)
 
 int android_find_method(jclass class, char *name, char *args, jmethodID *ret)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	*ret = (*jnienv)->GetMethodID(jnienv, class, name, args);
 	if (*ret == NULL)
 	{
@@ -267,6 +387,9 @@ int android_find_method(jclass class, char *name, char *args, jmethodID *ret)
 
 int android_find_static_method(jclass class, char *name, char *args, jmethodID *ret)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	*ret = (*jnienv)->GetStaticMethodID(jnienv, class, name, args);
 	if (*ret == NULL)
 	{
@@ -280,6 +403,9 @@ int android_find_static_method(jclass class, char *name, char *args, jmethodID *
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, jobject activity, jobject lang, int version, jobject display_density_string)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	char *strings[] =
 	{ "/data/data/com.zoffcc.applications.zanavi/bin/navit", NULL };
 	const char *langstr;
@@ -292,6 +418,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	// set global JNIenv here ----------
 	// set global JNIenv here ----------
 	jnienv = env;
+	//dbg(0,"jnienv=%p\n", jnienv);
 	// set global JNIenv here ----------
 	// set global JNIenv here ----------
 	// set global JNIenv here ----------
@@ -314,11 +441,21 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	setenv("ANDROID_DENSITY", displaydensitystr, 1);
 	(*env)->ReleaseStringUTFChars(env, display_density_string, displaydensitystr);
 	main_real(1, strings);
+
+	dbg(0,"after main_real call\n");
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 }
 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thiz, int param)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	dbg(0, "enter %d\n", param);
 
 	if (param == -2)
@@ -331,104 +468,124 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 			//DBG dbg(0, "save position to file");
 			char *center_file = bookmarks_get_center_file(TRUE);
 			bookmarks_write_center_to_file(attr.u.navit->bookmarks, center_file);
-			dbg(0,"save pos to file -> ready");
+			dbg(0, "save pos to file -> ready");
 			g_free(center_file);
 			// bookmarks_destroy(global_navit->bookmarks);
 		}
 	}
 
-	dbg(0,"acti: 001\n");
-	callback_list_call_1(android_activity_cbl, param);
-	dbg(0,"acti: 002\n");
+	// param ==  3 // onCreate
+	// param ==  2 // onStart
+	// param ==  1 // onResume
+	// param ==  0 // onRestart
+	// param == -1 // onPause
+	// param == -2 // onStop
+	// param == -3 // onDestroy
+	// param == -4 // exit() [java function]
+
+	if (param == 3)
+	{
+		navit_draw(global_navit);
+	}
+
+	dbg(0, "acti: 001\n");
+	// callback_list_call_1(android_activity_cbl, param);
+	//dbg(0, "acti: 002\n");
+
+	//if (param == -4)
+	//{
+	//	dbg(0, "acti: 003\n");
+	//	// *********EXIT******EXIT******** // exit(0);
+	//}
+
 	if (param == -4)
 	{
-		dbg(0,"acti: 003\n");
-		exit(0);
+		dbg(0, "acti: 004\n");
+		navit_destroy(global_navit);
+		dbg(0, "acti: 005\n");
+		event_main_loop_quit();
+		dbg(0, "acti: 006\n");
 	}
-	//if (param == -3)
-	//{
-	//	event_main_loop_quit();
-	//}
 }
 
+
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_SizeChangedCallback(JNIEnv* env, jobject thiz, int id, int w, int h)
+Java_com_zoffcc_applications_zanavi_NavitGraphics_SizeChangedCallback(JNIEnv* env, jobject thiz, int w, int h)
 {
-	//DBG dbg(0,"enter %p %d %d\n", id, w, h);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	dbg(0,"enter %d %d\n", w, h);
 	navit_handle_resize(global_navit, w, h);
-
-	// //DBG dbg(0,"== part2 ==\n");
-
-	//if (id)
-	//{
-	//	callback_call_2((struct callback *) id, w, h);
-	//}
-
-	//DBG dbg(0,"leave\n");
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
 }
+
 
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_ButtonCallback(JNIEnv* env, jobject thiz, int id, int pressed, int button, int x, int y)
+Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallback(JNIEnv* env, jobject thiz, int x1, int y1, int x2, int y2)
 {
-	//DBG dbg(0, "enter %p %d %d\n", (struct callback *) id, pressed, button);
-	if (id)
-		callback_call_4((struct callback *) id, pressed, button, x, y);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	struct point p_end;
+	struct point p_start;
+
+	p_start.x = x1;
+	p_start.y = y1;
+	p_end.x = x2;
+	p_end.y = y2;
+	update_transformation(global_navit->trans, &p_start, &p_end, NULL);
+	// graphics_draw_drag(this_->gra, NULL);
+	transform_copy(global_navit->trans, global_navit->trans_cursor);
+	global_navit->moved = 1;
+
+	/*
+	struct coord c;
+	struct pcoord pc;
+	p.x = x;
+	p.y = y;
+	transform_reverse(global_navit->trans, &p, &c);
+	pc.x = c.x;
+	pc.y = c.y;
+	pc.pro = transform_get_projection(global_navit->trans);
+	navit_set_position(global_navit, &pc);
+	*/
+
+	navit_draw(global_navit);
 }
 
-JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallback(JNIEnv* env, jobject thiz, int id, int x, int y)
-{
-	//DBG dbg(0, "enter %p %d %d\n", (struct callback *) id, x, y);
-	if (id)
-		callback_call_2((struct callback *) id, x, y);
-}
-
-JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_KeypressCallback(JNIEnv* env, jobject thiz, int id, jobject str)
-{
-	//DBG dbg(0,"EEnter\n");
-	const char *s;
-	////DBG dbg(0,"enter %p %p\n",(struct callback *)id,str);
-	s = (*env)->GetStringUTFChars(env, str, NULL);
-	////DBG dbg(0,"key=%s\n",s);
-	if (id)
-	{
-		callback_call_1((struct callback *) id, s);
-	}
-	(*env)->ReleaseStringUTFChars(env, str, s);
-}
 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitTimeout_TimeoutCallback(JNIEnv* env, jobject thiz, int delete, int id)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"enter %p %d %p\n",thiz, delete, (void *)id);
-	//DBG dbg(0,"timeout 1\n");
+	//dbg(0,"timeout 1\n");
 	// ICS
 	callback_call_0((struct callback *) id);
 	// ICS
-	//DBG dbg(0,"timeout 2\n");
+	//dbg(0,"timeout 2\n");
 	if (delete)
 	{
-		//DBG dbg(0,"timeout 3\n");
+		//dbg(0,"timeout 3\n");
 		// ICS
-		// (*jnienv)->DeleteGlobalRef(jnienv, thiz);
+		(*jnienv)->DeleteGlobalRef(jnienv, thiz);
 		// ICS
-		//DBG dbg(0,"timeout 4\n");
+		//dbg(0,"timeout 4\n");
 	}
-}
-
-JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv * env, jobject thiz, int id, jobject location)
-{
-	//DBG dbg(0,"enter %p %p\n",thiz, (void *)id);
-
-	// ***** calls: vehicle_android.c -> vehicle_android_callback()
-	callback_call_1((struct callback *) id, (void *) location);
 }
 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitIdle_IdleCallback(JNIEnv* env, jobject thiz, int id)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"enter %p %p\n",thiz, (void *)id);
 	callback_call_0((struct callback *) id);
 }
@@ -436,6 +593,9 @@ Java_com_zoffcc_applications_zanavi_NavitIdle_IdleCallback(JNIEnv* env, jobject 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitWatch_poll(JNIEnv* env, jobject thiz, int fd, int cond)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	struct pollfd pfd;
 	pfd.fd = fd;
 	//DBG dbg(0, "%p poll called for %d %d\n", env, fd, cond);
@@ -460,6 +620,9 @@ Java_com_zoffcc_applications_zanavi_NavitWatch_poll(JNIEnv* env, jobject thiz, i
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitWatch_WatchCallback(JNIEnv* env, jobject thiz, int id)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0, "enter %p %p\n", thiz, (void *) id);
 	callback_call_0((struct callback *) id);
 }
@@ -467,12 +630,38 @@ Java_com_zoffcc_applications_zanavi_NavitWatch_WatchCallback(JNIEnv* env, jobjec
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitSensors_SensorCallback(JNIEnv* env, jobject thiz, int id, int sensor, float x, float y, float z)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0, "enter %p %p %f %f %f\n", thiz, (void *) id, x, y, z);
 	callback_call_4((struct callback *) id, sensor, &x, &y, &z);
 }
 
+
+JNIEXPORT void JNICALL
+Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv * env, jobject thiz, jobject location)
+{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	//dbg(0,"location=%p\n", location);
+	jobject location2 = (*jnienv)->NewGlobalRef(jnienv, location);
+	(*jnienv)->DeleteLocalRef(jnienv, location);
+	//dbg(0,"location=%p\n", location2);
+
+	vehicle_update_(global_navit->vehicle->vehicle, location2);
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+}
+
+
 void android_return_search_result(struct jni_object *jni_o, char *str)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"EEnter\n");
 	jstring js2 = NULL;
 	JNIEnv* env2;
@@ -484,6 +673,9 @@ void android_return_search_result(struct jni_object *jni_o, char *str)
 
 void android_return_generic_int(int id, int i)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"Enter\n");
 	if (NavitGraphicsClass2 == NULL)
 	{
@@ -514,6 +706,9 @@ void android_return_generic_int(int id, int i)
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEnv* env, jobject thiz, int id, int partial, jobject str, int search_flags, jobject search_country, jobject latlon, int radius)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	const char *s;
 	s = (*env)->GetStringUTFChars(env, str, NULL);
 	////DBG dbg(0,"*****string=%s\n",s);
@@ -601,6 +796,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEn
 			my_jni_object.env = env;
 			my_jni_object.jo = thiz;
 			my_jni_object.jm = aMethodID;
+
+			offline_search_break_searching = 0;
+
 			// search_flags --> is search_order (search at what "order" level)
 			search_full_world(s, partial, search_flags, &my_jni_object, &g7, radius);
 		}
@@ -612,6 +810,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEn
 JNIEXPORT jint JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackDestinationValid(JNIEnv* env, jobject thiz)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"EEnter\n");
 	config_get_attr(config, attr_navit, &attr, NULL);
 	// //DBG dbg(0,"destination_valid=%d\n",attr.u.navit->destination_valid);
@@ -628,6 +829,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackDestinationValid(JNIEn
 
 static void map_preview_label_line(struct point *p, int count, char *label, int font_size)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	int i, x, y, tl, tlm, th, thm, tlsq, l;
 	float lsq;
 	double dx, dy;
@@ -709,6 +913,9 @@ static void map_preview_label_line(struct point *p, int count, char *label, int 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitMapPreviewActivity_DrawMapPreview(JNIEnv* env, jobject thiz, jobject latlonzoom, int width, int height, int font_size, int scale, int sel_range)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	// config_get_attr(config, attr_navit, &attr, NULL);
 
 	const char *s;
@@ -977,6 +1184,9 @@ Java_com_zoffcc_applications_zanavi_NavitMapPreviewActivity_DrawMapPreview(JNIEn
 
 void android_DrawMapPreview_target(int x, int y)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	if (NavitMapPreviewActivityClass == NULL)
 	{
 		if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitMapPreviewActivity", &NavitMapPreviewActivityClass))
@@ -999,6 +1209,9 @@ void android_DrawMapPreview_target(int x, int y)
 
 void android_DrawMapPreview_text(int x, int y, char *text, int size, int dx, int dy)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 
 	if (NavitMapPreviewActivityClass == NULL)
 	{
@@ -1027,6 +1240,9 @@ void android_DrawMapPreview_text(int x, int y, char *text, int size, int dx, int
 
 void android_DrawMapPreview_polyline(struct point *p, int count, int type)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	// type:
 	// 0 -> normal street
 	// 2 -> country border
@@ -1070,6 +1286,9 @@ void android_DrawMapPreview_polyline(struct point *p, int count, int type)
 JNIEXPORT jstring JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, jobject thiz, int i, float a, float b)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	// dbg(0,"EEnter i=%d\n", i);
 
 	// const char *result;
@@ -1150,6 +1369,53 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 		transform_to_geo(projection_mg, &c99, &g22);
 		result = g_strdup_printf("%f:%f", g22.lat, g22.lng);
 	}
+	else if (i == 5)
+	{
+		// input:	x,y pixel on screen
+		// output:	streetname nearest that position
+		struct coord c22;
+		struct point p;
+		struct pcoord c24;
+		p.x = a;
+		p.y = b;
+		transform_reverse(global_navit->trans, &p, &c22);
+		c24.x = c22.x;
+		c24.y = c22.y;
+		c24.pro = transform_get_projection(global_navit->trans);
+		result = navit_find_nearest_street(global_navit->mapsets->data, &c24);
+	}
+	else if (i == 6)
+	{
+		// input:	lat, lon
+		// output:	streetname nearest that position
+		struct coord c22;
+		struct point p;
+		struct pcoord c24;
+		struct coord_geo g99;
+		g99.lat = a;
+		g99.lng = b;
+		transform_from_geo(projection_mg, &g99, &c22);
+		c24.x = c22.x;
+		c24.y = c22.y;
+		c24.pro = transform_get_projection(global_navit->trans);
+		result = navit_find_nearest_street(global_navit->mapsets->data, &c24);
+	}
+	else if (i == 7)
+	{
+		// input:	x,y pixel on screen
+		// output:	0xFFFF 0xFFFF\n... -> string that can be used for traffic distortion file
+		struct coord c22;
+		struct point p;
+		struct pcoord c24;
+		p.x = a;
+		p.y = b;
+		transform_reverse(global_navit->trans, &p, &c22);
+		c24.x = c22.x;
+		c24.y = c22.y;
+		c24.pro = transform_get_projection(global_navit->trans);
+		result = navit_find_nearest_street_coords(global_navit->mapsets->data, &c24);
+	}
+
 
 	// dbg(0, "result=%s\n", result);
 	jstring js = (*env)->NewStringUTF(env, result);
@@ -1161,6 +1427,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 JNIEXPORT jstring JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackLocalizedString(JNIEnv* env, jobject thiz, jobject str)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"EEnter\n");
 
 	const char *s;
@@ -1183,6 +1452,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackLocalizedString(JNIEnv
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv* env, jobject thiz, int i, jobject str2)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	const char *s;
 	jobject str = (*env)->NewGlobalRef(env, str2);
 
@@ -1206,6 +1478,126 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 			// zoom out
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
+		}
+		else if (i == 73)
+		{
+			// update the route path and route graph (e.g. after setting new roadblocks)
+			// this destroys the route graph and calcs everything totally new!
+			if (global_navit->route)
+			{
+				if (global_navit->route->destinations)
+				{
+					route_path_update(global_navit->route, 1, 1);
+				}
+			}
+		}
+		else if (i == 72)
+		{
+			// update the route path and route graph (e.g. after setting new roadblocks)
+			// does not update destinations!!!
+			if (global_navit->route)
+			{
+				if (global_navit->route->destinations)
+				{
+					route_path_update(global_navit->route, 0, 1);
+				}
+			}
+		}
+		else if (i == 71)
+		{
+			// activate/deactivate "route graph" display
+			// 0 -> deactivate
+			// 1 -> activate
+
+			// _ms_route_graph
+			// _ms_navigation
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			navit_map_active_flag(global_navit, atoi(s), "_ms_route_graph");
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 70)
+		{
+			// allow drawing map
+			hold_drawing = 0;
+		}
+		else if (i == 69)
+		{
+			// stop drawing map
+			hold_drawing = 1;
+		}
+		else if (i == 68)
+		{
+			// shift "order" by this value (only for drawing objects)
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			shift_order = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 67)
+		{
+			// disable "water from relations"
+			enable_water_from_relations = 0;
+		}
+		else if (i == 66)
+		{
+			// enable "water from relations"
+			enable_water_from_relations = 1;
+		}
+		else if (i == 65)
+		{
+			// draw map async
+			navit_draw_async(global_navit, 1);
+		}
+		else if (i == 64)
+		{
+			// draw map
+			navit_draw(global_navit);
+		}
+		else if (i == 63)
+		{
+			// enable map drawing
+			disable_map_drawing = 0;
+		}
+		else if (i == 62)
+		{
+			// disable map drawing
+			disable_map_drawing = 1;
+		}
+		else if (i == 61)
+		{
+			// zoom to specific zoomlevel at given point as center
+			struct point p;
+			char *pstr;
+
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			char parse_str[strlen(s) + 1];
+			strcpy(parse_str, s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+			// (pixel-x#pixel-y#zoom-level)
+			// pixel-x
+			pstr = strtok(parse_str, "#");
+			p.x = atoi(pstr);
+			// pixel-y
+			pstr = strtok(NULL, "#");
+			p.y = atoi(pstr);
+			// zoom
+			pstr = strtok(NULL, "#");
+			int zoom_level = atoi(pstr);
+			// now call zoom function
+			navit_zoom_to_scale_with_center_point(global_navit, zoom_level, &p);
+		}
+		else if (i == 60)
+		{
+			// disable layer "name"
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			navit_layer_set_active(global_navit, s, 0, 0);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 59)
+		{
+			// enable layer "name"
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			navit_layer_set_active(global_navit, s, 1, 0);
+			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 58)
 		{
@@ -1234,9 +1626,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 		else if (i == 55)
 		{
 			// set cache size for (map-)files
-			dbg(0, "csf1\n");
+			//dbg(0, "csf1\n");
 			s = (*env)->GetStringUTFChars(env, str, NULL);
-			dbg(0, "csf2\n");
+			//dbg(0, "csf2\n");
 			cache_size_file = atoi(s);
 			file_cache_init();
 			dbg(0, "csf=%d\n", cache_size_file);
@@ -1255,6 +1647,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 		else if (i == 52)
 		{
 			// switch to demo vehicle
+
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+
 			if (global_navit->vehicle)
 			{
 				navit_remove_cursors(global_navit);
@@ -1283,7 +1678,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 			follow.u.num = 1;
 
 			speed.type = attr_speed;
-			speed.u.num = 45;
+			speed.u.num = atoi(s);
 
 			interval.type = attr_interval;
 			interval.u.num = 1000;
@@ -1325,6 +1720,8 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 			}
 			// **no** navit_set_vehicle(global_navit, global_navit->vehicle);
 			//DBG dbg(0, "ready\n");
+
+			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 51)
 		{
@@ -1745,6 +2142,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 
 void android_send_generic_text(int id, char *text)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
 	//DBG dbg(0,"Enter\n");
 
 	if (NavitGraphicsClass2 == NULL)

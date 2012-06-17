@@ -95,11 +95,19 @@
     </TableRow>
 
     <Button
+        android:id="@+id/ok01"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Ok" />
+        android:text="View" />
 
+        <Button
+        android:id="@+id/dst01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="set as Destination" />
+    
     <Button
+        android:id="@+id/cancel01"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Cancel" />

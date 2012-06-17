@@ -39,6 +39,71 @@
  * @returns the coordinate
  */
 
+
+
+/*
+================
+sine lookup table (input in degress)
+================
+*/
+/*
+#define SINMAX 9000
+double sinlut[SINMAX + 1];
+void sincreate(void)
+{
+   int i;
+   double angle, angleinc;
+
+   angleinc = 3.1415926535 / 2.0 / (SINMAX);
+   for (i = 0, angle = 0.0; i <= SINMAX; ++i, angle += angleinc)
+   {
+      sinlut[i] = sin(angle);
+   }
+}
+
+double sin_lut(double degrees)
+{
+   int ix;
+   ix = (int)(degrees * 100.0);
+   return sinlut[ix];
+}
+*/
+
+// very fast, but can be a bit off the real value!! so be careful!
+float sqrtf_fast2(float x2)
+{
+	unsigned int i = *(unsigned int*) &x2;
+	// adjust bias
+	i  += 127 << 23;
+	// approximation of square root
+	i >>= 1;
+	return *(float*) &i;
+}
+
+/*
+================
+SquareRootFloat (rather accurate)
+================
+*/
+float sqrtf_fast(float number2)
+{
+    long i;
+    float x, y;
+    const float f = 1.5F;
+
+    x = number2 * 0.5F;
+    y  = number2;
+
+    i  = * ( long * ) &y;
+    i  = 0x5f3759df - ( i >> 1 );
+    y  = * ( float * ) &i;
+    y  = y * ( f - ( x * y * y ) );
+	y  = y * ( f - ( x * y * y ) );
+    return number2 * y;
+}
+
+
+
 struct coord *
 coord_get(unsigned char **p)
 {

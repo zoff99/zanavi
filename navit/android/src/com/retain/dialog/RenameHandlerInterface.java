@@ -5,6 +5,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
  */
+
 /**
  * ZANavi, Zoff Android Navigation system.
  * Copyright (C) 2011 Zoff <zoff@zoff.cc>

@@ -30,6 +30,14 @@
         <item>extra large (DANGER!)</item>
         <item>super large (DANGER!)</item>
     </string-array>
+    <string-array name="route_styleValues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="route_styleArray">
+        <item>Style 1</item>
+        <item>Style 2</item>
+    </string-array>
     <string-array name="drawatorderValues">
         <item>0</item>
         <item>1</item>

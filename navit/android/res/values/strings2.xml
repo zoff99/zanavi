@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="fs_location">Location</string>
+    <string name="fs_cant_read_folder">folder can\'t be read!</string>
+    <string name="fs_nnew">New</string>
+    <string name="fs_select">Select</string>
+    <string name="fs_file_name">File name:</string>
+    <string name="fs_cancel">Cancel</string>
+    <string name="fs_create">Save</string>
+    <string name="fs_no_data">No Data</string>
+    <color name="fs_gray">#ffff0000</color>
+    <string name="fs_err">Error</string>
+</resources>

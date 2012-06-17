@@ -86,30 +86,35 @@
 						<coord x="0" y="{round(-13*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
 						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 					</polygon>
+		<xsl:text>&#x0A;        </xsl:text>
 					<polygon color="#00000066"><!-- shadow color , alpha 0x66 -->
 						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(13.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(-13*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
 						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 					</polygon>
+		<xsl:text>&#x0A;        </xsl:text>
 					<polygon color="#008500">
 						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
 						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 					</polygon>
+		<xsl:text>&#x0A;        </xsl:text>
 					<polygon color="#00BC00"><!-- light color -->
 						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
 						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 					</polygon>
+		<xsl:text>&#x0A;        </xsl:text>
 					<polyline color="#008500" width="2">
 						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
 						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 					</polyline>
+		<xsl:text>&#x0A;        </xsl:text>
 					<polyline color="#008500" width="2">
 						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
 						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
@@ -124,7 +129,7 @@
 		<!-- android layout -->
 		<!-- android layout -->
 		<!-- android layout -->
-			<layer name="polygons">
+			<layer name="polygons001">
 				<itemgra item_types="poly_wood" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polygon color="#8ec78d"/>
 					<text text_size="8"/>
@@ -133,7 +138,14 @@
 					<polygon color="#8ec78d"/>
 					<text text_size="10"/>
 				</itemgra>
+				<itemgra item_types="poly_park" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#7cc334"/>
+					<text text_size="8"/>
+				</itemgra>
+			</layer>
+		<xsl:text>&#x0A;        </xsl:text>
 
+			<layer name="polygons">
 				<!-- ocean -->
 				<itemgra item_types="poly_water_tiled">
 					<polygon color="#82c8ea"/>
@@ -153,13 +165,21 @@
 				</itemgra>
 				<!-- rivers with text -->
 
+				<!-- rivers with text (converted from relations) -->
+				<itemgra item_types="poly_water_from_relations" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polygon color="#82c8ea"/>
+					<polyline color="#5096b8"/>
+					<text text_size="8"/>
+				</itemgra>
+				<itemgra item_types="poly_water_from_relations" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#82c8ea"/>
+					<polyline color="#5096b8"/>
+					<text text_size="10"/>
+				</itemgra>
+				<!-- rivers with text (converted from relations) -->
 
 				<itemgra item_types="poly_flats,poly_scrub,poly_military_zone,poly_marine,plantation,tundra" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#a0a0a0"/>
-					<text text_size="8"/>
-				</itemgra>
-				<itemgra item_types="poly_park" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polygon color="#7cc334"/>
 					<text text_size="8"/>
 				</itemgra>
 				<itemgra item_types="poly_pedestrian" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
@@ -255,12 +275,16 @@
 				</itemgra>
 				-->
 
+				<!--
 				<itemgra item_types="water_river" order="{round(5-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#82c8ea" width="1"/>
 				</itemgra>
+				-->
+				<!--
 				<itemgra item_types="water_river" order="{round(6-number($LAYOUT_001_ORDER_DELTA_1))}-{round(7-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#82c8ea" width="3"/>
 				</itemgra>
+				-->
 				<itemgra item_types="water_river" order="{round(8-number($LAYOUT_001_ORDER_DELTA_1))}-{round(9-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#82c8ea" width="4"/>
 				</itemgra>
@@ -325,15 +349,18 @@
 					<polyline color="#9b1199" width="12" />
 				</itemgra>
 				<itemgra item_types="border_country" order="{round(8-number($LAYOUT_001_ORDER_DELTA_1))}-{round(12-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#9b1199" width="20" dash="2"/>
+					<polyline color="#9b1199" width="20" />
+					<!--<polyline color="#9b1199" width="20" dash="2"/>-->
 				</itemgra>
 				<itemgra item_types="border_country" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#9b1199" width="30" dash="2"/>
+					<polyline color="#9b1199" width="30" />
+					<!--<polyline color="#9b1199" width="30" dash="2"/>-->
 				</itemgra>
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
-			<layer name="streets">
+			<layer name="route_001" active="0">
 				<!-- route -->
 				<itemgra item_types="street_route" order="0-{round(1-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#69e068" width="3"/>
@@ -378,9 +405,11 @@
 					<polyline color="#69e068" width="530"/>
 				</itemgra>
 				<!-- route -->
+			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
-
+			<layer name="streets">
 				<itemgra item_types="selected_line" order="{round(2-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#ba00b8" width="4"/>
 				</itemgra>
@@ -446,10 +475,7 @@
 				<!-- also "car ferry" -->
 			</layer>
 
-
-			<layer name="streets__tunnel">
-			</layer>
-
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="streets_1">
 				<itemgra item_types="forest_way_1" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
@@ -759,13 +785,93 @@
 				</itemgra>
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
-			<layer name="streets__bridge">
+			<layer name="route_002" active="0">
+				<!-- route -->
+				<itemgra item_types="street_route" order="0-{round(1-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="2"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(2-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="4"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(3-number($LAYOUT_001_ORDER_DELTA_1))}-{round(5-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="4"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(6-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="4"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-{round(8-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="6"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(9-number($LAYOUT_001_ORDER_DELTA_1))}-{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="6"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fe" width="6"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="8"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="8"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="10"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="12"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="20"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="38"/>
+				</itemgra>
+				<itemgra item_types="street_route" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000fee0" width="46"/>
+				</itemgra>
+				<!-- route -->
 			</layer>
 
-
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="streets_2">
+
+				<!-- traffic distortion -->
+				<itemgra item_types="traffic_distortion" order="{round(8-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc0000" width="8"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(9-number($LAYOUT_001_ORDER_DELTA_1))}-{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc0000" width="10"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc0000" width="14"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc0000" width="16"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc0000" width="26"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc000066" width="32" dash="3"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc000066" width="34" dash="3"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc000066" width="66" dash="3"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc000066" width="134" dash="3"/>
+				</itemgra>
+				<itemgra item_types="traffic_distortion" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#cc000066" width="265" dash="3"/>
+				</itemgra>
+				<!-- traffic distortion -->
+
+
 
 				<itemgra item_types="highway_exit_label" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#000000" radius="3" text_size="7"/>
@@ -815,40 +921,9 @@
 				</itemgra>
 				<!-- text size for streetnames -->
 
-
-
-				<itemgra item_types="traffic_distortion" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-{round(8-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="8"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(9-number($LAYOUT_001_ORDER_DELTA_1))}-{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="10"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="14"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="16"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="26"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="32"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="34"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="66"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="134"/>
-				</itemgra>
-				<itemgra item_types="traffic_distortion" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ff9000" width="265"/>
-				</itemgra>
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="polylines">
 				<itemgra item_types="rail_tram" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-">
@@ -856,6 +931,7 @@
 				</itemgra>
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="labels">
 				<!-- house numbers -->
@@ -867,62 +943,110 @@
 				</itemgra>
 				<!-- house numbers -->
 
-
+				<!-- city/town labels -->
 				<itemgra item_types="town_label,district_label,town_label_0e0,town_label_1e0,town_label_2e0,town_label_5e0,town_label_1e1,town_label_2e1,town_label_5e1,town_label_1e2,town_label_2e2,town_label_5e2,district_label_0e0,district_label_1e0,district_label_2e0,district_label_5e0,district_label_1e1,district_label_2e1,district_label_5e1,district_label_1e2,district_label_2e2,district_label_5e2" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#000000" radius="3" text_size="7"/>
 				</itemgra>
 
-
 				<itemgra item_types="district_label_1e3,district_label_2e3,district_label_5e3" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#000000" radius="3" text_size="7"/>
-				</itemgra>
-				<itemgra item_types="town_label_1e3,place_label" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<circle color="#000000" radius="3" text_size="10"/>
 				</itemgra>
 				<itemgra item_types="district_label_1e4,district_label_2e4,district_label_5e4" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#000000" radius="3" text_size="7"/>
 				</itemgra>
-				<itemgra item_types="town_label_2e3" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<circle color="#000000" radius="3" text_size="10"/>
-				</itemgra>
-				<itemgra item_types="town_label_5e3,town_label_1e4,town_label_2e4,town_label_5e4" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<circle color="#000000" radius="3" text_size="15"/>
-				</itemgra>
 				<itemgra item_types="district_label_1e5,district_label_2e5,district_label_5e5" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<circle color="#000000" radius="3" text_size="7"/>
-				</itemgra>
-				<itemgra item_types="town_label_2e3" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<circle color="#000000" radius="3" text_size="7"/>
 				</itemgra>
 				<itemgra item_types="district_label_1e6,district_label_2e6,district_label_5e6,district_label_1e7" order="{round(9-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#000000" radius="3" text_size="7"/>
 				</itemgra>
+
+				<itemgra item_types="town_label_1e3,place_label" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<circle color="#000000" radius="3" text_size="10"/>
+				</itemgra>
+
+				<itemgra item_types="town_label_2e3" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<circle color="#000000" radius="3" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="town_label_2e3" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<circle color="#000000" radius="3" text_size="10"/>
+				</itemgra>
+
+				<itemgra item_types="town_label_5e3,town_label_1e4,town_label_2e4,town_label_5e4" order="{round(11-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<circle color="#000000" radius="3" text_size="15"/>
+				</itemgra>
 				<itemgra item_types="town_label_5e3" order="{round(9-number($LAYOUT_001_ORDER_DELTA_1))}-{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<circle color="#000000" radius="3" text_size="10"/>
 				</itemgra>
-				<itemgra item_types="town_label_1e4" order="{round(8-number($LAYOUT_001_ORDER_DELTA_1))}-{round(9-number($LAYOUT_001_ORDER_DELTA_1))}">
+				<itemgra item_types="town_label_1e4" order="{round(9-number($LAYOUT_001_ORDER_DELTA_1))}-{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<circle color="#000000" radius="3" text_size="10"/>
 				</itemgra>
-				<itemgra item_types="town_label_2e4,town_label_5e4" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-{round(8-number($LAYOUT_001_ORDER_DELTA_1))}">
+				<itemgra item_types="town_label_2e4,town_label_5e4" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-{round(10-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<circle color="#000000" radius="3" text_size="10"/>
+				</itemgra>
+
+				<itemgra item_types="town_label_1e5,town_label_2e5,town_label_5e5" order="{round(4-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<circle color="#000000" radius="3" text_size="10"/>
 				</itemgra>
 				<itemgra item_types="town_label_1e5,town_label_2e5,town_label_5e5" order="{round(5-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#000000" radius="3" text_size="15"/>
 				</itemgra>
-				<itemgra item_types="town_label_1e6,town_label_2e6,town_label_5e6,town_label_1e7" order="{round(5-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<circle color="#000000" radius="3" text_size="20"/>
-				</itemgra>
-				<itemgra item_types="town_label_1e5,town_label_2e5,town_label_5e5" order="{round(4-number($LAYOUT_001_ORDER_DELTA_1))}">
+
+				<itemgra item_types="town_label_1e6,town_label_2e6,town_label_5e6,town_label_1e7" order="0-{round(3-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<circle color="#000000" radius="3" text_size="10"/>
 				</itemgra>
 				<itemgra item_types="town_label_1e6,town_label_2e6,town_label_5e6,town_label_1e7" order="{round(4-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<circle color="#000000" radius="3" text_size="15"/>
 				</itemgra>
-				<itemgra item_types="town_label_1e6,town_label_2e6,town_label_5e6,town_label_1e7" order="0-{round(3-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<circle color="#000000" radius="3" text_size="10"/>
+				<itemgra item_types="town_label_1e6,town_label_2e6,town_label_5e6,town_label_1e7" order="{round(5-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<circle color="#000000" radius="3" text_size="20"/>
 				</itemgra>
+				<!-- city/town labels -->
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
+
+			<layer name="GPXdata" active="1">
+				<!-- GPX waypoint -->
+				<itemgra item_types="gpx_point" order="3-11">
+					<circle color="#0202ff" radius="14" width="4"/>
+				</itemgra>
+				<itemgra item_types="gpx_point" order="8-11">
+					<circle color="#0e0e0e" radius="0" width="0" text_size="8"/>
+				</itemgra>
+
+				<itemgra item_types="gpx_point" order="12-">
+					<circle color="#0202ff" radius="20" width="6"/>
+				</itemgra>
+				<itemgra item_types="gpx_point" order="12-">
+					<circle color="#0e0e0e" radius="0" width="0" text_size="18"/>
+				</itemgra>
+				<!-- GPX waypoint -->
+
+				<!-- GPX track -->
+				<itemgra item_types="gpx_track" order="3-11">
+					<polyline color="#ae101066" width="4"/><!-- alpha 0x66-->
+					<text text_size="10"/>
+				</itemgra>
+				<itemgra item_types="gpx_track" order="12-">
+					<polyline color="#ae101066" width="10"/><!-- alpha 0x66-->
+					<text text_size="14"/>
+				</itemgra>
+				<!-- GPX track -->
+
+				<!-- GPX route -->
+				<itemgra item_types="gpx_route" order="3-11">
+					<polyline color="#1010ae66" width="4"/><!-- alpha 0x66-->
+					<text text_size="10"/>
+				</itemgra>
+				<itemgra item_types="gpx_route" order="12-">
+					<polyline color="#1010ae66" width="10"/><!-- alpha 0x66-->
+					<text text_size="14"/>
+				</itemgra>
+				<!-- GPX route -->
+			</layer>
+
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="Internal">
 				<itemgra item_types="track" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
@@ -931,13 +1055,19 @@
 				<itemgra item_types="track_tracked" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#3f3fff" width="3"/>
 				</itemgra>
-				<itemgra item_types="rg_segment" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
+
+
+				<!-- route graph -->
+				<itemgra item_types="rg_segment" order="0-">
 					<polyline color="#FF089C" width="1"/>
 					<arrows color="#FF089C" width="1"/>
 				</itemgra>
-				<itemgra item_types="rg_point" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
+				<itemgra item_types="rg_point" order="0-">
 					<circle color="#FF089C" radius="10" text_size="7"/>
 				</itemgra>
+				<!-- route graph -->
+
+
 				<itemgra item_types="nav_left_1" order="0-">
 					<icon src="nav_left_1_bk.png" w="32" h="32"/>
 				</itemgra>
@@ -1027,6 +1157,7 @@
 				</itemgra>
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="POI Symbols" active="1">
 				<itemgra item_types="mini_roundabout" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}-">
@@ -1066,6 +1197,9 @@
 					<icon src="traffic_signals.png"/>
 				</itemgra>
 			</layer>
+
+		<xsl:text>&#x0A;        </xsl:text>
+
 			<layer name="POI Labels" active="1">
 				<itemgra item_types="poi_airport,town_ghost,poi_hotel,poi_car_parking,poi_car_dealer_parts,poi_fuel,poi_shopping,poi_attraction,poi_cafe,poi_bar,highway_exit,poi_camp_rv,poi_museum_history,poi_hospital,poi_dining,poi_fastfood,poi_police,poi_autoservice,poi_bank,poi_bus_station,poi_bus_stop,poi_business_service,poi_car_rent,poi_church,poi_cinema,poi_concert,poi_drinking_water,poi_emergency,poi_fair,poi_fish,poi_government_building,poi_hotspring,poi_information,poi_justice,poi_landmark,poi_library,poi_mall,poi_manmade_feature,poi_marine,poi_marine_type,poi_mark,poi_oil_field,poi_peak,poi_personal_service,poi_pharmacy,poi_post_office,poi_public_office,poi_rail_halt,poi_rail_station,poi_rail_tram_stop,poi_repair_service,poi_resort,poi_restaurant,poi_restricted_area,poi_sailing,poi_scenic_area,poi_school,poi_service,poi_shop_retail,poi_skiing,poi_social_service,poi_sport,poi_stadium,poi_swimming,poi_theater,poi_townhall,poi_trail,poi_truck_stop,poi_tunnel,poi_worship,poi_wrecker,poi_zoo,poi_biergarten,poi_castle,poi_ruins,poi_memorial,poi_monument,poi_shelter,poi_fountain,poi_viewpoint,vehicle" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<circle color="#606060" radius="0" width="0" text_size="10"/>
@@ -1077,6 +1211,7 @@
 				-->
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="Android-POI-Icons-full" active="0">
 				<itemgra item_types="mini_roundabout" order="12-">
@@ -1535,6 +1670,8 @@
 				</itemgra>
 			</layer>
 
+		<xsl:text>&#x0A;        </xsl:text>
+
 			<layer name="Android-POI-Labels-full" active="0">
 				<itemgra item_types="poi_airport,town_ghost,poi_hotel,poi_car_parking,poi_car_dealer_parts,poi_fuel,poi_shopping,poi_attraction,poi_cafe,poi_bar,highway_exit,poi_camp_rv,poi_museum_history,poi_hospital,poi_dining,poi_fastfood,poi_police,poi_autoservice,poi_bank,poi_bus_station,poi_bus_stop,poi_business_service,poi_car_rent,poi_church,poi_cinema,poi_concert,poi_drinking_water,poi_emergency,poi_fair,poi_fish,poi_government_building,poi_hotspring,poi_information,poi_justice,poi_landmark,poi_library,poi_mall,poi_manmade_feature,poi_marine,poi_marine_type,poi_mark,poi_oil_field,poi_peak,poi_personal_service,poi_pharmacy,poi_post_office,poi_public_office,poi_rail_halt,poi_rail_station,poi_rail_tram_stop,poi_repair_service,poi_resort,poi_restaurant,poi_restricted_area,poi_sailing,poi_scenic_area,poi_school,poi_service,poi_shop_retail,poi_skiing,poi_social_service,poi_sport,poi_stadium,poi_swimming,poi_theater,poi_townhall,poi_trail,poi_truck_stop,poi_tunnel,poi_worship,poi_wrecker,poi_zoo,poi_biergarten,poi_castle,poi_ruins,poi_memorial,poi_monument,poi_shelter,poi_fountain,poi_viewpoint,vehicle" order="14-">
 					<circle color="#606060" radius="0" width="0" text_size="10"/>
@@ -1544,7 +1681,7 @@
 				</itemgra>
 			</layer>
 
-
+		<xsl:text>&#x0A;        </xsl:text>
 
 		<!-- android layout -->
 		<!-- android layout -->

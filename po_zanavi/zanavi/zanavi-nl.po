@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
-"POT-Creation-Date: 2012-03-14 19:27+0100\n"
-"PO-Revision-Date: 2012-02-09 11:55+0000\n"
-"Last-Translator: Guus <Unknown>\n"
+"POT-Creation-Date: 2012-05-15 19:29+0200\n"
+"PO-Revision-Date: 2012-04-10 16:29+0000\n"
+"Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-09 14:36+0000\n"
-"X-Generator: Launchpad (build 15060)\n"
+"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
+"X-Generator: Launchpad (build 15342)\n"
 
 #: NavitMapPreviewActivity.java:198
 msgid "Use as destination"
@@ -32,73 +32,69 @@ msgstr "toon bestemming op kaart"
 msgid "touch map to zoom"
 msgstr "raak kaart aan om te zoomen"
 
-#: NavitMapDownloader.java:475 NavitMapDownloader.java:1564
-#: NavitMapDownloader.java:1955 NavitMapDownloader.java:1969
-#: NavitMapDownloader.java:2001
+#: NavitMapDownloader.java:476 NavitMapDownloader.java:1373
+#: NavitMapDownloader.java:1387 NavitMapDownloader.java:1419
 msgid "Error downloading map!"
 msgstr "Fout tijdens downloaden!"
 
-#: NavitMapDownloader.java:576 NavitMapDownloader.java:1325
-#: NavitMapDownloader.java:1734 NavitMapDownloader.java:1872
-#: NavitMapDownloader.java:1903 NavitMapDownloader.java:2069
-#: NavitMapDownloader.java:2202 NavitMapDownloader.java:2599
-#: NavitMapDownloader.java:2712 NavitMapDownloader.java:2890
-#: NavitMapDownloader.java:2904
+#: NavitMapDownloader.java:577 NavitMapDownloader.java:1321
+#: NavitMapDownloader.java:1490 NavitMapDownloader.java:1623
+#: NavitMapDownloader.java:2024 NavitMapDownloader.java:2137
+#: NavitMapDownloader.java:2315 NavitMapDownloader.java:2329
 msgid "Mapdownload"
 msgstr "kaart download"
 
-#: NavitMapDownloader.java:610 NavitMapDownloader.java:1326
-#: NavitMapDownloader.java:1747 NavitMapDownloader.java:1904
+#: NavitMapDownloader.java:611 NavitMapDownloader.java:1322
 msgid "downloading"
 msgstr "downloaden"
 
-#: NavitMapDownloader.java:610 NavitMapDownloader.java:1747
+#: NavitMapDownloader.java:611
 msgid "ETA"
 msgstr "VAT"
 
-#: NavitMapDownloader.java:713 NavitMapDownloader.java:1793
+#: NavitMapDownloader.java:714
 msgid "Error downloading map, resuming"
 msgstr "Fout tijdens downloaden, opnieuw"
 
-#: NavitMapDownloader.java:1499 NavitMapDownloader.java:1986
+#: NavitMapDownloader.java:1404
 msgid "Map already up to date"
 msgstr "Kaart is al actueel"
 
-#: NavitMapDownloader.java:1873 NavitMapDownloader.java:2203
-msgid "ready"
-msgstr "gereed"
-
-#: NavitMapDownloader.java:2070 NavitMapDownloader.java:2600
+#: NavitMapDownloader.java:1491 NavitMapDownloader.java:2025
 msgid "Creating outputfile, long time"
 msgstr "Bestand wordt gemaakt, kan even duren"
 
-#: NavitMapDownloader.java:2135
+#: NavitMapDownloader.java:1556
 msgid "MD5 mismatch"
 msgstr "MD5 fout"
 
-#: NavitMapDownloader.java:2713
+#: NavitMapDownloader.java:1624
+msgid "ready"
+msgstr "gereed"
+
+#: NavitMapDownloader.java:2138
 msgid "Creating outputfile, wait"
 msgstr "Bestand wordt gemaakt, even geduld"
 
-#: NavitMapDownloader.java:2891 NavitMapDownloader.java:2905
+#: NavitMapDownloader.java:2316 NavitMapDownloader.java:2330
 msgid "generating MD5 checksum"
 msgstr "MD5sum genereren"
 
 #. . english text: Welcome to ZANavi
-#: Navit.java:864
+#: Navit.java:875
 msgid "__INFO_BOX_TITLE__"
 msgstr "Welkom bij ZANavi"
 
-#: Navit.java:890
+#: Navit.java:901
 msgid "Ok"
 msgstr "Ok"
 
-#: Navit.java:899
+#: Navit.java:910
 msgid "More info"
 msgstr "Meer info"
 
 #. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
-#: Navit.java:929
+#: Navit.java:940
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
 "U voert ZANavi voor de eerste keer uit.\\n\\nOm te beginnen, selecteer\\"
@@ -108,123 +104,135 @@ msgstr ""
 "Project\\n\\nVoor meer info\\nbezoek onze site\\nhttp://zanavi.cc\\n\\n      "
 " Nog veel plezier met ZANavi."
 
-#: Navit.java:1753
+#: Navit.java:1919
 msgid "address search (online)"
 msgstr "adres zoeken (online)"
 
-#: Navit.java:1754
+#: Navit.java:1920
 msgid "address search (offline)"
 msgstr "adres zoeken (offline)"
 
-#: Navit.java:1757
+#: Navit.java:1923
 msgid "Stop Navigation"
 msgstr "Stop navigatie"
 
-#: Navit.java:1758
+#: Navit.java:1924
 msgid "Zoom to Route"
 msgstr "Zoom naar route"
 
 #. . TRANSLATORS: it means: "show current target in google maps"
 #. . TRANSLATORS: please keep this text short, to fit in the android menu!
-#: Navit.java:1761
+#: Navit.java:1927
 msgid "Target in gmaps"
 msgstr "Plaats in gmaps"
 
 #. . TRANSLATORS: text to translate is: exit ZANavi
-#: Navit.java:1764
+#: Navit.java:1930
 msgid "exit navit"
 msgstr "ZANavi afsluiten"
 
-#: Navit.java:1765
+#: Navit.java:1931
 msgid "toggle POI"
 msgstr "POI aan/uit"
 
-#: Navit.java:1766
+#: Navit.java:1932
 msgid "Settings"
 msgstr "Instellingen"
 
-#: Navit.java:1770
+#: Navit.java:1935
+msgid "Coord Dialog"
+msgstr ""
+
+#: Navit.java:1939
 msgid "Announcer Off"
 msgstr "spraak uit"
 
-#: Navit.java:1774
+#: Navit.java:1943
 msgid "Announcer On"
 msgstr "spraak aan"
 
-#: Navit.java:1777
+#: Navit.java:1946
 msgid "Recent destinations"
 msgstr "Recente locaties"
 
-#: Navit.java:1778
+#: Navit.java:1947
 msgid "download maps"
 msgstr "download kaarten"
 
-#: Navit.java:1779
+#: Navit.java:1948
 msgid "delete maps"
 msgstr "kaarten verwijderen"
 
-#: Navit.java:1784
+#: Navit.java:1949
+msgid "show Maps age"
+msgstr ""
+
+#: Navit.java:1950
+msgid "convert GPX file"
+msgstr ""
+
+#: Navit.java:1955
 msgid "Demo Vehicle"
 msgstr "Demo voertuig"
 
-#: Navit.java:1785
+#: Navit.java:1956
 msgid "Speech Texts"
 msgstr "Gesproken tekst"
 
-#: Navit.java:1786
+#: Navit.java:1957
 msgid "Nav. Commands"
 msgstr "Nav. Opdrachten"
 
-#: Navit.java:1790
+#: Navit.java:1961
 msgid "online Help"
 msgstr "online help"
 
-#: Navit.java:1833
+#: Navit.java:2024
 msgid "No address found"
 msgstr "Adres niet gevonden"
 
-#: Navit.java:1918 Navit.java:1932 Navit.java:4085
+#: Navit.java:2118 Navit.java:2132 Navit.java:4519
 msgid "Enter: City and Street"
 msgstr "Invoer: plaatsnaam en straat"
 
-#: Navit.java:2327
+#: Navit.java:2594
 msgid "No search string entered"
 msgstr "geen waarde opgegeven"
 
-#: Navit.java:2457 Navit.java:2565
+#: Navit.java:2724 Navit.java:2949
 msgid "setting destination to"
 msgstr "bestemming ingesteld op"
 
-#: Navit.java:2471 Navit.java:2579
+#: Navit.java:2738 Navit.java:2963
 msgid "new Waypoint"
 msgstr "nieuw routepunt"
 
-#: Navit.java:2755 Navit.java:2810
+#: Navit.java:3139 Navit.java:3194
 msgid "getting search results"
 msgstr "haalt zoekresultaten op"
 
-#: Navit.java:2756 Navit.java:2811
+#: Navit.java:3140 Navit.java:3195
 msgid "searching ..."
 msgstr "zoekt ..."
 
-#: Navit.java:2909 NavitGraphics.java:3502
+#: Navit.java:3293 NavitGraphics.java:3515
 msgid "loading search results"
 msgstr "resultaten ophalen"
 
-#: Navit.java:2910 NavitGraphics.java:3503
+#: Navit.java:3294 NavitGraphics.java:3516
 msgid "towns"
 msgstr "steden"
 
-#: Navit.java:2910 NavitGraphics.java:3503
+#: Navit.java:3294 NavitGraphics.java:3516
 msgid "Streets"
 msgstr "Straten"
 
-#: Navit.java:2932
+#: Navit.java:3317
 msgid "No Results found!"
 msgstr "Geen resultaat gevonden!"
 
 #. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
-#: Navit.java:3260 Navit.java:3286
+#: Navit.java:3645 Navit.java:3671
 msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
 msgstr "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA"
 
@@ -423,7 +431,7 @@ msgstr "Uitspreken straatnamen"
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:109
 msgid "__PREF__summ__speak_street_names"
-msgstr "__PREF__summ__Uitspreken_straatnamen"
+msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:111
@@ -486,32 +494,42 @@ msgid "__PREF__summ__streetsearch_r"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:158
-msgid "__PREF__title__map_directory"
+#: NavitPreferences.java:135
+msgid "__PREF__title__route_style"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:160
-msgid "__PREF__summ__map_directory"
+#: NavitPreferences.java:137
+msgid "__PREF__summ__route_style"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:162
-msgid "__PREF__dialogtitle__map_directory"
+msgid "__PREF__title__map_directory"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:164
-msgid "__PREF__dialogcancel__map_directory"
+msgid "__PREF__summ__map_directory"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:166
-msgid "__PREF__dialogok__map_directory"
+msgid "__PREF__dialogtitle__map_directory"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:168
+msgid "__PREF__dialogcancel__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:170
+msgid "__PREF__dialogok__map_directory"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:172
 msgid "__PREF__dialogmsg__map_directory"
 msgstr ""
 
@@ -557,10 +575,10 @@ msgstr ""
 msgid "Using Voice for:"
 msgstr "Gebruik taal voor:"
 
-#: NavitAndroidOverlay.java:607
+#: NavitAndroidOverlay.java:661
 msgid "drive here"
 msgstr "hierheen rijden"
 
-#: NavitAndroidOverlay.java:655
+#: NavitAndroidOverlay.java:714
 msgid "wait ..."
 msgstr "wachten ..."

@@ -31,7 +31,8 @@ static int has_quit;
 
 void event_main_loop_run(void)
 {
-	if (! event_methods.main_loop_run) {
+	if (! event_methods.main_loop_run)
+	{
 		dbg(0,"no event system set\n");
 		return;
 	}
@@ -41,7 +42,9 @@ void event_main_loop_run(void)
 void event_main_loop_quit(void)
 {
 	if (event_methods.main_loop_quit)
+	{
 		event_methods.main_loop_quit();
+	}
 	has_quit=1;
 }
 

@@ -1173,6 +1173,11 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 			tmp = phrases;
 			while (tmp)
 			{
+				if (offline_search_break_searching == 1)
+				{
+					break;
+				}
+
 				//dbg(0,"s0=%s\n",tmp->data);
 				if (tmp != exclude1 && tmp != exclude2 && tmp != exclude3)
 				{
@@ -1272,6 +1277,11 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 
 		while (tmp)
 		{
+			if (offline_search_break_searching == 1)
+			{
+				break;
+			}
+
 			if (tmp != exclude1 && tmp != exclude2)
 			{
 				//dbg(0,"s=%s\n",tmp->data);
@@ -1701,6 +1711,12 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 						while ((item = map_rect_get_item(mr)))
 						{
+
+							if (offline_search_break_searching == 1)
+							{
+								break;
+							}
+
 							if ((item_is_town(*item)) || (item_is_district(*item)))
 							{
 								struct search_list_town *p = NULL;
@@ -1721,6 +1737,12 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 									phrases = phrases_first;
 									while (phrases)
 									{
+
+										if (offline_search_break_searching == 1)
+										{
+											break;
+										}
+
 										if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 										{
 											// dbg(0,"matched town name=%s want=%s\n", attr.u.str, phrases->data);
@@ -1769,6 +1791,11 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 									phrases = phrases_first;
 									while (phrases)
 									{
+										if (offline_search_break_searching == 1)
+										{
+											break;
+										}
+
 										if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 										{
 											// dbg(0,"matched town name=%s want=%s\n", attr.u.str, phrases->data);
@@ -1826,6 +1853,11 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 										phrases = phrases_first;
 										while (phrases)
 										{
+											if (offline_search_break_searching == 1)
+											{
+												break;
+											}
+
 											if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 											{
 												if (calc_geo == 0)
@@ -1873,6 +1905,11 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 									phrases = phrases_first;
 									while (phrases)
 									{
+										if (offline_search_break_searching == 1)
+										{
+											break;
+										}
+
 										if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 										{
 											if (calc_geo == 0)
@@ -1919,6 +1956,11 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 									phrases = phrases_first;
 									while (phrases)
 									{
+										if (offline_search_break_searching == 1)
+										{
+											break;
+										}
+
 										if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 										{
 											if (calc_geo == 0)
