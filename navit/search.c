@@ -496,6 +496,9 @@ search_house_number_coordinate(struct item *item, struct interpolation *inter)
 {
 	struct pcoord *ret=g_new(struct pcoord, 1);
 	ret->pro = map_projection(item->map);
+
+	// dbg(0,"001t: %s\n", item_to_name(item->type));
+
 	if (item_is_point(*item))
 	{
 		struct coord c;
@@ -522,6 +525,7 @@ search_house_number_coordinate(struct item *item, struct interpolation *inter)
 			hn_pos = atoi(inter->last) - atoi(inter->curr);
 		else
 			hn_pos = atoi(inter->curr) - atoi(inter->first);
+
 		if (count)
 		{
 			int i, distance_sum = 0, hn_distance;
@@ -561,13 +565,15 @@ search_list_house_number_new(struct item *item, struct interpolation *inter, cha
 	struct attr attr;
 	char *hn;
 
-	// dbg(0,"@@@@ enter @@@@\n");
+	//dbg(0,"@@@@ enter @@@@\n");
 
 	ret->common.item = ret->common.unique = *item;
 	//if (item_attr_get(item, attr_street_name, &attr))
 	//	dbg(0,"xx1 %s\n",attr.u.str);
 	if (item_attr_get(item, attr_house_number, &attr))
+	{
 		ret->house_number = map_convert_string(item->map, attr.u.str);
+	}
 	else
 	{
 		//if (item_attr_get(item, attr_street_name, &attr))
@@ -606,10 +612,8 @@ search_list_house_number_new(struct item *item, struct interpolation *inter, cha
 			}
 		}
 	}
-	//dbg(0,"interpolate 33");
 	search_list_common_new(item, &ret->common);
 	ret->common.c = search_house_number_coordinate(item, ret->interpolation ? inter : NULL);
-	//dbg(0,"interpolate 44");
 	return ret;
 }
 
@@ -934,6 +938,7 @@ search_list_get_result(struct search_list *this_)
 			}
 			// CASE END *********
 
+			//dbg(0,"case end\n");
 
 			if (p)
 			{
@@ -1057,6 +1062,7 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 
 	while ((slr = search_list_get_result(sl)))
 	{
+
 		if (offline_search_break_searching == 1)
 		{
 			break;
@@ -1066,9 +1072,9 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 		if (slr != NULL)
 		{
 			if (slr->street != NULL)
+			{
 				if ((street_name != NULL) && (slr->street->name != NULL))
 				{
-
 					if (strcmp(slr->street->name, street_name) == 0)
 					{
 						char *buffer;
@@ -1099,10 +1105,10 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 						g_free(buffer);
 					}
 				}
+			}
 		}
 	}
 
-	//dbg(0,"return 2\n");
 	return result_list;
 }
 
@@ -1186,7 +1192,6 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 					attr2.type = attr_house_number;
 					attr2.u.str = tmp->data;
 					search_list_search(sl, &attr2, partial);
-
 					result_list = search_address_housenumber_real(result_list, sl, buffer2, phrases, exclude1, exclude2, exclude3, partial, jni);
 				}
 				tmp = g_list_next(tmp);

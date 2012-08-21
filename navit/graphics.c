@@ -82,9 +82,9 @@
 
 // above what "order" level to show only prerendered map
 #define ORDER_USE_PRERENDERED_MAP 0
-// minimun (line legth * 32) squared (in pixel) to show text label
+// minimum (line legth * 32) squared (in pixel) to show text label
 #define MIN_LINE_LENGTH_FOR_TEXT_2 409600
-// minimun (line legth * 32) squared (in pixel) to show text label -> for middle segments of streets
+// minimum (line legth * 32) squared (in pixel) to show text label -> for middle segments of streets
 #define MIN_LINE_LENGTH_FOR_TEXT_MIDDLE_2 1638400
 
 #define ORDER_LEVEL_FOR_STREET_SIMPLIFY 9
@@ -1407,9 +1407,9 @@ static void calc_offsets(int wi, int l, int dx, int dy, struct offset *res)
 }
 
 
-// this func. is not obsolete!! and unused!!!!
-// this func. is not obsolete!! and unused!!!!
-// this func. is not obsolete!! and unused!!!!
+// this func. is now obsolete!! and unused!!!!
+// this func. is now obsolete!! and unused!!!!
+// this func. is now obsolete!! and unused!!!!
 static void graphics_draw_polyline_as_polygon(struct graphics *gra, struct graphics_gc *gc, struct point *pnt, int count, int *width, int step, int fill, int order, int oneway)
 {
 	int maxpoints = 200;
@@ -1574,9 +1574,9 @@ static void graphics_draw_polyline_as_polygon(struct graphics *gra, struct graph
 		fowo = fow;
 	}
 }
-// this func. is not obsolete!! and unused!!!!
-// this func. is not obsolete!! and unused!!!!
-// this func. is not obsolete!! and unused!!!!
+// this func. is now obsolete!! and unused!!!!
+// this func. is now obsolete!! and unused!!!!
+// this func. is now obsolete!! and unused!!!!
 
 
 
@@ -1825,9 +1825,11 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 	int code;
 	int wmax;
 	int out = 0;
-	const int max_segs = 20;
+	const int max_segs = 2000;
 	struct point_rect r = gra->r;
 
+
+#if 0
 	// check if whole line is within a 2x2 pixel square
 	if (order < 11)
 	{
@@ -1866,6 +1868,8 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 			return;
 		}
 	}
+#endif
+
 
 	// calc visible area on screen
 	wmax=width[0];
@@ -1884,6 +1888,7 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 			p2.y = pa[i].y;
 			/* 0 = invisible, 1 = completely visible, 2,3 = at least part of line visible */
 			code=clip_line_aprox(&p1, &p2, &r);
+			// code = 1;
 
 			if (code > 0)
 			{
@@ -2571,7 +2576,7 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 				entry = get_hash_entry(display_list, dc->type);
 				if (entry && entry->di)
 				{
-					//dbg(0,"++type=%s\n", item_to_name(dc->type));
+					// dbg(0,"++type=%s\n", item_to_name(dc->type));
 					//if (!strcmp(item_to_name(dc->type), "border_country"))
 					//{
 					//	displayitem_draw(entry->di, NULL, dc, display_list->order, 1, 101);
@@ -2580,7 +2585,7 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 					//{
 						displayitem_draw(entry->di, NULL, dc, display_list->order, 1, run_type);
 					//}
-					//dbg(0,"**+gc free\n");
+					// dbg(0,"**+gc free\n");
 					display_context_free(dc);
 				}
 			}
@@ -2669,6 +2674,8 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 						//  2 -> tunnel
 						//  3 -> bridge
 
+	int send_refresh = 0;
+
 	int order_corrected = order + shift_order;
 	if (order_corrected < limit_order_corrected)
 	{
@@ -2689,6 +2696,8 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 		//draw_lines_count_2 = 0;
 		//draw_lines_count_3 = 0;
 		//draw_lines_count_4 = 0;
+
+		send_refresh = 1;
 
 		run_type = 2;
 		itms = lay->itemgras;
@@ -2856,6 +2865,16 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 		}
 	}
 	// dirty hack to draw "waypoint(s)" ---------------------------
+
+
+	if (send_refresh == 1)
+	{
+		// dummy "ready" signal ------------------------------------------
+		dbg(0,"dummy \"ready\" signal (layers)\n");
+		gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 96);
+		// dummy "ready" signal ------------------------------------------
+	}
+
 }
 
 /**
@@ -2971,6 +2990,19 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 
 	// reset value;
 	cancel_drawing_global = 0;
+
+	// dummy "start" signal ------------------------------------------
+	dbg(0,"dummy \"start\" signal\n");
+	gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 97);
+	// dummy "start" signal ------------------------------------------
+
+
+	// dummy "ready" signal ------------------------------------------
+	dbg(0,"dummy \"ready\" signal\n");
+	gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 99);
+	// dummy "ready" signal ------------------------------------------
+
+
 
 #ifdef HAVE_API_ANDROID
 	android_return_generic_int(2, 1);
@@ -3379,6 +3411,12 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	s_ = debug_measure_start();
 
 
+	// remove the "wait" screen
+#ifdef HAVE_API_ANDROID
+	android_return_generic_int(2, 0);
+#endif
+
+
 	//DBG dbg(0, "XXXXXYYYYYYY Draw: 004\n");
 
 	// reset value;
@@ -3389,12 +3427,11 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 	// profile(1,"process_selection\n");
 
-	//DBG dbg(0,"ee s\n");
 	if (displaylist->idle_ev)
 	{
 		event_remove_idle(displaylist->idle_ev);
 	}
-	//DBG dbg(0,"ee e\n");
+
 	displaylist->idle_ev = NULL;
 	callback_destroy(displaylist->idle_cb);
 	displaylist->idle_cb = NULL;
@@ -3454,10 +3491,6 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	displaylist->busy = 0;
 
 	//DBG dbg(0, "XXXXXYYYYYYY Draw: 006\n");
-
-#ifdef HAVE_API_ANDROID
-	android_return_generic_int(2, 0);
-#endif
 
 	map_rect_destroy(displaylist->mr);
 	if (!route_selection)
@@ -3533,6 +3566,10 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 	gra->meth.draw_mode(gra->priv, (flags & 8) ? draw_mode_begin_clear : draw_mode_begin);
 	if (!(flags & 2))
 	{
+		// clear the gfx object pipeline ------------------------------
+		dbg(0,"clear the gfx object pipeline\n");
+		gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 98);
+
 		// clear the display/screen/whatever here
 		gra->meth.draw_rectangle(gra->priv, gra->gc[0]->priv, &gra->r.lu, gra->r.rl.x - gra->r.lu.x, gra->r.rl.y - gra->r.lu.y);
 	}
@@ -3623,9 +3660,8 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
 			//dbg(0,"**draw 2.b2\n");
 		}
 		//dbg(0,"**draw 2.b3\n");
-		// displaylist->idle_ev=
-		event_add_idle(1000, displaylist->idle_cb);
-		//dbg(0,"**draw 2.b4\n");
+		displaylist->idle_ev = event_add_idle(1000, displaylist->idle_cb);
+		dbg(0,"**draw 2.b4 %p\n", displaylist->idle_ev);
 	}
 	else
 	{

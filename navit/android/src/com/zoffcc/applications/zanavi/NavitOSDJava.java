@@ -44,6 +44,9 @@ public class NavitOSDJava extends ImageView
 	private static Boolean one_shot = false;
 	private static long last_paint_me = 0L;
 
+	// this number is an estimate
+	final int NavitStreetFontLetterWidth = 28;
+
 	static Bitmap compass_b = null;
 	static Canvas compass_c = null;
 	static int compass_radius = 0;
@@ -616,7 +619,7 @@ public class NavitOSDJava extends ImageView
 					paint.setColor(Color.WHITE);
 					paint.setStrokeWidth(3);
 					paint.setStyle(Paint.Style.FILL);
-					if (Navit.OSD_nextturn.nextturn_streetname.length() > (nextt_str_ltxB + nextt_str_wB) / 25)
+					if (Navit.OSD_nextturn.nextturn_streetname.length() > (nextt_str_wB) / NavitStreetFontLetterWidth)
 					{
 						paint.setTextSize((int) (nextt_str_font_size * 0.70));
 					}
@@ -637,7 +640,7 @@ public class NavitOSDJava extends ImageView
 					paint.setColor(Color.BLACK);
 					paint.setStrokeWidth(3);
 					paint.setStyle(Paint.Style.FILL);
-					if (Navit.OSD_nextturn.nextturn_streetname.length() > (nextt_str_ltxB + nextt_str_wB) / 25)
+					if (Navit.OSD_nextturn.nextturn_streetname.length() > (nextt_str_wB) / NavitStreetFontLetterWidth)
 					{
 						paint.setTextSize((int) (nextt_str_font_size * 0.70));
 					}

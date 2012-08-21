@@ -919,3 +919,9 @@ file_init(void)
 #endif
 }
 
+
+
+void file_cache_init(void)
+{
+}
+

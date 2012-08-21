@@ -39,6 +39,7 @@
 package com.zoffcc.applications.zanavi;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -53,6 +54,7 @@ public class NavitAndroidOverlay extends ImageView
 {
 	public Boolean draw_bubble = false;
 	public static Boolean confirmed_bubble = false;
+	public static int confirmed_bubble_part = 0; // 0 -> left side, 1 -> right side
 	public long bubble_showing_since = 0L;
 	public static long bubble_max_showing_timespan = 8000L; // 8 secs.
 	public RectF follow_button_rect = new RectF(-100, 1, 1, 1);
@@ -227,11 +229,13 @@ public class NavitAndroidOverlay extends ImageView
 				int dy = (int) ((-100 / 1.5f) * draw_factor);
 				int bubble_size_x = (int) ((150 / 1.5f) * draw_factor);
 				int bubble_size_y = (int) ((60 / 1.5f) * draw_factor);
-				RectF box_rect = new RectF(this.bubble_001.x + dx, this.bubble_001.y + dy, this.bubble_001.x + bubble_size_x + dx, this.bubble_001.y + bubble_size_y + dy);
-				if (box_rect.contains(x, y))
+				RectF box_rect_left = new RectF(this.bubble_001.x + dx, this.bubble_001.y + dy, this.bubble_001.x + bubble_size_x / 2 + dx, this.bubble_001.y + bubble_size_y + dy);
+				RectF box_rect_right = new RectF(this.bubble_001.x + bubble_size_x / 2 + dx, this.bubble_001.y + dy, this.bubble_001.x + bubble_size_x + dx, this.bubble_001.y + bubble_size_y + dy);
+				if (box_rect_left.contains(x, y))
 				{
 					// bubble touched to confirm destination
 					confirmed_bubble = true;
+					confirmed_bubble_part = 0;
 					// draw confirmed bubble
 					this.postInvalidate();
 					String dest_name = "Point on Screen";
@@ -239,7 +243,7 @@ public class NavitAndroidOverlay extends ImageView
 					// remeber recent dest.
 					try
 					{
-						dest_name = NavitGraphics.CallbackGeoCalc(5, this.bubble_001.x, this.bubble_001.y);
+						dest_name = NavitGraphics.CallbackGeoCalc(8, this.bubble_001.x, this.bubble_001.y);
 						// System.out.println("x:"+dest_name+":y");
 						if ((dest_name.equals(" ")) || (dest_name == null))
 						{
@@ -288,6 +292,78 @@ public class NavitAndroidOverlay extends ImageView
 					// consume the event
 					return true;
 				}
+				else if (box_rect_right.contains(x, y))
+				{
+					// bubble touched to confirm destination
+					confirmed_bubble = true;
+					confirmed_bubble_part = 1;
+					// draw confirmed bubble
+					this.postInvalidate();
+
+					// whats here?
+					String item_dump_pretty = NavitGraphics.CallbackGeoCalc(10, this.bubble_001.x, this.bubble_001.y);
+					try
+					{
+						String item_dump_pretty_parsed = "";
+						String[] item_dump_lines = item_dump_pretty.split("\n");
+						int jk = 0;
+						String sep = "";
+						for (jk = 0; jk < item_dump_lines.length; jk++)
+						{
+							if (item_dump_lines[jk].startsWith("+*TYPE*+:"))
+							{
+								item_dump_pretty_parsed = item_dump_pretty_parsed + sep + item_dump_lines[jk].substring(9);
+							}
+							else if (item_dump_lines[jk].startsWith("flags="))
+							{
+
+							}
+							else if (item_dump_lines[jk].startsWith("maxspeed="))
+							{
+								item_dump_pretty_parsed = item_dump_pretty_parsed + sep + item_dump_lines[jk];
+							}
+							else if (item_dump_lines[jk].startsWith("label="))
+							{
+								item_dump_pretty_parsed = item_dump_pretty_parsed + sep + item_dump_lines[jk].substring(6);
+							}
+							else if (item_dump_lines[jk].startsWith("street_name="))
+							{
+								item_dump_pretty_parsed = item_dump_pretty_parsed + sep + item_dump_lines[jk].substring(12);
+							}
+							else if (item_dump_lines[jk].startsWith("street_name_systematic="))
+							{
+								item_dump_pretty_parsed = item_dump_pretty_parsed + sep + item_dump_lines[jk].substring(23);
+							}
+							else
+							{
+								item_dump_pretty_parsed = item_dump_pretty_parsed + sep + item_dump_lines[jk];
+							}
+
+							if (jk == 0)
+							{
+								sep = "\n";
+							}
+						}
+
+						Navit.generic_alert_box.setMessage(item_dump_pretty_parsed).setPositiveButton(Navit.get_text("Ok"), new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								// Handle Ok
+							}
+						}).create();
+						Navit.generic_alert_box.setCancelable(true);
+						Navit.generic_alert_box.setTitle(Navit.get_text("What's here")); // TRANS
+						Navit.generic_alert_box.show();
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+
+					return true;
+				}
+
 			}
 		}
 
@@ -641,7 +717,7 @@ public class NavitAndroidOverlay extends ImageView
 			c.drawLine(this.bubble_001.x + dx, this.bubble_001.y + dy + bubble_size_y - ly, this.bubble_001.x, this.bubble_001.y, bubble_paint);
 			c.drawLine(this.bubble_001.x + dx + lx, this.bubble_001.y + dy + bubble_size_y, this.bubble_001.x, this.bubble_001.y, bubble_paint);
 
-			// filled rect yellow-ish
+			// filled rect yellow-ish (left side) (fill it all)
 			bubble_paint.setStyle(Style.FILL);
 			bubble_paint.setStrokeWidth(0);
 			bubble_paint.setAntiAlias(false);
@@ -651,15 +727,18 @@ public class NavitAndroidOverlay extends ImageView
 			int ry = (int) (20 / 1.5f * draw_factor);
 			c.drawRoundRect(box_rect, rx, ry, bubble_paint);
 
-			if (NavitAndroidOverlay.confirmed_bubble)
-			{
-				// filled red rect (for confirmed bubble)
-				//bubble_paint.setStyle(Style.FILL);
-				//bubble_paint.setStrokeWidth(0);
-				//bubble_paint.setAntiAlias(false);
-				bubble_paint.setColor(Color.parseColor("#EC294D"));
-				c.drawRoundRect(box_rect, rx, ry, bubble_paint);
-			}
+			// filled rect green-ish (right side)
+			bubble_paint.setStyle(Style.FILL);
+			bubble_paint.setStrokeWidth(0);
+			bubble_paint.setAntiAlias(false);
+			bubble_paint.setColor(Color.parseColor("#74DF00"));
+			RectF box_rect_right_half = new RectF(this.bubble_001.x + dx + (bubble_size_x / 2) - rx, this.bubble_001.y + dy, this.bubble_001.x + bubble_size_x + dx, this.bubble_001.y + bubble_size_y + dy);
+			c.drawRoundRect(box_rect_right_half, rx, ry, bubble_paint);
+
+			// correct the overlap
+			bubble_paint.setColor(Color.parseColor("#FFF8C6"));
+			RectF box_rect_left_half_correction = new RectF(this.bubble_001.x + dx + (bubble_size_x / 2) - rx - 1, this.bubble_001.y + dy, this.bubble_001.x + dx + (bubble_size_x / 2), this.bubble_001.y + bubble_size_y + dy);
+			c.drawRect(box_rect_left_half_correction, bubble_paint);
 
 			// black outlined rect
 			bubble_paint.setStyle(Style.STROKE);
@@ -668,14 +747,42 @@ public class NavitAndroidOverlay extends ImageView
 			bubble_paint.setColor(Color.parseColor("#000000"));
 			c.drawRoundRect(box_rect, rx, ry, bubble_paint);
 
+			// black separator lines (outer)
+			bubble_paint.setStyle(Style.STROKE);
+			bubble_paint.setStrokeWidth(8);
+			bubble_paint.setAntiAlias(true);
+			bubble_paint.setColor(Color.parseColor("#000000"));
+			c.drawLine(box_rect.left + (box_rect.right - box_rect.left) / 2, box_rect.top, box_rect.left + (box_rect.right - box_rect.left) / 2, box_rect.bottom, bubble_paint);
+
+			// black separator lines (inner)
+			bubble_paint.setStyle(Style.STROKE);
+			bubble_paint.setStrokeWidth(2);
+			bubble_paint.setAntiAlias(true);
+			bubble_paint.setColor(Color.parseColor("#D8D8D8"));
+			c.drawLine(box_rect.left + (box_rect.right - box_rect.left) / 2, box_rect.top, box_rect.left + (box_rect.right - box_rect.left) / 2, box_rect.bottom, bubble_paint);
+
+			if (NavitAndroidOverlay.confirmed_bubble)
+			{
+				// red outline (for confirmed bubble)
+				bubble_paint.setStyle(Style.STROKE);
+				bubble_paint.setStrokeWidth(5);
+				bubble_paint.setAntiAlias(true);
+				bubble_paint.setColor(Color.parseColor("#EC294D"));
+				c.drawRoundRect(box_rect, rx, ry, bubble_paint);
+			}
+
 			int inner_dx = (int) (30 / 1.5f * draw_factor);
+			int inner_dx_left = (int) (30 / 1.5f * draw_factor);
+			int inner_dx_right = (int) (30 / 1.5f * draw_factor) + (bubble_size_x / 2);
 			int inner_dy = (int) (36 / 1.5f * draw_factor);
 			bubble_paint.setAntiAlias(true);
 			bubble_paint.setStyle(Style.FILL);
 			bubble_paint.setTextSize((int) (20 / 1.5f * draw_factor));
 			bubble_paint.setStrokeWidth(3);
 			bubble_paint.setColor(Color.parseColor("#3b3131"));
-			c.drawText(Navit.get_text("drive here"), this.bubble_001.x + dx + inner_dx, this.bubble_001.y + dy + inner_dy, bubble_paint);
+			// c.drawText(Navit.get_text("drive here"), this.bubble_001.x + dx + inner_dx, this.bubble_001.y + dy + inner_dy, bubble_paint);
+			c.drawText("X", this.bubble_001.x + dx + inner_dx_left, this.bubble_001.y + dy + inner_dy, bubble_paint);
+			c.drawText("?", this.bubble_001.x + dx + inner_dx_right, this.bubble_001.y + dy + inner_dy, bubble_paint);
 
 		}
 
@@ -729,6 +836,53 @@ public class NavitAndroidOverlay extends ImageView
 				paint.setStrokeWidth(2);
 				paint.setTextSize(30);
 				c.drawText(Navit.get_text("wait ..."), this.mCanvasWidth / 2, this.mCanvasHeight / 2, paint); //TRANS
+			}
+		}
+
+		if (Navit.PREF_item_dump)
+		{
+			if (!Navit.debug_item_dump.equals(""))
+			{
+				Paint paint = new Paint(0);
+				paint.setAntiAlias(true);
+				paint.setColor(Color.BLUE);
+				// paint.setAlpha(240);
+				// paint.setColor(Color.parseColor("#888888"));
+				paint.setStrokeWidth(2);
+				paint.setTextSize(22);
+
+				String[] s = Navit.debug_item_dump.split("\n");
+				int i3;
+				int i4 = 0;
+				int max_char = 38;
+				for (i3 = 0; i3 < s.length; i3++)
+				{
+					if (s[i3].length() > max_char)
+					{
+						int j3;
+						int indent = 0;
+						for (j3 = 0; j3 < (int) (s[i3].length() / max_char); j3++)
+						{
+							if (j3 > 0)
+							{
+								indent = 8;
+							}
+							c.drawText(s[i3].substring(j3 * max_char, ((j3 + 1) * max_char) - 0), 20 + indent, 110 + (i4 * 32), paint);
+							i4++;
+						}
+						if ((((int) (s[i3].length() / max_char)) * max_char) < s[i3].length())
+						{
+							indent = 8;
+							c.drawText(s[i3].substring(j3 * max_char), 20 + indent, 110 + (i4 * 32), paint);
+							i4++;
+						}
+					}
+					else
+					{
+						c.drawText(s[i3], 20, 110 + (i4 * 32), paint);
+						i4++;
+					}
+				}
 			}
 		}
 

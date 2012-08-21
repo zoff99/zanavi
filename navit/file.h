@@ -102,3 +102,6 @@ int file_is_reg(char *name);
 #endif
 
 #endif
+
+void file_cache_init(void);
+

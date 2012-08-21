@@ -116,7 +116,7 @@ import de.oberoner.gpx2navit_txt.MainFrame;
 
 public class Navit extends Activity implements Handler.Callback, SensorEventListener
 {
-	public static final String VERSION_TEXT_LONG_INC_REV = "1851";
+	public static final String VERSION_TEXT_LONG_INC_REV = "1937";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
 	public static String NavitAppVersion_string = "0";
@@ -125,7 +125,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	// define graphics here (this is bad, please fix me!)
 	public static NavitGraphics N_NavitGraphics = null;
 
-	AlertDialog.Builder generic_alert_box = null;
+	static AlertDialog.Builder generic_alert_box = null;
 
 	private Boolean xmlconfig_unpack_file = true;
 	private Boolean write_new_version_file = true;
@@ -139,6 +139,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	static Boolean unsupported = false;
 	static Boolean Navit_maps_loaded = false;
 	final static int Navit_MAX_RECENT_DESTINATIONS = 50;
+	static String debug_item_dump = "";
 
 	// for future use ...
 	// public static String NavitDataDirectory = "/sdcard/";
@@ -409,6 +410,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	static int PREF_drawatorder = 1;
 	static String PREF_streetsearch_r = "1"; // street search radius factor (multiplier)
 	static String PREF_route_style = "1"; // 1 -> under green 2 -> on top blue
+	static Boolean PREF_item_dump = false;
 
 	static Resources res_ = null;
 
@@ -529,9 +531,16 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		getBaseContext_ = getBaseContext();
 
 		res_ = getResources();
+		int ii = 0;
+		NavitGraphics.dl_thread_cur = 0;
+		for (ii = 0; ii < NavitGraphics.dl_thread_max; ii++)
+		{
+			NavitGraphics.dl_thread[ii] = null;
+		}
 
 		String font_file_name = "Roboto-Regular.ttf"; // "LiberationSans-Regular.ttf";
 		NavitStreetnameFont = Typeface.createFromAsset(getBaseContext().getAssets(), font_file_name);
+		// System.out.println("NavitStreetnameFont" + NavitStreetnameFont);
 
 		Navit_maps_loaded = false;
 
@@ -1078,11 +1087,39 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Navit.bigmap_bitmap = BitmapFactory.decodeResource(getResources(), R.raw.bigmap_colors_zanavi2);
 		// Navit.bigmap_bitmap.setDensity(120); // set our dpi!!
 
-		ActivityResults = new NavitActivityResult[16];
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		// wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
-		wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
+		try
+		{
+			ActivityResults = new NavitActivityResult[16];
+			setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+			// wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
+			wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			wl = null;
+		}
+
+		try
+		{
+			if (wl != null)
+			{
+				wl.acquire();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
 		Log.e("Navit", "trying to extract language resource " + NavitTextTranslations.main_language + "_" + NavitTextTranslations.sub_language);
 		if (!extractRes(NavitTextTranslations.main_language + "_" + NavitTextTranslations.sub_language, NAVIT_DATA_DIR + "/locale/" + NavitTextTranslations.main_language + "_" + NavitTextTranslations.sub_language + "/LC_MESSAGES/navit.mo"))
@@ -1447,6 +1484,18 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Log.e("Navit", "OnResume");
 		//InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		NavitActivity(1);
+
+		try
+		{
+			if (wl != null)
+			{
+				wl.acquire();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
 		//Intent caller = this.getIntent();
 		//System.out.println("A=" + caller.getAction() + " D=" + caller.getDataString());
@@ -1996,6 +2045,19 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		NavitActivity(-1);
 
 		Navit.show_mem_used();
+
+		try
+		{
+			if (wl != null)
+			{
+				wl.release();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -3129,7 +3191,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 							// ok now set target
 							try
 							{
-								dest_name = NavitGraphics.CallbackGeoCalc(6, lat, lon);
+								dest_name = NavitGraphics.CallbackGeoCalc(8, lat, lon);
 								if ((dest_name.equals(" ")) || (dest_name == null))
 								{
 									dest_name = "manual coordinates";
@@ -3971,9 +4033,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 	public void disableSuspend()
 	{
-		wl.acquire();
-		wl.release();
-
+		// wl.acquire();
+		// wl.release();
 	}
 
 	public void exit2()
@@ -4197,6 +4258,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		PREF_draw_polyline_circles = prefs.getBoolean("draw_polyline_circles", true);
 		PREF_streetsearch_r = prefs.getString("streetsearch_r", "2");
 		PREF_route_style = prefs.getString("route_style", "2");
+		PREF_item_dump = prefs.getBoolean("item_dump", false);
 
 		try
 		{

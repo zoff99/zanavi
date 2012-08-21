@@ -110,6 +110,8 @@ struct attr_iter
 	} u;
 };
 
+static int dist_to_street = 100000;
+
 static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv);
 static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, struct point *pnt);
 static int navit_set_attr_do(struct navit *this_, struct attr *attr, int init);
@@ -4651,6 +4653,304 @@ void navit_disable_suspend()
 
 
 /**
+ * @brief Dumps item attrs to string
+ *
+ * @param item		item
+ * @param pretty	0 -> normal, 1 -> pretty output
+ * @return string with attrs separated by '\n'
+ */
+char* navit_item_dump(struct item *item, int pretty)
+{
+	char *temp_str = NULL;
+	char *ret_value = NULL;
+	struct attr attr;
+	struct attr attr2;
+	int had_flags = 0;
+	int *f;
+	int flags;
+
+	if (item == NULL)
+	{
+		ret_value = g_strdup_printf("");
+		return ret_value;
+	}
+
+	if (pretty == 1)
+	{
+		ret_value = g_strdup_printf("+*TYPE*+:%s", item_to_name(item->type));
+	}
+	else
+	{
+		ret_value = g_strdup_printf("type=%s", item_to_name(item->type));
+	}
+
+	while (item_attr_get(item, attr_any, &attr))
+	{
+		if (attr.type == attr_flags)
+		{
+			had_flags = 1;
+
+			flags = attr.u.num;
+			if (flags == 0)
+			{
+				f = item_get_default_flags(item->type);
+				if (f)
+				{
+					flags = *f;
+				}
+				else
+				{
+					flags = 0;
+				}
+			}
+
+			if (pretty == 1)
+			{
+				temp_str = g_strdup_printf("%s\n%s=%s", ret_value, attr_to_name(attr.type), flags_to_text(flags));
+			}
+			else
+			{
+				temp_str = g_strdup_printf("%s\n%s='%s'", ret_value, attr_to_name(attr.type), flags_to_text(flags));
+			}
+		}
+		else
+		{
+			if (pretty == 1)
+			{
+				temp_str = g_strdup_printf("%s\n%s=%s", ret_value, attr_to_name(attr.type), attr_to_text(&attr, NULL, 1));
+			}
+			else
+			{
+				temp_str = g_strdup_printf("%s\n%s='%s'", ret_value, attr_to_name(attr.type), attr_to_text(&attr, NULL, 1));
+			}
+		}
+		g_free(ret_value);
+		ret_value = g_strdup(temp_str);
+		g_free(temp_str);
+	}
+
+	if (had_flags == 0)
+	{
+		f = item_get_default_flags(item->type);
+		if (f)
+		{
+			flags = *f;
+
+			if (pretty == 1)
+			{
+				temp_str = g_strdup_printf("%s\n%s=%s", ret_value, attr_to_name(attr_flags), flags_to_text(flags));
+			}
+			else
+			{
+				temp_str = g_strdup_printf("%s\n%s='%s'", ret_value, attr_to_name(attr_flags), flags_to_text(flags));
+			}
+
+			g_free(ret_value);
+			ret_value = g_strdup(temp_str);
+			g_free(temp_str);
+		}
+	}
+
+	// g_free(item);
+
+	return ret_value;
+}
+
+
+int navit_normal_item(enum item_type type)
+{
+	if ((type > type_none)&&(type < type_waypoint))
+	{
+		return 1;
+	}
+	else if ((type >= type_poi_land_feature)&&(type <= type_poi_zoo))
+	{
+		return 1;
+	}
+	else if ((type >= type_traffic_signals)&&(type <= type_poi_cafe))
+	{
+		return 1;
+	}
+	else if ((type >= type_poi_peak)&&(type <= type_poi_ruins))
+	{
+		return 1;
+	}
+	else if ((type >= type_poi_post_box)&&(type <= type_house_number))
+	{
+		return 1;
+	}
+	else if ((type >= type_poi_playground)&&(type <= type_poi_shop_photo))
+	{
+		return 1;
+	}
+	else if (type == type_place_label)
+	{
+		return 1;
+	}
+	else if ((type >= type_line)&&(type <= type_ferry))
+	{
+		return 1;
+	}
+	else if (type == type_street_unkn)
+	{
+		return 1;
+	}
+	else if ((type >= type_aeroway_runway)&&(type <= type_footway_and_piste_nordic))
+	{
+		return 1;
+	}
+	else if ((type >= type_house_number_interpolation_even)&&(type <= type_city_wall))
+	{
+		return 1;
+	}
+	else if ((type >= type_border_city)&&(type <= type_border_county))
+	{
+		return 1;
+	}
+	else if ((type >= type_forest_way_1)&&(type <= type_forest_way_4))
+	{
+		return 1;
+	}
+	else if ((type >= type_area)&&(type <= type_poly_museum))
+	{
+		return 1;
+	}
+	else if ((type >= type_poly_commercial_center)&&(type <= type_tundra))
+	{
+		return 1;
+	}
+	else if ((type >= type_poly_building)&&(type <= type_poly_terminal))
+	{
+		return 1;
+	}
+	else if ((type >= type_poly_sports_centre)&&(type <= type_poly_aeroway_runway))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pretty)
+{
+	int max_dist = 0; // smallest rectangle possible
+	int dist, mindist = 0, pos;
+	int mindist_hn = 0;
+	struct mapset_handle *h;
+	struct map *m;
+	struct map_rect *mr;
+	struct item *item;
+	struct coord lp;
+	struct street_data *sd;
+	struct coord c;
+	struct coord_geo g;
+	struct map_selection sel;
+	struct attr street_name_attr;
+	struct attr hn_attr;
+	char *ret_str = NULL;
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	mindist = 1000;
+
+	h = mapset_open(ms);
+	if (!h)
+	{
+		// dbg(0,"return 1\n");
+		ret_str = g_strdup_printf("");
+		return ret_str;
+	}
+
+	while ((m = mapset_next(h, 0)))
+	{
+		c.x = pc->x;
+		c.y = pc->y;
+		if (map_projection(m) != pc->pro)
+		{
+			transform_to_geo(pc->pro, &c, &g);
+			transform_from_geo(map_projection(m), &g, &c);
+		}
+
+		sel.next = NULL;
+		sel.order = 18;
+		sel.range.min = type_none;
+		sel.range.max = type_last;
+		sel.u.c_rect.lu.x = c.x - max_dist;
+		sel.u.c_rect.lu.y = c.y + max_dist;
+		sel.u.c_rect.rl.x = c.x + max_dist;
+		sel.u.c_rect.rl.y = c.y - max_dist;
+
+		mr = map_rect_new(m, &sel);
+		if (!mr)
+		{
+			continue;
+		}
+
+		while ((item = map_rect_get_item(mr)))
+		{
+			if (navit_normal_item(item->type) == 1)
+			{
+				//dbg(0,"*type=%s\n", item_to_name(item->type));
+
+				struct coord c2[101];
+				int count22 = item_coord_get(item, c2, 100);
+				if (count22 == 0)
+				{
+					continue;
+				}
+				else if (count22 > 1)
+				{
+					dist = transform_distance_polyline_sq__v2(c2, count22, &c);
+					if (dist < mindist)
+					{
+						mindist = dist;
+						if (ret_str != NULL)
+						{
+							g_free(ret_str);
+						}
+						ret_str=navit_item_dump(item, pretty);
+					}
+				}
+				else
+				{
+					dist = transform_distance_sq(&c, &c2);
+					if (dist <= (mindist + 4))
+					{
+						mindist = dist;
+						if (ret_str != NULL)
+						{
+							g_free(ret_str);
+						}
+						ret_str=navit_item_dump(item, pretty);
+					}
+				}
+				// dbg(0,"*end\n");
+			}
+		}
+
+		if (mr)
+		{
+			map_rect_destroy(mr);
+		}
+	}
+	mapset_close(h);
+
+	if (ret_str == NULL)
+	{
+		// dbg(0,"was NULL\n");
+		ret_str = g_strdup_printf("");
+	}
+
+	return ret_str;
+}
+
+
+
+
+
+/**
  * @brief Finds the nearest street to a given coordinate
  *
  * @param ms The mapset to search in for the street
@@ -4660,7 +4960,7 @@ void navit_disable_suspend()
 char*
 navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 {
-	int max_dist = 1; // smallest rectangle possible
+	int max_dist = 0; // smallest rectangle possible
 	int dist, mindist = 0, pos;
 	struct mapset_handle *h;
 	struct map *m;
@@ -4685,6 +4985,8 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 
 	if (!h)
 	{
+		// set global value :-(
+		dist_to_street = mindist;
 		return street_name;
 	}
 
@@ -4724,38 +5026,14 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 				}
 				//dbg(0,"6 sd x:%d sd y:%d count:%d\n", sd->c->x, sd->c->y, sd->count);
 				//dbg(0,"6 c x:%d c y:%d\n", c.x, c.y);
-				dist = transform_distance_polyline_sq(sd->c, sd->count, &c, &lp, &pos);
+				dist = transform_distance_polyline_sq__v2(sd->c, sd->count, &c);
 				//dbg(0,"mindist:%d dist:%d\n", mindist, dist);
 				if (dist < mindist)
 				{
 					//dbg(0,"6.a\n");
 					mindist = dist;
 
-					if (item_attr_get(item, attr_label, &street_name_attr))
-					{
-						if (street_name)
-						{
-							g_free(street_name);
-							street_name = NULL;
-						}
-						street_name = g_strdup_printf("%s", street_name_attr.u.str);
-						//dbg(0,"r1 %s\n", street_name);
-					}
-					/*
-					else if (item_attr_get(&sd->item, attr_street_name, &street_name_attr))
-					{
-						if (street_name)
-						{
-							dbg(0,"6.b\n");
-							g_free(street_name);
-							street_name = NULL;
-							dbg(0,"6.c\n");
-						}
-						street_name = g_strdup_printf("%s", street_name_attr.u.str);
-						dbg(0,"r2 %s\n", street_name);
-					}
-					*/
-					else if (item_attr_get(item, attr_street_name, &street_name_attr))
+					if (item_attr_get(item, attr_street_name, &street_name_attr))
 					{
 						if (street_name)
 						{
@@ -4764,6 +5042,16 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 						}
 						street_name = g_strdup_printf("%s", street_name_attr.u.str);
 						//dbg(0,"r3 %s\n", street_name);
+					}
+					else if (item_attr_get(item, attr_label, &street_name_attr))
+					{
+						if (street_name)
+						{
+							g_free(street_name);
+							street_name = NULL;
+						}
+						street_name = g_strdup_printf("%s", street_name_attr.u.str);
+						//dbg(0,"r1 %s\n", street_name);
 					}
 					else if (item_attr_get(item, attr_street_name_systematic, &street_name_attr))
 					{
@@ -4795,6 +5083,243 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 		}
 	}
 	mapset_close(h);
+	// set global value :-(
+	dist_to_street = mindist;
+	return street_name;
+}
+
+
+
+/**
+ * @brief Finds the nearest street or housenumber to a given coordinate
+ *
+ * @param ms The mapset to search in for the street
+ * @param pc The coordinate to find a street nearby [ input in pcoord(x,y) ]
+ * @return The nearest street or housenumber
+ */
+char*
+navit_find_nearest_street_hn(struct mapset *ms, struct pcoord *pc)
+{
+	int max_dist = 0; // smallest rectangle possible
+	int dist, mindist = 0, pos;
+	int mindist_hn = 0;
+	struct mapset_handle *h;
+	struct map *m;
+	struct map_rect *mr;
+	struct item *item;
+	struct coord lp;
+	struct street_data *sd;
+	struct coord c;
+	struct coord_geo g;
+	struct map_selection sel;
+	struct attr street_name_attr;
+	struct attr hn_attr;
+	char *street_name = NULL;
+	char *street_name_saved = NULL;
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	// first find a street
+	street_name_saved = navit_find_nearest_street(ms, pc);
+	// street_name = g_strdup_printf(" ");
+	street_name = g_strdup(street_name_saved);
+	// first find a street
+
+	mindist = dist_to_street; // start with small radius at the beginning! (only use housenumber of different street, if we are really close to it!!)
+							  // global value -> this is naughty :-)
+
+	if (mindist < 8)
+	{
+		// so we can find other housenumbers if we are very close
+		mindist = 8;
+	}
+
+	mindist_hn = 10000;
+
+	//dbg(0,"given streetname %s %s dist %d\n", street_name, street_name_saved, dist_to_street);
+
+
+	h = mapset_open(ms);
+
+	if (!h)
+	{
+		if (street_name_saved)
+		{
+			g_free(street_name_saved);
+			street_name_saved = NULL;
+		}
+		return street_name;
+	}
+
+	while ((m = mapset_next(h, 0)))
+	{
+		c.x = pc->x;
+		c.y = pc->y;
+		if (map_projection(m) != pc->pro)
+		{
+			transform_to_geo(pc->pro, &c, &g);
+			transform_from_geo(map_projection(m), &g, &c);
+		}
+
+		sel.next = NULL;
+		sel.order = 18;
+		sel.range.min = type_none;
+		sel.range.max = type_area;
+		sel.u.c_rect.lu.x = c.x - max_dist;
+		sel.u.c_rect.lu.y = c.y + max_dist;
+		sel.u.c_rect.rl.x = c.x + max_dist;
+		sel.u.c_rect.rl.y = c.y - max_dist;
+
+		mr = map_rect_new(m, &sel);
+		if (!mr)
+		{
+			continue;
+		}
+
+		while ((item = map_rect_get_item(mr)))
+		{
+			if (item->type == type_house_number)
+			{
+				//dbg(0,"hn found\n");
+				struct coord c2;
+				int rrr = item_coord_get(item, &c2, 1);
+				if (rrr)
+				{
+					dist = transform_distance_sq(&c, &c2);
+					//dbg(0,"dist=%d\n", dist);
+					if (dist < mindist)
+					{
+						if (item_attr_get(item, attr_street_name, &street_name_attr))
+						{
+							if (item_attr_get(item, attr_house_number, &hn_attr))
+							{
+								if (street_name)
+								{
+									g_free(street_name);
+									street_name = NULL;
+								}
+								street_name = g_strdup_printf("%s %s", street_name_attr.u.str, hn_attr.u.str);
+								//dbg(0,"sn 1\n");
+								mindist = dist;
+								mindist_hn = dist;
+							}
+						}
+					}
+					// else try to find housenumbers for our current street
+					// just take the nearest housenumber for our current street
+					else if (dist < mindist_hn)
+					{
+						//dbg(0,"sn 2.1\n");
+						if (item_attr_get(item, attr_street_name, &street_name_attr))
+						{
+							//dbg(0,"sn 2.2\n");
+							if (item_attr_get(item, attr_house_number, &hn_attr))
+							{
+								//dbg(0,"sn 2.3\n");
+								if ((street_name != NULL) && (street_name_saved != NULL))
+								{
+									// dbg(0,"sn 2.4 -%s- -%s-\n", street_name_saved, street_name_attr.u.str);
+									if (!strcmp(street_name_saved, street_name_attr.u.str))
+									{
+										g_free(street_name);
+										street_name = NULL;
+
+										// dbg(0,"sn 2.99\n");
+
+										street_name = g_strdup_printf("%s %s", street_name_attr.u.str, hn_attr.u.str);
+										mindist_hn = dist;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+
+#if 0
+			//else if (item->type > type_line)
+			if (1 == 0) // DISABLED !!!!!!
+			{
+				if (item_get_default_flags(item->type))
+				{
+					sd = street_get_data(item);
+					if (!sd)
+					{
+						continue;
+					}
+					dist = transform_distance_polyline_sq(sd->c, sd->count, &c, &lp, &pos);
+					if (dist < mindist)
+					{
+						mindist = dist;
+
+						if (item_attr_get(item, attr_label, &street_name_attr))
+						{
+							if (street_name)
+							{
+								g_free(street_name);
+								street_name = NULL;
+							}
+							if (street_name_saved)
+							{
+								g_free(street_name_saved);
+								street_name_saved = NULL;
+							}
+							street_name = g_strdup_printf("%s", street_name_attr.u.str);
+							street_name_saved = g_strdup(street_name);
+						}
+						else if (item_attr_get(item, attr_street_name, &street_name_attr))
+						{
+							if (street_name)
+							{
+								g_free(street_name);
+								street_name = NULL;
+							}
+							if (street_name_saved)
+							{
+								g_free(street_name_saved);
+								street_name_saved = NULL;
+							}
+							street_name = g_strdup_printf("%s", street_name_attr.u.str);
+							street_name_saved = g_strdup(street_name);
+						}
+						else if (item_attr_get(item, attr_street_name_systematic, &street_name_attr))
+						{
+							if (street_name)
+							{
+								g_free(street_name);
+								street_name = NULL;
+							}
+							if (street_name_saved)
+							{
+								g_free(street_name_saved);
+								street_name_saved = NULL;
+							}
+							street_name = g_strdup_printf("%s", street_name_attr.u.str);
+							street_name_saved = g_strdup(street_name);
+						}
+					}
+					street_data_free(sd);
+				}
+			}
+#endif
+		}
+
+		if (mr)
+		{
+			map_rect_destroy(mr);
+		}
+	}
+
+	if (street_name_saved)
+	{
+		g_free(street_name_saved);
+		street_name_saved = NULL;
+	}
+
+	mapset_close(h);
 	return street_name;
 }
 
@@ -4809,7 +5334,7 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 char*
 navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 {
-	int max_dist = 1; // smallest rectangle possible
+	int max_dist = 0; // smallest rectangle possible
 	int dist, mindist = 0, pos;
 	struct mapset_handle *h;
 	struct map *m;
@@ -4876,7 +5401,8 @@ navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 					continue;
 				}
 				found_good = 0;
-				dist = transform_distance_polyline_sq(sd->c, sd->count, &c, &lp, &pos);
+				// OLD // dist = transform_distance_polyline_sq(sd->c, sd->count, &c, &lp, &pos);
+				dist = transform_distance_polyline_sq__v2(sd->c, sd->count, &c);
 				if (dist < mindist)
 				{
 					mindist = dist;

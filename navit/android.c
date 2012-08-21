@@ -287,7 +287,28 @@ struct gui_priv {
 
 
 
+JavaVM *cachedJVM = NULL;
 
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved)
+{
+    JNIEnv *env_this;
+    cachedJVM = jvm;
+    if ((*jvm)->GetEnv(jvm, (void**)&env_this, JNI_VERSION_1_6))
+	{
+        dbg(0,"Could not get JVM\n");
+        return JNI_ERR;
+    }
+
+	dbg(0,"++ Found JWM ++\n");
+    return JNI_VERSION_1_6;
+}
+
+JNIEnv* jni_getenv()
+{
+    JNIEnv* env_this;
+    (*cachedJVM)->GetEnv(cachedJVM, (void**)&env_this, JNI_VERSION_1_6);
+    return env_this;
+}
 
 
 static void gui_internal_search_list_set_default_country2(struct gui_priv *this)
@@ -554,7 +575,16 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallback(JNIEnv* env, jo
 	navit_set_position(global_navit, &pc);
 	*/
 
+	dbg(0,"call async java draw -start-\n");
 	navit_draw(global_navit);
+	// navit_draw_async(global_navit, 1);
+	dbg(0,"call async java draw --end--\n");
+
+	// remove the "wait" screen
+#ifdef HAVE_API_ANDROID
+	android_return_generic_int(2, 0);
+#endif
+
 }
 
 
@@ -572,11 +602,13 @@ Java_com_zoffcc_applications_zanavi_NavitTimeout_TimeoutCallback(JNIEnv* env, jo
 	//dbg(0,"timeout 2\n");
 	if (delete)
 	{
-		//dbg(0,"timeout 3\n");
+		dbg(0,"timeout 3\n");
 		// ICS
-		(*jnienv)->DeleteGlobalRef(jnienv, thiz);
+		jobject this_global = (*jnienv)->NewGlobalRef(jnienv, thiz);
+		dbg(0,"timeout 3.1\n");
+		(*jnienv)->DeleteGlobalRef(jnienv, this_global);
 		// ICS
-		//dbg(0,"timeout 4\n");
+		dbg(0,"timeout 4\n");
 	}
 }
 
@@ -677,6 +709,10 @@ void android_return_generic_int(int id, int i)
 	dbg(0,"+#+:enter\n");
 #endif
 	//DBG dbg(0,"Enter\n");
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	if (NavitGraphicsClass2 == NULL)
 	{
 		if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitGraphics", &NavitGraphicsClass2))
@@ -697,9 +733,9 @@ void android_return_generic_int(int id, int i)
 		return; /* exception thrown */
 	}
 	//DBG dbg(0,"xa1\n");
-	// -crash- (*jnienv)->CallVoidMethod(jnienv, NavitGraphicsClass2, return_generic_int, id, i);
-	(*jnienv)->CallStaticVoidMethod(jnienv, NavitGraphicsClass2, return_generic_int, id, i);
-	// -works- (*jnienv)->CallStaticObjectMethod(jnienv, NavitGraphicsClass2, return_generic_int, id, i);
+	// -crash- (*jnienv2)->CallVoidMethod(jnienv2, NavitGraphicsClass2, return_generic_int, id, i);
+	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, return_generic_int, id, i);
+	// -works- (*jnienv2)->CallStaticObjectMethod(jnienv2, NavitGraphicsClass2, return_generic_int, id, i);
 	//DBG dbg(0,"xa2\n");
 }
 
@@ -1415,7 +1451,51 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 		c24.pro = transform_get_projection(global_navit->trans);
 		result = navit_find_nearest_street_coords(global_navit->mapsets->data, &c24);
 	}
-
+	else if (i == 8)
+	{
+		// input:	x,y pixel on screen
+		// output:	nearest street or housenumber
+		struct coord c22;
+		struct point p;
+		struct pcoord c24;
+		p.x = a;
+		p.y = b;
+		transform_reverse(global_navit->trans, &p, &c22);
+		c24.x = c22.x;
+		c24.y = c22.y;
+		c24.pro = transform_get_projection(global_navit->trans);
+		result = navit_find_nearest_street_hn(global_navit->mapsets->data, &c24);
+	}
+	else if (i == 9)
+	{
+		// input:	x,y pixel on screen
+		// output:	item dump of nearest item
+		struct coord c22;
+		struct point p;
+		struct pcoord c24;
+		p.x = a;
+		p.y = b;
+		transform_reverse(global_navit->trans, &p, &c22);
+		c24.x = c22.x;
+		c24.y = c22.y;
+		c24.pro = transform_get_projection(global_navit->trans);
+		result = navit_find_nearest_item_dump(global_navit->mapsets->data, &c24, 0);
+	}
+	else if (i == 10)
+	{
+		// input:	x,y pixel on screen
+		// output:	item dump of nearest item (pretty output to show to user)
+		struct coord c22;
+		struct point p;
+		struct pcoord c24;
+		p.x = a;
+		p.y = b;
+		transform_reverse(global_navit->trans, &p, &c22);
+		c24.x = c22.x;
+		c24.y = c22.y;
+		c24.pro = transform_get_projection(global_navit->trans);
+		result = navit_find_nearest_item_dump(global_navit->mapsets->data, &c24, 1);
+	}
 
 	// dbg(0, "result=%s\n", result);
 	jstring js = (*env)->NewStringUTF(env, result);
@@ -2131,12 +2211,12 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannel(JNIEnv*
 		}
 	}
 
-	//DBG dbg(0,"deleteglobalref\n");
+	// dbg(0,"deleteglobalref\n");
 
 	(*env)->DeleteGlobalRef(env, str);
 	str = NULL;
 
-	//DBG dbg(0,"leave\n");
+	// dbg(0,"leave\n");
 
 }
 
@@ -2168,9 +2248,12 @@ void android_send_generic_text(int id, char *text)
 	}
 	//DBG dbg(0,"x3\n");
 
-	jstring string1 = (*jnienv)->NewStringUTF(jnienv, text);
-	(*jnienv)->CallStaticVoidMethod(jnienv, NavitGraphicsClass2, send_generic_text, id, string1);
-	(*jnienv)->DeleteLocalRef(jnienv, string1);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	jstring string1 = (*jnienv2)->NewStringUTF(jnienv2, text);
+	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, send_generic_text, id, string1);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string1);
 
 	//DBG dbg(0,"leave\n");
 }

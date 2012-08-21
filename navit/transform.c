@@ -1074,6 +1074,50 @@ transform_polyline_length(enum projection pro, struct coord *c, int count)
 	return ret;
 }
 
+
+// calc the distance (squared) of a point (p) to a line segment (l1 .. l2)
+// return (int) distance squared
+int transform_distance_point2line_sq(struct coord *p, struct coord *l1, struct coord *l2)
+{
+    int A = p->x - l1->x;
+    int B = p->y - l1->y;
+    float C = l2->x - l1->x;
+    float D = l2->y - l1->y;
+
+    int dot = A * C + B * D;
+    int len_sq = C * C + D * D;
+    float param = (float)dot / (float)len_sq;
+
+    int xx, yy;
+
+    if (param < 0 || (l1->x == l2->x && l1->y == l2->y))
+	{
+        xx = l1->x;
+        yy = l1->y;
+    }
+    else if (param > 1)
+	{
+        xx = l2->x;
+        yy = l2->y;
+    }
+    else
+	{
+        xx = l1->x + param * C;
+        yy = l1->y + param * D;
+    }
+
+    int dx = p->x - xx;
+    int dy = p->y - yy;
+
+	if (dx > 32767 || dy > 32767 || dx < -32767 || dy < -32767)
+	{
+		return INT_MAX;
+	}
+
+    return (dx * dx + dy * dy);
+
+}
+
 int
 transform_distance_sq(struct coord *c1, struct coord *c2)
 {
@@ -1169,6 +1213,38 @@ transform_distance_line_sq_float(struct coord *l0, struct coord *l1, struct coor
 		*lpnt=l;
 	return transform_distance_sq_float(&l, ref);
 }
+
+
+int
+transform_distance_polyline_sq__v2(struct coord *c, int count, struct coord *ref)
+{
+	int i,dist,distn;
+
+	if (count < 2)
+	{
+		int d;
+		d = transform_distance_sq(&c[0], ref);
+		//dbg(0,"d=%d\n", d);
+		return d;
+	}
+
+	dist=transform_distance_point2line_sq(ref, &c[0], &c[1]);
+	//dbg(0,"dist1:%d\n", dist);
+
+	for (i = 2; i < count; i++)
+	{
+		distn=transform_distance_point2line_sq(ref, &c[i-1], &c[i]);
+		//dbg(0,"dist2:%d\n", dist);
+		if (distn < dist)
+		{
+			dist=distn;
+		}
+	}
+	//dbg(0,"dist final:%d\n", dist);
+	return dist;
+}
+
+
 
 int
 transform_distance_polyline_sq(struct coord *c, int count, struct coord *ref, struct coord *lpnt, int *pos)

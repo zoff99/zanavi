@@ -317,25 +317,19 @@
 				<itemgra item_types="poly_car_parking" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#e7cf87"/>
 				</itemgra>
+
+				<!-- buildings -->
 				<itemgra item_types="poly_building" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#b6a6a6"/>
+					<polyline color="#dddddd" width="1"/>
 				</itemgra>
+				<!-- buildings -->
 
+			</layer>
 
-				<itemgra item_types="rail" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#696969" width="3"/>
-					<polyline color="#ffffff" width="1" dash="1"/>
-				</itemgra>
-				<itemgra item_types="rail" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#696969" width="10"/>
-					<polyline color="#ffffff" width="8" dash="1"/>
-				</itemgra>
-				<itemgra item_types="rail" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#696969" width="20"/>
-					<polyline color="#ffffff" width="18" dash="1"/>
-				</itemgra>
+		<xsl:text>&#x0A;        </xsl:text>
 
-
+			<layer name="Borders">
 				<itemgra item_types="border_country" order="0-1">
 					<polyline color="#9b1199" width="1" />
 				</itemgra>
@@ -475,9 +469,63 @@
 				<!-- also "car ferry" -->
 			</layer>
 
-		<xsl:text>&#x0A;        </xsl:text>
+			<xsl:text>&#x0A;        </xsl:text>
 
 			<layer name="streets_1">
+
+				<itemgra item_types="rail" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#696969" width="3"/>
+					<polyline color="#ffffff" width="1" dash="1"/>
+				</itemgra>
+				<itemgra item_types="rail" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#696969" width="10"/>
+					<polyline color="#ffffff" width="8" dash="1"/>
+				</itemgra>
+				<itemgra item_types="rail" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polyline color="#696969" width="20"/>
+					<polyline color="#ffffff" width="18" dash="1"/>
+				</itemgra>
+
+				<itemgra item_types="rail_narrow_gauge" order="13">
+					<polyline color="#696969" width="4"/>
+					<polyline color="#FFFFFF" width="2"/>
+				</itemgra>
+				<itemgra item_types="rail_narrow_gauge" order="14-">
+					<polyline color="#696969" width="6"/>
+					<polyline color="#FFFFFF" width="4"/>
+				</itemgra>
+
+				<itemgra item_types="rail_light" order="13">
+					<polyline color="#696969" width="4"/>
+					<polyline color="#FFFFFF" width="2"/>
+				</itemgra>
+				<itemgra item_types="rail_light" order="14-">
+					<polyline color="#696969" width="6"/>
+					<polyline color="#FFFFFF" width="4"/>
+				</itemgra>
+
+				<itemgra item_types="rail_subway" order="13-14">
+					<polyline color="#696969" width="4"/>
+					<polyline color="#FFFFFF" width="2"/>
+				</itemgra>
+				<itemgra item_types="rail_subway" order="15-">
+					<polyline color="#696969" width="10"/>
+					<polyline color="#FFFFFF" width="8"/>
+				</itemgra>
+
+				<itemgra item_types="rail_mono" order="13-">
+					<polyline color="#696969" width="1"/>
+				</itemgra>
+				<itemgra item_types="rail_preserved" order="13-">
+					<polyline color="#696969" width="1"/>
+				</itemgra>
+				<itemgra item_types="rail_disused" order="13-">
+					<polyline color="#d3d3d3" width="1"/>
+				</itemgra>
+				<itemgra item_types="rail_abandoned" order="13-">
+					<polyline color="#f5f5f5" width="1"/>
+				</itemgra>
+
 				<itemgra item_types="forest_way_1" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#0070c0" width="6"/>
 				</itemgra>
@@ -514,9 +562,19 @@
 				<itemgra item_types="bridleway" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#000000" width="1"/>
 				</itemgra>
-				<itemgra item_types="cycleway" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#000000" width="1"/>
+
+				<itemgra item_types="cycleway" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#0000ff" width="1" dash="6"/>
 				</itemgra>
+				<itemgra item_types="cycleway" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#ffffff" width="5" dash="6"/>
+					<polyline color="#0000ff" width="3" dash="6"/>
+				</itemgra>
+				<itemgra item_types="cycleway" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polyline color="#ffffff" width="7" dash="6"/>
+					<polyline color="#0000ff" width="5" dash="6"/>
+				</itemgra>
+
 				<itemgra item_types="lift_cable_car" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#696969" width="1" dash="5"/>
 				</itemgra>
@@ -526,6 +584,8 @@
 				<itemgra item_types="lift_drag" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#696969" width="1" dash="5"/>
 				</itemgra>
+
+
 				<itemgra item_types="footway" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#ffffff" width="5" dash="6"/>
 					<polyline color="#ff0000" width="3" dash="6"/>
@@ -534,9 +594,27 @@
 					<polyline color="#ffffff" width="7" dash="6"/>
 					<polyline color="#ff0000" width="5" dash="6"/>
 				</itemgra>
-				<itemgra item_types="steps" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#000000" width="1"/>
+
+
+				<itemgra item_types="path" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#ffffff" width="5" dash="6"/>
+					<polyline color="#ff0000" width="3" dash="6"/>
 				</itemgra>
+				<itemgra item_types="path" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polyline color="#ffffff" width="7" dash="6"/>
+					<polyline color="#ff0000" width="5" dash="6"/>
+				</itemgra>
+
+				<itemgra item_types="steps" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#ffffff" width="9" dash="7"/>
+					<polyline color="#ff0000" width="7" dash="7"/>
+				</itemgra>
+				<itemgra item_types="steps" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polyline color="#ffffff" width="11" dash="7"/>
+					<polyline color="#ff0000" width="9" dash="7"/>
+				</itemgra>
+
+
 				<itemgra item_types="street_pedestrian,living_street" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="13"/>
 					<polyline color="#dddddd" width="9"/>
@@ -729,6 +807,19 @@
 				</itemgra>
 
 
+
+				<itemgra item_types="bus_guideway" order="13-">
+					<polyline color="#696969" width="1"/>
+				</itemgra>
+				<itemgra item_types="rail_tram" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#606060" width="1"/>
+				</itemgra>
+				<itemgra item_types="rail_tram" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polyline color="#606060" width="2"/>
+				</itemgra>
+
+
+
 				<!-- autobahn / highway -->
 				<itemgra item_types="highway_city,highway_land" order="0-{round(1-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#fc843b" width="1"/>
@@ -910,6 +1001,18 @@
 					<text text_size="7"/>
 				</itemgra>
 
+
+				<itemgra item_types="rail_tram" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<text text_size="10"/>
+				</itemgra>
+				<itemgra item_types="rail" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<text text_size="10"/>
+				</itemgra>
+				<itemgra item_types="rail_subway" order="13-">
+					<text text_size="9"/>
+				</itemgra>
+
+
 				<itemgra item_types="street_nopass,street_0,street_1_city,street_1_land" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<text text_size="9"/>
 				</itemgra>
@@ -925,11 +1028,10 @@
 
 		<xsl:text>&#x0A;        </xsl:text>
 
+			<!--
 			<layer name="polylines">
-				<itemgra item_types="rail_tram" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#606060" width="2"/>
-				</itemgra>
 			</layer>
+			-->
 
 		<xsl:text>&#x0A;        </xsl:text>
 

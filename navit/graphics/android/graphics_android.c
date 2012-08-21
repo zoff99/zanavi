@@ -175,7 +175,9 @@ static void gc_set_linewidth(struct graphics_gc_priv *gc, int w)
 
 static void gc_set_dashes(struct graphics_priv *gra, struct graphics_gc_priv *gc, int w, int offset, int dash_list[], int order)
 {
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_set_dashes, gc->gra->Paint, dash_list[0], order);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_set_dashes, gc->gra->Paint, dash_list[0], order);
 }
 
 static void gc_set_foreground(struct graphics_gc_priv *gc, struct color *c)
@@ -219,6 +221,9 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 {
 	//DBG dbg(0,"EEnter\n");
 
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	struct graphics_image_priv* ret = NULL;
 
 	if (!g_hash_table_lookup_extended(image_cache_hash, path, NULL, (gpointer) & ret))
@@ -230,45 +235,45 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 		// // dbg(1, "enter %s\n", path);
 		if (!strncmp(path, "res/drawable/", 13))
 		{
-			jstring a = (*jnienv)->NewStringUTF(jnienv, "drawable");
-			jstring b = (*jnienv)->NewStringUTF(jnienv, "com.zoffcc.applications.zanavi");
+			jstring a = (*jnienv2)->NewStringUTF(jnienv2, "drawable");
+			jstring b = (*jnienv2)->NewStringUTF(jnienv2, "com.zoffcc.applications.zanavi");
 			char *path_noext = g_strdup(path + 13);
 			char *pos = strrchr(path_noext, '.');
 			if (pos)
 				*pos = '\0';
 			//DBG dbg(0, "path_noext=%s\n", path_noext);
-			string = (*jnienv)->NewStringUTF(jnienv, path_noext);
+			string = (*jnienv2)->NewStringUTF(jnienv2, path_noext);
 			g_free(path_noext);
-			id = (*jnienv)->CallIntMethod(jnienv, gra->Resources, gra->Resources_getIdentifier, string, a, b);
+			id = (*jnienv2)->CallIntMethod(jnienv2, gra->Resources, gra->Resources_getIdentifier, string, a, b);
 			//DBG dbg(0, "id=%d\n", id);
 			//DBG dbg(0,"JNI\n");
 			if (id)
 			{
-				ret->Bitmap = (*jnienv)->CallStaticObjectMethod(jnienv, gra->BitmapFactoryClass, gra->BitmapFactory_decodeResource, gra->Resources, id);
+				ret->Bitmap = (*jnienv2)->CallStaticObjectMethod(jnienv2, gra->BitmapFactoryClass, gra->BitmapFactory_decodeResource, gra->Resources, id);
 			}
-			(*jnienv)->DeleteLocalRef(jnienv, b);
-			(*jnienv)->DeleteLocalRef(jnienv, a);
+			(*jnienv2)->DeleteLocalRef(jnienv2, b);
+			(*jnienv2)->DeleteLocalRef(jnienv2, a);
 		}
 		else
 		{
-			string = (*jnienv)->NewStringUTF(jnienv, path);
+			string = (*jnienv2)->NewStringUTF(jnienv2, path);
 			//DBG dbg(0,"JNI\n");
-			ret->Bitmap = (*jnienv)->CallStaticObjectMethod(jnienv, gra->BitmapFactoryClass, gra->BitmapFactory_decodeFile, string);
+			ret->Bitmap = (*jnienv2)->CallStaticObjectMethod(jnienv2, gra->BitmapFactoryClass, gra->BitmapFactory_decodeFile, string);
 			// there should be a check here, if we really want any rotation/scaling
 			// otherwise the call is overkill
 			//DBG dbg(0,"JNI\n");
-			ret->Bitmap = (*jnienv)->CallStaticObjectMethod(jnienv, gra->NavitGraphicsClass, gra->NavitGraphicsClass_rotate_and_scale_bitmap, ret->Bitmap, *w, *h, rotation);
+			ret->Bitmap = (*jnienv2)->CallStaticObjectMethod(jnienv2, gra->NavitGraphicsClass, gra->NavitGraphicsClass_rotate_and_scale_bitmap, ret->Bitmap, *w, *h, rotation);
 		}
 		//// dbg(1, "result=%p\n", ret->Bitmap);
 		if (ret->Bitmap)
 		{
 			//DBG dbg(0,"JNI\n");
-			ret->Bitmap = (*jnienv)->NewGlobalRef(jnienv, ret->Bitmap);
-			// ICS (*jnienv)->DeleteLocalRef(jnienv, ret->Bitmap);
+			ret->Bitmap = (*jnienv2)->NewGlobalRef(jnienv2, ret->Bitmap);
+			// ICS (*jnienv2)->DeleteLocalRef(jnienv2, ret->Bitmap);
 			//DBG dbg(0,"JNI\n");
-			ret->width = (*jnienv)->CallIntMethod(jnienv, ret->Bitmap, gra->Bitmap_getWidth);
+			ret->width = (*jnienv2)->CallIntMethod(jnienv2, ret->Bitmap, gra->Bitmap_getWidth);
 			//DBG dbg(0,"JNI\n");
-			ret->height = (*jnienv)->CallIntMethod(jnienv, ret->Bitmap, gra->Bitmap_getHeight);
+			ret->height = (*jnienv2)->CallIntMethod(jnienv2, ret->Bitmap, gra->Bitmap_getHeight);
 			//// dbg(1, "w=%d h=%d for %s\n", ret->width, ret->height, path);
 			ret->hot.x = ret->width / 2;
 			ret->hot.y = ret->height / 2;
@@ -280,7 +285,7 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 			//DBG dbg(0, "Failed to open %s\n", path);
 		}
 		//DBG dbg(0,"JNI\n");
-		(*jnienv)->DeleteLocalRef(jnienv, string);
+		(*jnienv2)->DeleteLocalRef(jnienv2, string);
 		//DBG dbg(0,"JNI\n");
 		g_hash_table_insert(image_cache_hash, g_strdup(path), (gpointer) ret);
 	}
@@ -301,9 +306,12 @@ static void initPaint(struct graphics_priv *gra, struct graphics_gc_priv *gc)
 {
 	//DBG dbg(0,"EEnter\n");
 
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	float wf = gc->linewidth;
-	(*jnienv)->CallVoidMethod(jnienv, gc->gra->Paint, gra->Paint_setStrokeWidth, wf);
-	(*jnienv)->CallVoidMethod(jnienv, gc->gra->Paint, gra->Paint_setARGB, gc->a, gc->r, gc->g, gc->b);
+	(*jnienv2)->CallVoidMethod(jnienv2, gc->gra->Paint, gra->Paint_setStrokeWidth, wf);
+	(*jnienv2)->CallVoidMethod(jnienv2, gc->gra->Paint, gra->Paint_setARGB, gc->a, gc->r, gc->g, gc->b);
 }
 
 static void draw_lines(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count)
@@ -312,18 +320,23 @@ static void draw_lines(struct graphics_priv *gra, struct graphics_gc_priv *gc, s
 	jint pc[count * 2];
 	int i;
 	jintArray points;
+
 	if (count <= 0)
 		return;
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
 	for (i = 0; i < count; i++)
 	{
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
 	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polyline, gc->gra->Paint, points);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polyline, gc->gra->Paint, points);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
 static void draw_lines3(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count, int order, int width)
@@ -336,16 +349,20 @@ static void draw_lines3(struct graphics_priv *gra, struct graphics_gc_priv *gc, 
 	{
 		return;
 	}
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
 	for (i = 0; i < count; i++)
 	{
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
 	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polyline3, gc->gra->Paint, points, order, width);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polyline3, gc->gra->Paint, points, order, width);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
 static void draw_lines4(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count, int order, int width, int type)
@@ -356,23 +373,35 @@ static void draw_lines4(struct graphics_priv *gra, struct graphics_gc_priv *gc, 
 	// type:1 -> tunnel
 	// type:2 -> bridge
 
-	jint pc[count * 2];
-	int i;
-	jintArray points;
-	if (count <= 0)
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+
+	if (type > 90)
 	{
-		return;
+		// "***" signal
+		(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polyline4, NULL, NULL, order, width, type);
 	}
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
-	for (i = 0; i < count; i++)
+	else
 	{
-		pc[i * 2] = p[i].x;
-		pc[i * 2 + 1] = p[i].y;
+		jint pc[count * 2];
+		int i;
+		jintArray points;
+		if (count <= 0)
+		{
+			return;
+		}
+		points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
+		for (i = 0; i < count; i++)
+		{
+			pc[i * 2] = p[i].x;
+			pc[i * 2 + 1] = p[i].y;
+		}
+		initPaint(gra, gc);
+		(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+		(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polyline4, gc->gra->Paint, points, order, width, type);
+		(*jnienv2)->DeleteLocalRef(jnienv2, points);
 	}
-	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polyline4, gc->gra->Paint, points, order, width, type);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
 }
 
 static void draw_lines2(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count, int order, int oneway)
@@ -383,16 +412,20 @@ static void draw_lines2(struct graphics_priv *gra, struct graphics_gc_priv *gc, 
 	jintArray points;
 	if (count <= 0)
 		return;
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
 	for (i = 0; i < count; i++)
 	{
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
 	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polyline2, gc->gra->Paint, points, order, oneway);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polyline2, gc->gra->Paint, points, order, oneway);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
 static void draw_lines_dashed(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count, int order, int oneway)
@@ -402,16 +435,20 @@ static void draw_lines_dashed(struct graphics_priv *gra, struct graphics_gc_priv
 	jintArray points;
 	if (count <= 0)
 		return;
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
 	for (i = 0; i < count; i++)
 	{
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
 	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polyline_dashed, gc->gra->Paint, points, order, oneway);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polyline_dashed, gc->gra->Paint, points, order, oneway);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
 static void draw_polygon(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count)
@@ -421,16 +458,20 @@ static void draw_polygon(struct graphics_priv *gra, struct graphics_gc_priv *gc,
 	jintArray points;
 	if (count <= 0)
 		return;
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
 	for (i = 0; i < count; i++)
 	{
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
 	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polygon, gc->gra->Paint, points);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polygon, gc->gra->Paint, points);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
 static void draw_polygon2(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int count, int order, int oneway)
@@ -440,46 +481,62 @@ static void draw_polygon2(struct graphics_priv *gra, struct graphics_gc_priv *gc
 	jintArray points;
 	if (count <= 0)
 		return;
-	points = (*jnienv)->NewIntArray(jnienv, count * 2);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
 	for (i = 0; i < count; i++)
 	{
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
 	initPaint(gra, gc);
-	(*jnienv)->SetIntArrayRegion(jnienv, points, 0, count * 2, pc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_polygon2, gc->gra->Paint, points, order, oneway);
-	(*jnienv)->DeleteLocalRef(jnienv, points);
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polygon2, gc->gra->Paint, points, order, oneway);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
 static void draw_rectangle(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int w, int h)
 {
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	initPaint(gra, gc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_rectangle, gc->gra->Paint, p->x, p->y, w, h);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_rectangle, gc->gra->Paint, p->x, p->y, w, h);
 }
 
 static void draw_circle(struct graphics_priv *gra, struct graphics_gc_priv *gc, struct point *p, int r)
 {
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	initPaint(gra, gc);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_circle, gc->gra->Paint, p->x, p->y, r);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_circle, gc->gra->Paint, p->x, p->y, r);
 }
 
 static void draw_text(struct graphics_priv *gra, struct graphics_gc_priv *fg, struct graphics_gc_priv *bg, struct graphics_font_priv *font, char *text, struct point *p, int dx, int dy)
 {
 	//// dbg(1, "enter %s\n", text);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	initPaint(gra, fg);
-	jstring string = (*jnienv)->NewStringUTF(jnienv, text);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_text, fg->gra->Paint, p->x, p->y, string, font->size, dx, dy);
-	(*jnienv)->DeleteLocalRef(jnienv, string);
+	jstring string = (*jnienv2)->NewStringUTF(jnienv2, text);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_text, fg->gra->Paint, p->x, p->y, string, font->size, dx, dy);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string);
 }
 
 static void draw_image(struct graphics_priv *gra, struct graphics_gc_priv *fg, struct point *p, struct graphics_image_priv *img)
 {
 	//DBG dbg(0,"EEnter\n");
 
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	//// dbg(1, "enter %p\n", img);
 	initPaint(gra, fg);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_image, fg->gra->Paint, p->x, p->y, img->Bitmap);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_image, fg->gra->Paint, p->x, p->y, img->Bitmap);
 
 }
 
@@ -487,7 +544,10 @@ static void draw_bigmap(struct graphics_priv *gra, struct graphics_gc_priv *fg, 
 {
 	//DBG dbg(0,"EEnter\n");
 
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_bigmap, yaw, order, clat, clng, x, y, scx, scy, px, py, valid);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_bigmap, yaw, order, clat, clng, x, y, scx, scy, px, py, valid);
 
 	//DBG dbg(0,"leave\n");
 }
@@ -496,15 +556,18 @@ static void send_osd_values(struct graphics_priv *gra, struct graphics_gc_priv *
 {
 	//DBG dbg(0,"EEnter\n");
 
-	jstring string1 = (*jnienv)->NewStringUTF(jnienv, id);
-	jstring string2 = (*jnienv)->NewStringUTF(jnienv, text1);
-	jstring string3 = (*jnienv)->NewStringUTF(jnienv, text2);
-	jstring string4 = (*jnienv)->NewStringUTF(jnienv, text3);
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_send_osd_values, string1, string2, string3, string4, i1, i2, i3, i4, f1, f2, f3);
-	(*jnienv)->DeleteLocalRef(jnienv, string1);
-	(*jnienv)->DeleteLocalRef(jnienv, string2);
-	(*jnienv)->DeleteLocalRef(jnienv, string3);
-	(*jnienv)->DeleteLocalRef(jnienv, string4);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	jstring string1 = (*jnienv2)->NewStringUTF(jnienv2, id);
+	jstring string2 = (*jnienv2)->NewStringUTF(jnienv2, text1);
+	jstring string3 = (*jnienv2)->NewStringUTF(jnienv2, text2);
+	jstring string4 = (*jnienv2)->NewStringUTF(jnienv2, text3);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_send_osd_values, string1, string2, string3, string4, i1, i2, i3, i4, f1, f2, f3);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string1);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string2);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string3);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string4);
 }
 
 static void draw_image_warp(struct graphics_priv *gr, struct graphics_gc_priv *fg, struct point *p, int count, char *data)
@@ -518,8 +581,10 @@ static void draw_restore(struct graphics_priv *gr, struct point *p, int w, int h
 static void draw_drag(struct graphics_priv *gra, struct point *p)
 {
 	//DBG dbg(0,"EEnter\n");
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
 
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_drag, p ? p->x : 0, p ? p->y : 0);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_drag, p ? p->x : 0, p ? p->y : 0);
 }
 
 static void background_gc(struct graphics_priv *gr, struct graphics_gc_priv *gc)
@@ -529,8 +594,10 @@ static void background_gc(struct graphics_priv *gr, struct graphics_gc_priv *gc)
 static void draw_mode(struct graphics_priv *gra, enum draw_mode_num mode)
 {
 	//DBG dbg(0,"EEnter\n");
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
 
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_draw_mode, (int) mode);
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_mode, (int) mode);
 }
 
 static struct graphics_priv * overlay_new(struct graphics_priv *gr, struct graphics_methods *meth, struct point *p, int w, int h, int alpha, int wraparound);
@@ -541,7 +608,10 @@ get_data(struct graphics_priv *this, const char *type)
 	//DBG dbg(0,"EEnter\n");
 
 	if (strcmp(type, "window"))
+	{
 		return NULL;
+	}
+
 	return &this->win;
 }
 
@@ -574,22 +644,31 @@ static void get_text_bbox(struct graphics_priv *gr, struct graphics_font_priv *f
 static void overlay_disable(struct graphics_priv *gra, int disable)
 {
 	//DBG dbg(0,"EEnter\n");
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_overlay_disable, disable);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_overlay_disable, disable);
 }
 
 static void overlay_resize(struct graphics_priv *gra, struct point *pnt, int w, int h, int alpha, int wraparound)
 {
 	//DBG dbg(0,"EEnter\n");
-	(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_overlay_resize, pnt ? pnt->x : 0, pnt ? pnt->y : 0, w, h, alpha, wraparound);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_overlay_resize, pnt ? pnt->x : 0, pnt ? pnt->y : 0, w, h, alpha, wraparound);
 }
 
 static int set_attr(struct graphics_priv *gra, struct attr *attr)
 {
 	//DBG dbg(0,"EEnter\n");
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	switch (attr->type)
 	{
 		case attr_use_camera:
-			(*jnienv)->CallVoidMethod(jnienv, gra->NavitGraphics, gra->NavitGraphics_SetCamera, attr->u.num);
+			(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_SetCamera, attr->u.num);
 			return 1;
 		default:
 			return 0;
@@ -675,7 +754,7 @@ static int graphics_android_init(struct graphics_priv *ret, struct graphics_priv
 	struct callback *cb;
 	jmethodID cid;
 
-	//DBG dbg(0, "at 2 jnienv=%p\n", jnienv);
+	dbg(0, "at 2 jnienv=%p\n", jnienv);
 	//DBG dbg(0,"a1\n");
 	if (!find_class_global("android/graphics/Paint", &ret->PaintClass))
 		return 0;
@@ -739,7 +818,7 @@ static int graphics_android_init(struct graphics_priv *ret, struct graphics_priv
 	}
 	//DBG dbg(0, "at 4 android_activity=%p\n", android_activity);
 	ret->NavitGraphics = (*jnienv)->NewObject(jnienv, ret->NavitGraphicsClass, cid, android_activity, parent ? parent->NavitGraphics : NULL, pnt ? pnt->x : 0, pnt ? pnt->y : 0, w, h, alpha, wraparound, use_camera);
-	//DBG dbg(0, "result=%p\n", ret->NavitGraphics);
+	dbg(0, "result=%p\n", ret->NavitGraphics);
 	if (ret->NavitGraphics)
 	{
 		ret->NavitGraphics = (*jnienv)->NewGlobalRef(jnienv, ret->NavitGraphics);
@@ -882,7 +961,10 @@ static jmethodID Navit_disableSuspend, Navit_exit;
 static void graphics_android_disable_suspend(struct window *win)
 {
 	//DBG dbg(0,"enter\n");
-	(*jnienv)->CallVoidMethod(jnienv, android_activity, Navit_disableSuspend);
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	(*jnienv2)->CallVoidMethod(jnienv2, android_activity, Navit_disableSuspend);
 }
 
 static struct graphics_priv *
@@ -893,9 +975,13 @@ graphics_android_new(struct navit *nav, struct graphics_methods *meth, struct at
 	struct graphics_priv *ret;
 	struct attr *attr;
 	int use_camera = 0;
-	if (!event_request_system("android", "graphics_android"))
-		return NULL;ret=g_new0(struct graphics_priv, 1);
 
+	if (!event_request_system("android", "graphics_android"))
+	{
+		return NULL;
+	}
+
+	ret=g_new0(struct graphics_priv, 1);
 	ret->cbl = cbl;
 	*meth = graphics_methods;
 	ret->win.priv = ret;
@@ -998,17 +1084,18 @@ event_android_add_timeout(int timeout, int multi, struct callback *cb)
 	// timeout -> delay in milliseconds
 
 	jobject ret;
+	jobject ret_g = NULL;
 	ret = (*jnienv)->NewObject(jnienv, NavitTimeoutClass, NavitTimeout_init, timeout, multi, (int) cb);
 	//dbg(0, "result for %d,%d,%p\n", timeout, multi, cb);
 
 	if (ret)
 	{
-		//DBG dbg(0,"l ret=%p\n",ret);
-		ret = (*jnienv)->NewGlobalRef(jnienv, ret);
-		//DBG dbg(0,"g ret=%p\n",ret);
+		dbg(0,"l ret=%p\n",ret);
+		ret_g = (*jnienv)->NewGlobalRef(jnienv, ret);
+		dbg(0,"g ret=%p\n",ret_g);
 	}
 	//dbg(0,"leave\n");
-	return (struct event_timeout *) ret;
+	return (struct event_timeout *) ret_g;
 }
 
 static void event_android_remove_timeout(struct event_timeout *to)
@@ -1017,11 +1104,13 @@ static void event_android_remove_timeout(struct event_timeout *to)
 
 	if (to)
 	{
-		// //DBG dbg(0, "remove %p\n", to);
-		//dbg(0, "remove\n");
+		dbg(0, "remove %p\n", to);
 		jobject obj = (jobject) to;
 		(*jnienv)->CallVoidMethod(jnienv, obj, NavitTimeout_remove);
-		// ICS (*jnienv)->DeleteGlobalRef(jnienv, obj);
+		// ICS
+		dbg(0, "remove 1\n");
+		(*jnienv)->DeleteGlobalRef(jnienv, obj);
+		dbg(0, "remove 2\n");
 	}
 }
 

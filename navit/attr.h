@@ -73,6 +73,7 @@ enum attr_type {
 #define AF_FORD			(1<<13)
 #define AF_UNDERGROUND		(1<<14)
 #define AF_BRIDGE		(1<<15) // NEW !!
+// 16 - 18 is still free!!
 #define AF_DANGEROUS_GOODS	(1<<19)
 #define AF_EMERGENCY_VEHICLES	(1<<20)
 #define AF_TRANSPORT_TRUCK	(1<<21)

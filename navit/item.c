@@ -70,10 +70,12 @@ struct default_flags default_flags2[] =
 { type_footway, AF_PBH },
 { type_living_street, AF_ALL },
 { type_street_service, AF_ALL },
+{ type_street_parking_lane, AF_ALL },
 { type_bridleway, AF_PBH },
 { type_path, AF_PBH },
 { type_steps, AF_PBH },
-{ type_street_pedestrian, AF_PBH }, };
+{ type_street_pedestrian, AF_PBH },
+};
 
 struct item_name item_names[] =
 {
@@ -209,6 +211,28 @@ struct item * item_new(char *type, int zoom)
 	return it;
 }
 
+
+// not working yet!!!!! ------
+/*
+void item_dup(struct item *src, struct item *dst)
+{
+	int size;
+	void *priv_data;
+
+	dst = g_new0(struct item, 1);
+	dst->type=src->type;
+	dst->id_hi=src->id_hi;
+	dst->id_lo=src->id_lo;
+
+	dst->priv_data=g_malloc(size);
+	memcpy(dst->priv_data, src->priv_data, size);
+	// int len = (ib->len + 1) * 4;
+
+}
+*/
+// not working yet!!!!! ------
+
+
 enum item_type item_from_name(const char *name)
 {
 	int i;
@@ -281,7 +305,7 @@ void item_hash_insert(struct item_hash *h, struct item *item, void *val)
 {
 	struct item *hitem=g_new(struct item, 1);
 	*hitem = *item;
-	dbg(2, "inserting (0x%x,0x%x) into %p\n", item->id_hi, item->id_lo, h->h);
+	//dbg(2, "inserting (0x%x,0x%x) into %p\n", item->id_hi, item->id_lo, h->h);
 	g_hash_table_insert(h->h, hitem, val);
 }
 
@@ -289,9 +313,9 @@ int item_hash_remove(struct item_hash *h, struct item *item)
 {
 	int ret;
 
-	dbg(2, "removing (0x%x,0x%x) from %p\n", item->id_hi, item->id_lo, h->h);
+	//dbg(2, "removing (0x%x,0x%x) from %p\n", item->id_hi, item->id_lo, h->h);
 	ret = g_hash_table_remove(h->h, item);
-	dbg(2, "ret=%d\n", ret);
+	//dbg(2, "ret=%d\n", ret);
 
 	return ret;
 }

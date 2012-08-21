@@ -157,7 +157,12 @@
             android:key="enable_debug_functions"
             android:summary="enable Debug functions in menu [DEBUG]"
             android:title="Debug Functions" />
-    </PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="item_dump"
+            android:summary="show item dump [DEBUG]"
+            android:title="show item dump" />
+        </PreferenceCategory>
     <PreferenceCategory android:title="Language" >
         <ListPreference
             android:defaultValue="*DEFAULT*"
