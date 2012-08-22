@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -66,6 +85,8 @@ extern void builtin_init(void);
 
 int main_real(int argc, char **argv)
 {
+	dbg(0,"in main loop 001 ##########################\n");
+
 	xmlerror *error = NULL;
 	char *config_file = NULL;
 	int opt;
@@ -76,11 +97,14 @@ int main_real(int argc, char **argv)
 	main_argc=argc;
 	main_argv=argv;
 
+	dbg(0,"in main loop 002 ##########################\n");
 
 #ifdef HAVE_GLIB
 	event_glib_init();
+	dbg(0,"in main loop 003 ##########################\n");
 #else
 	_g_slice_thread_init_nomessage();
+	dbg(0,"in main loop 004 ##########################\n");
 #endif
 	atom_init();
 	main_init(argv[0]);
@@ -88,23 +112,39 @@ int main_real(int argc, char **argv)
 	debug_init(argv[0]);
 
 	cp = getenv("NAVIT_LOGFILE");
-	if (cp) {
+	if (cp)
+	{
 		debug_set_logfile(cp);
 	}
 #ifdef HAVE_API_WIN32_CE
-	else {	
+	else
+	{
 		debug_set_logfile("/Storage Card/navit.log");
 	}
 #endif
+
+
+	dbg(0,"in main loop 005 ##########################\n");
 	file_init();
+	dbg(0,"in main loop 006 ##########################\n");
+
 #ifndef USE_PLUGINS
+	dbg(0,"in main loop 007 ##########################\n");
 	builtin_init();
 #endif
+
+	dbg(0,"in main loop 008 ##########################\n");
 	route_init();
+	dbg(0,"in main loop 008.1 ##########################\n");
 	navigation_init();
+	dbg(0,"in main loop 008.2 ##########################\n");
 	tracking_init();
+	dbg(0,"in main loop 008.3 ##########################\n");
 	search_init();
+	dbg(0,"in main loop 008.4 ##########################\n");
 	linguistics_init();
+	dbg(0,"in main loop 0014 ##########################\n");
+
 	config_file=NULL;
 #ifdef HAVE_GETOPT_H
 	opterr=0;  //don't bomb out on errors.
@@ -184,31 +224,43 @@ int main_real(int argc, char **argv)
 			break;
 		}
 		else
+		{
 			g_free(config_file);
+		}
 		li = g_list_next(li);
 	}
 
+
+	// ############### load XML config file, and call all the init/new functions ################
+	// ############### load XML config file, and call all the init/new functions ################
+	// ############### load XML config file, and call all the init/new functions ################
+	clock_t s_ = debug_measure_start();
 	if (!config_load(config_file, &error))
 	{
 	}
+	debug_mrp("load and init xmlconfig:", debug_measure_end(s_));
+	// ############### load XML config file, and call all the init/new functions ################
+	// ############### load XML config file, and call all the init/new functions ################
+	// ############### load XML config file, and call all the init/new functions ################
+
 
 	while (li)
 	{
 		g_free(li->data);
 		li = g_list_next(li);
 	}
+
 	g_list_free(list);
-	if (! config_get_attr(config, attr_navit, &navit, NULL) && !config_empty_ok) {
+
+	if (! config_get_attr(config, attr_navit, &navit, NULL) && !config_empty_ok)
+	{
 		dbg(0, "No instance has been created, exiting\n");
 		exit(1);
 	}
-	event_main_loop_run();
 
-	dbg(0,"1 after main loop ##########################");
-	dbg(0,"2 after main loop ##########################");
-	dbg(0,"3 after main loop ##########################");
-	dbg(0,"4 after main loop ##########################");
-	dbg(0,"5 after main loop ##########################");
+	dbg(0,"in main loop 026 ##########################\n");
+	event_main_loop_run();
+	dbg(0,"after main loop ##########################");
 
 #ifndef HAVE_API_ANDROID
 	debug_finished();

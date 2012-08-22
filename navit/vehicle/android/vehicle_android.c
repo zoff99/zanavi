@@ -78,7 +78,28 @@ struct vehicle_priv
 
 // global vars
 struct vehicle_priv *priv_global_android = NULL;
+
+jclass NavitClass3 = NULL;
+jmethodID Navit_get_vehicle;
 // global vars
+
+
+
+
+static int find_static_method(jclass class, char *name, char *args, jmethodID *ret)
+{
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	//DBG dbg(0,"EEnter\n");
+	*ret = (*jnienv2)->GetStaticMethodID(jnienv2, class, name, args);
+	if (*ret == NULL)
+	{
+		//DBG dbg(0, "Failed to get static Method %s with signature %s\n", name, args);
+		return 0;
+	}
+	return 1;
+}
 
 
 /**
@@ -175,6 +196,9 @@ static void vehicle_android_update_location_direct(jobject location)
 
 	struct vehicle_priv *v = priv_global_android;
 
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	//dbg(0,"jnienv=%p\n", jnienv);
 	//dbg(0,"priv_global_android=%p\n", priv_global_android);
 	//dbg(0,"v=%p\n", v);
@@ -183,13 +207,13 @@ static void vehicle_android_update_location_direct(jobject location)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
-	v->geo.lat = (*jnienv)->CallDoubleMethod(jnienv, location, v->Location_getLatitude);
-	v->geo.lng = (*jnienv)->CallDoubleMethod(jnienv, location, v->Location_getLongitude);
-	v->speed = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getSpeed) * 3.6; // convert from m/s -> km/h
-	v->direction = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getBearing);
-	v->height = (*jnienv)->CallDoubleMethod(jnienv, location, v->Location_getAltitude);
-	v->radius = (*jnienv)->CallFloatMethod(jnienv, location, v->Location_getAccuracy);
-	tnow = (*jnienv)->CallLongMethod(jnienv, location, v->Location_getTime) / 1000;
+	v->geo.lat = (*jnienv2)->CallDoubleMethod(jnienv2, location, v->Location_getLatitude);
+	v->geo.lng = (*jnienv2)->CallDoubleMethod(jnienv2, location, v->Location_getLongitude);
+	v->speed = (*jnienv2)->CallFloatMethod(jnienv2, location, v->Location_getSpeed) * 3.6; // convert from m/s -> km/h
+	v->direction = (*jnienv2)->CallFloatMethod(jnienv2, location, v->Location_getBearing);
+	v->height = (*jnienv2)->CallDoubleMethod(jnienv2, location, v->Location_getAltitude);
+	v->radius = (*jnienv2)->CallFloatMethod(jnienv2, location, v->Location_getAccuracy);
+	tnow = (*jnienv2)->CallLongMethod(jnienv2, location, v->Location_getTime) / 1000;
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
@@ -201,7 +225,7 @@ static void vehicle_android_update_location_direct(jobject location)
 	v->have_coords = 1;
 
 	// remove globalref again
-	(*jnienv)->DeleteGlobalRef(jnienv, location);
+	(*jnienv2)->DeleteGlobalRef(jnienv2, location);
 
 	// ***** calls: navit.c -> navit_vehicle_update
 	// xxx stupid callback stuff -> remove me!!  xxx
@@ -225,6 +249,13 @@ static int vehicle_android_init(struct vehicle_priv *ret)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
+	int thread_id = gettid();
+	dbg(0, "THREAD ID=%d\n", thread_id);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	jmethodID cid;
 
 	//dbg(0,"priv_global_android=%p\n", priv_global_android);
@@ -250,18 +281,43 @@ static int vehicle_android_init(struct vehicle_priv *ret)
 		return 0;
 	}
 
-	//dbg(0,"jnienv=%p\n", jnienv);
+	//dbg(0,"jnienv2=%p\n", jnienv2);
 
 	//DBG dbg(0,"at 3\n");
-	cid = (*jnienv)->GetMethodID(jnienv, ret->NavitVehicleClass, "<init>", "(Landroid/content/Context;I)V");
-	if (cid == NULL)
+	//cid = (*jnienv2)->GetMethodID(jnienv2, ret->NavitVehicleClass, "<init>", "(Landroid/content/Context;I)V");
+	//if (cid == NULL)
+	//{
+	//	//DBG dbg(0,"no method found\n");
+	//	return 0;
+	//}
+
+	// --------------- Init the new Vehicle Object here -----------------
+	// --------------- Init the new Vehicle Object here -----------------
+	// --------------- Init the new Vehicle Object here -----------------
+	dbg(0,"Init the new Vehicle Object here\n");
+
+	if (NavitClass3 == NULL)
 	{
-		//DBG dbg(0,"no method found\n");
+		if (!android_find_class_global("com/zoffcc/applications/zanavi/Navit", &NavitClass3))
+		{
+			NavitClass3 = NULL;
+			return 0;
+		}
+	}
+
+	if (!find_static_method(NavitClass3, "get_vehicle_object", "()Lcom/zoffcc/applications/zanavi/NavitVehicle;", &Navit_get_vehicle))
+	{
 		return 0;
 	}
-	//DBG dbg(0,"at 4 android_activity=%p\n",android_activity);
-	ret->NavitVehicle = (*jnienv)->NewObject(jnienv, ret->NavitVehicleClass, cid, android_activity, (int) ret->cb);
-	//DBG dbg(0,"result=%p\n",ret->NavitVehicle);
+
+	/// --old-- ret->NavitVehicle = (*jnienv2)->NewObject(jnienv2, ret->NavitVehicleClass, cid, android_activity, (int) ret->cb);
+	/// --new--
+	ret->NavitVehicle = (*jnienv2)->CallStaticObjectMethod(jnienv2, NavitClass3, Navit_get_vehicle);
+	/// --new--
+	// --------------- Init the new Vehicle Object here -----------------
+	// --------------- Init the new Vehicle Object here -----------------
+	// --------------- Init the new Vehicle Object here -----------------
+
 	if (!ret->NavitVehicle)
 	{
 		return 0;
@@ -269,8 +325,10 @@ static int vehicle_android_init(struct vehicle_priv *ret)
 
 	if (ret->NavitVehicle)
 	{
-		ret->NavitVehicle = (*jnienv)->NewGlobalRef(jnienv, ret->NavitVehicle);
+		ret->NavitVehicle = (*jnienv2)->NewGlobalRef(jnienv2, ret->NavitVehicle);
 	}
+
+	dbg(0,"leave\n");
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:leave\n");

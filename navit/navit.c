@@ -121,7 +121,7 @@ static void navit_cmd_set_center_cursor(struct navit *this_);
 static void navit_cmd_announcer_toggle(struct navit *this_);
 static void navit_set_vehicle(struct navit *this_, struct navit_vehicle *nv);
 
-int allow_gui_internal = 0;
+int allow_gui_internal = 0; // disable old GUI internal. it will not work anymore!
 int routing_mode = 0;
 int MYSTERY_SPEED = 2;
 int offline_search_filter_duplicates = 0;
@@ -138,6 +138,7 @@ int global_search_street_size_factor = 1; // make search radius for streets bigg
 int disable_map_drawing = 0; // dont draw the map and dont read data from file (hopefully saving resources)
 int enable_water_from_relations = 1; // do you want to draw water where the "tags" come from osm-"relations"
 int hold_drawing = 0; // 0 -> draw normal , 1 -> dont do any drawing
+int global_stop_demo_vehicle = 0; // 0 -> demo vehicle can move, 1 -> demo vehicle stands still
 
 long long draw_lines_count_2 = 0;
 long long draw_lines_count_3 = 0;
@@ -145,6 +146,8 @@ long long draw_lines_count_4 = 0;
 
 int mapdraw_time[11 + 5]; // time to draw map on screen (in 1/1000 of a second) [add 5, just in case we inc it 2 times at same time because of threads]
 int cur_mapdraw_time_index = 0;
+
+int route_status_previous = 0;
 
 void navit_add_mapset(struct navit *this_, struct mapset *ms)
 {
@@ -222,16 +225,23 @@ void navit_draw_async(struct navit *this_, int async)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
+	//dbg(0,"DO__DRAW:ndasync enter, async=%d\n", async);
+
 	//dbg(0,"EEnter this_->blocked=%d\n",this_->blocked);
 	if (this_->blocked)
 	{
 		this_->blocked |= 2;
 		//dbg(0,"set this_->blocked=%d\n",this_->blocked);
+		// dbg(0,"DO__DRAW:ndasync return 001\n");
 		return;
 	}
 	transform_setup_source_rect(this_->trans);
 	//dbg(0,"call graphics_draw\n");
+
+	// dbg(0,"DO__DRAW:gras_draw call\n");
 	graphics_draw(this_->gra, this_->displaylist, this_->mapsets->data, this_->trans, this_->layout_current, async, NULL, this_->graphics_flags | 1);
+	// dbg(0,"DO__DRAW:ndasync leave\n");
 }
 
 void navit_draw(struct navit *this_)
@@ -240,12 +250,17 @@ void navit_draw(struct navit *this_)
 	dbg(0,"+#+:enter\n");
 #endif
 
+	// dbg(0,"DO__DRAW:nd:enter\n");
+
 	//dbg(0,"EEnter this_->ready=%d\n",this_->ready);
 	if (this_->ready == 3)
 	{
 		//dbg(0,"navit_draw_async_001\n");
+		// dbg(0,"DO__DRAW:navit_draw_async call\n");
 		navit_draw_async(this_, 0);
 	}
+
+	// dbg(0,"DO__DRAW:nd:leave\n");
 }
 
 int navit_get_ready(struct navit *this_)
@@ -257,6 +272,8 @@ int navit_get_ready(struct navit *this_)
 	return this_->ready;
 }
 
+// UNUSED -----
+// UNUSED -----
 void navit_draw_displaylist(struct navit *this_)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
@@ -309,7 +326,7 @@ static void navit_redraw_route(struct navit *this_, struct route *route, struct 
 	dbg(0,"+#+:enter\n");
 #endif
 
-	////DBG dbg(0,"EEnter\n");
+	//dbg(0,"enter\n");
 	int updated;
 
 	if ((this_->route) && (this_->route->route_status_was_updated == 1))
@@ -362,12 +379,12 @@ void navit_handle_resize(struct navit *this_, int w, int h)
 	dbg(0,"+#+:enter\n");
 #endif
 
-	dbg(0,"EEnter\n");
+	// dbg(0, "EEnter %p\n", this_);
 	struct map_selection sel;
 	int callback = (this_->ready == 1);
-	dbg(0,"pre this_->ready=%d\n",this_->ready);
+	// dbg(0, "pre this_->ready=%d\n", this_->ready);
 	this_->ready = this_->ready | 2;
-	dbg(0,"set this_->ready=%d\n",this_->ready);
+	// dbg(0, "set this_->ready=%d\n", this_->ready);
 	memset(&sel, 0, sizeof(sel));
 	this_->w = w;
 	this_->h = h;
@@ -383,10 +400,13 @@ void navit_handle_resize(struct navit *this_, int w, int h)
 	}
 	if (this_->ready == 3)
 	{
-		dbg(0,"navit_draw_async_002\n");
+		// dbg(0, "navit_draw_async_002\n");
 		// navit_draw_async(this_, 1);
+		// dbg(0,"DO__DRAW:navit_draw_async call\n");
 		navit_draw_async(this_, 0);
 	}
+
+	// dbg(0, "return\n");
 }
 
 void navit_resize(void *data, int w, int h)
@@ -491,21 +511,8 @@ void navit_set_timeout(struct navit *this_)
 #endif
 
 	// --------- DISABLE -----------
-	// --------- DISABLE -----------
-	// --------- DISABLE -----------
-	// --------- DISABLE -----------
 	return;
 	// --------- DISABLE -----------
-	// --------- DISABLE -----------
-	// --------- DISABLE -----------
-	// --------- DISABLE -----------
-
-
-	////DBG dbg(0,"EEnter\n");
-	struct attr follow;
-	follow.type = attr_follow;
-	follow.u.num = this_->center_timeout;
-	navit_set_attr(this_, &follow);
 }
 
 int navit_handle_button(struct navit *this_, int pressed, int button, struct point *p, struct callback *popup_callback)
@@ -535,9 +542,9 @@ int navit_handle_button(struct navit *this_, int pressed, int button, struct poi
 			this_->popped = 0;
 			// ---- DISBALED --------
 			/*
-			if (popup_callback)
-				this_->button_timeout = event_add_timeout(500, 0, popup_callback);
-			*/
+			 if (popup_callback)
+			 this_->button_timeout = event_add_timeout(500, 0, popup_callback);
+			 */
 		}
 		if (button == 2)
 			navit_set_center_screen(this_, p, 1);
@@ -608,17 +615,20 @@ static void navit_button(void *data, int pressed, int button, struct point *p)
 		if (!this->popup_callback)
 		{
 			this->popup_callback = callback_new_1(callback_cast(navit_popup), this);
+			callback_add_names(this->popup_callback, "navit_button", "navit_popup");
 		}
 		navit_handle_button(this, pressed, button, p, this->popup_callback);
 	}
 }
 
+// UNUSED ---
+// UNUSED ---
 static void navit_motion_timeout(struct navit *this_)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
-	////DBG dbg(0,"EEnter\n");
+	// dbg(0,"EEnter\n");
 	int dx, dy;
 
 	if (this_->drag_bitmap)
@@ -654,9 +664,9 @@ static void navit_motion_timeout(struct navit *this_)
 #if 0
 		graphics_displaylist_move(this_->displaylist, dx, dy);
 #endif
-		graphics_draw_cancel(this_->gra, this_->displaylist);
-		// //DBG dbg(0,"call graphics_displaylist_draw 1")
+		graphics_draw_cancel(this_->gra, this_->displaylist); // --> calls "do_draw" normally
 		graphics_displaylist_draw(this_->gra, this_->displaylist, tr, this_->layout_current, this_->graphics_flags);
+
 		transform_destroy(tr);
 		this_->moved = 1;
 	}
@@ -690,11 +700,11 @@ void navit_handle_motion(struct navit *this_, struct point *p)
 			// -------- DISABLE -------
 			// -------- DISABLE -------
 			/*
-			if (!this_->motion_timeout_callback)
-				this_->motion_timeout_callback = callback_new_1(callback_cast(navit_motion_timeout), this_);
-			if (!this_->motion_timeout)
-				this_->motion_timeout = event_add_timeout(100, 0, this_->motion_timeout_callback);
-			*/
+			 if (!this_->motion_timeout_callback)
+			 this_->motion_timeout_callback = callback_new_1(callback_cast(navit_motion_timeout), this_);
+			 if (!this_->motion_timeout)
+			 this_->motion_timeout = event_add_timeout(100, 0, this_->motion_timeout_callback);
+			 */
 			// -------- DISABLE -------
 			// -------- DISABLE -------
 			// -------- DISABLE -------
@@ -941,8 +951,8 @@ void navit_zoom_to_scale_with_center_point(struct navit *this_, int new_scale, s
 	//DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans);
 	long new_scale_long = new_scale;
-	dbg(0, "zoom to scale -> old scale=%d", scale);
-	dbg(0, "zoom to scale -> want scale=%d", new_scale_long);
+	// dbg(0, "zoom to scale -> old scale=%d", scale);
+	// dbg(0, "zoom to scale -> want scale=%d", new_scale_long);
 
 	// only do something if scale changed!
 	if (scale != new_scale_long)
@@ -1660,28 +1670,9 @@ static void navit_cmd_spawn(struct navit *this, char *function, struct attr **in
 	}
 }
 
-static struct command_table commands[] =
-{
-{ "zoom_in", command_cast(navit_cmd_zoom_in) },
-{ "zoom_out", command_cast(navit_cmd_zoom_out) },
-{ "zoom_to_route", command_cast(navit_cmd_zoom_to_route) },
-{ "say", command_cast(navit_cmd_say) },
-{ "set_center_cursor", command_cast(navit_cmd_set_center_cursor) },
-{ "set_destination", command_cast(navit_cmd_set_destination) },
-{ "announcer_toggle", command_cast(navit_cmd_announcer_toggle) },
-{ "fmt_coordinates", command_cast(navit_cmd_fmt_coordinates) },
-{ "set_int_var", command_cast(navit_cmd_set_int_var) },
-{ "get_int_var", command_cast(navit_cmd_get_int_var) },
-{ "push_int", command_cast(navit_cmd_push_int) },
-{ "pop_int", command_cast(navit_cmd_pop_int) },
-{ "int_stack_size", command_cast(navit_cmd_int_stack_size) },
-{ "toggle_layer", command_cast(navit_cmd_toggle_layer) },
-{ "strjoin", command_cast(navit_cmd_strjoin) },
-{ "spawn", command_cast(navit_cmd_spawn) },
-{ "map_add_curr_pos", command_cast(navit_cmd_map_add_curr_pos) },
-{ "map_item_set_attr", command_cast(navit_cmd_map_item_set_attr) },
-{ "set_attr_var", command_cast(navit_cmd_set_attr_var) },
-{ "get_attr_var", command_cast(navit_cmd_get_attr_var) }, };
+static struct command_table
+		commands[] =
+				{ { "zoom_in", command_cast(navit_cmd_zoom_in) }, { "zoom_out", command_cast(navit_cmd_zoom_out) }, { "zoom_to_route", command_cast(navit_cmd_zoom_to_route) }, { "say", command_cast(navit_cmd_say) }, { "set_center_cursor", command_cast(navit_cmd_set_center_cursor) }, { "set_destination", command_cast(navit_cmd_set_destination) }, { "announcer_toggle", command_cast(navit_cmd_announcer_toggle) }, { "fmt_coordinates", command_cast(navit_cmd_fmt_coordinates) }, { "set_int_var", command_cast(navit_cmd_set_int_var) }, { "get_int_var", command_cast(navit_cmd_get_int_var) }, { "push_int", command_cast(navit_cmd_push_int) }, { "pop_int", command_cast(navit_cmd_pop_int) }, { "int_stack_size", command_cast(navit_cmd_int_stack_size) }, { "toggle_layer", command_cast(navit_cmd_toggle_layer) }, { "strjoin", command_cast(navit_cmd_strjoin) }, { "spawn", command_cast(navit_cmd_spawn) }, { "map_add_curr_pos", command_cast(navit_cmd_map_add_curr_pos) }, { "map_item_set_attr", command_cast(navit_cmd_map_item_set_attr) }, { "set_attr_var", command_cast(navit_cmd_set_attr_var) }, { "get_attr_var", command_cast(navit_cmd_get_attr_var) }, };
 
 void navit_command_add_table(struct navit*this_, struct command_table *commands, int count)
 {
@@ -1698,7 +1689,7 @@ navit_new(struct attr *parent, struct attr **attrs)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
-	////DBG dbg(0,"EEnter\n");
+
 	struct navit *this_=g_new0(struct navit, 1);
 	struct pcoord center;
 	struct coord co;
@@ -1728,6 +1719,9 @@ navit_new(struct attr *parent, struct attr **attrs)
 	this_->follow_cursor = 1;
 	this_->radius = 30;
 	this_->border = 16;
+
+	// dbg(0, "GGGGG:set global_navit\n");
+	global_navit = this_;
 
 	this_->trans = transform_new();
 	this_->trans_cursor = transform_new();
@@ -1814,16 +1808,17 @@ static int navit_set_graphics(struct navit *this_, struct graphics *gra)
 	this_->gra = gra;
 
 	/*
-	this_->resize_callback = callback_new_attr_1(callback_cast(navit_resize), attr_resize, this_);
-	graphics_add_callback(gra, this_->resize_callback);
-	this_->button_callback = callback_new_attr_1(callback_cast(navit_button), attr_button, this_);
-	graphics_add_callback(gra, this_->button_callback);
-	this_->motion_callback = callback_new_attr_1(callback_cast(navit_motion), attr_motion, this_);
-	graphics_add_callback(gra, this_->motion_callback);
-	*/
+	 this_->resize_callback = callback_new_attr_1(callback_cast(navit_resize), attr_resize, this_);
+	 graphics_add_callback(gra, this_->resize_callback);
+	 this_->button_callback = callback_new_attr_1(callback_cast(navit_button), attr_button, this_);
+	 graphics_add_callback(gra, this_->button_callback);
+	 this_->motion_callback = callback_new_attr_1(callback_cast(navit_motion), attr_motion, this_);
+	 graphics_add_callback(gra, this_->motion_callback);
+	 */
 
 	// this draw the vehicle // very stupid
 	this_->predraw_callback = callback_new_attr_1(callback_cast(navit_predraw), attr_predraw, this_);
+	callback_add_names(this_->predraw_callback, "navit_set_graphics", "navit_predraw");
 	graphics_add_callback(gra, this_->predraw_callback);
 
 	////DBG dbg(0,"111111111\n");
@@ -2645,11 +2640,6 @@ void navit_add_all_maps(struct navit *this_)
 		}
 		g_free(map_file);
 
-
-
-
-
-
 		// gpx tracks map --------------------
 		parent.type = attr_navit;
 		parent.u.navit = this_;
@@ -2708,11 +2698,6 @@ void navit_add_all_maps(struct navit *this_)
 		}
 		g_free(map_file);
 		// traffic map --------------------
-
-
-
-
-
 
 
 		int i = 1;
@@ -2811,14 +2796,14 @@ void navit_add_all_maps(struct navit *this_)
 	 */
 
 	/*
-	struct attr parent;
-	parent.type = attr_navit;
-	parent.u.navit = global_navit;
+	 struct attr parent;
+	 parent.type = attr_navit;
+	 parent.u.navit = global_navit;
 
-	struct attr *attrs_r[2];
-	attrs_r[0] = NULL;
-	attrs_r[1] = NULL;
-	*/
+	 struct attr *attrs_r[2];
+	 attrs_r[0] = NULL;
+	 attrs_r[1] = NULL;
+	 */
 
 	//***this_->route = route_new(&parent, attrs_r);
 
@@ -2840,6 +2825,7 @@ void navit_add_all_maps(struct navit *this_)
 
 		struct attr callback;
 		this_->route_cb = callback_new_attr_1(callback_cast(navit_redraw_route), attr_route_status, this_);
+		callback_add_names(this_->route_cb, "navit_add_all_maps", "navit_redraw_route");
 		callback.type = attr_callback;
 		callback.u.callback = this_->route_cb;
 		route_add_attr(this_->route, &callback);
@@ -2885,6 +2871,9 @@ void navit_init(struct navit *this_)
 	int callback;
 	char *center_file;
 
+	// dbg(0,"GGGGG:set global_navit\n");
+	// global_navit = this_;
+
 	// default value
 	navit_maps_dir = "/sdcard/zanavi/maps/";
 
@@ -2913,9 +2902,6 @@ void navit_init(struct navit *this_)
 		struct attr attr_type_gui, attr_type_graphics;
 		gui_get_attr(this_->gui, attr_type, &attr_type_gui, NULL);
 		graphics_get_attr(this_->gra, attr_type, &attr_type_graphics, NULL);
-		//DBG dbg(0, "failed to connect graphics '%s' to gui '%s'\n", attr_type_graphics.u.str, attr_type_gui.u.str);
-		// //DBG dbg(0," Please see http://wiki.navit-project.org/index.php/Failed_to_connect_graphics_to_gui\n");
-		// //DBG dbg(0," for explanations and solutions\n");
 
 		dbg(0, "failed to connect to graphics\n");
 		navit_destroy(this_);
@@ -3028,6 +3014,7 @@ void navit_init(struct navit *this_)
 	{
 		struct attr callback;
 		this_->route_cb = callback_new_attr_1(callback_cast(navit_redraw_route), attr_route_status, this_);
+		callback_add_names(this_->route_cb, "navit_init", "navit_redraw_route");
 		callback.type = attr_callback;
 		callback.u.callback = this_->route_cb;
 		route_add_attr(this_->route, &callback);
@@ -3038,6 +3025,7 @@ void navit_init(struct navit *this_)
 		if (this_->speech)
 		{
 			this_->nav_speech_cb = callback_new_1(callback_cast(navit_speak), this_);
+			callback_add_names(this_->nav_speech_cb, "navit_init", "navit_speak");
 			navigation_register_callback(this_->navigation, attr_navigation_speech, this_->nav_speech_cb);
 		}
 
@@ -3052,6 +3040,7 @@ void navit_init(struct navit *this_)
 	//dbg(0, "g0\n");
 	bookmarks_set_center_from_file(this_->bookmarks, center_file);
 	g_free(center_file);
+
 #if 0
 	if (this_->menubar)
 	{
@@ -3062,7 +3051,7 @@ void navit_init(struct navit *this_)
 		}
 	}
 #endif
-	global_navit = this_;
+
 #if 0
 	navit_window_roadbook_new(this_);
 	navit_window_items_new(this_);
@@ -3088,7 +3077,7 @@ void navit_init(struct navit *this_)
 	//	navit_draw_async(this_, 1);
 	//}
 
-	dbg(0,"init ready=%d\n", this_->ready);
+	dbg(0, "init ready=%d\n", this_->ready);
 
 	// draw???????
 	// dbg(0,"init DRAW 11\n");
@@ -3137,6 +3126,7 @@ void navit_zoom_to_rect(struct navit *this_, struct coord_rect *r)
 	if (this_->ready == 3)
 	{
 		////DBG dbg(0,"navit_draw_async_004\n");
+		//dbg(0,"DO__DRAW:navit_draw_async call\n");
 		navit_draw_async(this_, 0);
 	}
 }
@@ -3355,7 +3345,9 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 		p->x = 50 * width / 100;
 		p->y = (50 + offset) * height / 100;
 		if (dir)
+		{
 			*dir = keep_orientation ? this_->orientation : nv->dir;
+		}
 	}
 	else
 	{
@@ -3372,7 +3364,9 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 		p->x = (50 - offset * sin(M_PI * mdir / 180.)) * width / 100;
 		p->y = (50 + offset * cos(M_PI * mdir / 180.)) * height / 100;
 		if (dir)
+		{
 			*dir = this_->orientation;
+		}
 	}
 	return 1;
 }
@@ -3390,7 +3384,9 @@ void navit_set_center_cursor(struct navit *this_, int autozoom, int keep_orienta
 	transform_set_yaw(this_->trans, dir);
 	navit_set_center_coord_screen(this_, &nv->coord, &pn, 0);
 	if (autozoom)
+	{
 		navit_autozoom(this_, &nv->coord, nv->speed, 0);
+	}
 }
 
 static void navit_set_center_cursor_draw(struct navit *this_)
@@ -3403,6 +3399,7 @@ static void navit_set_center_cursor_draw(struct navit *this_)
 	if (this_->ready == 3)
 	{
 		//dbg(0,"navit_draw_async_005\n");
+		//dbg(0,"DO__DRAW:navit_draw_async call (AS)\n");
 		navit_draw_async(this_, 1);
 	}
 }
@@ -4056,7 +4053,6 @@ void navit_remove_callback(struct navit *this_, struct callback *cb)
  * @param navit The navit instance
  * @returns nothing
  */
-
 static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, struct point *pnt)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
@@ -4068,7 +4064,10 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 	enum projection pro;
 
 	if (this_->blocked)
+	{
 		return;
+	}
+
 	if (pnt)
 	{
 		cursor_pnt = *pnt;
@@ -4077,19 +4076,22 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 	{
 		pro = transform_get_projection(this_->trans_cursor);
 		if (!pro)
+		{
 			return;
+		}
 		transform(this_->trans_cursor, pro, &nv->coord, &cursor_pnt, 1, 0, 0, NULL);
 	}
-	////DBG dbg(0,"xx=%d\n",cursor_pnt.x);
-	////DBG dbg(0,"yy=%d\n",cursor_pnt.y);
+
+	//dbg(0,"xx=%d\n",cursor_pnt.x);
+	//dbg(0,"yy=%d\n",cursor_pnt.y);
 
 	global_vehicle_pos_onscreen.x = cursor_pnt.x;
 	global_vehicle_pos_onscreen.y = cursor_pnt.y;
 
-	////DBG dbg(0,"xx=%d\n",pnt->x);
-	////DBG dbg(0,"yy=%d\n",pnt->y);
-	////DBG dbg(0,"vehicle_draw_001\n");
-	vehicle_draw(nv->vehicle, this_->gra, &cursor_pnt, pnt ? 0 : 1, nv->dir - transform_get_yaw(this_->trans_cursor), nv->speed);
+	//dbg(0,"xx=%d\n",cursor_pnt.x);
+	//dbg(0,"yy=%d\n",cursor_pnt.y);
+	//dbg(0,"vehicle_draw_001\n");
+	vehicle_draw(nv->vehicle, this_->gra, &cursor_pnt, 0, nv->dir - transform_get_yaw(this_->trans_cursor), nv->speed);
 #if 0	
 	if (pnt)
 	pnt2=*pnt;
@@ -4106,6 +4108,9 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 #endif
 }
 
+// --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
+// --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
+// --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
@@ -4119,10 +4124,13 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	struct attr attr_valid, attr_dir, attr_speed, attr_pos;
 	struct pcoord cursor_pc;
 	struct point cursor_pnt, *pnt = &cursor_pnt;
+	struct point old_cursor_pnt;
 	struct tracking *tracking = NULL;
 	struct pcoord pc[16];
 	enum projection pro = transform_get_projection(this_->trans_cursor);
 	int count;
+	int old_dir;
+	int old_pos_invalid;
 	int (*get_attr)(void *, enum attr_type, struct attr *, struct attr_iter *);
 	void *attr_object;
 	char *destination_file;
@@ -4159,22 +4167,54 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 		}
 	}
 
+	// load attrs with data from vehicle
 	if (!get_attr(attr_object, attr_position_direction, &attr_dir, NULL) || !get_attr(attr_object, attr_position_speed, &attr_speed, NULL) || !get_attr(attr_object, attr_position_coord_geo, &attr_pos, NULL))
 	{
 		return;
 	}
+	// load attrs with data from vehicle
+
+
+	// save old value
+	old_dir = nv->dir;
 
 	nv->dir = *attr_dir.u.numd;
 	nv->speed = *attr_speed.u.numd;
-	transform_from_geo(pro, attr_pos.u.coord_geo, &nv->coord);
-	if (nv != this_->vehicle)
+
+	// old values ---------
+	if ((global_last_vehicle_pos_geo.lat != 0.0) && (global_last_vehicle_pos_geo.lng != 0.0))
 	{
-		if (hold_drawing == 0)
-		{
-			navit_vehicle_draw(this_, nv, NULL);
-		}
-		return;
+		transform_from_geo(pro, &global_last_vehicle_pos_geo, &nv->coord);
+		transform(this_->trans_cursor, pro, &nv->coord, &old_cursor_pnt, 1, 0, 0, NULL);
+		old_pos_invalid = 0;
+
+		// XXX // dbg(0,"old values lat:%f lon:%f px:%d py:%d\n", global_last_vehicle_pos_geo.lat, global_last_vehicle_pos_geo.lng, old_cursor_pnt.x, old_cursor_pnt.y);
 	}
+	else
+	{
+		old_pos_invalid = 1;
+	}
+	// old values ---------
+
+
+	transform_from_geo(pro, attr_pos.u.coord_geo, &nv->coord);
+
+	// save this position
+	global_last_vehicle_pos_geo.lat = attr_pos.u.coord_geo->lat;
+	global_last_vehicle_pos_geo.lng = attr_pos.u.coord_geo->lng;
+	// save this position
+
+
+	// XXX // dbg(0,"v1 lat:%f lon:%f x:%d y:%d\n",attr_pos.u.coord_geo->lat, attr_pos.u.coord_geo->lng, nv->coord.x, nv->coord.y);
+
+	//if (nv != this_->vehicle)
+	//{
+	//	if (hold_drawing == 0)
+	//	{
+	//		navit_vehicle_draw(this_, nv, NULL);
+	//	}
+	//	return;
+	//}
 	cursor_pc.x = nv->coord.x;
 	cursor_pc.y = nv->coord.y;
 	cursor_pc.pro = pro;
@@ -4194,15 +4234,30 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 
 	// navit_textfile_debug_log(this_, "type=trackpoint_tracked");
 	/*
-	if (this_->gui && nv->speed > MYSTERY_SPEED)
-	{
-		// stupid!!!! this gets called every second!!! fixme!!!!!!
-		navit_disable_suspend();
-		// stupid!!!! this gets called every second!!! fixme!!!!!!
-	}
-	*/
+	 if (this_->gui && nv->speed > MYSTERY_SPEED)
+	 {
+	 // stupid!!!! this gets called every second!!! fixme!!!!!!
+	 navit_disable_suspend();
+	 // stupid!!!! this gets called every second!!! fixme!!!!!!
+	 }
+	 */
 
 	transform(this_->trans_cursor, pro, &nv->coord, &cursor_pnt, 1, 0, 0, NULL);
+	// XXX // dbg(0,"v2 px:%d py:%d x:%d y:%d\n", cursor_pnt.x, cursor_pnt.y, nv->coord.x, nv->coord.y);
+
+
+	if (old_pos_invalid == 0)
+	{
+		int delta_x = cursor_pnt.x - old_cursor_pnt.x;
+		int delta_y = cursor_pnt.y - old_cursor_pnt.y;
+		int delta_angle = nv->dir - old_dir;
+
+#ifdef HAVE_API_ANDROID
+		//dbg(0,"delta x=%d, y=%d, angle=%d\n", delta_x, delta_y, delta_angle);
+		set_vehicle_values_to_java_delta(delta_x, delta_y, delta_angle);
+#endif
+	}
+
 	if (this_->button_pressed != 1 && this_->follow_cursor && nv->follow_curr <= nv->follow && (nv->follow_curr == 1 || !transform_within_border(this_->trans_cursor, &cursor_pnt, this_->border)))
 	{
 		if (hold_drawing == 0)
@@ -4291,6 +4346,10 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	dbg(0,"+#+:leave\n");
 #endif
 }
+// --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
+// --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
+// --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
+
 
 /**
  * Set the position of the vehicle
@@ -4299,7 +4358,6 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
  * @param c The coordinate to set as position
  * @returns nothing
  */
-
 void navit_set_position(struct navit *this_, struct pcoord *c)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
@@ -4400,6 +4458,10 @@ int navit_add_vehicle(struct navit *this_, struct vehicle *v)
 	nv->follow = 0;
 	nv->last.x = 0;
 	nv->last.y = 0;
+
+	global_last_vehicle_pos_geo.lat = 0;
+	global_last_vehicle_pos_geo.lng = 0;
+
 	nv->animate_cursor = 0;
 	if ((vehicle_get_attr(v, attr_follow, &follow, NULL)))
 		nv->follow = follow.u.num;
@@ -4413,6 +4475,7 @@ int navit_add_vehicle(struct navit *this_, struct vehicle *v)
 
 	// gets called via this callback in vehicle_android.c [in function: vehicle_android_callback]
 	nv->callback.u.callback = callback_new_attr_2(callback_cast(navit_vehicle_update), attr_position_coord_geo, this_, nv);
+	callback_add_names(nv->callback.u.callback, "navit_add_vehicle", "navit_vehicle_update");
 
 	//dbg(0,"EEnter 11\n");
 	vehicle_add_attr(nv->vehicle, &nv->callback);
@@ -4651,7 +4714,6 @@ void navit_disable_suspend()
 	callback_list_call_attr_0(global_navit->attr_cbl, attr_unsuspend);
 }
 
-
 /**
  * @brief Dumps item attrs to string
  *
@@ -4756,30 +4818,29 @@ char* navit_item_dump(struct item *item, int pretty)
 	return ret_value;
 }
 
-
 int navit_normal_item(enum item_type type)
 {
-	if ((type > type_none)&&(type < type_waypoint))
+	if ((type > type_none) && (type < type_waypoint))
 	{
 		return 1;
 	}
-	else if ((type >= type_poi_land_feature)&&(type <= type_poi_zoo))
+	else if ((type >= type_poi_land_feature) && (type <= type_poi_zoo))
 	{
 		return 1;
 	}
-	else if ((type >= type_traffic_signals)&&(type <= type_poi_cafe))
+	else if ((type >= type_traffic_signals) && (type <= type_poi_cafe))
 	{
 		return 1;
 	}
-	else if ((type >= type_poi_peak)&&(type <= type_poi_ruins))
+	else if ((type >= type_poi_peak) && (type <= type_poi_ruins))
 	{
 		return 1;
 	}
-	else if ((type >= type_poi_post_box)&&(type <= type_house_number))
+	else if ((type >= type_poi_post_box) && (type <= type_house_number))
 	{
 		return 1;
 	}
-	else if ((type >= type_poi_playground)&&(type <= type_poi_shop_photo))
+	else if ((type >= type_poi_playground) && (type <= type_poi_shop_photo))
 	{
 		return 1;
 	}
@@ -4787,7 +4848,7 @@ int navit_normal_item(enum item_type type)
 	{
 		return 1;
 	}
-	else if ((type >= type_line)&&(type <= type_ferry))
+	else if ((type >= type_line) && (type <= type_ferry))
 	{
 		return 1;
 	}
@@ -4795,35 +4856,35 @@ int navit_normal_item(enum item_type type)
 	{
 		return 1;
 	}
-	else if ((type >= type_aeroway_runway)&&(type <= type_footway_and_piste_nordic))
+	else if ((type >= type_aeroway_runway) && (type <= type_footway_and_piste_nordic))
 	{
 		return 1;
 	}
-	else if ((type >= type_house_number_interpolation_even)&&(type <= type_city_wall))
+	else if ((type >= type_house_number_interpolation_even) && (type <= type_city_wall))
 	{
 		return 1;
 	}
-	else if ((type >= type_border_city)&&(type <= type_border_county))
+	else if ((type >= type_border_city) && (type <= type_border_county))
 	{
 		return 1;
 	}
-	else if ((type >= type_forest_way_1)&&(type <= type_forest_way_4))
+	else if ((type >= type_forest_way_1) && (type <= type_forest_way_4))
 	{
 		return 1;
 	}
-	else if ((type >= type_area)&&(type <= type_poly_museum))
+	else if ((type >= type_area) && (type <= type_poly_museum))
 	{
 		return 1;
 	}
-	else if ((type >= type_poly_commercial_center)&&(type <= type_tundra))
+	else if ((type >= type_poly_commercial_center) && (type <= type_tundra))
 	{
 		return 1;
 	}
-	else if ((type >= type_poly_building)&&(type <= type_poly_terminal))
+	else if ((type >= type_poly_building) && (type <= type_poly_terminal))
 	{
 		return 1;
 	}
-	else if ((type >= type_poly_sports_centre)&&(type <= type_poly_aeroway_runway))
+	else if ((type >= type_poly_sports_centre) && (type <= type_poly_aeroway_runway))
 	{
 		return 1;
 	}
@@ -4910,7 +4971,7 @@ char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pre
 						{
 							g_free(ret_str);
 						}
-						ret_str=navit_item_dump(item, pretty);
+						ret_str = navit_item_dump(item, pretty);
 					}
 				}
 				else
@@ -4923,7 +4984,7 @@ char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pre
 						{
 							g_free(ret_str);
 						}
-						ret_str=navit_item_dump(item, pretty);
+						ret_str = navit_item_dump(item, pretty);
 					}
 				}
 				// dbg(0,"*end\n");
@@ -4945,10 +5006,6 @@ char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pre
 
 	return ret_str;
 }
-
-
-
-
 
 /**
  * @brief Finds the nearest street to a given coordinate
@@ -5088,8 +5145,6 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 	return street_name;
 }
 
-
-
 /**
  * @brief Finds the nearest street or housenumber to a given coordinate
  *
@@ -5128,7 +5183,7 @@ navit_find_nearest_street_hn(struct mapset *ms, struct pcoord *pc)
 	// first find a street
 
 	mindist = dist_to_street; // start with small radius at the beginning! (only use housenumber of different street, if we are really close to it!!)
-							  // global value -> this is naughty :-)
+	// global value -> this is naughty :-)
 
 	if (mindist < 8)
 	{
@@ -5238,10 +5293,10 @@ navit_find_nearest_street_hn(struct mapset *ms, struct pcoord *pc)
 				}
 			}
 
-
 #if 0
 			//else if (item->type > type_line)
 			if (1 == 0) // DISABLED !!!!!!
+
 			{
 				if (item_get_default_flags(item->type))
 				{
@@ -5322,7 +5377,6 @@ navit_find_nearest_street_hn(struct mapset *ms, struct pcoord *pc)
 	mapset_close(h);
 	return street_name;
 }
-
 
 /**
  * @brief Finds the nearest street to a given coordinate
@@ -5408,19 +5462,19 @@ navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 					mindist = dist;
 
 					/*
-					if (item_attr_get(item, attr_label, &street_name_attr))
-					{
-						found_good = 1;
-					}
-					else if (item_attr_get(item, attr_street_name, &street_name_attr))
-					{
-						found_good = 1;
-					}
-					else if (item_attr_get(item, attr_street_name_systematic, &street_name_attr))
-					{
-						found_good = 1;
-					}
-					*/
+					 if (item_attr_get(item, attr_label, &street_name_attr))
+					 {
+					 found_good = 1;
+					 }
+					 else if (item_attr_get(item, attr_street_name, &street_name_attr))
+					 {
+					 found_good = 1;
+					 }
+					 else if (item_attr_get(item, attr_street_name_systematic, &street_name_attr))
+					 {
+					 found_good = 1;
+					 }
+					 */
 
 					// allow any street/line, so you can select streets without name also!
 					found_good = 1;
@@ -5455,24 +5509,24 @@ navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 		for (i = 0; i < sd_copy->count; i++)
 		{
 			/*
-			unsigned int x;
-			unsigned int y;
-			char *sign_x = "";
-			char *sign_y = "";
-	
-			if ( c->x < 0 ) {
-				x = -c->x;
-				sign_x = "-";
-			} else {
-				x = c->x;
-			}
-			if ( c->y < 0 ) {
-				y = -c->y;
-				sign_y = "-";
-			} else {
-				y = c->y;
-			}
-			*/
+			 unsigned int x;
+			 unsigned int y;
+			 char *sign_x = "";
+			 char *sign_y = "";
+
+			 if ( c->x < 0 ) {
+			 x = -c->x;
+			 sign_x = "-";
+			 } else {
+			 x = c->x;
+			 }
+			 if ( c->y < 0 ) {
+			 y = -c->y;
+			 sign_y = "-";
+			 } else {
+			 y = c->y;
+			 }
+			 */
 
 			street_coords_tmp = street_coords;
 			if (street_coords == NULL)
@@ -5494,7 +5548,8 @@ navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 	return street_coords;
 }
 
-
+// UNUSDED -------
+// UNUSDED -------
 int navit_block(struct navit *this_, int block)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
@@ -5538,16 +5593,16 @@ void navit_destroy(struct navit *this_)
 	}
 
 	/*
-	if (this_->bookmarks)
-	{
-		dbg(0, "save position to file\n");
-		char *center_file = bookmarks_get_center_file(TRUE);
-		bookmarks_write_center_to_file(this_->bookmarks, center_file);
-		g_free(center_file);
-		bookmarks_destroy(this_->bookmarks);
-		dbg(0, "save position to file -> ready\n");
-	}
-	*/
+	 if (this_->bookmarks)
+	 {
+	 dbg(0, "save position to file\n");
+	 char *center_file = bookmarks_get_center_file(TRUE);
+	 bookmarks_write_center_to_file(this_->bookmarks, center_file);
+	 g_free(center_file);
+	 bookmarks_destroy(this_->bookmarks);
+	 dbg(0, "save position to file -> ready\n");
+	 }
+	 */
 
 	dbg(0, "ex 001\n");
 	callback_destroy(this_->nav_speech_cb);
@@ -5561,22 +5616,22 @@ void navit_destroy(struct navit *this_)
 	callback_destroy(this_->progress_cb);
 	dbg(0, "ex 006\n");
 	/*
-	if (this_->gra)
-		graphics_remove_callback(this_->gra, this_->resize_callback);
-	callback_destroy(this_->resize_callback);
-	*/
+	 if (this_->gra)
+	 graphics_remove_callback(this_->gra, this_->resize_callback);
+	 callback_destroy(this_->resize_callback);
+	 */
 	dbg(0, "ex 007\n");
 	/*
-	if (this_->gra)
-		graphics_remove_callback(this_->gra, this_->button_callback);
-	callback_destroy(this_->button_callback);
-	*/
+	 if (this_->gra)
+	 graphics_remove_callback(this_->gra, this_->button_callback);
+	 callback_destroy(this_->button_callback);
+	 */
 	dbg(0, "ex 008\n");
 	/*
-	if (this_->gra)
-		graphics_remove_callback(this_->gra, this_->motion_callback);
-	callback_destroy(this_->motion_callback);
-	*/
+	 if (this_->gra)
+	 graphics_remove_callback(this_->gra, this_->motion_callback);
+	 callback_destroy(this_->motion_callback);
+	 */
 	dbg(0, "ex 009\n");
 	if (this_->gra)
 	{

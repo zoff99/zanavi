@@ -83,6 +83,8 @@ vehicleprofile_set_attr_do(struct vehicleprofile *this_, struct attr *attr)
 struct vehicleprofile *
 vehicleprofile_new(struct attr *parent, struct attr **attrs)
 {
+	dbg(0,"EEnter\n");
+
 	struct vehicleprofile *this_;
 	struct attr **attr, *type_attr;
 	if (! (type_attr=attr_search(attrs, NULL, attr_name))) {
@@ -98,7 +100,11 @@ vehicleprofile_new(struct attr *parent, struct attr **attrs)
 	this_->axle_weight=-1;
 	this_->through_traffic_penalty=9000;
 	for (attr=attrs;*attr; attr++)
+	{
 		vehicleprofile_set_attr_do(this_, *attr);
+	}
+
+	dbg(0,"return\n");
 	return this_;
 }
 

@@ -103,6 +103,7 @@ public class NavitAndroidOverlay extends ImageView
 				{
 					//Log.e("Navit", "BubbleThread: bubble displaying too long, hide it");
 					// with invalidate we call the onDraw() function, that will take care of it
+					//System.out.println("invalidate 001");
 					this.a_overlay.postInvalidate();
 					this.running = false;
 				}
@@ -110,7 +111,7 @@ public class NavitAndroidOverlay extends ImageView
 				{
 					try
 					{
-						Thread.sleep(50);
+						Thread.sleep(280);
 					}
 					catch (InterruptedException e)
 					{
@@ -138,7 +139,7 @@ public class NavitAndroidOverlay extends ImageView
 
 	public void show_bubble()
 	{
-		//Log.e("Navit", "NavitAndroidOverlay -> show_bubble");
+		//System.out.println("NavitAndroidOverlay -> show_bubble");
 		if (!this.draw_bubble)
 		{
 			confirmed_bubble = false;
@@ -237,6 +238,7 @@ public class NavitAndroidOverlay extends ImageView
 					confirmed_bubble = true;
 					confirmed_bubble_part = 0;
 					// draw confirmed bubble
+					//System.out.println("invalidate 002");
 					this.postInvalidate();
 					String dest_name = "Point on Screen";
 
@@ -298,6 +300,7 @@ public class NavitAndroidOverlay extends ImageView
 					confirmed_bubble = true;
 					confirmed_bubble_part = 1;
 					// draw confirmed bubble
+					//System.out.println("invalidate 003");
 					this.postInvalidate();
 
 					// whats here?
@@ -376,6 +379,7 @@ public class NavitAndroidOverlay extends ImageView
 				{
 					// toggle follow mode
 					Navit.toggle_follow_button();
+					//System.out.println("invalidate 004");
 					this.postInvalidate();
 					// consume the event
 					return true;
@@ -425,14 +429,14 @@ public class NavitAndroidOverlay extends ImageView
 					{
 						if (overlay_draw_thread1 == null)
 						{
-							overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
-							overlay_draw_thread1.start();
+							//overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
+							//overlay_draw_thread1.start();
 						}
 					}
 					catch (Exception e)
 					{
-						overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
-						overlay_draw_thread1.start();
+						//overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
+						//overlay_draw_thread1.start();
 					}
 
 					//					System.out.println("ZZZZZZZZ O.11");
@@ -455,6 +459,7 @@ public class NavitAndroidOverlay extends ImageView
 					//						}
 					//					}
 					NavitGraphics.wait_for_redraw_map = true;
+					//System.out.println("invalidate 005");
 					this.invalidate();
 					//System.out.println("wait_for_redraw_map=true o1");
 					//Log.e("NavitGraphics", "wait_for_redraw_map=true o1");
@@ -484,14 +489,14 @@ public class NavitAndroidOverlay extends ImageView
 					{
 						if (overlay_draw_thread1 == null)
 						{
-							overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
-							overlay_draw_thread1.start();
+							//overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
+							//overlay_draw_thread1.start();
 						}
 					}
 					catch (Exception e)
 					{
-						overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
-						overlay_draw_thread1.start();
+						//overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
+						//overlay_draw_thread1.start();
 					}
 
 					//					System.out.println("ZZZZZZZZ O.22");
@@ -517,6 +522,7 @@ public class NavitAndroidOverlay extends ImageView
 					try
 					{
 						NavitGraphics.wait_for_redraw_map = true;
+						//System.out.println("invalidate 006");
 						this.invalidate();
 						//System.out.println("wait_for_redraw_map=true o2");
 						//Log.e("NavitGraphics", "wait_for_redraw_map=true o2");
@@ -543,14 +549,14 @@ public class NavitAndroidOverlay extends ImageView
 				{
 					if (overlay_draw_thread1 == null)
 					{
-						overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
-						overlay_draw_thread1.start();
+						//overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
+						//overlay_draw_thread1.start();
 					}
 				}
 				catch (Exception e)
 				{
-					overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
-					overlay_draw_thread1.start();
+					//overlay_draw_thread1 = new NavitGraphics.OverlayDrawThread();
+					//overlay_draw_thread1.start();
 				}
 			}
 		}
@@ -819,24 +825,24 @@ public class NavitAndroidOverlay extends ImageView
 		if (NavitGraphics.in_map)
 		{
 			//Log.e("NavitGraphics", "NavitAndroidOverlay -> draw2");
-			if (NavitGraphics.wait_for_redraw_map)
-			{
-				//Log.e("NavitGraphics", "NavitAndroidOverlay -> draw wait rect");
-				Paint paint = new Paint(0);
-				paint.setAntiAlias(true);
-				paint.setStyle(Style.FILL);
-				paint.setColor(Color.LTGRAY);
-				paint.setAlpha(70);
-
-				RectF r1 = new RectF(20 * draw_factor, 20 * draw_factor, this.mCanvasWidth - 20 * draw_factor, this.mCanvasHeight - 20 * draw_factor);
-				c.drawRoundRect(r1, 20, 20, paint);
-				paint.setColor(Color.parseColor("#888888"));
-				paint.setAlpha(230);
-				paint.setTextAlign(Paint.Align.CENTER);
-				paint.setStrokeWidth(2);
-				paint.setTextSize(30);
-				c.drawText(Navit.get_text("wait ..."), this.mCanvasWidth / 2, this.mCanvasHeight / 2, paint); //TRANS
-			}
+			//if (NavitGraphics.wait_for_redraw_map)
+			//{
+			//	//Log.e("NavitGraphics", "NavitAndroidOverlay -> draw wait rect");
+			//	Paint paint = new Paint(0);
+			//	paint.setAntiAlias(true);
+			//	paint.setStyle(Style.FILL);
+			//	paint.setColor(Color.LTGRAY);
+			//	paint.setAlpha(70);
+			//
+			//	RectF r1 = new RectF(20 * draw_factor, 20 * draw_factor, this.mCanvasWidth - 20 * draw_factor, this.mCanvasHeight - 20 * draw_factor);
+			//	c.drawRoundRect(r1, 20, 20, paint);
+			//	paint.setColor(Color.parseColor("#888888"));
+			//	paint.setAlpha(230);
+			//	paint.setTextAlign(Paint.Align.CENTER);
+			//	paint.setStrokeWidth(2);
+			//	paint.setTextSize(30);
+			//	c.drawText(Navit.get_text("wait ..."), this.mCanvasWidth / 2, this.mCanvasHeight / 2, paint); //TRANS
+			//}
 		}
 
 		if (Navit.PREF_item_dump)

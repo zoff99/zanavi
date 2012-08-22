@@ -62,67 +62,7 @@
         <xsl:template match="/config/navit/layout[1]">
 <layout name="Android-Car" color="#fef9ee" font="Liberation Sans">
 		<xsl:text>&#x0A;        </xsl:text>
-        <cursor w="{round(30*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" h="{round(32*number($CAR_FACTOR_)*number($OSD_FACTOR_))}">
-		<xsl:text>&#x0A;        </xsl:text>
-                <itemgra speed_range="-2">
-                        <polyline color="#00BC00" radius="{round(0*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" width="{round(3*number($CAR_FACTOR_)*number($OSD_FACTOR_))}">
-                                <coord x="0" y="0"/>
-                        </polyline>
-                        <circle color="#008500" radius="{round(6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" width="{round(2*number($CAR_FACTOR_)*number($OSD_FACTOR_))}">
-                                <coord x="0" y="0"/>
-                        </circle>
-                        <circle color="#00BC00" radius="{round(9*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" width="{round(2*number($CAR_FACTOR_)*number($OSD_FACTOR_))}">
-                                <coord x="0" y="0"/>
-                        </circle>
-                        <circle color="#008500" radius="{round(13*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" width="{round(2*number($CAR_FACTOR_)*number($OSD_FACTOR_))}">
-                                <coord x="0" y="0"/>
-                        </circle>
-                </itemgra>
-		<xsl:text>&#x0A;        </xsl:text>
-				<itemgra speed_range="3-">
-					<polygon color="#00000066"><!-- shadow color , alpha 0x66-->
-						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(13.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(-13*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
-						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-					</polygon>
-		<xsl:text>&#x0A;        </xsl:text>
-					<polygon color="#00000066"><!-- shadow color , alpha 0x66 -->
-						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(13.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(-13*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
-						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-14.6*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-					</polygon>
-		<xsl:text>&#x0A;        </xsl:text>
-					<polygon color="#008500">
-						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
-						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-					</polygon>
-		<xsl:text>&#x0A;        </xsl:text>
-					<polygon color="#00BC00"><!-- light color -->
-						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
-						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-					</polygon>
-		<xsl:text>&#x0A;        </xsl:text>
-					<polyline color="#008500" width="2">
-						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
-						<coord x="{round(-14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-					</polyline>
-		<xsl:text>&#x0A;        </xsl:text>
-					<polyline color="#008500" width="2">
-						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-						<coord x="0" y="{round(-10.4*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" /><!-- point in middle -->
-						<coord x="{round(14*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" y="{round(-12*number($CAR_FACTOR_)*number($OSD_FACTOR_))}" />
-					</polyline>
-				</itemgra>
-
+        <cursor w="50" h="50">
 		<xsl:text>&#x0A;        </xsl:text>
         </cursor>
 		<xsl:text>&#x0A;        </xsl:text>
@@ -545,15 +485,15 @@
 					<polyline color="#000000" width="1"/>
 				</itemgra>
 				<itemgra item_types="track_gravelled" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ffffff" width="4" dash="5"/>
+					<polyline color="#ffffff" width="4"/>
 					<polyline color="#800000" width="2" dash="5"/>
 				</itemgra>
 				<itemgra item_types="track_gravelled" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ffffff" width="5" dash="5"/>
+					<polyline color="#ffffff" width="5"/>
 					<polyline color="#800000" width="3" dash="5"/>
 				</itemgra>
 				<itemgra item_types="track_gravelled" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#ffffff" width="7" dash="5"/>
+					<polyline color="#ffffff" width="7"/>
 					<polyline color="#800000" width="5" dash="5"/>
 				</itemgra>
 				<itemgra item_types="track_unpaved" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
@@ -567,11 +507,11 @@
 					<polyline color="#0000ff" width="1" dash="6"/>
 				</itemgra>
 				<itemgra item_types="cycleway" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ffffff" width="5" dash="6"/>
+					<polyline color="#ffffff" width="5"/>
 					<polyline color="#0000ff" width="3" dash="6"/>
 				</itemgra>
 				<itemgra item_types="cycleway" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#ffffff" width="7" dash="6"/>
+					<polyline color="#ffffff" width="7"/>
 					<polyline color="#0000ff" width="5" dash="6"/>
 				</itemgra>
 
@@ -587,33 +527,34 @@
 
 
 				<itemgra item_types="footway" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ffffff" width="5" dash="6"/>
+					<polyline color="#ffffff" width="5"/>
 					<polyline color="#ff0000" width="3" dash="6"/>
 				</itemgra>
 				<itemgra item_types="footway" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#ffffff" width="7" dash="6"/>
+					<polyline color="#ffffff" width="7"/>
 					<polyline color="#ff0000" width="5" dash="6"/>
 				</itemgra>
 
 
 				<itemgra item_types="path" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ffffff" width="5" dash="6"/>
-					<polyline color="#ff0000" width="3" dash="6"/>
+					<polyline color="#ffffff" width="5"/>
+					<polyline color="#660000" width="3" dash="6"/>
 				</itemgra>
 				<itemgra item_types="path" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#ffffff" width="7" dash="6"/>
-					<polyline color="#ff0000" width="5" dash="6"/>
+					<polyline color="#ffffff" width="7"/>
+					<polyline color="#660000" width="5" dash="6"/>
 				</itemgra>
 
 				<itemgra item_types="steps" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
-					<polyline color="#ffffff" width="9" dash="7"/>
-					<polyline color="#ff0000" width="7" dash="7"/>
+					<polyline color="#ffffff" width="11"/>
+					<polyline color="#000000" width="8"/>
+					<polyline color="#ff0000" width="5" dash="7"/>
 				</itemgra>
 				<itemgra item_types="steps" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<polyline color="#ffffff" width="11" dash="7"/>
-					<polyline color="#ff0000" width="9" dash="7"/>
+					<polyline color="#ffffff" width="13"/>
+					<polyline color="#000000" width="10"/>
+					<polyline color="#ff0000" width="7" dash="7"/>
 				</itemgra>
-
 
 				<itemgra item_types="street_pedestrian,living_street" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="13"/>

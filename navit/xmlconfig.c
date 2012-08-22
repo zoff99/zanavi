@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2009 Navit Team
  *
@@ -1084,6 +1103,8 @@ static const GMarkupParser parser =
 static gboolean
 parse_file(struct xmldocument *document, xmlerror **error)
 {
+	//dbg(0,"EEnter\n");
+
 	GMarkupParseContext *context;
 	gchar *contents, *message;
 	gsize len;
@@ -1095,11 +1116,12 @@ parse_file(struct xmldocument *document, xmlerror **error)
 #if GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 12
 #define G_MARKUP_TREAT_CDATA_AS_TEXT 0
 #endif
-	context = g_markup_parse_context_new (&parser, G_MARKUP_TREAT_CDATA_AS_TEXT, document, NULL);
 
-	if (!g_file_get_contents (document->href, &contents, &len, error))
+	context = g_markup_parse_context_new(&parser, G_MARKUP_TREAT_CDATA_AS_TEXT, document, NULL);
+
+	if (!g_file_get_contents(document->href, &contents, &len, error))
 	{
-		g_markup_parse_context_free (context);
+		g_markup_parse_context_free(context);
 		return FALSE;
 	}
 	xmldir=getenv("XMLDIR");
@@ -1118,7 +1140,7 @@ parse_file(struct xmldocument *document, xmlerror **error)
 	document->active=document->xpointer ? 0:1;
 	document->first=NULL;
 	document->last=NULL;
-	result = g_markup_parse_context_parse (context, contents, len, error);
+	result = g_markup_parse_context_parse(context, contents, len, error);
 	if (!result && error && *error)
 	{
 		g_markup_parse_context_get_position(context, &line, &chr);
@@ -1126,7 +1148,7 @@ parse_file(struct xmldocument *document, xmlerror **error)
 		g_free((*error)->message);
 		(*error)->message=message;
 	}
-	g_markup_parse_context_free (context);
+	g_markup_parse_context_free(context);
 	g_free (contents);
 	if (xmldir)
 	setenv("XMLDIR",xmldir,1);
@@ -1151,26 +1173,49 @@ parse_file(struct xmldocument *document, xmlerror **error)
 	return result;
 }
 #else
+
+// this is used on android!!!!
+// this is used on android!!!!
+// this is used on android!!!!
 static void parse_node(struct xmldocument *document, ezxml_t node)
 {
+
+	//dbg(0,"EEnter\n");
+
 	while (node)
 	{
+		//dbg(0,"name:%s\n", node->name);
+
 		xi_start_element(NULL, node->name, node->attr, node->attr + 1, document, NULL);
 		if (node->txt)
 		{
+			//dbg(0," txt:start\n");
 			xi_text(NULL, node->txt, strlen(node->txt), document, NULL);
+			//dbg(0," txt:end\n");
 		}
+
 		if (node->child)
 		{
 			parse_node(document, node->child);
 		}
+
 		xi_end_element(NULL, node->name, document, NULL);
 		node = node->ordered;
 	}
 }
 
+
+
+
+
+// this is used on android!!!!
+// this is used on android!!!!
+// this is used on android!!!!
+// this is used on android!!!!
 static gboolean parse_file(struct xmldocument *document, xmlerror **error)
 {
+	//dbg(0,"EEnter 2\n");
+
 	FILE *f;
 	ezxml_t root;
 

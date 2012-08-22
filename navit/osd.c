@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -103,6 +122,7 @@ osd_evaluate_command(struct osd_item *this, struct navit *nav)
 void
 osd_std_click(struct osd_item *this, struct navit *nav, int pressed, int button, struct point *p)
 {
+	/*
 	struct point bp = this->p;
 	if (!this->command || !this->command[0])
 		return;
@@ -118,17 +138,19 @@ osd_std_click(struct osd_item *this, struct navit *nav, int pressed, int button,
 	this->pressed = pressed;
 	if (pressed && this->command) 
 		osd_evaluate_command(this, nav);
+	*/
 }
 
 void
 osd_std_resize(struct osd_item *item)
 {
- 	graphics_overlay_resize(item->gr, &item->p, item->w, item->h, 65535, 1);
+ 	// graphics_overlay_resize(item->gr, &item->p, item->w, item->h, 65535, 1);
 }
  
 static void
 osd_std_calculate_sizes(struct osd_item *item, struct osd_priv *priv, int w, int h) 
 {
+	/*
 	struct attr vehicle_attr;
 
  	if (item->rel_w) {
@@ -153,6 +175,7 @@ osd_std_calculate_sizes(struct osd_item *item, struct osd_priv *priv, int w, int
 			item->meth.draw(priv, item->navit, vehicle_attr.u.vehicle);
 		}
 	}
+	*/
 }
 
 static void
@@ -175,11 +198,13 @@ osd_std_keypress(struct osd_item *item, struct navit *nav, char *key)
 static void
 osd_std_reconfigure(struct osd_item *item, struct command_saved *cs)
 {
+	/*
 	if (!command_saved_error(cs)) {
 		graphics_overlay_disable(item->gr, !command_saved_get_int(cs));
 	} else {
 		dbg(0, "Error in saved command: %i\n", command_saved_error(cs));
 	}
+	*/
 }
 
 void
@@ -301,14 +326,16 @@ osd_std_config(struct osd_item *item, struct navit *navit)
 			attr.u.num=-1;
 		item->configured = !!(attr.u.num & item->osd_configuration);
 	}
-	if (item->gr && !(item->flags & 16)) 
-		graphics_overlay_disable(item->gr, !item->configured);
+
+	//if (item->gr && !(item->flags & 16)) 
+	//	graphics_overlay_disable(item->gr, !item->configured);
 }
 
 void
 osd_set_std_config(struct navit *nav, struct osd_item *item)
 {
 	item->cb = callback_new_attr_2(callback_cast(osd_std_config), attr_osd_configuration, item, nav);
+	callback_add_names(item->cb, "osd_set_std_config", "osd_std_config");
 	navit_add_callback(nav, item->cb);
 	osd_std_config(item, nav);
 }
@@ -316,39 +343,44 @@ osd_set_std_config(struct navit *nav, struct osd_item *item)
 void
 osd_set_std_graphic(struct navit *nav, struct osd_item *item, struct osd_priv *priv)
 {
-	struct graphics *navit_gr;
+	// struct graphics *navit_gr;
 
-	navit_gr = navit_get_graphics(nav);
-	item->gr = graphics_overlay_new(navit_gr, &item->p, item->w, item->h, 65535, 1);
+	// navit_gr = navit_get_graphics(nav);
+	item->gr = NULL;
+	// DISABLE OVERLAYS // graphics_overlay_new(navit_gr, &item->p, item->w, item->h, 65535, 1);
 
-	item->graphic_bg = graphics_gc_new(item->gr);
-	graphics_gc_set_foreground(item->graphic_bg, &item->color_bg);
-	graphics_background_gc(item->gr, item->graphic_bg);
+	// item->graphic_bg = graphics_gc_new(item->gr);
+	// graphics_gc_set_foreground(item->graphic_bg, &item->color_bg);
+	// graphics_background_gc(item->gr, item->graphic_bg);
 
-	item->graphic_fg_white = graphics_gc_new(item->gr);
-	graphics_gc_set_foreground(item->graphic_fg_white, &item->color_white);
+	// item->graphic_fg_white = graphics_gc_new(item->gr);
+	// graphics_gc_set_foreground(item->graphic_fg_white, &item->color_white);
 
-	if (item->flags & 2) {
-		item->font = graphics_named_font_new(item->gr, item->font_name, item->font_size, 1);
-		item->graphic_fg_text = graphics_gc_new(item->gr);
-		graphics_gc_set_foreground(item->graphic_fg_text, &item->text_color);
-	}
+	// if (item->flags & 2) {
+	// 	item->font = graphics_named_font_new(item->gr, item->font_name, item->font_size, 1);
+	// 	item->graphic_fg_text = graphics_gc_new(item->gr);
+	// 	graphics_gc_set_foreground(item->graphic_fg_text, &item->text_color);
+	// }
 
 	osd_set_std_config(nav, item);
 
 	item->resize_cb = callback_new_attr_2(callback_cast(osd_std_calculate_sizes), attr_resize, item, priv);
-	graphics_add_callback(navit_gr, item->resize_cb);
+	callback_add_names(item->resize_cb, "osd_set_std_graphic", "osd_std_calculate_sizes");
+
+	// graphics_add_callback(navit_gr, item->resize_cb);
 	dbg(0,"accesskey %s\n",item->accesskey);
-	if (item->accesskey) {
-		item->keypress_cb=callback_new_attr_2(callback_cast(osd_std_keypress), attr_keypress, item, nav);
-		graphics_add_callback(navit_gr, item->keypress_cb);
-	}
+	// if (item->accesskey) {
+	// 	item->keypress_cb=callback_new_attr_2(callback_cast(osd_std_keypress), attr_keypress, item, nav);
+	// 	graphics_add_callback(navit_gr, item->keypress_cb);
+	// }
 
 }
 
 void
 osd_std_draw(struct osd_item *item)
 {
+	/*
+
 	struct point p[2];
 	int flags=item->attr_flags;
 
@@ -372,4 +404,7 @@ osd_std_draw(struct osd_item *item)
 	p[0].y=0;
 	if (flags & 8) 
 		graphics_draw_lines(item->gr, item->graphic_fg_text, p, 2);
+
+	*/
 }
+

@@ -50,6 +50,7 @@
 #include "util.h"
 #include "event.h"
 #include "coord.h"
+#include "navit.h"
 #include "transform.h"
 #include "projection.h"
 #include "point.h"
@@ -58,6 +59,10 @@
 #include "color.h"
 #include "layout.h"
 #include "vehicle.h"
+
+// forward rev
+struct navit *global_navit;
+
 
 struct vehicle
 {
@@ -288,7 +293,7 @@ int vehicle_set_attr(struct vehicle *this_, struct attr *attr)
 
 	if (ret == 1 && attr->type != attr_navit && attr->type != attr_pdl_gps_update)
 	{
-		dbg(0,"xx 3\n");
+		//dbg(0,"xx 3\n");
 		this_->attrs = attr_generic_set_attr(this_->attrs, attr);
 	}
 
@@ -391,6 +396,8 @@ void vehicle_set_cursor(struct vehicle *this_, struct cursor *cursor, int overwr
 	{
 		return;
 	}
+
+#if 0
 	if (this_->animate_callback)
 	{
 		event_remove_timeout(this_->animate_timer);
@@ -398,10 +405,11 @@ void vehicle_set_cursor(struct vehicle *this_, struct cursor *cursor, int overwr
 		callback_destroy(this_->animate_callback);
 		this_->animate_callback = NULL; // dangling pointer! prevent double freeing.
 	}
+
 	if (cursor && cursor->interval)
 	{
 		this_->animate_callback = callback_new_2(callback_cast(vehicle_draw_do), this_, 0);
-		dbg(0, "event_add_timeout %d,%d,%p", cursor->interval, 1, this_->animate_callback);
+		//dbg(0, "event_add_timeout %d,%d,%p", cursor->interval, 1, this_->animate_callback);
 		this_->animate_timer = event_add_timeout(cursor->interval, 1, this_->animate_callback);
 	}
 
@@ -411,20 +419,45 @@ void vehicle_set_cursor(struct vehicle *this_, struct cursor *cursor, int overwr
 		this_->cursor_pnt.y += (this_->cursor->h - cursor->h) / 2;
 		graphics_overlay_resize(this_->gra, &this_->cursor_pnt, cursor->w, cursor->h, 65535, 0);
 	}
+#endif
+
+	// ###############################################
+	// ###############################################
+	// set fixed size of navigation cursor to 50,50 !!
+	if (cursor)
+	{
+		cursor->w = 50;
+		cursor->h = 50;
+	}
+
+	if (this_->cursor)
+	{
+		this_->cursor->w = 50;
+		this_->cursor->h = 50;
+	}
+	// set fixed size of navigation cursor to 50,50 !!
+	// ###############################################
+	// ###############################################
+
 
 	if (cursor)
 	{
 		sc.x = cursor->w / 2;
 		sc.y = cursor->h / 2;
-		if (!this_->cursor && this_->gra)
-			graphics_overlay_disable(this_->gra, 0);
+		//if (!this_->cursor && this_->gra)
+		//{
+		//	graphics_overlay_disable(this_->gra, 0);
+		//}
 	}
 	else
 	{
 		sc.x = sc.y = 0;
-		if (this_->cursor && this_->gra)
-			graphics_overlay_disable(this_->gra, 1);
+		//if (this_->cursor && this_->gra)
+		//{
+		//	graphics_overlay_disable(this_->gra, 1);
+		//}
 	}
+
 	transform_set_screen_center(this_->trans, &sc);
 
 	this_->cursor = cursor;
@@ -478,27 +511,38 @@ void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt
 	dbg(0,"+#+:enter\n");
 #endif
 
-	if (hold_drawing > 0)
-	{
-		return;
-	}
+	//if (hold_drawing > 0)
+	//{
+	//	return;
+	//}
 
 	if (angle < 0)
+	{
 		angle += 360;
+	}
+
 	//// dbg(1, "enter this=%p gra=%p pnt=%p lazy=%d dir=%d speed=%d\n", this_, gra,
 	//		pnt, lazy, angle, speed);
-	//// dbg(1, "point %d,%d\n", pnt->x, pnt->y);
+	//dbg(0, "point %d,%d\n", pnt->x, pnt->y);
 	this_->cursor_pnt = *pnt;
 	this_->angle = angle;
 	this_->speed = speed;
 	if (!this_->cursor)
+	{
 		return;
-	this_->cursor_pnt.x -= this_->cursor->w / 2;
-	this_->cursor_pnt.y -= this_->cursor->h / 2;
+	}
+
+	//dbg(0,"cpx:%d, cpy:%d, cw:%d, ch:%d\n", this_->cursor_pnt.x, this_->cursor_pnt.y, this_->cursor->w, this_->cursor->h);
+
+	//*** this_->cursor_pnt.x -= this_->cursor->w / 2;
+	//*** this_->cursor_pnt.y -= this_->cursor->h / 2;
+
+#if 0
 	if (!this_->gra)
 	{
 		struct color c;
-		this_->gra = graphics_overlay_new(gra, &this_->cursor_pnt, this_->cursor->w, this_->cursor->h, 65535, 0);
+		dbg(0,"Create new Vehicle Overlay Graphics\n");
+		this_->gra = graphics_overlay_new("type:vehicle",gra, &this_->cursor_pnt, this_->cursor->w, this_->cursor->h, 65535, 0);
 		if (this_->gra)
 		{
 			this_->bg = graphics_gc_new(this_->gra);
@@ -510,8 +554,28 @@ void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt
 			graphics_background_gc(this_->gra, this_->bg);
 		}
 	}
+#endif
 
-	vehicle_draw_do(this_, lazy);
+
+	//  ++++++++++ // transform_set_yaw(this_->trans, -this_->angle);
+	// vehicle_draw_do(this_, lazy);
+
+#ifdef HAVE_API_ANDROID
+		//dbg(0,"x=%d y=%d angle=%d speed=%d\n",this_->cursor_pnt.x, this_->cursor_pnt.y, angle, speed);
+
+		//int dx = 0;
+		//int dy = 0;
+		//int dangle = 0;
+
+		//struct navit_vehicle *nv2 = global_navit->vehicle;
+		//struct point pnt2;
+		//dbg(0,"dir=%d dx=%d, dy=%d\n", nv2->dir, dx, dy);
+		//transform(this_->trans, projection_mg, &nv2->coord, &pnt2, 1, 0, 0, NULL);
+		//dbg(0,"px=%d, py=%d\n", pnt2.x, pnt2.y);
+
+		set_vehicle_values_to_java(this_->cursor_pnt.x, this_->cursor_pnt.y, angle, speed);
+#endif
+
 }
 
 int vehicle_get_cursor_data(struct vehicle *this, struct point *pnt, int *angle, int *speed)
@@ -527,66 +591,7 @@ int vehicle_get_cursor_data(struct vehicle *this, struct point *pnt, int *angle,
 
 static void vehicle_draw_do(struct vehicle *this_, int lazy)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
-	if (hold_drawing > 0)
-	{
-		return;
-	}
-
-	struct point p;
-	struct cursor *cursor = this_->cursor;
-	int speed = this_->speed;
-	int angle = this_->angle;
-	int sequence = this_->sequence;
-	struct attr **attr;
-	char *label = NULL;
-	int match = 0;
-
-	if (!this_->cursor || !this_->cursor->attrs || !this_->gra)
-		return;
-
-	attr = this_->attrs;
-	while (attr && *attr)
-	{
-		if ((*attr)->type == attr_name)
-			label = (*attr)->u.str;
-		attr++;
-	}
-	transform_set_yaw(this_->trans, -this_->angle);
-	graphics_draw_mode(this_->gra, draw_mode_begin);
-	p.x = 0;
-	p.y = 0;
-	graphics_draw_rectangle(this_->gra, this_->bg, &p, cursor->w, cursor->h);
-	attr = cursor->attrs;
-	while (*attr)
-	{
-		if ((*attr)->type == attr_itemgra)
-		{
-			struct itemgra *itm = (*attr)->u.itemgra;
-			//// dbg(1, "speed %d-%d %d\n", itm->speed_range.min,
-			//		itm->speed_range.max, speed);
-			if (speed >= itm->speed_range.min && speed <= itm->speed_range.max && angle >= itm->angle_range.min && angle <= itm->angle_range.max && sequence >= itm->sequence_range.min && sequence <= itm->sequence_range.max)
-			{
-				graphics_draw_itemgra(this_->gra, itm, this_->trans, label);
-			}
-			if (sequence < itm->sequence_range.max)
-				match = 1;
-		}
-		++attr;
-	}
-	graphics_draw_drag(this_->gra, &this_->cursor_pnt);
-	graphics_draw_mode(this_->gra, lazy ? draw_mode_end_lazy : draw_mode_end);
-	if (this_->animate_callback)
-	{
-		++this_->sequence;
-		if (cursor->sequence_range && cursor->sequence_range->max < this_->sequence)
-			this_->sequence = cursor->sequence_range->min;
-		if (!match && !cursor->sequence_range)
-			this_->sequence = 0;
-	}
+	// UNUSED ---------
 }
 
 /**

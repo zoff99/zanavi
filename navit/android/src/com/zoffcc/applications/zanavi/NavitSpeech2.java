@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011 - 2012 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,8 +74,8 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 			try
 			{
 				Log.e("NavitSpeech2", "3.1 want locale=" + locale2.getLanguage());
-				Log.e("NavitSpeech2", "3 E=" + mTts.getDefaultEngine());
-				Log.e("NavitSpeech2", "3 def.enf.=" + mTts.areDefaultsEnforced());
+				//Log.e("NavitSpeech2", "3 E=" + mTts.getDefaultEngine());
+				//Log.e("NavitSpeech2", "3 def.enf.=" + mTts.areDefaultsEnforced());
 			}
 			catch (NoSuchMethodError e2)
 			{
@@ -235,7 +235,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 				}
 				if (Navit.PREF_show_debug_messages)
 				{
-					Navit.set_debug_messages3(what);
+					Navit.set_debug_messages3_wrapper(what);
 				}
 			}
 		}

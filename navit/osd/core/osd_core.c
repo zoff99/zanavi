@@ -91,7 +91,7 @@ static void
 transform_rotate(struct point *center, int angle, struct point *p,
 		 int count)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	int i, x, y;
 	double dx, dy;
@@ -111,7 +111,7 @@ static void
 handle(struct graphics *gr, struct graphics_gc *gc, struct point *p, int r,
        int dir)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point ph[3];
 	int l = r * 0.4;
@@ -142,7 +142,7 @@ handle(struct graphics *gr, struct graphics_gc *gc, struct point *p, int r,
 static char *
 format_distance(double distance, char *sep, int imperial)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	if (imperial){
 		distance *= FEET_PER_METER;
@@ -234,7 +234,7 @@ format_float_0(double num)
 static void
 osd_cmd_osd_set_attr(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	struct attr **list;
 	struct attr*val = g_new0(struct attr,1);
@@ -313,7 +313,7 @@ struct odometer {
 static void
 osd_cmd_odometer_reset(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	if (in && in[0] && ATTR_IS_STRING(in[0]->type) && in[0]->u.str) {
           GList* list = odometer_list;
@@ -330,7 +330,7 @@ osd_cmd_odometer_reset(struct navit *this, char *function, struct attr **in, str
 static char* 
 str_replace(char*output, char*input, char*pattern, char*replacement)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
   char *pos;
   char *pos2;
@@ -765,7 +765,7 @@ static void
 osd_cmd_interface_draw(struct cmd_interface *this, struct navit *nav,
 		struct vehicle *v)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point p;
 	struct point bbox[4];
@@ -804,7 +804,7 @@ if(this->text)
 static void
 osd_cmd_interface_init(struct cmd_interface *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
 
@@ -819,7 +819,10 @@ osd_cmd_interface_init(struct cmd_interface *this, struct navit *nav)
 		event_add_timeout(this->update_period*1000, 1, callback_new_1(callback_cast(osd_cmd_interface_draw), this));
 	}
 
-	navit_add_callback(nav, callback_new_attr_1(callback_cast (osd_std_click), attr_button, &this->osd_item));
+	struct callback *cb;
+	cb = callback_new_attr_1(callback_cast (osd_std_click), attr_button, &this->osd_item);
+	callback_add_names(cb, "osd_cmd_interface_init", "osd_std_click");
+	navit_add_callback(nav, cb);
 
 	this->text = g_strdup("");
 }
@@ -827,7 +830,7 @@ osd_cmd_interface_init(struct cmd_interface *this, struct navit *nav)
 static int
 osd_cmd_interface_set_attr(struct cmd_interface *this_, struct attr* attr)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	struct navit* nav;
 	if(NULL==attr || NULL==this_) {
@@ -870,7 +873,7 @@ static struct osd_priv *
 osd_cmd_interface_new(struct navit *nav, struct osd_methods *meth,
 		struct attr **attrs)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct cmd_interface *this = g_new0(struct cmd_interface, 1);
 	struct attr *attr;
@@ -896,10 +899,12 @@ osd_cmd_interface_new(struct navit *nav, struct osd_methods *meth,
 	attr = attr_search(attrs, NULL, attr_command);
 	this->command = attr ? g_strdup(attr->u.str) : g_strdup("");
 
-	if(b_commandtable_added == 0) {
+	if (b_commandtable_added == 0)
+	{
 		navit_command_add_table(nav, commands, sizeof(commands)/sizeof(struct command_table));
 		b_commandtable_added = 1;
 	}
+
 	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_cmd_interface_init), attr_graphics_ready, this));
 	return (struct osd_priv *) this;
 }
@@ -925,7 +930,7 @@ static void
 osd_stopwatch_draw(struct stopwatch *this, struct navit *nav,
 		struct vehicle *v)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	struct graphics_gc *curr_color;
 	char buffer[32]="00:00:00";
@@ -1063,7 +1068,7 @@ static void
 osd_compass_draw(struct compass *this, struct navit *nav,
 		 struct vehicle *v)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point p,bbox[4];
 	struct attr attr_dir, destination_attr, position_attr, imperial_attr;
@@ -1076,7 +1081,7 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 	if (navit_get_attr(nav, attr_imperial, &imperial_attr, NULL))
 		imperial=imperial_attr.u.num;
 
-	//dbg(0,"CCC 1\n");
+	//// dbg(0,,"CCC 1\n");
 	// **DISABLE** osd_std_draw(&this->osd_item);
 	// **DISABLE** p.x = this->osd_item.w/2;
 	// **DISABLE** p.y = this->osd_item.w/2;
@@ -1084,23 +1089,26 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 	// graphics_send_osd_values(this->osd_item.gr,this->osd_item.graphic_fg_white,"compass","draw_circle","","",0,0,0,0,0.0,0.0,0.0);
 
 	// **DISABLE** graphics_draw_circle(this->osd_item.gr, this->osd_item.graphic_fg_white, &p, this->osd_item.w*5/6);
-	//dbg(0,"CCC 2\n");
+	//// dbg(0,,"CCC 2\n");
 	if (v) {
-	//dbg(0,"CCC 3\n");
+	//// dbg(0,,"CCC 3\n");
 		if (vehicle_get_attr(v, attr_position_direction, &attr_dir, NULL)) {
-	//dbg(0,"CCC 4\n");
+	//// dbg(0,,"CCC 4\n");
 			vdir = *attr_dir.u.numd;
 			// **DISABLE** handle(this->osd_item.gr, this->osd_item.graphic_fg_white, &p, this->osd_item.w/3, -vdir);
-			// dbg(0,"vdir:%f\n",vdir);
+			// // dbg(0,,"vdir:%f\n",vdir);
 			//char *buf_value;
 			//g_snprintf(buf_value, 20, "%f", -vdir);
-	//dbg(0,"CCC 5\n");
-			graphics_send_osd_values(this->osd_item.gr,this->osd_item.graphic_fg_white,"compass","direction","","",(int)-vdir,0,0,0,0,0,0);
+	//// dbg(0,,"CCC 5\n");
+
+#ifdef HAVE_API_ANDROID
+			send_osd_values("compass","direction","","",(int)-vdir,0,0,0,0,0,0);
+#endif
 			//g_free(buf_value);
-	//dbg(0,"CCC 6\n");
+	//// dbg(0,,"CCC 6\n");
 		}
 
-	//dbg(0,"CCC 7\n");
+	//// dbg(0,,"CCC 7\n");
 		if (navit_get_attr(nav, attr_destination, &destination_attr, NULL)
 		    && vehicle_get_attr(v, attr_position_coord_geo,&position_attr, NULL)) {
 			pro = destination_attr.u.pcoord->pro;
@@ -1109,30 +1117,32 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 			c2.y = destination_attr.u.pcoord->y;
 			dir = atan2(c2.x - c1.x, c2.y - c1.y) * 180.0 / M_PI;
 			dir -= vdir;
-	//dbg(0,"CCC 8\n");
+	//// dbg(0,,"CCC 8\n");
 			// **DISABLE** handle(this->osd_item.gr, this->green, &p, this->osd_item.w/3, dir);
 			buffer=format_distance(transform_distance(pro, &c1, &c2),"",imperial);
 			// **DISABLE** graphics_get_text_bbox(this->osd_item.gr, this->osd_item.font, buffer, 0x10000, 0, bbox, 0);
 			// **DISABLE** p.x=(this->osd_item.w-bbox[2].x)/2;
 			// **DISABLE** p.y = this->osd_item.h-this->osd_item.h/10;
 
-			// dbg(0,"dir:%f\n",dir);
+			// // dbg(0,,"dir:%f\n",dir);
 			//char *buf_value;
 			//g_snprintf(buf_value, 20, "%f", dir);
-	//dbg(0,"CCC 8\n");
-			graphics_send_osd_values(this->osd_item.gr,this->osd_item.graphic_fg_white,"compass","text_and_dst_angle",buffer,"",(int)dir,0,0,0,0,0,0);
-	//dbg(0,"CCC 10\n");
+	//// dbg(0,,"CCC 8\n");
+#ifdef HAVE_API_ANDROID
+			send_osd_values("compass","text_and_dst_angle",buffer,"",(int)dir,0,0,0,0,0,0);
+#endif
+	//// dbg(0,,"CCC 10\n");
 			//g_free(buf_value);
 
 			// **DISABLE** graphics_draw_text(this->osd_item.gr, this->green, NULL, this->osd_item.font, buffer, &p, 0x10000, 0);
 			g_free(buffer);
-	//dbg(0,"CCC 11\n");
+	//// dbg(0,,"CCC 11\n");
 		}
 	}
 
-	//dbg(0,"CCC 12\n");
+	//// dbg(0,,"CCC 12\n");
 	// **DISABLE** graphics_draw_mode(this->osd_item.gr, draw_mode_end);
-	//dbg(0,"CCC 13\n");
+	//// dbg(0,,"CCC 13\n");
 }
 
 
@@ -1140,40 +1150,42 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 static void
 osd_compass_init(struct compass *this, struct navit *nav)
 {
-	struct color c;
+	//struct color c;
 
-	//dbg(0,"CCC 14\n");
+	//// dbg(0,,"CCC 14\n");
 
-	osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
+	//osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
 
-	//dbg(0,"CCC 15\n");
+	//// dbg(0,,"CCC 15\n");
 
-	this->green = graphics_gc_new(this->osd_item.gr);
-	c.r = 0;
-	c.g = 65535;
-	c.b = 0;
-	c.a = 65535;
+	//this->green = graphics_gc_new(this->osd_item.gr);
+	//c.r = 0;
+	//c.g = 65535;
+	//c.b = 0;
+	//c.a = 65535;
 
 	// **DISABLE** graphics_gc_set_foreground(this->green, &c);
 	// **DISABLE** graphics_gc_set_linewidth(this->green, this->width);
 	// **DISABLE** graphics_gc_set_linewidth(this->osd_item.graphic_fg_white, this->width);
 
-	//dbg(0,"CCC 16\n");
+	//// dbg(0,,"CCC 16\n");
+	struct callback *cb;
+	cb = callback_new_attr_1(callback_cast(osd_compass_draw), attr_position_coord_geo, this);
+	callback_add_names(cb, "osd_compass_init", "osd_compass_draw");
+	navit_add_callback(nav, cb);
 
-	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_compass_draw), attr_position_coord_geo, this));
-
-	//dbg(0,"CCC 17\n");
+	//// dbg(0,,"CCC 17\n");
 
 	osd_compass_draw(this, nav, NULL);
 
-	//dbg(0,"CCC 18\n");
+	//// dbg(0,,"CCC 18\n");
 }
 
 static struct osd_priv *
 osd_compass_new(struct navit *nav, struct osd_methods *meth,
 		struct attr **attrs)
 {
-	//dbg(0,"EEnter\n");
+	//// dbg(0,,"EEnter\n");
 
 	struct compass *this = g_new0(struct compass, 1);
 	struct attr *attr;
@@ -1187,9 +1199,13 @@ osd_compass_new(struct navit *nav, struct osd_methods *meth,
 	osd_set_std_attr(attrs, &this->osd_item, 2);
 	attr = attr_search(attrs, NULL, attr_width);
 	this->width=attr ? attr->u.num : 2;
-	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_compass_init), attr_graphics_ready, this));
 
-	dbg(0,"11111111111\n");
+	struct callback *cb;
+	cb = callback_new_attr_1(callback_cast(osd_compass_init), attr_graphics_ready, this);
+	callback_add_names(cb, "osd_compass_new", "osd_compass_init");
+	navit_add_callback(nav, cb);
+
+	// dbg(0,,"11111111111\n");
 
 	return (struct osd_priv *) this;
 }
@@ -1205,19 +1221,19 @@ struct osd_button {
 static void
 osd_button_draw(struct osd_button *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point bp = this->item.p;
 	if (!this->item.configured)
 		return;
 	osd_wrap_point(&bp, nav);
-	graphics_draw_image(this->item.gr, this->item.graphic_bg, &bp, this->img);
+	//graphics_draw_image(this->item.gr, this->item.graphic_bg, &bp, this->img);
 }
 
 static void
 osd_button_init(struct osd_button *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct graphics *gra = navit_get_graphics(nav);
 	dbg(1, "enter\n");
@@ -1254,7 +1270,7 @@ osd_button_init(struct osd_button *this, struct navit *nav)
 int
 osd_button_set_attr(struct osd_button *this_, struct attr* attr)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	if(NULL==attr || NULL==this_) {
 		return 0;
@@ -1303,7 +1319,7 @@ static struct osd_priv *
 osd_button_new(struct navit *nav, struct osd_methods *meth,
 	       struct attr **attrs)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct osd_button *this = g_new0(struct osd_button, 1);
 	struct attr *attr;
@@ -1319,12 +1335,12 @@ osd_button_new(struct navit *nav, struct osd_methods *meth,
 	if (attr)
 		this->use_overlay=attr->u.num;
 	if (!this->item.command) {
-		dbg(0, "no command\n");
+		// dbg(0,, "no command\n");
 		goto error;
 	}
 	attr = attr_search(attrs, NULL, attr_src);
 	if (!attr) {
-		dbg(0, "no src\n");
+		// dbg(0,, "no src\n");
 		goto error;
 	}
 
@@ -1354,7 +1370,7 @@ struct osd_image {
 static void
 osd_image_draw(struct osd_image *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point bp = this->item.p;
 	osd_wrap_point(&bp, nav);
@@ -1364,7 +1380,7 @@ osd_image_draw(struct osd_image *this, struct navit *nav)
 static void
 osd_image_init(struct osd_image *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct graphics *gra = navit_get_graphics(nav);
 	dbg(1, "enter\n");
@@ -1401,7 +1417,7 @@ static struct osd_priv *
 osd_image_new(struct navit *nav, struct osd_methods *meth,
 	       struct attr **attrs)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct osd_image *this = g_new0(struct osd_image, 1);
 	struct attr *attr;
@@ -1416,7 +1432,7 @@ osd_image_new(struct navit *nav, struct osd_methods *meth,
 		this->use_overlay=attr->u.num;
 	attr = attr_search(attrs, NULL, attr_src);
 	if (!attr) {
-		dbg(0, "no src\n");
+		// dbg(0,, "no src\n");
 		goto error;
 	}
 
@@ -1443,7 +1459,7 @@ static void
 osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 		       struct vehicle *v)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point p;
 	int do_draw = 0;
@@ -1487,14 +1503,16 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 		if (this->active)
 		{
 			image = g_strdup_printf(this->icon_src, name);
-			dbg(1, "image=%s\n", image);
+			// dbg(1, "image=%s\n", image);
 
-			graphics_send_osd_values(this->osd_item.gr,this->osd_item.graphic_fg_white,"nav_next_turn","draw_image1",image,"",this->icon_w,this->icon_h,0,0,0.0,0.0,0.0);
+#ifdef HAVE_API_ANDROID
+			send_osd_values("nav_next_turn","draw_image1",image,"",this->icon_w,this->icon_h,0,0,0.0,0.0,0.0);
+#endif
 
 			// **DISABLE** gr_image = graphics_image_new_scaled(this->osd_item.gr, image, this->icon_w, this->icon_h);
-			if (!gr_image)
-			{
-				// **DISABLE** dbg(0,"failed to load %s in %dx%d\n",image,this->icon_w,this->icon_h);
+			//if (!gr_image)
+			//{
+				// **DISABLE** // dbg(0,,"failed to load %s in %dx%d\n",image,this->icon_w,this->icon_h);
 				// **DISABLE** g_free(image);
 
 				// **DISABLE** graphics_send_osd_values(this->osd_item.gr,this->osd_item.graphic_fg_white,"nav_next_turn","draw_image2","unknown.xpm","",this->icon_w,this->icon_h,0,0,0.0,0.0,0.0);
@@ -1510,8 +1528,12 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 							      this->
 							      icon_h);
 				*/
-			}
-			dbg(1, "gr_image=%p\n", gr_image);
+			//}
+
+			
+			//dbg(1, "gr_image=%p\n", gr_image);
+
+			/*
 			if (gr_image)
 			{
 				p.x =
@@ -1520,17 +1542,9 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 				p.y =
 				    (this->osd_item.h -
 				     gr_image->height) / 2;
-
-				// **DISABLE** 
-				/*
-				graphics_draw_image(this->osd_item.gr,
-						    this->osd_item.
-						    graphic_fg_white, &p,
-						    gr_image);
-				graphics_image_free(this->osd_item.gr,
-						    gr_image);
-				*/
 			}
+			*/
+
 			g_free(image);
 		}
 		// **DISABLE** graphics_draw_mode(this->osd_item.gr, draw_mode_end);
@@ -1540,11 +1554,14 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 static void
 osd_nav_next_turn_init(struct nav_next_turn *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
-	osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
-	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_nav_next_turn_draw), attr_position_coord_geo, this));
-	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_std_click), attr_button, &this->osd_item));
+	//osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
+	struct callback *cb;
+	cb = callback_new_attr_1(callback_cast(osd_nav_next_turn_draw), attr_position_coord_geo, this);
+	callback_add_names(cb, "osd_nav_next_turn_init", "osd_nav_next_turn_draw");
+	navit_add_callback(nav, cb);
+	//navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_std_click), attr_button, &this->osd_item));
 	osd_nav_next_turn_draw(this, nav, NULL);
 }
 
@@ -1552,7 +1569,7 @@ static struct osd_priv *
 osd_nav_next_turn_new(struct navit *nav, struct osd_methods *meth,
 		      struct attr **attrs)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct nav_next_turn *this = g_new0(struct nav_next_turn, 1);
 	struct attr *attr;
@@ -1593,9 +1610,15 @@ osd_nav_next_turn_new(struct navit *nav, struct osd_methods *meth,
 	
 	attr = attr_search(attrs, NULL, attr_level);
 	if (attr)
+	{
 		this->level=attr->u.num;
+	}
 
-	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_nav_next_turn_init), attr_graphics_ready, this));
+	struct callback *cb;
+	cb = callback_new_attr_1(callback_cast(osd_nav_next_turn_init), attr_graphics_ready, this);
+	callback_add_names(cb, "osd_nav_next_turn_new", "osd_nav_next_turn_init");
+	navit_add_callback(nav, cb);
+
 	return (struct osd_priv *) this;
 }
 
@@ -2456,7 +2479,7 @@ osd_text_split(char *in, char **index)
 static void
 osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point p, p2[4];
 	char *str,*last,*next,*value,*absbegin;
@@ -2492,10 +2515,13 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 		value=NULL;
 		id_string=NULL;
 
-		if (oti->static_text) {
+		if (oti->static_text)
+		{
 			value=g_strdup(oti->text);
 			id_string=g_strdup_printf("none:static_text:static_text");
-		} else if (oti->section == attr_navigation) {
+		}
+		else if (oti->section == attr_navigation)
+		{
 			if (navit && !nav)
 				nav = navit_get_navigation(navit);
 			if (nav && !nav_map)
@@ -2518,8 +2544,8 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 			}
 
 			if (item) {
-				//dbg(0,"name %s\n", item_to_name(item->type));
-				//dbg(0,"type %s\n", attr_to_name(oti->attr_typ));
+				//// dbg(0,,"name %s\n", item_to_name(item->type));
+				//// dbg(0,,"type %s\n", attr_to_name(oti->attr_typ));
 				if (item_attr_get(item, oti->attr_typ, &attr))
 				{
 					value=osd_text_format_attr(&attr, oti->format, imperial);
@@ -2627,8 +2653,11 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 
 		// id_string=g_strdup_printf("%s#+#%s:%s",id_string, str ? str:"",value ? value:" ");
-		graphics_send_osd_values(this->osd_item.gr, this->osd_item.graphic_fg_text,"osd_text_draw","draw_text",id_string,value ? value : "",  0,0,0,0,  0.0,0.0,0.0);
-		//dbg(0,"%s\n",id_string);
+
+#ifdef HAVE_API_ANDROID
+		send_osd_values("osd_text_draw","draw_text",id_string,value ? value : "",  0,0,0,0,  0.0,0.0,0.0);
+#endif
+		//// dbg(0,,"%s\n",id_string);
 		if (id_string)
 		{
 			g_free(id_string);
@@ -2698,7 +2727,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 			if (do_draw)
 			{
-				osd_std_resize(&this->osd_item);
+				//osd_std_resize(&this->osd_item);
 			}
 		default:
 			p.y=(this->osd_item.h-lines*(height+yspacing)-yspacing)/2;
@@ -2712,10 +2741,15 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 				*next='\0';
 				next+=2;
 			}
+
+			/*
 			graphics_get_text_bbox(this->osd_item.gr,
 					       this->osd_item.font,
 					       str, 0x10000,
 					       0x0, p2, 0);
+			*/
+
+			/*
 			switch (this->align & 12)
 			{
 			case 4:
@@ -2728,6 +2762,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 				p.x = ((p2[0].x - p2[2].x) / 2) + (this->osd_item.w / 2);
 			}
 			p.y += height+yspacing;
+			*/
 
 			// graphics_send_osd_values(this->osd_item.gr, this->osd_item.graphic_fg_text,"osd_text_draw","draw_text",str,"",  0,0,0,0,  0.0,0.0,0.0);
 
@@ -2760,7 +2795,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 static struct osd_text_item *
 oti_new(struct osd_text_item * parent)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
     struct osd_text_item *this;
     this=g_new0(struct osd_text_item, 1);
@@ -2788,7 +2823,7 @@ oti_new(struct osd_text_item * parent)
 static void
 osd_text_prepare(struct osd_text *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	char *absbegin,*str,*start,*end,*key,*subkey,*index;
 	struct osd_text_item *oti;
@@ -2848,9 +2883,14 @@ osd_text_prepare(struct osd_text *this, struct navit *nav)
 			oti->format = g_strdup(index);
 		}
 
-		switch(oti->attr_typ) {
+		switch(oti->attr_typ)
+		{
+			struct callback *cb;
+
 			default:
-				navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_text_draw), attr_position_coord_geo, this));
+				cb = callback_new_attr_1(callback_cast(osd_text_draw), attr_position_coord_geo, this);
+				callback_add_names(cb, "osd_text_prepare", "osd_text_draw");
+				navit_add_callback(nav, cb);
 				break;
 		}
 
@@ -2875,20 +2915,24 @@ osd_text_prepare(struct osd_text *this, struct navit *nav)
 static void
 osd_text_init(struct osd_text *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
-	osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
-	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_std_click), attr_button, &this->osd_item));
+	//osd_set_std_graphic(nav, &this->osd_item, (struct osd_priv *)this);
+
+	struct callback *cb;
+	cb = callback_new_attr_1(callback_cast(osd_std_click), attr_button, &this->osd_item);
+	callback_add_names(cb, "osd_text_init", "osd_std_click");
+	navit_add_callback(nav, cb);
+
 	osd_text_prepare(this,nav);
 	osd_text_draw(this, nav, NULL);
-
 }
 
 static struct osd_priv *
 osd_text_new(struct navit *nav, struct osd_methods *meth,
 	    struct attr **attrs)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct osd_text *this = g_new0(struct osd_text, 1);
 	struct attr *attr;
@@ -3149,7 +3193,7 @@ struct osd_scale {
 static void
 osd_scale_draw(struct osd_scale *this, struct navit *nav)
 {
-	//dbg(0,"EEnter\n");
+	// dbg(0,,"EEnter\n");
 
 	struct point bp,bp1,bp2;
 	struct point p[10],bbox[4];
@@ -3173,7 +3217,9 @@ osd_scale_draw(struct osd_scale *this, struct navit *nav)
 		bp.x=0;
 		bp.y=0;
 
-		graphics_send_osd_values(this->item.gr, this->item.graphic_bg,"scale","draw_rectangle1","","",this->item.w, this->item.h,0,0,0.0,0.0,0.0);
+#ifdef HAVE_API_ANDROID
+		send_osd_values("scale","draw_rectangle1","","",this->item.w, this->item.h,0,0,0.0,0.0,0.0);
+#endif
 		// **DISABLE** graphics_draw_rectangle(this->item.gr, this->item.graphic_bg, &bp, this->item.w, this->item.h);
 	} else {
 		bp=this->item.p;
@@ -3218,7 +3264,9 @@ osd_scale_draw(struct osd_scale *this, struct navit *nav)
 	p[8].x-=2;
 	p[8].y-=2;
 
-	graphics_send_osd_values(this->item.gr, this->item.graphic_fg_white,"scale","draw_rectangle2","","",len,this->item.h,0,0,0.0,0.0,0.0);
+#ifdef HAVE_API_ANDROID
+	send_osd_values("scale","draw_rectangle2","","",len,this->item.h,0,0,0.0,0.0,0.0);
+#endif
 
 	// **DISABLE** graphics_draw_rectangle(this->item.gr, this->item.graphic_fg_white, p+6, 4,this->item.h/5+4);
 	// **DISABLE** graphics_draw_rectangle(this->item.gr, this->item.graphic_fg_white, p+7, p[1].x-p[0].x, 4);
@@ -3231,7 +3279,9 @@ osd_scale_draw(struct osd_scale *this, struct navit *nav)
 	p[0].x=(this->item.w-bbox[2].x)/2+bp.x;
 	p[0].y=bp.y+this->item.h-this->item.h/10;
 
-	graphics_send_osd_values(this->item.gr, this->item.graphic_fg_white,"scale","draw_text",text,"",0,0,0,0,0.0,0.0,0.0);
+#ifdef HAVE_API_ANDROID
+	send_osd_values("scale","draw_text",text,"",0,0,0,0,0.0,0.0,0.0);
+#endif
 
 	// **DISABLE** graphics_draw_text(this->item.gr, this->black, this->item.graphic_fg_white, this->item.font, text, &p[0], 0x10000, 0);
 	g_free(text);
@@ -3244,6 +3294,9 @@ osd_scale_draw(struct osd_scale *this, struct navit *nav)
 static void
 osd_scale_init(struct osd_scale *this, struct navit *nav)
 {
+	// dbg(0,,"EEnter\n");
+
+	/*
 	struct color color_white={0xffff,0xffff,0xffff,0x0000};
 	struct color color_black={0x0000,0x0000,0x0000,0x0000};
 	struct graphics *gra = navit_get_graphics(nav);
@@ -3263,12 +3316,17 @@ osd_scale_init(struct osd_scale *this, struct navit *nav)
 	graphics_add_callback(gra, this->draw_cb=callback_new_attr_2(callback_cast(osd_scale_draw), attr_postdraw, this, nav));
 	if (navit_get_ready(nav) == 3)
 		osd_scale_draw(this, nav);
+
+	*/
 }
 
 static struct osd_priv *
 osd_scale_new(struct navit *nav, struct osd_methods *meth,
 	       struct attr **attrs)
 {
+
+	// dbg(0,,"EEnter\n");
+
 	struct osd_scale *this = g_new0(struct osd_scale, 1);
 	struct attr *attr;
 
@@ -3281,7 +3339,7 @@ osd_scale_new(struct navit *nav, struct osd_methods *meth,
 	if (attr)
 		this->use_overlay=attr->u.num;
 
-	navit_add_callback(nav, this->navit_init_cb = callback_new_attr_1(callback_cast (osd_scale_init), attr_graphics_ready, this));
+	// navit_add_callback(nav, this->navit_init_cb = callback_new_attr_1(callback_cast (osd_scale_init), attr_graphics_ready, this));
 
 	return (struct osd_priv *) this;
 }
@@ -3327,6 +3385,9 @@ osd_auxmap_draw(struct auxmap *this)
 static void
 osd_auxmap_init(struct auxmap *this, struct navit *nav)
 {
+	// dbg(0,,"EEnter\n");
+
+
 	struct graphics *gra;
 	struct attr attr;
 	struct map_selection sel;
@@ -3385,16 +3446,17 @@ plugin_init(void)
 	plugin_register_osd_type("compass", osd_compass_new);
 	plugin_register_osd_type("navigation_next_turn", osd_nav_next_turn_new);
 	plugin_register_osd_type("button", osd_button_new);
-    	plugin_register_osd_type("toggle_announcer", osd_nav_toggle_announcer_new);
-    	plugin_register_osd_type("speed_warner", osd_speed_warner_new);
-    	plugin_register_osd_type("speed_cam", osd_speed_cam_new);
-    	plugin_register_osd_type("text", osd_text_new);
-    	plugin_register_osd_type("gps_status", osd_gps_status_new);
-    	plugin_register_osd_type("volume", osd_volume_new);
-    	plugin_register_osd_type("scale", osd_scale_new);
+   	plugin_register_osd_type("toggle_announcer", osd_nav_toggle_announcer_new);
+   	plugin_register_osd_type("speed_warner", osd_speed_warner_new);
+   	plugin_register_osd_type("speed_cam", osd_speed_cam_new);
+   	plugin_register_osd_type("text", osd_text_new);
+   	plugin_register_osd_type("gps_status", osd_gps_status_new);
+   	plugin_register_osd_type("volume", osd_volume_new);
+   	plugin_register_osd_type("scale", osd_scale_new);
 	plugin_register_osd_type("image", osd_image_new);
 	plugin_register_osd_type("stopwatch", osd_stopwatch_new);
 	plugin_register_osd_type("odometer", osd_odometer_new);
 	plugin_register_osd_type("auxmap", osd_auxmap_new);
 	plugin_register_osd_type("cmd_interface", osd_cmd_interface_new);
 }
+

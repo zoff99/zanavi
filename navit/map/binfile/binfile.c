@@ -2107,7 +2107,7 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 
 				if (binmap_search_by_index(map, town, &msp->mr))
 				{
-					dbg(0, "search:mode=1\n");
+					//dbg(0, "search:mode=1\n");
 					msp->mode = 1;
 				}
 				else
@@ -2116,13 +2116,13 @@ binmap_search_new(struct map_priv *map, struct item *item, struct attr *search, 
 					{
 						if ((msp->mr = binmap_search_street_by_place(map, town, &c, &msp->ms)))
 						{
-							dbg(0, "search:mode=2\n");
+							//dbg(0, "search:mode=2\n");
 							msp->mode = 2;
 						}
 						else
 						{
 							msp->mr = binmap_search_street_by_estimate(map, town, &c, &msp->ms);
-							dbg(0, "search:mode=3\n");
+							//dbg(0, "search:mode=3\n");
 							msp->mode = 3;
 						}
 					}
@@ -2868,6 +2868,7 @@ static int map_binfile_open(struct map_priv *m)
 		{
 			;
 		}
+
 		if (item && item->type == type_map_information)
 		{
 			if (binfile_attr_get(item->priv_data, attr_version, &attr))
@@ -2882,7 +2883,7 @@ static int map_binfile_open(struct map_priv *m)
 			}
 			if (m->url && binfile_attr_get(item->priv_data, attr_url, &attr))
 			{
-				dbg(0, "url config %s map %s\n", m->url, attr.u.str);
+				//dbg(0, "url config %s map %s\n", m->url, attr.u.str);
 				if (strcmp(m->url, attr.u.str))
 				{
 					m->update_available = 1;
@@ -2891,7 +2892,9 @@ static int map_binfile_open(struct map_priv *m)
 				m->url = g_strdup(attr.u.str);
 			}
 		}
+
 		map_rect_destroy_binfile(mr);
+
 		if (m->map_version >= 16)
 		{
 			dbg(0, "Warning: This map is incompatible with your versionof ZANavi. Please update ZANavi.\n");

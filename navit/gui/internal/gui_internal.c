@@ -5479,15 +5479,25 @@ static int gui_internal_set_graphics(struct gui_priv *this, struct graphics *gra
 	this->win=win;
 	navit_ignore_graphics_events(this->nav, 1);
 	transform_get_size(trans, &this->root.w, &this->root.h);
+
 	this->resize_cb=callback_new_attr_1(callback_cast(gui_internal_resize), attr_resize, this);
+	callback_add_names(this->resize_cb, "gui_internal_set_graphics", "gui_internal_resize");
 	graphics_add_callback(gra, this->resize_cb);
+
 	this->button_cb=callback_new_attr_1(callback_cast(gui_internal_button), attr_button, this);
+	callback_add_names(this->button_cb, "gui_internal_set_graphics", "gui_internal_button");
 	graphics_add_callback(gra, this->button_cb);
+
 	this->motion_cb=callback_new_attr_1(callback_cast(gui_internal_motion), attr_motion, this);
+	callback_add_names(this->motion_cb, "gui_internal_set_graphics", "gui_internal_motion");
 	graphics_add_callback(gra, this->motion_cb);
+
 	this->keypress_cb=callback_new_attr_1(callback_cast(gui_internal_keypress), attr_keypress, this);
+	callback_add_names(this->keypress_cb, "gui_internal_set_graphics", "gui_internal_keypress");
 	graphics_add_callback(gra, this->keypress_cb);
+
 	this->window_closed_cb=callback_new_attr_1(callback_cast(gui_internal_window_closed), attr_window_closed, this);
+	callback_add_names(this->window_closed_cb, "gui_internal_set_graphics", "gui_internal_window_closed");
 	graphics_add_callback(gra, this->window_closed_cb);
 
 	// set fullscreen if needed

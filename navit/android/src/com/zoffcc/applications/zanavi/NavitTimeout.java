@@ -38,51 +38,82 @@
 
 package com.zoffcc.applications.zanavi;
 
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
+import java.util.Random;
 
-public class NavitTimeout implements Runnable
+public class NavitTimeout extends Thread
 {
-	private static Handler handler = new Handler()
-	{
-		public void handleMessage(Message m)
-		{
-			Log.e("Navit", "Handler received message");
-		}
-	};
-	private boolean event_multi;
+	boolean event_multi;
 	private int event_callbackid;
 	private int event_timeout;
+	Boolean running;
+	private int randnum = 0;
 
-	public native void TimeoutCallback(int del, int id);
+	final Random myRandom = new Random();
+
+	// public native void TimeoutCallback(int del, int id);
 
 	NavitTimeout(int timeout, boolean multi, int callbackid)
 	{
-		Log.e("Navit","Create New Event - to=" + timeout + " multi=" + multi + " cid=" + callbackid);
+		this.randnum = myRandom.nextInt();
+		//Log.e("Navit", "Create New Event #"+randnum+" - to=" + timeout + " multi=" + multi + " cid=" + callbackid);
 		event_timeout = timeout;
 		event_multi = multi;
 		event_callbackid = callbackid;
-		handler.postDelayed(this, event_timeout);
+		running = true;
+		this.start();
+		//Log.e("Navit", "Create New Event - READY");
 	}
 
 	public void run()
 	{
-		Log.e("Navit","Handle Event - to=" + event_timeout + " multi=" + event_multi + " cid=" + event_callbackid);
-		if (event_multi)
+		//Log.e("Navit", "Handle Event #"+randnum+" - run");
+
+		while (running)
 		{
-			handler.postDelayed(this, event_timeout);
-			TimeoutCallback(0, event_callbackid);
+			try
+			{
+				//Log.e("Navit", "Handle Event - sleep " + event_timeout + " millis");
+				Thread.sleep(event_timeout, 0);
+			}
+			catch (InterruptedException e)
+			{
+				//e.printStackTrace();
+			}
+
+			if (running)
+			{
+				if (event_multi)
+				{
+					//Log.e("Navit", "Handle Event #"+randnum+" - to=" + event_timeout + " multi=" + event_multi + " cid=" + event_callbackid);
+					Navit.cwthr.TimeoutCallback2(this, 0, event_callbackid);
+				}
+				else
+				{
+					//Log.e("Navit", "Handle Event #"+randnum+" - to=" + event_timeout + " multi=" + event_multi + " cid=" + event_callbackid);
+					running = false;
+					Navit.cwthr.TimeoutCallback2(this, 1, event_callbackid);
+				}
+			}
 		}
-		else
+
+		//Log.e("Navit", "Handle Event #"+randnum+" - end cid=" + event_callbackid);
+
+		try
 		{
-			TimeoutCallback(1, event_callbackid);
+			Thread.sleep(event_timeout, 1000); // sleep 1 secs. to wait for timeout remove call (in C code)
 		}
+		catch (InterruptedException e)
+		{
+		}
+
+		//Log.e("Navit", "Handle Event #"+randnum+" - finish cid=" + event_callbackid);
+
 	}
 
 	public void remove()
 	{
-		Log.e("Navit","remove Event - to=" + event_timeout + " multi=" + event_multi + " cid=" + event_callbackid);
-		handler.removeCallbacks(this);
+		//Log.e("Navit", "remove Event #"+randnum+" - to=" + event_timeout + " multi=" + event_multi + " cid=" + event_callbackid);
+		running = false;
+		this.interrupt();
 	}
 }

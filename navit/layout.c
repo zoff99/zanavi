@@ -306,6 +306,9 @@ int layer_set_attr(struct layer *layer, struct attr *attr)
 
 struct itemgra * itemgra_new(struct attr *parent, struct attr **attrs)
 {
+
+	//dbg(0,"EEnter\n");
+
 	struct itemgra *itm;
 	struct attr *order, *item_types, *speed_range, *angle_range, *sequence_range;
 	enum item_type *type;
@@ -344,6 +347,9 @@ struct itemgra * itemgra_new(struct attr *parent, struct attr **attrs)
 			type++;
 		}
 	}
+
+	//dbg(0,"return\n");
+
 	return itm;
 }
 int itemgra_add_attr(struct itemgra *itemgra, struct attr *attr)

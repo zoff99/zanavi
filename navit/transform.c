@@ -232,7 +232,8 @@ transform_to_geo(enum projection pro, struct coord *c, struct coord_geo *g)
 	int x,y,northern,zone;
 	switch (pro) {
 	case projection_mg:
-		g->lng=c->x/6371000.0/M_PI*180;
+		// g->lng=c->x/6371000.0/M_PI*180;
+		g->lng=c->x*0.00000899322; // simpler
 		g->lat=navit_atan(exp(c->y/6371000.0))/M_PI*360-90;
 		break;
 	case projection_garmin:
@@ -243,7 +244,8 @@ transform_to_geo(enum projection pro, struct coord *c, struct coord_geo *g)
 		x=c->x;
 		y=c->y;
 		northern=y >= 0;
-		if (!northern) {
+		if (!northern)
+		{
 			y+=10000000;
 		}
 		zone=(x/1000000);
@@ -260,8 +262,10 @@ transform_from_geo(enum projection pro, struct coord_geo *g, struct coord *c)
 {
 	switch (pro) {
 	case projection_mg:
-		c->x=g->lng*6371000.0*M_PI/180;
-		c->y=log(navit_tan(M_PI_4+g->lat*M_PI/360))*6371000.0;
+		// c->x=g->lng*6371000.0*M_PI/180;
+		c->x=g->lng*111194.9266445587373; // already calced (6371000.0*M_PI/180)
+		// c->y=log(navit_tan(M_PI_4+g->lat*M_PI/360))*6371000.0;
+		c->y=log(navit_tan(M_PI_4+g->lat*0.008726646259971647884618))*6371000.0; // already calced (M_PI/360)
 		break;
 	case projection_garmin:
 		c->x=g->lng*geo2gar_units;
@@ -565,27 +569,36 @@ transform_screen_to_3d(struct transformation *t, struct point *p, navit_float z,
 static int
 transform_reverse_near_far(struct transformation *t, struct point *p, struct coord *c, int near, int far)
 {
-        double xc,yc;
-	dbg(1,"%d,%d\n",p->x,p->y);
-	if (t->ddd) {
+	double xc,yc;
+
+	//dbg(1,"%d,%d\n",p->x,p->y);
+
+	if (t->ddd)
+	{
 		struct coord_geo_cart nearc,farc,nears,fars,intersection;
 		transform_screen_to_3d(t, p, near, &nearc);	
 		transform_screen_to_3d(t, p, far, &farc);
 		transform_apply_inverse_matrix(t, &nearc, &nears);
 		transform_apply_inverse_matrix(t, &farc, &fars);
 		if (transform_zplane_intersection(&nears, &fars, HOG(*t), &intersection) != 1)
+		{
 			return 0;
+		}
 		xc=intersection.x;
 		yc=intersection.y;
-	} else {
-        	double xcn,ycn;
+	}
+	else
+	{
+      	double xcn,ycn;
 		xcn=p->x - t->offx;
 		ycn=p->y - t->offy;
 		xc=(xcn*t->im00+ycn*t->im01)*(1 << POST_SHIFT);
 		yc=(xcn*t->im10+ycn*t->im11)*(1 << POST_SHIFT);
 	}
+
 	c->x=xc*(1 << t->scale_shift)+t->map_center.x;
 	c->y=yc*(1 << t->scale_shift)+t->map_center.y;
+
 	return 1;
 }
 
@@ -647,12 +660,12 @@ transform_get_selection(struct transformation *this_, enum projection pro, int o
 		if (this_->pro != pro) {
 			transform_to_geo(this_->pro, &curri->u.c_rect.lu, &g);
 			transform_from_geo(pro, &g, &curro->u.c_rect.lu);
-			dbg(1,"%f,%f", g.lat, g.lng);
+			// dbg(1,"%f,%f", g.lat, g.lng);
 			transform_to_geo(this_->pro, &curri->u.c_rect.rl, &g);
 			transform_from_geo(pro, &g, &curro->u.c_rect.rl);
-			dbg(1,": - %f,%f\n", g.lat, g.lng);
+			// dbg(1,": - %f,%f\n", g.lat, g.lng);
 		}
-		dbg(1,"transform rect for %d is %d,%d - %d,%d\n", pro, curro->u.c_rect.lu.x, curro->u.c_rect.lu.y, curro->u.c_rect.rl.x, curro->u.c_rect.rl.y);
+		// dbg(1,"transform rect for %d is %d,%d - %d,%d\n", pro, curro->u.c_rect.lu.x, curro->u.c_rect.lu.y, curro->u.c_rect.rl.x, curro->u.c_rect.rl.y);
 		curro->order+=order;
 #if 0
 		curro->u.c_rect.lu.x-=500;
@@ -874,7 +887,7 @@ transform_setup_source_rect(struct transformation *t)
 				if (transform_zplane_intersection(&cg[edgenodes[i*2]], &cg[edgenodes[i*2+1]], HOG(*t), &tmp) == 1) {
 					c.x=tmp.x*(1 << t->scale_shift)+t->map_center.x;
 					c.y=tmp.y*(1 << t->scale_shift)+t->map_center.y;
-					dbg(1,"intersection with edge %d at 0x%x,0x%x\n",i,c.x,c.y);
+					//dbg(1,"intersection with edge %d at 0x%x,0x%x\n",i,c.x,c.y);
 					if (valid)
 						coord_rect_extend(&msm->u.c_rect, &c);
 					else {
@@ -882,21 +895,21 @@ transform_setup_source_rect(struct transformation *t)
 						msm->u.c_rect.rl=c;
 						valid=1;
 					}
-					dbg(1,"rect 0x%x,0x%x - 0x%x,0x%x\n",msm->u.c_rect.lu.x,msm->u.c_rect.lu.y,msm->u.c_rect.rl.x,msm->u.c_rect.rl.y);
+					//dbg(1,"rect 0x%x,0x%x - 0x%x,0x%x\n",msm->u.c_rect.lu.x,msm->u.c_rect.lu.y,msm->u.c_rect.rl.x,msm->u.c_rect.rl.y);
 				}
 			}
 		} else {
 			for (i = 0 ; i < 4 ; i++) {
 				transform_reverse(t, &screen_pnt[i], &screen[i]);
-				dbg(1,"map(%d) %d,%d=0x%x,0x%x\n", i,screen_pnt[i].x, screen_pnt[i].y, screen[i].x, screen[i].y);
+				//dbg(1,"map(%d) %d,%d=0x%x,0x%x\n", i,screen_pnt[i].x, screen_pnt[i].y, screen[i].x, screen[i].y);
 			}
 			msm->u.c_rect.lu.x=min4(screen[0].x,screen[1].x,screen[2].x,screen[3].x);
 			msm->u.c_rect.rl.x=max4(screen[0].x,screen[1].x,screen[2].x,screen[3].x);
 			msm->u.c_rect.rl.y=min4(screen[0].y,screen[1].y,screen[2].y,screen[3].y);
 			msm->u.c_rect.lu.y=max4(screen[0].y,screen[1].y,screen[2].y,screen[3].y);
 		}
-		dbg(1,"%dx%d\n", msm->u.c_rect.rl.x-msm->u.c_rect.lu.x,
-				 msm->u.c_rect.lu.y-msm->u.c_rect.rl.y);
+		//dbg(1,"%dx%d\n", msm->u.c_rect.rl.x-msm->u.c_rect.lu.x,
+		//		 msm->u.c_rect.lu.y-msm->u.c_rect.rl.y);
 		*msm_last=msm;
 		msm_last=&msm->next;
 		ms=ms->next;
@@ -920,7 +933,7 @@ transform_set_scale(struct transformation *t, long scale)
 int
 transform_get_order(struct transformation *t)
 {
-	dbg(1,"order %d\n", t->order);
+	//dbg(1,"order %d\n", t->order);
 	return t->order;
 }
 

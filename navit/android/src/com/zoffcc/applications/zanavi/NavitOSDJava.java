@@ -41,7 +41,7 @@ public class NavitOSDJava extends ImageView
 
 	private static Boolean show_scale = false;
 
-	private static Boolean one_shot = false;
+	//private static Boolean one_shot = false;
 	private static long last_paint_me = 0L;
 
 	// this number is an estimate
@@ -534,10 +534,10 @@ public class NavitOSDJava extends ImageView
 			e.printStackTrace();
 		}
 
-		if (NavitGraphics.MAP_DISPLAY_OFF)
-		{
-			one_shot = true;
-		}
+		//if (NavitGraphics.MAP_DISPLAY_OFF)
+		//{
+		//	one_shot = true;
+		//}
 	}
 
 	public void onDraw(Canvas c)
@@ -778,15 +778,15 @@ public class NavitOSDJava extends ImageView
 			}
 		}
 
-		if (NavitGraphics.MAP_DISPLAY_OFF)
-		{
-			if (one_shot)
-			{
-				//System.out.println("one shot");
-				one_shot = false;
-				this.postInvalidate();
-			}
-		}
+		//if (NavitGraphics.MAP_DISPLAY_OFF)
+		//{
+		//	if (one_shot)
+		//	{
+		//		//System.out.println("one shot");
+		//		one_shot = false;
+		//		//this.postInvalidate();
+		//	}
+		//}
 	}
 
 	//	@Override
@@ -803,6 +803,8 @@ public class NavitOSDJava extends ImageView
 			switch (msg.what)
 			{
 			case 1:
+				//System.out.println("OSDJava:handleMessage:1");
+				//System.out.println("invalidate 007");
 				postInvalidate();
 				break;
 			}

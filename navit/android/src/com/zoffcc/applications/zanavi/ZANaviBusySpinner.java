@@ -79,7 +79,7 @@ public class ZANaviBusySpinner extends ImageView
 		}
 		catch (Exception e)
 		{
-
+			//e.printStackTrace();
 		}
 	}
 
@@ -87,29 +87,38 @@ public class ZANaviBusySpinner extends ImageView
 	{
 		try
 		{
-			rotateAnim.cancel();
+			// ******* rotateAnim.cancel(); // --> this works only on higher API levels!!
+
+			// --> so use these lines instead
+			rotateAnim.setRepeatMode(Animation.RESTART);
+			rotateAnim.setRepeatCount(0);
+			rotateAnim.setDuration(600L); // speed of the animation, higher value = lower speed
+			rotateAnim.setInterpolator(new LinearInterpolator());
+			// --> so use these lines instead
+
 			rotateAnim.reset();
-			// System.out.println("ZANaviBusySpinner cancel");
+			//System.out.println("ZANaviBusySpinner cancel");
 		}
 		catch (Exception e)
 		{
-
+			//e.printStackTrace();
 		}
 
 		try
 		{
-			// System.out.println("ZANaviBusySpinner null");
 			rotateAnim = null;
+			//System.out.println("ZANaviBusySpinner null");
 		}
 		catch (Exception e)
 		{
-
+			//e.printStackTrace();
 		}
 
 	}
 
 	public void onDraw(Canvas c)
 	{
+		//System.out.println("ZANaviBusySpinner onDraw");
 		if (ZANaviBusySpinner.active)
 		{
 			if (rotateAnim == null)
@@ -117,7 +126,7 @@ public class ZANaviBusySpinner extends ImageView
 				createAnim(c);
 			}
 
-			// System.out.println("ZANaviBusySpinner draw");
+			//System.out.println("ZANaviBusySpinner draw");
 			c.drawArc(this.r, 0, 310, false, this.paint);
 		}
 	}

@@ -72,6 +72,7 @@ extern int shift_order;
 extern int global_search_street_size_factor;
 extern int enable_water_from_relations;
 extern int hold_drawing;
+extern int global_stop_demo_vehicle;
 
 extern long long draw_lines_count_2;
 extern long long draw_lines_count_3;
@@ -79,6 +80,8 @@ extern long long draw_lines_count_4;
 
 extern int mapdraw_time[11 + 5];
 extern int cur_mapdraw_time_index;
+
+extern int route_status_previous;
 
 /* prototypes */
 enum attr_type;
@@ -182,6 +185,7 @@ int navit_get_cur_pnt(struct navit *this_, struct point *p);
 #include "attr.h"
 
 struct coord global_vehicle_pos_onscreen;
+struct coord_geo global_last_vehicle_pos_geo;
 
 //! The navit_vehicule
 struct navit_vehicle

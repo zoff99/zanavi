@@ -142,7 +142,7 @@ static int search_list_level(enum attr_type attr_type)
 		case attr_postal:
 			return -1;
 		default:
-			dbg(0, "unknown search '%s'\n", attr_to_name(attr_type));
+			// // dbg(0, "unknown search '%s'\n", attr_to_name(attr_type));
 			return -1;
 	}
 }
@@ -162,8 +162,8 @@ void search_list_search(struct search_list *this_, struct attr *search_attr, int
 	int level = search_list_level(search_attr->type);
 	this_->item = NULL;
 	interpolation_clear(&this_->inter);
-	//dbg(0,"## enter\n");
-	//dbg(0,"## level=%d\n", level);
+	//// // dbg(0,"## enter\n");
+	//// dbg(0,"## level=%d\n", level);
 	if (level != -1)
 	{
 		this_->result.id = 0;
@@ -177,14 +177,14 @@ void search_list_search(struct search_list *this_, struct attr *search_attr, int
 			le = &this_->levels[level - 1];
 			le->curr = le->list;
 		}
-		//dbg(0,"## le=%p partial=%d\n", le, partial);
+		//// dbg(0,"## le=%p partial=%d\n", le, partial);
 	}
 	else if (search_attr->type == attr_postal)
 	{
 		g_free(this_->postal);
 		this_->postal = g_strdup(search_attr->u.str);
 	}
-	//dbg(0,"## return\n");
+	//// dbg(0,"## return\n");
 }
 
 struct search_list_common *
@@ -199,7 +199,7 @@ search_list_select(struct search_list *this_, enum attr_type attr_type, int id, 
 	curr = le->list;
 	if (mode > 0 || !id)
 		le->selected = mode;
-	//dbg(0,"enter level=%d %d %d %p\n", level, id, mode, curr);
+	//// dbg(0,"enter level=%d %d %d %p\n", level, id, mode, curr);
 	while (curr)
 	{
 		num++;
@@ -210,13 +210,13 @@ search_list_select(struct search_list *this_, enum attr_type attr_type, int id, 
 			if (id)
 			{
 				le->last = curr;
-				//dbg(0,"found\n");
+				//// dbg(0,"found\n");
 				return slc;
 			}
 		}
 		curr = g_list_next(curr);
 	}
-	//dbg(0,"not found\n");
+	//// dbg(0,"not found\n");
 	return NULL;
 }
 
@@ -304,7 +304,7 @@ search_list_town_new(struct item *item)
 
 	if (item_attr_get(item, attr_town_streets_item, &attr))
 	{
-		//dbg(1, "town_assoc 0x%x 0x%x\n", attr.u.item->id_hi, attr.u.item->id_lo);
+		//// dbg(1, "town_assoc 0x%x 0x%x\n", attr.u.item->id_hi, attr.u.item->id_lo);
 		ret->common.unique = *attr.u.item;
 	}
 
@@ -397,7 +397,7 @@ static void search_list_street_destroy(struct search_list_street *this_)
 static char *
 search_interpolate(struct interpolation *inter)
 {
-	dbg(1, "interpolate %s-%s %s\n", inter->first, inter->last, inter->curr);
+	// dbg(1, "interpolate %s-%s %s\n", inter->first, inter->last, inter->curr);
 	if (!inter->first || !inter->last)
 		return NULL;
 	if (!inter->curr)
@@ -419,7 +419,7 @@ search_interpolate(struct interpolation *inter)
 			inter->curr = NULL;
 		}
 	}
-	dbg(1, "interpolate result %s\n", inter->curr);
+	// dbg(1, "interpolate result %s\n", inter->curr);
 	return inter->curr;
 }
 
@@ -440,7 +440,7 @@ static void search_interpolation_split(char *str, struct interpolation *inter)
 	strncpy(first, str, len);
 	first[len] = '\0';
 	last = g_strdup(pos + 1);
-	dbg(1, "%s = %s - %s\n", str, first, last);
+	// dbg(1, "%s = %s - %s\n", str, first, last);
 	if (atoi(first) > atoi(last))
 	{
 		inter->first = last;
@@ -462,7 +462,7 @@ static int search_setup_interpolation(struct item *item, enum attr_type i0, enum
 	g_free(inter->last);
 	g_free(inter->curr);
 	inter->first = inter->last = inter->curr = NULL;
-	dbg(1, "setup %s\n", attr_to_name(i0));
+	// dbg(1, "setup %s\n", attr_to_name(i0));
 	if (item_attr_get(item, i0, &attr))
 	{
 		search_interpolation_split(attr.u.str, inter);
@@ -497,7 +497,7 @@ search_house_number_coordinate(struct item *item, struct interpolation *inter)
 	struct pcoord *ret=g_new(struct pcoord, 1);
 	ret->pro = map_projection(item->map);
 
-	// dbg(0,"001t: %s\n", item_to_name(item->type));
+	// // dbg(0,"001t: %s\n", item_to_name(item->type));
 
 	if (item_is_point(*item))
 	{
@@ -530,27 +530,27 @@ search_house_number_coordinate(struct item *item, struct interpolation *inter)
 		{
 			int i, distance_sum = 0, hn_distance;
 			int *distances = g_alloca(sizeof(int) * (count - 1));
-			dbg(1, "count=%d hn_length=%d hn_pos=%d (%s of %s-%s)\n", count, hn_length, hn_pos, inter->curr, inter->first, inter->last);
+			// dbg(1, "count=%d hn_length=%d hn_pos=%d (%s of %s-%s)\n", count, hn_length, hn_pos, inter->curr, inter->first, inter->last);
 			if (!hn_length)
 			{
 				hn_length = 2;
 				hn_pos = 1;
 			}
 			if (count == max)
-				dbg(0, "coordinate overflow\n");
+				// dbg(0, "coordinate overflow\n");
 			for (i = 0; i < count - 1; i++)
 			{
 				distances[i] = navit_sqrt(transform_distance_sq(&c[i], &c[i + 1]));
 				distance_sum += distances[i];
-				dbg(1, "distance[%d]=%d\n", i, distances[i]);
+				// dbg(1, "distance[%d]=%d\n", i, distances[i]);
 			}
-			dbg(1, "sum=%d\n", distance_sum);
+			// dbg(1, "sum=%d\n", distance_sum);
 			hn_distance = distance_sum * hn_pos / hn_length;
-			dbg(1, "hn_distance=%d\n", hn_distance);
+			// dbg(1, "hn_distance=%d\n", hn_distance);
 			i = 0;
 			while (i < count - 1 && hn_distance > distances[i])
 				hn_distance -= distances[i++];
-			dbg(1, "remaining distance=%d from %d\n", hn_distance, distances[i]);
+			// dbg(1, "remaining distance=%d from %d\n", hn_distance, distances[i]);
 			ret->x = (c[i + 1].x - c[i].x) * hn_distance / distances[i] + c[i].x;
 			ret->y = (c[i + 1].y - c[i].y) * hn_distance / distances[i] + c[i].y;
 		}
@@ -565,11 +565,11 @@ search_list_house_number_new(struct item *item, struct interpolation *inter, cha
 	struct attr attr;
 	char *hn;
 
-	//dbg(0,"@@@@ enter @@@@\n");
+	//// dbg(0,"@@@@ enter @@@@\n");
 
 	ret->common.item = ret->common.unique = *item;
 	//if (item_attr_get(item, attr_street_name, &attr))
-	//	dbg(0,"xx1 %s\n",attr.u.str);
+	//	// dbg(0,"xx1 %s\n",attr.u.str);
 	if (item_attr_get(item, attr_house_number, &attr))
 	{
 		ret->house_number = map_convert_string(item->map, attr.u.str);
@@ -577,36 +577,36 @@ search_list_house_number_new(struct item *item, struct interpolation *inter, cha
 	else
 	{
 		//if (item_attr_get(item, attr_street_name, &attr))
-		//	dbg(0,"xx2 %s\n",attr.u.str);
+		//	// dbg(0,"xx2 %s\n",attr.u.str);
 		for (;;)
 		{
-			//dbg(0,"interpolate 11");
+			//// dbg(0,"interpolate 11");
 			ret->interpolation = 1;
 			switch (inter->side)
 			{
 				case 0:
-					//dbg(0,"interpolate 11 0");
+					//// dbg(0,"interpolate 11 0");
 					inter->side = -1;
 					search_setup_interpolation(item, attr_house_number_left, attr_house_number_left_odd, attr_house_number_left_even, inter);
 				case -1:
-					//dbg(0,"interpolate 11 -1");
+					//// dbg(0,"interpolate 11 -1");
 					if ((hn = search_interpolate(inter)))
 						break;
 					inter->side = 1;
 					search_setup_interpolation(item, attr_house_number_right, attr_house_number_right_odd, attr_house_number_right_even, inter);
 				case 1:
-					//dbg(0,"interpolate 11 1");
+					//// dbg(0,"interpolate 11 1");
 					if ((hn = search_interpolate(inter)))
 						break;
 				default:
-					//dbg(0,"interpolate 11 default");
+					//// dbg(0,"interpolate 11 default");
 					g_free(ret);
 					return NULL;
 			}
 			if (search_match(hn, inter_match, inter_partial))
 			{
-				//dbg(0,"interpolate 22");
-				//dbg(0,"match %s %s-%s\n",hn, inter->first, inter->last);
+				//// dbg(0,"interpolate 22");
+				//// dbg(0,"match %s %s-%s\n",hn, inter->first, inter->last);
 				ret->house_number = map_convert_string(item->map, hn);
 				break;
 			}
@@ -647,7 +647,7 @@ static void search_list_result_destroy(int level, void *p)
 
 static void search_list_search_free(struct search_list *sl, int level)
 {
-	//dbg(0,"enter\n");
+	//// dbg(0,"enter\n");
 
 	struct search_list_level *le = &sl->levels[level];
 	GList *next, *curr;
@@ -676,7 +676,7 @@ static void search_list_search_free(struct search_list *sl, int level)
 	le->curr = NULL;
 	le->last = NULL;
 
-	//dbg(0,"return\n");
+	//// dbg(0,"return\n");
 }
 
 char *
@@ -684,7 +684,7 @@ search_postal_merge(char *mask, char *new)
 {
 	int i;
 	char *ret = NULL;
-	dbg(1, "enter %s %s\n", mask, new);
+	// dbg(1, "enter %s %s\n", mask, new);
 	if (!new)
 		return NULL;
 	if (!mask)
@@ -703,7 +703,7 @@ search_postal_merge(char *mask, char *new)
 		while (mask[i])
 			ret[i++] = '.';
 	}
-	dbg(1, "merged %s with %s as %s\n", mask, new, ret);
+	// dbg(1, "merged %s with %s as %s\n", mask, new, ret);
 	return ret;
 }
 
@@ -740,7 +740,7 @@ static int search_add_result(struct search_list_level *le, struct search_list_co
 	struct search_list_common *slo;
 	char *merged;
 
-	//dbg(0,"enter\n");
+	//// dbg(0,"enter\n");
 
 	//slo=g_hash_table_lookup(le->hash, &slc->unique);
 	//if (!slo) {
@@ -773,24 +773,24 @@ search_list_get_result(struct search_list *this_)
 	struct attr attr2;
 	int has_street_name = 0;
 
-	//dbg(0,"******* enter *******\n");
+	//// dbg(0,"******* enter *******\n");
 	le = &this_->levels[level];
-	//dbg(0,"le=%p\n", le);
+	//// dbg(0,"le=%p\n", le);
 	for (;;)
 	{
-		//dbg(0,"le->search=%p\n", le->search);
+		//// dbg(0,"le->search=%p\n", le->search);
 		if (!le->search)
 		{
-			//dbg(0,"partial=%d level=%d\n", le->partial, level);
+			//// dbg(0,"partial=%d level=%d\n", le->partial, level);
 			if (!level)
 				le->parent = NULL;
 			else
 			{
 				leu = &this_->levels[level - 1];
-				//dbg(0,"leu->curr=%p\n", leu->curr);
+				//// dbg(0,"leu->curr=%p\n", leu->curr);
 				for (;;)
 				{
-					//dbg(0,"*********########");
+					//// dbg(0,"*********########");
 
 					struct search_list_common *slc;
 					if (!leu->curr)
@@ -810,32 +810,32 @@ search_list_get_result(struct search_list *this_)
 #if 0
 			if (le->parent)
 			{
-				dbg(0,"mapset_search_new with item(%d,%d)\n", le->parent->item.id_hi, le->parent->item.id_lo);
+				// dbg(0,"mapset_search_new with item(%d,%d)\n", le->parent->item.id_hi, le->parent->item.id_lo);
 			}
 			else
 			{
-				dbg(0,"NO parent!!\n");
+				// dbg(0,"NO parent!!\n");
 			}
-			dbg(0,"############## attr=%s\n", attr_to_name(le->attr->type));
+			// dbg(0,"############## attr=%s\n", attr_to_name(le->attr->type));
 #endif
 			le->search = mapset_search_new(this_->ms, &le->parent->item, le->attr, le->partial);
 			// ** DOC ** mapset_search_new(struct mapset *ms, struct item *item, struct attr *search_attr, int partial)
 			le->hash = g_hash_table_new(search_item_hash_hash, search_item_hash_equal);
 		}
 
-		//dbg(0,"le->search=%p\n", le->search);
+		//// dbg(0,"le->search=%p\n", le->search);
 
 		if (!this_->item)
 		{
-			//dbg(0,"sssss 1");
+			//// dbg(0,"sssss 1");
 			this_->item = mapset_search_get_item(le->search);
-			//dbg(0,"sssss 1 %p\n",this_->item);
+			//// dbg(0,"sssss 1 %p\n",this_->item);
 		}
 
 		if (this_->item)
 		{
 			void *p = NULL;
-			//dbg(0,"id_hi=%d id_lo=%d\n", this_->item->id_hi, this_->item->id_lo);
+			//// dbg(0,"id_hi=%d id_lo=%d\n", this_->item->id_hi, this_->item->id_lo);
 			if (this_->postal)
 			{
 				struct attr postal;
@@ -854,18 +854,18 @@ search_list_get_result(struct search_list *this_)
 			this_->result.town = NULL;
 			this_->result.street = NULL;
 			this_->result.c = NULL;
-			//dbg(0,"case x LEVEL start %d\n",level);
+			//// dbg(0,"case x LEVEL start %d\n",level);
 			switch (level)
 			{
 				case 0:
-					//dbg(0,"case 0 COUNTRY");
+					//// dbg(0,"case 0 COUNTRY");
 					p = search_list_country_new(this_->item);
 					this_->result.country = p;
 					this_->result.country->common.parent = NULL;
 					this_->item = NULL;
 					break;
 				case 1:
-					//dbg(0,"case 1 TOWN");
+					//// dbg(0,"case 1 TOWN");
 					p = search_list_town_new(this_->item);
 					this_->result.town = p;
 					this_->result.town->common.parent = this_->levels[0].last->data;
@@ -874,7 +874,7 @@ search_list_get_result(struct search_list *this_)
 					this_->item = NULL;
 					break;
 				case 2:
-					//dbg(0,"case 2 STREET");
+					//// dbg(0,"case 2 STREET");
 					p = search_list_street_new(this_->item);
 					this_->result.street = p;
 					this_->result.street->common.parent = this_->levels[1].last->data;
@@ -884,26 +884,26 @@ search_list_get_result(struct search_list *this_)
 					this_->item = NULL;
 					break;
 				case 3:
-					//dbg(0,"case 3 HOUSENUMBER");
+					//// dbg(0,"case 3 HOUSENUMBER");
 					has_street_name = 0;
 
 					// if this housenumber has a streetname tag, set the name now
 					if (item_attr_get(this_->item, attr_street_name, &attr2))
 					{
-						// dbg(0,"streetname: %s\n",attr2.u.str);
+						// // dbg(0,"streetname: %s\n",attr2.u.str);
 						has_street_name = 1;
 					}
 
-					//dbg(0,"case 3 XXXX 1\n");
+					//// dbg(0,"case 3 XXXX 1\n");
 					p = search_list_house_number_new(this_->item, &this_->inter, le->attr->u.str, le->partial);
-					//dbg(0,"case 3 XXXX 2\n");
+					//// dbg(0,"case 3 XXXX 2\n");
 					if (!p)
 					{
 						interpolation_clear(&this_->inter);
 						this_->item = NULL;
 						continue;
 					}
-					//dbg(0,"case 3 XXXX 3\n");
+					//// dbg(0,"case 3 XXXX 3\n");
 					this_->result.house_number = p;
 					if (!this_->result.house_number->interpolation)
 					{
@@ -916,12 +916,12 @@ search_list_get_result(struct search_list *this_)
 					this_->result.country = this_->result.town->common.parent;
 					this_->result.c = this_->result.house_number->common.c;
 
-					//dbg(0,"case 3 XXXX 4\n");
+					//// dbg(0,"case 3 XXXX 4\n");
 					if (has_street_name == 1)
 					{
 						gchar *tmp_name = g_strdup(attr2.u.str);
 						this_->result.street->name = tmp_name;
-						//dbg(0,"res streetname=%s\n",this_->result.street->name);
+						//// dbg(0,"res streetname=%s\n",this_->result.street->name);
 					}
 					else
 					{
@@ -933,12 +933,12 @@ search_list_get_result(struct search_list *this_)
 						//
 						this_->result.street->name = NULL;
 					}
-					//dbg(0,"case 3 XXXX 5\n");
+					//// dbg(0,"case 3 XXXX 5\n");
 					break;
 			}
 			// CASE END *********
 
-			//dbg(0,"case end\n");
+			//// dbg(0,"case end\n");
 
 			if (p)
 			{
@@ -946,7 +946,7 @@ search_list_get_result(struct search_list *this_)
 				{
 					//** this_->result.id++;
 					this_->result.id = 0;
-					//dbg(0,"++++ return result\n");
+					//// dbg(0,"++++ return result\n");
 					return &this_->result;
 				}
 				else
@@ -1058,7 +1058,7 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 	struct coord_geo g;
 	struct coord c;
 
-	//dbg(0,"enter\n");
+	//// dbg(0,"enter\n");
 
 	while ((slr = search_list_get_result(sl)))
 	{
@@ -1095,7 +1095,7 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 									slr->house_number->house_number);
 						}
 
-						//dbg(0,"res=%s\n",buffer);
+						//// dbg(0,"res=%s\n",buffer);
 
 						// deactivated now * result_list=g_list_prepend(result_list,g_strdup(buffer));
 #ifdef HAVE_API_ANDROID
@@ -1115,7 +1115,7 @@ search_address_housenumber_real(GList *result_list, struct search_list *sl, char
 static GList *
 search_address__street(GList *result_list, struct search_list *sl, GList *phrases, GList *exclude1, GList *exclude2, GList *exclude3, int partial, struct jni_object *jni)
 {
-	//dbg(0,"enter\n");
+	//// dbg(0,"enter\n");
 
 	struct search_list_result *slr = NULL;
 	GList *tmp = phrases;
@@ -1158,7 +1158,7 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 			}
 			// deactivated now * result_list=g_list_prepend(result_list,g_strdup(buffer));
 
-			//dbg(0,"res=%s\n",buffer);
+			//// dbg(0,"res=%s\n",buffer);
 
 #ifdef HAVE_API_ANDROID
 			// return results to android as they come in ...
@@ -1167,7 +1167,7 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 			count++;
 
 			buffer2 = g_strdup_printf("%s", slr->street->name);
-			//dbg(0,"b2:%s\n",buffer2);
+			//// dbg(0,"b2:%s\n",buffer2);
 
 
 			save_item = sl->item;
@@ -1184,10 +1184,10 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 					break;
 				}
 
-				//dbg(0,"s0=%s\n",tmp->data);
+				//// dbg(0,"s0=%s\n",tmp->data);
 				if (tmp != exclude1 && tmp != exclude2 && tmp != exclude3)
 				{
-					//dbg(0,"s=%s\n",tmp->data);
+					//// dbg(0,"s=%s\n",tmp->data);
 
 					attr2.type = attr_house_number;
 					attr2.u.str = tmp->data;
@@ -1216,14 +1216,14 @@ search_address__street(GList *result_list, struct search_list *sl, GList *phrase
 		}
 	}
 
-	//dbg(0,"return 2\n");
+	//// dbg(0,"return 2\n");
 	return result_list;
 }
 
 static GList *
 search_address__town(GList *result_list, struct search_list *sl, GList *phrases, GList *exclude1, GList *exclude2, int partial, struct jni_object *jni)
 {
-	//dbg(0,"enter\n");
+	//// dbg(0,"enter\n");
 	struct search_list_result *slr;
 	GList *tmp = phrases;
 	int count = 0;
@@ -1261,7 +1261,7 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 			buffer = g_strdup_printf("TWN:H%dL%d:%f:%f:%.101s,%.7s %.101s", slr->town->common.item.id_hi, slr->town->common.item.id_lo, g.lat, g.lng, slr->country->name, slr->town->common.postal, slr->town->common.town_name);
 		}
 
-		//dbg(0,"**res=%s\n",buffer);
+		//// dbg(0,"**res=%s\n",buffer);
 
 		// deactivated now * result_list=g_list_prepend(result_list,g_strdup(buffer));
 #ifdef HAVE_API_ANDROID
@@ -1289,7 +1289,7 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 
 			if (tmp != exclude1 && tmp != exclude2)
 			{
-				//dbg(0,"s=%s\n",tmp->data);
+				//// dbg(0,"s=%s\n",tmp->data);
 				attr.type = attr_street_name;
 				attr.u.str = tmp->data;
 				search_list_search(sl, &attr, partial);
@@ -1304,7 +1304,7 @@ search_address__town(GList *result_list, struct search_list *sl, GList *phrases,
 		sl->last_result_valid = save_last_result_valid;
 	}
 
-	//dbg(0,"return 2\n");
+	//// dbg(0,"return 2\n");
 	return result_list;
 }
 
@@ -1315,19 +1315,19 @@ search_address__country(GList *result_list, struct search_list *sl, GList *phras
 	int count = 0;
 	struct attr attr;
 	struct search_list_result *slr;
-	//dbg(0,"enter\n");
+	//// dbg(0,"enter\n");
 
 	while ((slr = search_list_get_result(sl)))
 	{
-		//dbg(0,"1 slr=%p\n",slr->country);
-		//dbg(0,"2 slr=%s\n",slr->country->name);
-		//dbg(0,"3 slr=%s\n",slr->country->iso2);
+		//// dbg(0,"1 slr=%p\n",slr->country);
+		//// dbg(0,"2 slr=%s\n",slr->country->name);
+		//// dbg(0,"3 slr=%s\n",slr->country->iso2);
 		count++;
 	}
-	//dbg(0,"count %d\n",count);
+	//// dbg(0,"count %d\n",count);
 	if (!count)
 	{
-		//dbg(0,"return 1");
+		//// dbg(0,"return 1");
 		return result_list;
 	}
 
@@ -1335,7 +1335,7 @@ search_address__country(GList *result_list, struct search_list *sl, GList *phras
 	{
 		if (tmp != exclude)
 		{
-			//dbg(0,"Is=%s\n",tmp->data);
+			//// dbg(0,"Is=%s\n",tmp->data);
 			attr.type = attr_town_or_district_name;
 			attr.u.str = tmp->data;
 			search_list_search(sl, &attr, partial);
@@ -1343,11 +1343,11 @@ search_address__country(GList *result_list, struct search_list *sl, GList *phras
 		}
 		//else
 		//{
-		//dbg(0,"Xs=%s\n",tmp->data);
+		//// dbg(0,"Xs=%s\n",tmp->data);
 		//}
 		tmp = g_list_next(tmp);
 	}
-	//dbg(0,"return 2");
+	//// dbg(0,"return 2");
 	return result_list;
 }
 
@@ -1677,7 +1677,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 	struct pcoord center99;
 	int search_radius_this = 0;
-	dbg(0, "in lat=%f,lng=%f\n", search_center->lat, search_center->lng);
+	// dbg(0, "in lat=%f,lng=%f\n", search_center->lat, search_center->lng);
 	if ((search_center->lat == 0) && (search_center->lng == 0))
 	{
 		center99.x = 0;
@@ -1692,7 +1692,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 		center99.y = c99.y;
 		search_radius_this = search_radius;
 	}
-	dbg(0, "out x=%d,y=%d,r=%d\n", center99.x, center99.y, search_radius_this);
+	// dbg(0, "out x=%d,y=%d,r=%d\n", center99.x, center99.y, search_radius_this);
 
 	struct map_selection *sel = map_selection_rect_new(&center99, search_radius_this, search_order);
 	sel->range.min = type_town_label;
@@ -1707,7 +1707,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 38) == 0)
 				{
 					// its an sdcard map
-					//dbg(0,"map name=%s",map_name_attr.u.str);
+					//// dbg(0,"map name=%s",map_name_attr.u.str);
 					// mr=map_rect_new(map, NULL);
 					mr = map_rect_new(map, sel);
 					if (mr)
@@ -1737,7 +1737,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 									c.y = p->common.c->y;
 									int calc_geo = 0;
 
-									// dbg(0,"town name=%s\n", attr.u.str);
+									// // dbg(0,"town name=%s\n", attr.u.str);
 
 									phrases = phrases_first;
 									while (phrases)
@@ -1750,7 +1750,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 										if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 										{
-											// dbg(0,"matched town name=%s want=%s\n", attr.u.str, phrases->data);
+											// // dbg(0,"matched town name=%s want=%s\n", attr.u.str, phrases->data);
 											if (calc_geo == 0)
 											{
 												transform_to_geo(p->common.c->pro, &c, &g);
@@ -1791,7 +1791,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 									c.y = p->common.c->y;
 									int calc_geo = 0;
 
-									// dbg(0,"town name=%s\n", attr.u.str);
+									// // dbg(0,"town name=%s\n", attr.u.str);
 
 									phrases = phrases_first;
 									while (phrases)
@@ -1803,7 +1803,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 										if (!ascii_cmp_local(attr.u.str, phrases->data, partial))
 										{
-											// dbg(0,"matched town name=%s want=%s\n", attr.u.str, phrases->data);
+											// // dbg(0,"matched town name=%s want=%s\n", attr.u.str, phrases->data);
 											if (calc_geo == 0)
 											{
 												transform_to_geo(p->common.c->pro, &c, &g);
@@ -1840,10 +1840,10 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 								if (item_attr_get(item, attr_label, &attr))
 								{
-									// dbg(0,"street1=%s\n",map_convert_string(item->map, attr.u.str));
+									// // dbg(0,"street1=%s\n",map_convert_string(item->map, attr.u.str));
 									if ((streetname_last == NULL) || (strcmp(streetname_last, attr.u.str) != 0))
 									{
-										// dbg(0,"street2=%s\n",map_convert_string(item->map, attr.u.str));
+										// // dbg(0,"street2=%s\n",map_convert_string(item->map, attr.u.str));
 										streetname_last = g_strdup_printf("%s", attr.u.str);
 
 										p = search_list_street_new(item);
@@ -1878,7 +1878,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 												{
 													buffer = g_strdup_printf("STR:H%dL%d:%f:%f:%.7s %.101s", p->common.item.id_hi, p->common.item.id_lo, g.lat, g.lng, p->common.postal, attr.u.str);
 												}
-												//dbg(0,"street3=%s\n",buffer);
+												//// dbg(0,"street3=%s\n",buffer);
 #ifdef HAVE_API_ANDROID
 												// return results to android as they come in ...
 												android_return_search_result(jni,buffer);
@@ -1896,7 +1896,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 								if (item_attr_get(item, attr_street_name_match, &attr))
 								{
-									//dbg(0,"street systematic=%s\n",map_convert_string(item->map, attr.u.str));
+									//// dbg(0,"street systematic=%s\n",map_convert_string(item->map, attr.u.str));
 
 									p = search_list_street_new(item);
 									char *buffer = NULL;
@@ -1947,7 +1947,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 
 								if (item_attr_get(item, attr_street_name_systematic, &attr))
 								{
-									//dbg(0,"street systematic=%s\n",map_convert_string(item->map, attr.u.str));
+									//// dbg(0,"street systematic=%s\n",map_convert_string(item->map, attr.u.str));
 
 									p = search_list_street_new(item);
 									char *buffer = NULL;
@@ -2030,42 +2030,42 @@ search_by_address(GList *result_list, struct mapset *ms, char *addr, int partial
 	phrases_first = phrases;
 	sl = search_list_new(ms);
 
-	dbg(0, "-- START --\n");
+	// dbg(0, "-- START --\n");
 
 	// normal search stuff -------- START ----------
 	if (search_country_flags == 1)
 	{
-		dbg(0, "-- country default start --\n");
+		// dbg(0, "-- country default start --\n");
 		//while (phrases)
 		//{
-		// dbg(0,"s=%s\n",phrases->data);
+		// // dbg(0,"s=%s\n",phrases->data);
 		// set default country
 		search_list_search(sl, country_default(), 0);
 		ret = search_address__country(ret, sl, phrases, NULL, partial, jni);
 		// phrases=g_list_next(phrases);
 		//}
-		dbg(0, "-- country default end --\n");
+		// dbg(0, "-- country default end --\n");
 	}
 	else if (search_country_flags == 2)
 	{
-		dbg(0, "-- country sel:%s start --\n", search_country_string);
+		// dbg(0, "-- country sel:%s start --\n", search_country_string);
 		// set a country
 		struct attr country;
 		country.type = attr_country_iso2;
 		country.u.str = search_country_string;
 		//while (phrases)
 		//{
-		// dbg(0,"s=%s\n",phrases->data);
+		// // dbg(0,"s=%s\n",phrases->data);
 		search_list_search(sl, &country, 0);
 		// set a country
 		ret = search_address__country(ret, sl, phrases, NULL, partial, jni);
 		//phrases=g_list_next(phrases);
 		//}
-		dbg(0, "-- country sel:%s end --\n", search_country_string);
+		// dbg(0, "-- country sel:%s end --\n", search_country_string);
 	}
 	else // flags==3
 	{
-		dbg(0, "-- country all start --\n");
+		// dbg(0, "-- country all start --\n");
 		// search all countries!! could take a really long time!!
 		struct attr country;
 		int j2 = sizeof(all_country_list) / sizeof(all_country_list[0]);
@@ -2077,8 +2077,8 @@ search_by_address(GList *result_list, struct mapset *ms, char *addr, int partial
 				phrases = phrases_first;
 				//while (phrases)
 				//{
-				// dbg(0,"s country=%s\n",all_country_list[j1].iso2);
-				// dbg(0,"s=%s\n",phrases->data);
+				// // dbg(0,"s country=%s\n",all_country_list[j1].iso2);
+				// // dbg(0,"s=%s\n",phrases->data);
 				country.type = attr_country_iso2;
 				country.u.str = all_country_list[j1].iso2;
 				search_list_search(sl, &country, 0);
@@ -2092,7 +2092,7 @@ search_by_address(GList *result_list, struct mapset *ms, char *addr, int partial
 				}
 			}
 		}
-		dbg(0, "-- country all end --\n");
+		// dbg(0, "-- country all end --\n");
 	}
 	// normal search stuff --------  END  ----------
 
@@ -2101,7 +2101,7 @@ search_by_address(GList *result_list, struct mapset *ms, char *addr, int partial
 		g_list_free(phrases_first);
 	}
 
-	dbg(0, "--  END  --\n");
+	// dbg(0, "--  END  --\n");
 
 	g_free(str);
 	return ret;

@@ -33,9 +33,31 @@ struct speech_priv {
 	int flags;
 };
 
-static int 
+
+jclass NavitClass4 = NULL;
+jmethodID Navit_get_speech;
+
+static int find_static_method(jclass class, char *name, char *args, jmethodID *ret)
+{
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	//DBG dbg(0,"EEnter\n");
+	*ret = (*jnienv2)->GetStaticMethodID(jnienv2, class, name, args);
+	if (*ret == NULL)
+	{
+		//DBG dbg(0, "Failed to get static Method %s with signature %s\n", name, args);
+		return 0;
+	}
+	return 1;
+}
+
+static int
 speech_android_say(struct speech_priv *this, const char *text)
 {
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
 	char *str=g_strdup(text);
 	jstring string;
 	int i;
@@ -77,10 +99,10 @@ speech_android_say(struct speech_priv *this, const char *text)
 	}
 */
 
-	string = (*jnienv)->NewStringUTF(jnienv, str);
+	string = (*jnienv2)->NewStringUTF(jnienv2, str);
 	// dbg(0,"enter %s\n",str);
-    (*jnienv)->CallVoidMethod(jnienv, this->NavitSpeech, this->NavitSpeech_say, string);
-    (*jnienv)->DeleteLocalRef(jnienv, string);
+    (*jnienv2)->CallVoidMethod(jnienv2, this->NavitSpeech, this->NavitSpeech_say, string);
+    (*jnienv2)->DeleteLocalRef(jnienv2, string);
 
 	g_free(str);
 
@@ -88,11 +110,13 @@ speech_android_say(struct speech_priv *this, const char *text)
 }
 
 static void 
-speech_android_destroy(struct speech_priv *this) {
+speech_android_destroy(struct speech_priv *this)
+{
 	g_free(this);
 }
 
-static struct speech_methods speech_android_meth = {
+static struct speech_methods speech_android_meth =
+{
 	speech_android_destroy,
 	speech_android_say,
 };
@@ -101,6 +125,12 @@ static int
 speech_android_init(struct speech_priv *ret)
 {
 	dbg(0,"EEnter\n");
+
+	int thread_id = gettid();
+	dbg(0, "THREAD ID=%d\n", thread_id);
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
 
 	jmethodID cid;
 	char *class="com/zoffcc/applications/zanavi/NavitSpeech2";
@@ -118,27 +148,52 @@ speech_android_init(struct speech_priv *ret)
 		return 0;
 	}
 
-    dbg(0,"at 3\n");
-    cid = (*jnienv)->GetMethodID(jnienv, ret->NavitSpeechClass, "<init>", "(Lcom/zoffcc/applications/zanavi/Navit;)V");
-    if (cid == NULL)
-	{
-            dbg(0,"no method found\n");
-            return 0; /* exception thrown */
-    }
 	if (!android_find_method(ret->NavitSpeechClass, "say", "(Ljava/lang/String;)V", &ret->NavitSpeech_say))
 	{
 		return 0;
 	}
-    dbg(0,"at 4 android_activity=%p\n",android_activity);
-    ret->NavitSpeech=(*jnienv)->NewObject(jnienv, ret->NavitSpeechClass, cid, android_activity);
-    dbg(0,"result=%p\n",ret->NavitSpeech);
+
+
+
+
+
+	// --------------- Init the new Speech Object here -----------------
+	// --------------- Init the new Speech Object here -----------------
+	// --------------- Init the new Speech Object here -----------------
+	dbg(0,"Init the new Speech Object here\n");
+
+	if (NavitClass4 == NULL)
+	{
+		if (!android_find_class_global("com/zoffcc/applications/zanavi/Navit", &NavitClass4))
+		{
+			NavitClass4 = NULL;
+			return 0;
+		}
+	}
+
+	if (!find_static_method(NavitClass4, "get_speech_object", "()Lcom/zoffcc/applications/zanavi/NavitSpeech2;", &Navit_get_speech))
+		return 0;
+
+
+	/// --old-- ret->NavitSpeech=(*jnienv2)->NewObject(jnienv2, ret->NavitSpeechClass, cid, android_activity);
+
+	/// --new--
+	ret->NavitSpeech = (*jnienv2)->CallStaticObjectMethod(jnienv2, NavitClass4, Navit_get_speech);
+	/// --new--
+
+	// --------------- Init the new Speech Object here -----------------
+	// --------------- Init the new Speech Object here -----------------
+	// --------------- Init the new Speech Object here -----------------
+
+
+
 	if (!ret->NavitSpeech)
 	{
 		return 0;
 	}
 	if (ret->NavitSpeech)
 	{
-		ret->NavitSpeech = (*jnienv)->NewGlobalRef(jnienv, ret->NavitSpeech);
+		ret->NavitSpeech = (*jnienv2)->NewGlobalRef(jnienv2, ret->NavitSpeech);
 	}
 	return 1;
 }

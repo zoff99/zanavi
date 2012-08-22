@@ -47,7 +47,7 @@
 // #define NAVIT_FUNC_CALLS_DEBUG_PRINT 1
 // #define NAVIT_SAY_DEBUG_PRINT 1
 // #define NAVIT_MEASURE_TIME_DEBUG 1
-
+// #define NAVIT_CALLBACK_DEBUG_PRINT 1
 
 
 #ifdef __cplusplus

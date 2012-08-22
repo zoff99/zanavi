@@ -65,6 +65,9 @@ public class NavitVehicle
 	private static float compass_heading;
 	private static float current_accuracy = 99999999F;
 
+	int sats1_old = -1;
+	int satsInFix1_old = -1;
+
 	public static Handler vehicle_handler_ = null;
 	public static long lastcompass_update_timestamp = 0L;
 
@@ -79,9 +82,21 @@ public class NavitVehicle
 	public static GpsStatus gps_status = null;
 	public static Boolean update_location_in_progress = false;
 
-	private static Location last_location = null;
+	public static Location last_location = null;
 
 	public static native void VehicleCallback(Location location);
+
+	public static void VehicleCallback2(Location location)
+	{
+		if (Navit.Global_Init_Finished != 0)
+		{
+			Navit.cwthr.VehicleCallback3(location);
+		}
+		else
+		{
+			System.out.println("VehicleCallback2:Global_Init_Finished == 0 !!!!!!!");
+		}
+	}
 
 	// private static SatStatusThread st = null;
 
@@ -126,7 +141,7 @@ public class NavitVehicle
 
 				try
 				{
-					Thread.sleep(1000);
+					Thread.sleep(3000);
 				}
 				catch (InterruptedException e)
 				{
@@ -140,9 +155,9 @@ public class NavitVehicle
 		}
 	}
 
-	NavitVehicle(Context context, int callbackid)
+	NavitVehicle(Context context)
 	{
-		vehicle_handler_ = vehicle_handler;
+		vehicle_handler_ = Navit.vehicle_handler;
 
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		locationManager_s = locationManager;
@@ -173,7 +188,7 @@ public class NavitVehicle
 						if (!Navit.DemoVehicle)
 						{
 							//Log.e("NavitVehicle", "call VehicleCallback 001");
-							VehicleCallback(location);
+							VehicleCallback2(location);
 						}
 					}
 				}
@@ -236,7 +251,7 @@ public class NavitVehicle
 					//Log.e("NavitVehicle", "LocationChanged provider=precise Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
 					last_location = location;
 					//Log.e("NavitVehicle", "call VehicleCallback 002");
-					VehicleCallback(location);
+					VehicleCallback2(location);
 				}
 			}
 
@@ -362,7 +377,12 @@ public class NavitVehicle
 				if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS)
 				{
 					// get new gpsstatus --------
+
+					sats1_old = Navit.sats;
+					satsInFix1_old = Navit.satsInFix;
+
 					GpsStatus stat = locationManager.getGpsStatus(null);
+
 					Navit.sats = 0;
 					Navit.satsInFix = 0;
 
@@ -378,12 +398,22 @@ public class NavitVehicle
 								Navit.satsInFix++;
 							}
 						}
-						// redraw NavitOSDJava
-						Message msg = NavitOSDJava.progress_handler_.obtainMessage();
-						Bundle b = new Bundle();
-						msg.what = 1;
-						msg.setData(b);
-						NavitOSDJava.progress_handler_.sendMessage(msg);
+
+						System.out.println("checking sat status update");
+
+						if ((sats1_old != Navit.sats) || (satsInFix1_old != Navit.satsInFix))
+						{
+							System.out.println("sat status update -> changed");
+							if (Navit.PREF_show_sat_status)
+							{
+								// redraw NavitOSDJava
+								Message msg = NavitOSDJava.progress_handler_.obtainMessage();
+								Bundle b = new Bundle();
+								msg.what = 1;
+								msg.setData(b);
+								NavitOSDJava.progress_handler_.sendMessage(msg);
+							}
+						}
 					}
 					catch (Exception e)
 					{
@@ -411,13 +441,13 @@ public class NavitVehicle
 					float save_speed = last_location.getSpeed();
 					mock_location.setSpeed(0.2f);
 					//Log.e("NavitVehicle", "call VehicleCallback 003");
-					VehicleCallback(mock_location);
+					VehicleCallback2(mock_location);
 					mock_location.setSpeed(save_speed);
 				}
 				else
 				{
 					//Log.e("NavitVehicle", "call VehicleCallback 004");
-					VehicleCallback(mock_location);
+					VehicleCallback2(mock_location);
 				}
 			}
 		}
@@ -443,7 +473,7 @@ public class NavitVehicle
 							Log.e("NavitVehicle", "getLastKnownLocation precise (2) l=" + l.toString());
 							last_location = l;
 							//Log.e("NavitVehicle", "call VehicleCallback 005");
-							VehicleCallback(l);
+							VehicleCallback2(l);
 						}
 					}
 				}
@@ -478,7 +508,7 @@ public class NavitVehicle
 										Log.e("NavitVehicle", "getLastKnownLocation fast (3) l=" + l.toString());
 										last_location = l;
 										//Log.e("NavitVehicle", "call VehicleCallback 006");
-										VehicleCallback(l);
+										VehicleCallback2(l);
 									}
 								}
 							}
@@ -584,7 +614,7 @@ public class NavitVehicle
 		{
 			e.printStackTrace();
 		}
-		System.out.println("turn_ON_sat_status");
+		//System.out.println("turn_ON_sat_status");
 	}
 
 	public static void turn_off_sat_status()
@@ -602,7 +632,7 @@ public class NavitVehicle
 		{
 			e.printStackTrace();
 		}
-		System.out.println("turn_off_sat_status");
+		//System.out.println("turn_off_sat_status");
 	}
 
 	public static void turn_off_fast_provider()
@@ -626,36 +656,38 @@ public class NavitVehicle
 		turn_off_fast_provider();
 	}
 
-	public Handler vehicle_handler = new Handler()
-	{
-		public void handleMessage(Message msg)
-		{
-			switch (msg.what)
-			{
-			case 1:
-				// dismissDialog(msg.getData().getInt("dialog_num"));
-				// removeDialog(msg.getData().getInt("dialog_num"));
-				Location l = new Location("Network");
-				l.setLatitude(msg.getData().getFloat("lat"));
-				l.setLongitude(msg.getData().getFloat("lng"));
-				l.setBearing(msg.getData().getFloat("b"));
-				l.setSpeed(0.8f);
-				NavitVehicle.set_mock_location__fast(l);
-				break;
-			case 2:
-				if (update_location_in_progress)
-				{
-				}
-				else
-				{
-					update_location_in_progress = true;
-					VehicleCallback(last_location);
-					update_location_in_progress = false;
-				}
-				break;
-			}
-		}
-	};
+	/*
+	 * public Handler vehicle_handler = new Handler()
+	 * {
+	 * public void handleMessage(Message msg)
+	 * {
+	 * switch (msg.what)
+	 * {
+	 * case 1:
+	 * // dismissDialog(msg.getData().getInt("dialog_num"));
+	 * // removeDialog(msg.getData().getInt("dialog_num"));
+	 * Location l = new Location("Network");
+	 * l.setLatitude(msg.getData().getFloat("lat"));
+	 * l.setLongitude(msg.getData().getFloat("lng"));
+	 * l.setBearing(msg.getData().getFloat("b"));
+	 * l.setSpeed(0.8f);
+	 * NavitVehicle.set_mock_location__fast(l);
+	 * break;
+	 * case 2:
+	 * if (update_location_in_progress)
+	 * {
+	 * }
+	 * else
+	 * {
+	 * update_location_in_progress = true;
+	 * VehicleCallback(last_location);
+	 * update_location_in_progress = false;
+	 * }
+	 * break;
+	 * }
+	 * }
+	 * };
+	 */
 
 	public static void update_compass_heading(float heading)
 	{
@@ -685,12 +717,12 @@ public class NavitVehicle
 						if (!Navit.DemoVehicle)
 						{
 							//Log.e("NavitVehicle", "call VehicleCallback 007:start");
-							VehicleCallback(last_location);
+							VehicleCallback2(last_location);
 							/*
-							Message m2 = new Message();
-							m2.what = 2;
-							vehicle_handler_.handleMessage(m2);
-							*/
+							 * Message m2 = new Message();
+							 * m2.what = 2;
+							 * vehicle_handler_.handleMessage(m2);
+							 */
 							//Log.e("NavitVehicle", "call VehicleCallback 007:end");
 						}
 						last_location.setSpeed(save_speed);
@@ -700,7 +732,7 @@ public class NavitVehicle
 						if (!Navit.DemoVehicle)
 						{
 							//Log.e("NavitVehicle", "call VehicleCallback 008");
-							VehicleCallback(last_location);
+							VehicleCallback2(last_location);
 						}
 					}
 					// !! ugly hack to make map redraw !!

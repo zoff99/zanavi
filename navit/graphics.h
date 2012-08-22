@@ -38,11 +38,11 @@ struct mapset;
 
 enum draw_mode_num
 {
-	draw_mode_begin,
-	draw_mode_begin_clear,
-	draw_mode_end,
-	draw_mode_cursor,
-	draw_mode_end_lazy
+	draw_mode_begin, // 0
+	draw_mode_begin_clear, // 1
+	draw_mode_end, // 2
+	draw_mode_cursor, // 3
+	draw_mode_end_lazy // 4
 };
 
 #include "item.h"
@@ -107,9 +107,9 @@ struct graphics_methods
 	void (*draw_lines2)(struct graphics_priv *gr, struct graphics_gc_priv *gc,
 			struct point *p, int count, int order, int oneway);
 	void (*draw_lines3)(struct graphics_priv *gr, struct graphics_gc_priv *gc,
-			struct point *p, int count, int order, int width);
+			struct point *p, int count, int order, int width, int dashes, struct color *c);
 	void (*draw_lines4)(struct graphics_priv *gr, struct graphics_gc_priv *gc,
-			struct point *p, int count, int order, int width, int type);
+			struct point *p, int count, int order, int width, int type, int dashes, struct color *c);
 	void (*draw_lines_dashed)(struct graphics_priv *gr,
 			struct graphics_gc_priv *gc, struct point *p, int count, int order,
 			int oneway);
@@ -130,10 +130,6 @@ struct graphics_methods
 	void (*draw_bigmap)(struct graphics_priv *gr, struct graphics_gc_priv *fg,
 			int yaw, int order, float clat, float clng, int x, int y, int scx,
 			int scy, int px, int py, int valid);
-	void (*send_osd_values)(struct graphics_priv *gr,
-			struct graphics_gc_priv *fg, char *id, char *text1, char *text2,
-			char *text3, int i1, int i2, int i3, int i4, float f1, float f2,
-			float f3);
 	void
 			(*draw_image_warp)(struct graphics_priv *gr,
 					struct graphics_gc_priv *fg, struct point *p, int count,
@@ -150,7 +146,7 @@ struct graphics_methods
 	void
 			(*background_gc)(struct graphics_priv *gr,
 					struct graphics_gc_priv *gc);
-	struct graphics_priv *(*overlay_new)(struct graphics_priv *gr,
+	struct graphics_priv *(*overlay_new)(const char* name, struct graphics_priv *gr,
 			struct graphics_methods *meth, struct point *p, int w, int h,
 			int alpha, int wraparound);
 	struct graphics_image_priv *(*image_new)(struct graphics_priv *gr,
@@ -245,7 +241,7 @@ void graphics_set_rect(struct graphics *gra, struct point_rect *pr);
 struct graphics *graphics_new(struct attr *parent, struct attr **attrs);
 int graphics_get_attr(struct graphics *this_, enum attr_type type,
 		struct attr *attr, struct attr_iter *iter);
-struct graphics *graphics_overlay_new(struct graphics *parent, struct point *p,
+struct graphics *graphics_overlay_new(const char* name, struct graphics *parent, struct point *p,
 		int w, int h, int alpha, int wraparound);
 void graphics_overlay_resize(struct graphics *this_, struct point *p, int w,
 		int h, int alpha, int wraparound);

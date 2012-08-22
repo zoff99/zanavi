@@ -100,10 +100,20 @@
             android:title="AntiAlias" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="use_map_filtering"
+            android:summary="draw Map with filtering on. this looks nicer, but needs more CPU power"
+            android:title="Map Filtering" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="use_custom_font"
             android:summary="use ZANavi custom font"
             android:title="use custom Font" />
-
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_smooth_drawing"
+            android:summary="Smooth drawing when moving or when using compass [BETA]"
+            android:title="Smooth Drawing" />
+        
         <ListPreference
             android:defaultValue="2"
             android:entries="@array/mapfontsizeArray"
@@ -111,13 +121,6 @@
             android:key="map_font_size"
             android:summary="Select font size for map text"
             android:title="map font size" />
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/mapdrawingtimeoutArray"
-            android:entryValues="@array/mapdrawingtimeoutValues"
-            android:key="cancel_map_drawing_timeout"
-            android:summary="Timeout for map drawing. set to long only on fast devices!"
-            android:title="Timeout for map drawing" />
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/drawatorderArray"

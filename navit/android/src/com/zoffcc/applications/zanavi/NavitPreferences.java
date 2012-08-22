@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,10 +60,6 @@ public class NavitPreferences extends PreferenceActivity
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__use_imperial");
 		//. TRANSLATORS: see en_US for english text to translate!!
-		x = Navit.get_text("__PREF__title__show_3d_map");
-		//. TRANSLATORS: see en_US for english text to translate!!
-		x = Navit.get_text("__PREF__summ__show_3d_map");
-		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__title__use_anti_aliasing");
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__use_anti_aliasing");
@@ -116,10 +112,6 @@ public class NavitPreferences extends PreferenceActivity
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__use_custom_font");
 		//. TRANSLATORS: see en_US for english text to translate!!
-		x = Navit.get_text("__PREF__title__cancel_map_drawing_timeout");
-		//. TRANSLATORS: see en_US for english text to translate!!
-		x = Navit.get_text("__PREF__summ__cancel_map_drawing_timeout");
-		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__title__mapcache");
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__mapcache");
@@ -135,6 +127,10 @@ public class NavitPreferences extends PreferenceActivity
 		x = Navit.get_text("__PREF__title__route_style");
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__route_style");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__title__show_3d_map");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__summ__show_3d_map");
 		//
 		// dummy for xgettext
 	}
@@ -185,8 +181,8 @@ public class NavitPreferences extends PreferenceActivity
 		// need to add "route_style" !!!!!!
 		// need to add "route_style" !!!!!!
 		// need to add "route_style" !!!!!!
-		String[] PrefTransTexts = new String[] { "use_fast_provider", "follow_gps", "show_vehicle_in_center", "use_compass_heading_base", "use_compass_heading_always", "use_compass_heading_fast", "use_imperial", "show_3d_map", "use_anti_aliasing", "gui_oneway_arrows", "show_debug_messages", "navit_lang", "use_lock_on_roads", "use_route_highways", "save_zoomlevel", "show_sat_status", "use_agps", "enable_debug_functions", "speak_street_names", "use_custom_font", "map_font_size", "drawatorder",
-				"streetsearch_r", "cancel_map_drawing_timeout", "mapcache", "draw_polyline_circles" };
+		String[] PrefTransTexts = new String[] { "use_fast_provider", "follow_gps", "show_vehicle_in_center", "use_compass_heading_base", "use_compass_heading_always", "use_compass_heading_fast", "use_imperial", "use_anti_aliasing", "gui_oneway_arrows", "show_debug_messages", "navit_lang", "use_lock_on_roads", "use_route_highways", "save_zoomlevel", "show_sat_status", "use_agps", "enable_debug_functions", "speak_street_names", "use_custom_font", "map_font_size", "drawatorder", "streetsearch_r",
+				"mapcache", "draw_polyline_circles", "show_3d_map" };
 
 		int i = 0;
 		for (i = 0; i < PrefTransTexts.length; i++)
