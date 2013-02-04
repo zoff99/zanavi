@@ -23,16 +23,16 @@ import java.math.BigDecimal;
  */
 public class Location2
 {
-	private BigDecimal	latitude;
-	private BigDecimal	longitude;
+	private BigDecimal latitude;
+	private BigDecimal longitude;
 
 	/**
 	 * Creates a new instance of <code>Location</code> with the given parameters.
 	 * 
 	 * @param latitude
-	 *           the latitude, in degrees, of this location. North latitude is positive, south negative.
+	 *            the latitude, in degrees, of this location. North latitude is positive, south negative.
 	 * @param longitude
-	 *           the longitude, in degrees of this location. East longitude is positive, west negative.
+	 *            the longitude, in degrees of this location. East longitude is positive, west negative.
 	 */
 	public Location2(String latitude, String longitude)
 	{

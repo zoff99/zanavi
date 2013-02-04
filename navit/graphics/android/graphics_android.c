@@ -1247,7 +1247,7 @@ event_android_new(struct event_methods *meth)
 
 void plugin_init(void)
 {
-	//DBG // dbg(0,"enter\n");
+	dbg(0,"enter\n");
 	plugin_register_graphics_type("android", graphics_android_new);
 	plugin_register_event_type("android", event_android_new);
 }

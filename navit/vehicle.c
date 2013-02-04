@@ -63,7 +63,6 @@
 // forward rev
 struct navit *global_navit;
 
-
 struct vehicle
 {
 	struct vehicle_methods meth;
@@ -556,24 +555,23 @@ void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt
 	}
 #endif
 
-
 	//  ++++++++++ // transform_set_yaw(this_->trans, -this_->angle);
 	// vehicle_draw_do(this_, lazy);
 
 #ifdef HAVE_API_ANDROID
-		//dbg(0,"x=%d y=%d angle=%d speed=%d\n",this_->cursor_pnt.x, this_->cursor_pnt.y, angle, speed);
+	//dbg(0,"x=%d y=%d angle=%d speed=%d\n",this_->cursor_pnt.x, this_->cursor_pnt.y, angle, speed);
 
-		//int dx = 0;
-		//int dy = 0;
-		//int dangle = 0;
+	//int dx = 0;
+	//int dy = 0;
+	//int dangle = 0;
 
-		//struct navit_vehicle *nv2 = global_navit->vehicle;
-		//struct point pnt2;
-		//dbg(0,"dir=%d dx=%d, dy=%d\n", nv2->dir, dx, dy);
-		//transform(this_->trans, projection_mg, &nv2->coord, &pnt2, 1, 0, 0, NULL);
-		//dbg(0,"px=%d, py=%d\n", pnt2.x, pnt2.y);
+	//struct navit_vehicle *nv2 = global_navit->vehicle;
+	//struct point pnt2;
+	//dbg(0,"dir=%d dx=%d, dy=%d\n", nv2->dir, dx, dy);
+	//transform(this_->trans, projection_mg, &nv2->coord, &pnt2, 1, 0, 0, NULL);
+	//dbg(0,"px=%d, py=%d\n", pnt2.x, pnt2.y);
 
-		set_vehicle_values_to_java(this_->cursor_pnt.x, this_->cursor_pnt.y, angle, speed);
+	set_vehicle_values_to_java(this_->cursor_pnt.x, this_->cursor_pnt.y, angle, speed);
 #endif
 
 }

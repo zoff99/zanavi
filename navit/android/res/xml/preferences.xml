@@ -71,6 +71,20 @@
             android:title="prefer Highways" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="use_index_search"
+            android:summary="use faster and better index search [donate version]"
+            android:title="index search" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/trafficlights_delayArray"
+            android:entryValues="@array/trafficlights_delayValues"
+            android:key="trafficlights_delay"
+            android:summary="calculate traffic lights delay for routing"
+            android:title="Traffic lights delay" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="speak_street_names"
             android:summary="Say Streetnames when navigating. on foreign languages streetnames may sound strange!"
             android:title="speak Streetnames" />
@@ -113,7 +127,12 @@
             android:key="use_smooth_drawing"
             android:summary="Smooth drawing when moving or when using compass [BETA]"
             android:title="Smooth Drawing" />
-        
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_multipolygons"
+            android:summary="draw lines and areas from multipolygons"
+            android:title="Multipolygons" />
+
         <ListPreference
             android:defaultValue="2"
             android:entries="@array/mapfontsizeArray"
@@ -128,6 +147,13 @@
             android:key="drawatorder"
             android:summary="Draw more Detail on map. change only on fast devices!"
             android:title="Draw more Detail" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/drawatorder2Array"
+            android:entryValues="@array/drawatorder2Values"
+            android:key="more_map_detail"
+            android:summary="Draw more Detail on map. only on fast devices! needs a RESTART!!"
+            android:title="More map detail [BETA]" />
         <ListPreference
             android:defaultValue="7168"
             android:entries="@array/mapcacheArray"
@@ -149,6 +175,7 @@
             android:summary="show oneway street arrows [BETA]"
             android:title="OneWay Arrows" />
     </PreferenceCategory>
+
     <PreferenceCategory android:title="Debug" >
         <CheckBoxPreference
             android:defaultValue="false"
@@ -165,7 +192,13 @@
             android:key="item_dump"
             android:summary="show item dump [DEBUG]"
             android:title="show item dump" />
-        </PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_route_rects"
+            android:summary="show route rectangles [DEBUG]"
+            android:title="show route rectangles" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Language" >
         <ListPreference
             android:defaultValue="*DEFAULT*"

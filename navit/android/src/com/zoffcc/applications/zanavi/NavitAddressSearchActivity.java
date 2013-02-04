@@ -59,6 +59,7 @@ import android.widget.TextView;
 public class NavitAddressSearchActivity extends Activity
 {
 	private EditText address_string;
+	private EditText hn_string;
 	private CheckBox pm_checkbox;
 	private CheckBox hdup_checkbox;
 	private CheckBox ff_checkbox;
@@ -91,6 +92,13 @@ public class NavitAddressSearchActivity extends Activity
 		addr_view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		addr_view.setPadding(4, 4, 4, 4);
 
+		// address: label and text field
+		TextView addrhn_view = new TextView(this);
+		addrhn_view.setText(Navit.get_text("Housenumber")); //TRANS
+		addrhn_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+		addrhn_view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		addrhn_view.setPadding(4, 4, 4, 4);
+
 		// partial match checkbox
 		pm_checkbox = new CheckBox(this);
 		pm_checkbox.setText(Navit.get_text("partial match")); //TRANS
@@ -101,48 +109,50 @@ public class NavitAddressSearchActivity extends Activity
 		// partial match checkbox
 		hdup_checkbox = new CheckBox(this);
 		hdup_checkbox.setText(Navit.get_text("hide duplicates")); //TRANS
-		hdup_checkbox.setChecked(false);
+		hdup_checkbox.setChecked(true);
 		hdup_checkbox.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		hdup_checkbox.setGravity(Gravity.CENTER);
 
 		// full file checkbox
 		ff_checkbox = new CheckBox(this);
-		ff_checkbox.setText(Navit.get_text("search full mapfile [BETA]")); //TRANS
-		ff_checkbox.setChecked(false);
-		ff_checkbox.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		ff_checkbox.setGravity(Gravity.CENTER);
-
-		ff_checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		if (!Navit.use_index_search)
 		{
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+			ff_checkbox.setText(Navit.get_text("search full mapfile [BETA]")); //TRANS
+			ff_checkbox.setChecked(false);
+			ff_checkbox.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+			ff_checkbox.setGravity(Gravity.CENTER);
+
+			ff_checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener()
 			{
-				if (isChecked)
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 				{
-					try
+					if (isChecked)
 					{
-						search_country_select.setVisibility(View.INVISIBLE);
-						hdup_checkbox.setVisibility(View.INVISIBLE);
-					}
-					catch (Exception e)
-					{
+						try
+						{
+							search_country_select.setVisibility(View.INVISIBLE);
+							hdup_checkbox.setVisibility(View.INVISIBLE);
+						}
+						catch (Exception e)
+						{
 
+						}
+					}
+					else
+					{
+						try
+						{
+							search_country_select.setVisibility(View.VISIBLE);
+							hdup_checkbox.setVisibility(View.VISIBLE);
+						}
+						catch (Exception e)
+						{
+
+						}
 					}
 				}
-				else
-				{
-					try
-					{
-						search_country_select.setVisibility(View.VISIBLE);
-						hdup_checkbox.setVisibility(View.VISIBLE);
-					}
-					catch (Exception e)
-					{
-
-					}
-				}
-			}
-		});
-
+			});
+		}
 		// search button
 		final Button btnSearch = new Button(this);
 		btnSearch.setText(Navit.get_text("Search")); //TRANS
@@ -164,16 +174,20 @@ public class NavitAddressSearchActivity extends Activity
 
 		// select country button
 		search_country_select = new Button(this);
-		search_country_select.setText(NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][2]);
-		search_country_select.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		search_country_select.setGravity(Gravity.CENTER);
-		search_country_select.setOnClickListener(new View.OnClickListener()
+		if (!Navit.use_index_search)
 		{
-			public void onClick(View v)
+
+			search_country_select.setText(NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][2]);
+			search_country_select.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+			search_country_select.setGravity(Gravity.CENTER);
+			search_country_select.setOnClickListener(new View.OnClickListener()
 			{
-				start_country_select_form();
-			}
-		});
+				public void onClick(View v)
+				{
+					start_country_select_form();
+				}
+			});
+		}
 
 		// title
 		try
@@ -208,6 +222,20 @@ public class NavitAddressSearchActivity extends Activity
 		{
 		}
 
+		if (Navit.use_index_search)
+		{
+
+			// house number string
+			try
+			{
+				hn_string = new EditText(this);
+				hn_string.setText(getIntent().getExtras().getString("hn_string"));
+			}
+			catch (Exception e)
+			{
+			}
+		}
+
 		// address string
 		try
 		{
@@ -223,10 +251,21 @@ public class NavitAddressSearchActivity extends Activity
 		panel.addView(address_string);
 		if (this.search_type.equals("offline"))
 		{
-			panel.addView(search_country_select);
+			if (Navit.use_index_search)
+			{
+				panel.addView(addrhn_view);
+				panel.addView(hn_string);
+			}
+			if (!Navit.use_index_search)
+			{
+				panel.addView(search_country_select);
+			}
 			panel.addView(pm_checkbox);
 			panel.addView(hdup_checkbox);
-			panel.addView(ff_checkbox);
+			if (!Navit.use_index_search)
+			{
+				panel.addView(ff_checkbox);
+			}
 		}
 		panel.addView(btnSearch);
 
@@ -270,6 +309,11 @@ public class NavitAddressSearchActivity extends Activity
 
 		if (this.search_type.endsWith("offline"))
 		{
+			if (Navit.use_index_search)
+			{
+				resultIntent.putExtra("hn_string", NavitAddressSearchActivity.this.hn_string.getText().toString());
+			}
+
 			if (NavitAddressSearchActivity.this.pm_checkbox.isChecked())
 			{
 				resultIntent.putExtra("partial_match", "1");
@@ -305,18 +349,28 @@ public class NavitAddressSearchActivity extends Activity
 				resultIntent.putExtra("full_file_search", "0");
 			}
 
-			resultIntent.putExtra("address_country_iso2", NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][0]);
-			resultIntent.putExtra("search_country_id", search_country_id);
-			if (NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][0].equals("*D"))
+			try
 			{
-				resultIntent.putExtra("address_country_flags", 1);
+				resultIntent.putExtra("address_country_iso2", NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][0]);
+				resultIntent.putExtra("search_country_id", search_country_id);
+				if (NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][0].equals("*D"))
+				{
+					resultIntent.putExtra("address_country_flags", 1);
+				}
+				else if (NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][0].equals("*A"))
+				{
+					resultIntent.putExtra("address_country_flags", 3);
+				}
+				else
+				{
+					resultIntent.putExtra("address_country_flags", 2);
+				}
 			}
-			else if (NavitAddressSearchCountrySelectActivity.CountryList_Human[search_country_id][0].equals("*A"))
+			catch (Exception e)
 			{
-				resultIntent.putExtra("address_country_flags", 3);
-			}
-			else
-			{
+				// index search
+				resultIntent.putExtra("address_country_iso2", "X");
+				resultIntent.putExtra("search_country_id", 0);
 				resultIntent.putExtra("address_country_flags", 2);
 			}
 		}

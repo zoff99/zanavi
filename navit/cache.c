@@ -23,33 +23,8 @@
 #endif
 #include <string.h>
 #include "debug.h"
+#include "types.h"
 #include "cache.h"
-
-struct cache_entry
-{
-	int usage;
-	int size;
-	struct cache_entry_list *where;
-	struct cache_entry *next;
-	struct cache_entry *prev;
-	int id[0];
-};
-
-struct cache_entry_list
-{
-	struct cache_entry *first, *last;
-	int size;
-};
-
-struct cache
-{
-	struct cache_entry_list t1, b1, t2, b2, *insert;
-	int size, id_size, entry_size;
-	int t1_target;
-	long misses;
-	long hits;
-	GHashTable *hash;
-};
 
 static void cache_entry_dump(struct cache *cache, struct cache_entry *entry)
 {
@@ -112,6 +87,7 @@ cache_new(int id_size, int size)
 	cache->id_size = id_size / 4;
 	cache->entry_size = cache->id_size * sizeof(int) + sizeof(struct cache_entry);
 	cache->size = size;
+	//cache->real_size_bytes = 0;
 
 	dbg(0, "_c id_size=%d\n", id_size);
 	dbg(0, "_c size=%d\n", size);
@@ -165,6 +141,9 @@ static void cache_remove(struct cache *cache, struct cache_entry *entry)
 	// dbg(1,"remove 0x%x 0x%x 0x%x 0x%x 0x%x\n", entry->id[0], entry->id[1], entry->id[2], entry->id[3], entry->id[4]);
 	g_hash_table_remove(cache->hash, (gpointer)(entry->id));
 	g_slice_free1(entry->size, entry);
+	// real size
+	//dbg(0,"1cache->real_size_bytes="LONGLONG_FMT"\n", cache->real_size_bytes);
+	//cache->real_size_bytes = cache->real_size_bytes - entry->size;
 }
 
 static struct cache_entry *
@@ -216,6 +195,9 @@ cache_entry_new(struct cache *cache, void *id, int size)
 	// cache->misses += size;
 	cache->misses += 1;
 	ret = (struct cache_entry *) g_slice_alloc0(size);
+	// real size
+	//dbg(0,"2cache->real_size_bytes="LONGLONG_FMT"\n", cache->real_size_bytes);
+	//cache->real_size_bytes = cache->real_size_bytes + size;
 	ret->size = size;
 	ret->usage = 1;
 	memcpy(ret->id, id, cache->id_size * sizeof(int));
@@ -240,8 +222,14 @@ cache_trim(struct cache *cache, struct cache_entry *entry)
 		g_hash_table_remove(cache->hash, (gpointer)(entry->id));
 
 		new_entry = g_slice_alloc0(cache->entry_size);
+		// real size
+		//dbg(0,"3cache->real_size_bytes="LONGLONG_FMT"\n", cache->real_size_bytes);
+		//cache->real_size_bytes = cache->real_size_bytes + cache->entry_size;
 		memcpy(new_entry, entry, cache->entry_size);
 		g_slice_free1(entry->size, entry);
+		// real size
+		//cache->real_size_bytes = cache->real_size_bytes - entry->size;
+
 		new_entry->size = cache->entry_size;
 
 		g_hash_table_insert(cache->hash, (gpointer) new_entry->id, new_entry);
@@ -402,7 +390,9 @@ void cache_insert(struct cache *cache, void *data)
 			if (cache->t1.size + cache->t2.size + cache->b1.size + cache->b2.size >= cache->size)
 			{
 				if (cache->t1.size + cache->t2.size + cache->b1.size + cache->b2.size >= 2 * cache->size)
+				{
 					cache_remove_lru(cache, &cache->b2);
+				}
 				cache_replace(cache);
 			}
 		}
@@ -454,8 +444,7 @@ void cache_stats(struct cache *cache)
 		}
 	}
 
-
-
+	// dbg(0,"CACHE wanted size=%d real size=%lu\n", cache->size, cache->real_size_bytes);
 }
 
 void cache_dump(struct cache *cache)

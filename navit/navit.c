@@ -136,9 +136,14 @@ int limit_order_corrected = 4; // remain at this order level for drawing streets
 int shift_order = 0; // shift order level (for displaying objects) by this values (should only be bigger than zero!!)
 int global_search_street_size_factor = 1; // make search radius for streets bigger
 int disable_map_drawing = 0; // dont draw the map and dont read data from file (hopefully saving resources)
-int enable_water_from_relations = 1; // do you want to draw water where the "tags" come from osm-"relations"
 int hold_drawing = 0; // 0 -> draw normal , 1 -> dont do any drawing
 int global_stop_demo_vehicle = 0; // 0 -> demo vehicle can move, 1 -> demo vehicle stands still
+int global_show_route_rectangles = 0; // 1 -> show route rectangles, 0 -> dont show route rectangles
+int global_traffic_light_delay = 0; // 0 -> dont account for traffic lights in route, >0 -> calc a delay for each traffic light
+int global_draw_multipolygons = 1; // 0 -> dont draw lines and triangles from multipolygons, 1 -> draw them
+
+GHashTable *global_transform_hash = NULL;
+GHashTable *global_transform_hash2 = NULL;
 
 long long draw_lines_count_2 = 0;
 long long draw_lines_count_3 = 0;
@@ -148,6 +153,7 @@ int mapdraw_time[11 + 5]; // time to draw map on screen (in 1/1000 of a second) 
 int cur_mapdraw_time_index = 0;
 
 int route_status_previous = 0;
+long long global_route_memory_size = 0;
 
 void navit_add_mapset(struct navit *this_, struct mapset *ms)
 {
@@ -1690,6 +1696,8 @@ navit_new(struct attr *parent, struct attr **attrs)
 	dbg(0,"+#+:enter\n");
 #endif
 
+	dbg(0, "+#+:enter\n");
+
 	struct navit *this_=g_new0(struct navit, 1);
 	struct pcoord center;
 	struct coord co;
@@ -1730,14 +1738,20 @@ navit_new(struct attr *parent, struct attr **attrs)
 	center.y = co.y;
 	center.pro = pro;
 
+	transform_init();
+
 	//DBG dbg(0, "setting center from xmlfile [hardcoded]\n");
 	transform_setup(this_->trans, &center, zoom, (this_->orientation != -1) ? this_->orientation : 0);
 
-	// initialze trans_cursor here	
+	// initialze trans_cursor here
 	transform_copy(this_->trans, this_->trans_cursor);
-	// initialze trans_cursor here	
+	// initialze trans_cursor here
 
+
+	dbg(0, "ii 001\n");
 	this_->bookmarks = bookmarks_new(&this_->self, NULL, this_->trans);
+	//this_->bookmarks = NULL;
+	dbg(0, "ii 002\n");
 
 	this_->prevTs = 0;
 
@@ -1748,9 +1762,11 @@ navit_new(struct attr *parent, struct attr **attrs)
 	this_->displaylist = graphics_displaylist_new();
 	command_add_table(this_->attr_cbl, commands, sizeof(commands) / sizeof(struct command_table), this_);
 
+	dbg(0, "ii 009\n");
+
 	// this_->messages = messagelist_new(attrs);
 
-	////DBG dbg(0,"111111\n");
+	dbg(0, "111111\n");
 
 	return this_;
 }
@@ -3885,6 +3901,155 @@ int navit_get_attr(struct navit *this_, enum attr_type type, struct attr *attr, 
 #endif
 
 	return ret;
+}
+
+void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value)
+{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	GList *l;
+	struct layout *lay;
+	GList *l2;
+	struct layer *layer;
+	GList *ig;
+	struct itemgra *itemgr;
+	GList *elements;
+	struct element *e;
+
+	// loop through all the layouts
+	l = this_->layouts;
+	while (l)
+	{
+		lay = l->data;
+		//dbg(0,"layout name=%s\n", lay->name);
+		if (!strcmp(lay->name, "Android-Car"))
+		{
+			//dbg(0,"layout found\n");
+			l2 = lay->layers;
+			while (l2)
+			{
+				layer = l2->data;
+				//dbg(0,"layer name=%s\n", layer->name);
+				// only change the zoom of these layers
+				if ((!strcmp(layer->name, "polygons001"))
+					|| (!strcmp(layer->name, "polygons"))
+					|| (!strcmp(layer->name, "streets"))
+					|| (!strcmp(layer->name, "streets_1"))
+					|| (!strcmp(layer->name, "streets_2"))
+					|| (!strcmp(layer->name, "route_001"))
+					|| (!strcmp(layer->name, "route_002"))
+					)
+				{
+					//dbg(0,"layer found\n");
+					ig = layer->itemgras;
+					while (ig)
+					{
+						//dbg(0,"*itgr*\n");
+						itemgr = ig->data;
+
+						// now shift "order"-value of itemgra by "shift_value"
+						// ! max order == 18 !
+						// ! min order == -2 !
+
+
+						int was_shifted = 0;
+
+						//if (itemgr->order.min < 20)
+						//{
+						itemgr->order.min = itemgr->order.min - shift_value;
+						was_shifted = 1;
+						//}
+						//if (itemgr->order.min < -2)
+						//{
+						//	itemgr->order.min = -2;
+						//}
+						if (itemgr->order.min > 18)
+						{
+							itemgr->order.min = 18;
+						}
+
+						// ------------------------------
+
+						if (itemgr->order.max < 18)
+						{
+							itemgr->order.max = itemgr->order.max - shift_value;
+							was_shifted = 1;
+						}
+						//
+						//if (itemgr->order.max < -2)
+						//{
+						//	itemgr->order.max = -2;
+						//}
+						if (itemgr->order.max > 18)
+						{
+							itemgr->order.max = 18;
+						}
+
+						float sv_001 = ((float) shift_value * 1.34f);
+						float sv_002 = ((float) shift_value * 0.75f);
+
+						if (was_shifted == 1)
+						{
+							// loop thru all the elements in this "itemgra"
+							elements = itemgr->elements;
+							while (elements)
+							{
+								e = elements->data;
+
+								if (e->type == element_polyline)
+								{
+									// shift polyline width
+									e->u.polyline.width = ((float) e->u.polyline.width / sv_001) + 0;
+									if (e->u.polyline.width < 1)
+									{
+										e->u.polyline.width = 1;
+									}
+								}
+
+								if (e->type == element_circle)
+								{
+									// shift circle witdh
+									e->u.circle.width = ((float) e->u.circle.width / sv_001) + 0;
+									if (e->u.circle.width < 1)
+									{
+										e->u.circle.width = 1;
+									}
+
+									e->u.circle.radius = ((float) e->u.circle.radius / sv_001) + 0;
+									if (e->u.circle.radius < 1)
+									{
+										e->u.circle.radius = 1;
+									}
+								}
+
+								if (e->type == element_text)
+								{
+									// shift text size
+									e->text_size = (float) e->text_size / sv_002;
+									if (e->text_size < 1)
+									{
+										e->text_size = 1;
+									}
+								}
+								elements = g_list_next(elements);
+							}
+							// loop thru all the elements in this "itemgra"
+						}
+
+						ig = g_list_next(ig);
+					}
+				}
+				l2 = g_list_next(l2);
+			}
+		}
+		l = g_list_next(l);
+	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
 }
 
 static int navit_add_log(struct navit *this_, struct log *log)

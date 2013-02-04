@@ -542,7 +542,7 @@ map_new_csv(struct map_methods *meth, struct attr **attrs, struct callback_list 
 	m = g_new0(struct map_priv, 1);
 	m->id = ++map_id;
 	m->qitem_hash = g_hash_table_new(g_int_hash, g_int_equal);
-	m->item_hash = g_hash_table_new_full(g_int_hash, g_int_equal,g_free,g_free);
+	m->item_hash = g_hash_table_new_full(g_int_hash, g_int_equal,g_free_func,g_free_func);
 
 	item_type  = attr_search(attrs, NULL, attr_item_type);
 	attr_types = attr_search(attrs, NULL, attr_attr_types);

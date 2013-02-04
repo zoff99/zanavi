@@ -53,6 +53,7 @@ import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +129,7 @@ import de.oberoner.gpx2navit_txt.MainFrame;
 
 public class Navit extends Activity implements Handler.Callback, SensorEventListener
 {
-	public static final String VERSION_TEXT_LONG_INC_REV = "179";
+	public static final String VERSION_TEXT_LONG_INC_REV = "762";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
 	public static String NavitAppVersion_string = "0";
@@ -158,6 +159,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	SunriseSunsetCalculator sun_moon__calc = null;
 	Calendar sun_moon__cx = null;
 	SolarPosition.SunCoordinates sun_moon__sc = null;
+	public static boolean calc_sun_enabled = true;
 	// -------- SUN / MOON ----------
 
 	public static CWorkerThread cwthr = null;
@@ -166,6 +168,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public static NavitVehicle NV = null;
 	public static NavitSpeech2 NSp = null;
 
+	public static boolean use_index_search = false;
+
 	static AlertDialog.Builder generic_alert_box = null;
 
 	private Boolean xmlconfig_unpack_file = true;
@@ -173,7 +177,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	final static int Navit_Status_COMPLETE_NEW_INSTALL = 1;
 	final static int Navit_Status_UPGRADED_TO_NEW_VERSION = 2;
 	final static int Navit_Status_NORMAL_STARTUP = 0;
-	Boolean Navit_DonateVersion_Installed = false;
+	static Boolean Navit_DonateVersion_Installed = false;
 	static Boolean Navit_Largemap_DonateVersion_Installed = false;
 	private int startup_status = Navit_Status_NORMAL_STARTUP;
 	final static int Navit_SHOW_DEST_ON_MAP_ZOOMLEVEL = 8;
@@ -247,13 +251,19 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 	}
 
-	public static final class Navit_Address_Result_Struct
+	public static final class Navit_Address_Result_Struct implements Comparable<Navit_Address_Result_Struct>
 	{
 		String result_type; // TWN,STR,SHN
 		String item_id; // H<ddddd>L<ddddd> -> item.id_hi item.id_lo
 		float lat;
 		float lon;
 		String addr;
+
+		// function to sort address result list
+		public int compareTo(Navit_Address_Result_Struct comp)
+		{
+			return this.addr.toLowerCase().compareTo(comp.addr.toLowerCase());
+		}
 	}
 
 	public static final class Navit_Point_on_Map implements Serializable
@@ -363,6 +373,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public static int search_results_towns = 0;
 	public static int search_results_streets = 0;
 	public static int search_results_streets_hn = 0;
+	public static Boolean search_hide_duplicates = false;
 	public static Boolean NavitStartupAlreadySearching = false;
 	SearchResultsThread searchresultsThread = null;
 	SearchResultsThread searchresultsThread_offline = null;
@@ -380,6 +391,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public static String NavitSearchresultBar_title = "";
 	public static String NavitSearchresultBar_text = "";
 	public static List<Navit_Address_Result_Struct> NavitAddressResultList_foundItems = new ArrayList<Navit_Address_Result_Struct>();
+
 	public static Boolean DemoVehicle = false;
 
 	static Typeface NavitStreetnameFont = null;
@@ -402,6 +414,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public static Bitmap nav_arrow_moving_shadow = null;
 
 	public static String Navit_last_address_search_string = "";
+	public static String Navit_last_address_hn_string = "";
 	public static Boolean Navit_last_address_full_file_search = false;
 	public static String Navit_last_address_search_country_iso2_string = "";
 	public static int Navit_last_address_search_country_flags = 3;
@@ -455,8 +468,13 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	static int PREF_drawatorder = 1;
 	static String PREF_streetsearch_r = "1"; // street search radius factor (multiplier)
 	static String PREF_route_style = "1"; // 1 -> under green 2 -> on top blue
-	static Boolean PREF_item_dump = false;
-	static Boolean PREF_use_smooth_drawing = true;
+	static String PREF_trafficlights_delay = "0"; // 0 -> dont calc traffic lights delay
+	static boolean PREF_item_dump = false;
+	static boolean PREF_use_smooth_drawing = true;
+	static boolean PREF_show_route_rects = false;
+	static int PREF_more_map_detail = 0; // 0 -> *normal* , higher values show more detail (and use a lot more CPU!!)
+	static boolean PREF_show_multipolygons = true;
+	static boolean PREF_use_index_search = true;
 
 	static Resources res_ = null;
 
@@ -1157,6 +1175,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			{
 				e.printStackTrace();
 			}
+
 		}
 		// show info box for upgrade
 
@@ -1173,10 +1192,17 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Log.e("Navit", "Navit -> density=" + Navit.metrics.density);
 		Log.e("Navit", "Navit -> scaledDensity=" + Navit.metrics.scaledDensity);
 
-		//System.gc();
-		System.gc();
-		Navit.bigmap_bitmap = BitmapFactory.decodeResource(getResources(), R.raw.bigmap_colors_zanavi2);
-		// Navit.bigmap_bitmap.setDensity(120); // set our dpi!!
+		try
+		{
+			Navit.bigmap_bitmap = BitmapFactory.decodeResource(getResources(), R.raw.bigmap_colors_zanavi2);
+		}
+		catch (Exception e)
+		{
+			// when not enough memory is available, then disable large world overview map!
+			System.gc();
+			Navit.bigmap_bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+		}
+		// ------no----- // Navit.bigmap_bitmap.setDensity(120); // set our dpi!!
 
 		try
 		{
@@ -1455,19 +1481,22 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	{
 		try
 		{
-			int usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
-
 			if (PREF_show_debug_messages)
 			{
+				int usedMegs;
+				//System.gc();
+				usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
+				//Debug.MemoryInfo meminfo = new Debug.MemoryInfo();
+				//Debug.getMemoryInfo(meminfo);
+
 				if (usedMegs_old != usedMegs)
 				{
 					String usedMegsString = String.format("Memory Used: %d MB", usedMegs);
-					// System.out.println("" + usedMegsString);
+					//System.out.println("" + meminfo.dalvikPrivateDirty + " " + meminfo.dalvikPss + " " + meminfo.dalvikSharedDirty + " nP:" + meminfo.nativePrivateDirty + " nPss:" + meminfo.nativePss + " nSh:" + meminfo.nativeSharedDirty + " o1:" + meminfo.otherPrivateDirty + " o2:" + meminfo.otherPss + " o3:" + meminfo.otherSharedDirty);
 					Navit.set_debug_messages2(usedMegsString);
 				}
+				usedMegs_old = usedMegs;
 			}
-
-			usedMegs_old = usedMegs;
 		}
 		catch (Exception e)
 		{
@@ -1949,6 +1978,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					Navit.follow_button_on();
 				}
 				catch (Exception e2)
+
 				{
 					e2.printStackTrace();
 				}
@@ -2414,11 +2444,12 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	{
 		Navit_last_address_partial_match = false;
 		Navit_last_address_search_string = target_address;
+		Navit_last_address_hn_string = "";
 
 		// ----------- CONFIG ---------
 		// ----------- CONFIG ---------
 		// ----------- CONFIG ---------
-		Boolean use_online_searchmode_here = false;
+		Boolean use_online_searchmode_here = true;
 		Boolean hide_duplicates_searchmode_here = false;
 		// ----------- CONFIG ---------
 		// ----------- CONFIG ---------
@@ -2429,10 +2460,12 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		if (use_online_searchmode_here)
 		{
 			dialog_num_ = Navit.SEARCHRESULTS_WAIT_DIALOG;
+			Navit.use_index_search = false;
 		}
 		else
 		{
 			dialog_num_ = Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE;
+			Navit.use_index_search = Navit.allow_use_index_search();
 		}
 
 		// clear results
@@ -2441,6 +2474,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Navit.NavitSearchresultBarIndex = -1;
 		Navit.NavitSearchresultBar_title = "";
 		Navit.NavitSearchresultBar_text = "";
+		search_hide_duplicates = false;
 
 		if (Navit_last_address_search_string.equals(""))
 		{
@@ -2461,6 +2495,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 			if (hide_duplicates_searchmode_here)
 			{
+				search_hide_duplicates = true;
 				// hide duplicates when searching
 				// hide duplicates when searching
 				Message msg22 = new Message();
@@ -2538,9 +2573,11 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			break;
 		case 6:
 			// ok startup address search activity (online google maps search)
+			Navit.use_index_search = false;
 			Intent search_intent = new Intent(this, NavitAddressSearchActivity.class);
 			search_intent.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
 			search_intent.putExtra("address_string", Navit_last_address_search_string);
+			//search_intent.putExtra("hn_string", Navit_last_address_hn_string);
 			search_intent.putExtra("type", "online");
 			String pm_temp = "0";
 			if (Navit_last_address_partial_match)
@@ -2552,9 +2589,11 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			break;
 		case 7:
 			// ok startup address search activity (offline binfile search)
+			Navit.use_index_search = Navit.allow_use_index_search();
 			Intent search_intent2 = new Intent(this, NavitAddressSearchActivity.class);
 			search_intent2.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
 			search_intent2.putExtra("address_string", Navit_last_address_search_string);
+			search_intent2.putExtra("hn_string", Navit_last_address_hn_string);
 			search_intent2.putExtra("type", "offline");
 			search_intent2.putExtra("search_country_id", Navit_last_address_search_country_id);
 
@@ -2816,8 +2855,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			msg = new Message();
 			b = new Bundle();
 			b.putInt("Callback", 51);
-			b.putInt("x", Navit.NG__map_main.view.getWidth());
-			b.putInt("y", Navit.NG__map_main.view.getHeight());
+			b.putInt("x", (int) (Navit.NG__map_main.view.getWidth() / 2));
+			b.putInt("y", (int) (Navit.NG__map_main.view.getHeight() / 2));
 			msg.setData(b);
 			N_NavitGraphics.callback_handler.sendMessage(msg);
 
@@ -2861,8 +2900,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			msg = new Message();
 			b = new Bundle();
 			b.putInt("Callback", 51);
-			b.putInt("x", Navit.NG__map_main.view.getWidth());
-			b.putInt("y", Navit.NG__map_main.view.getHeight());
+			b.putInt("x", (int) (Navit.NG__map_main.view.getWidth() / 2));
+
+			b.putInt("y", (int) (Navit.NG__map_main.view.getHeight() / 2));
 			msg.setData(b);
 			N_NavitGraphics.callback_handler.sendMessage(msg);
 
@@ -2961,6 +3001,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 						File del_map_name_fileSplit = new File(del_map_name + "." + String.valueOf(jkl));
 						del_map_name_fileSplit.delete();
 					}
+					// also remove index file
+					File del_map_name_file_idx = new File(del_map_name + ".idx");
+					del_map_name_file_idx.delete();
 					// remove also any MD5 files for this map that may be on disk
 					try
 					{
@@ -3076,6 +3119,17 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					try
 					{
 						String addr = data.getStringExtra("address_string");
+						String hn = "";
+						try
+						{
+							// only from offline mask!
+							hn = data.getStringExtra("hn_string");
+						}
+						catch (Exception e)
+						{
+							hn = "";
+						}
+
 						Boolean partial_match = false;
 						try
 						{
@@ -3094,11 +3148,13 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 						if (requestCode == NavitAddressSearch_id_offline)
 						{
+							search_hide_duplicates = false;
 							try
 							{
 								Boolean hide_dup = data.getStringExtra("hide_dup").equals("1");
 								if (hide_dup)
 								{
+									search_hide_duplicates = true;
 									Message msg = new Message();
 									Bundle b = new Bundle();
 									b.putInt("Callback", 45);
@@ -3109,10 +3165,16 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 							catch (Exception e)
 							{
 							}
+							Navit.use_index_search = Navit.allow_use_index_search();
+						}
+						else
+						{
+							Navit.use_index_search = false;
 						}
 
 						Navit_last_address_partial_match = partial_match;
 						Navit_last_address_search_string = addr;
+						Navit_last_address_hn_string = hn;
 
 						try
 						{
@@ -3261,7 +3323,14 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 								e2.printStackTrace();
 							}
 
-							show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+							if (Navit.use_index_search)
+							{
+								show_geo_on_screen((float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat), (float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+							}
+							else
+							{
+								show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+							}
 						}
 						else
 						{
@@ -3269,10 +3338,20 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 							// get the coords for the destination
 							int destination_id = Integer.parseInt(data.getStringExtra("selected_id"));
 
+							// (float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat), (float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(destination_id).lon)
+							// (float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat)
+
 							// ok now set target
 							try
 							{
-								Navit.remember_destination(Navit.NavitAddressResultList_foundItems.get(destination_id).addr, Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+								if (Navit.use_index_search)
+								{
+									Navit.remember_destination(Navit.NavitAddressResultList_foundItems.get(destination_id).addr, (float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat), (float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+								}
+								else
+								{
+									Navit.remember_destination(Navit.NavitAddressResultList_foundItems.get(destination_id).addr, Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+								}
 								// save points
 								write_map_points();
 							}
@@ -3280,6 +3359,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 							{
 								e.printStackTrace();
 							}
+
+							// DEBUG: clear route rectangle list
+							NavitGraphics.route_rects.clear();
 
 							if (NavitGraphics.navit_route_status == 0)
 							{
@@ -3289,8 +3371,16 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 								Message msg = new Message();
 								Bundle b = new Bundle();
 								b.putInt("Callback", 3);
-								b.putString("lat", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lat));
-								b.putString("lon", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+								if (Navit.use_index_search)
+								{
+									b.putString("lat", String.valueOf((float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat)));
+									b.putString("lon", String.valueOf((float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(destination_id).lon)));
+								}
+								else
+								{
+									b.putString("lat", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lat));
+									b.putString("lon", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+								}
 								b.putString("q", Navit.NavitAddressResultList_foundItems.get(destination_id).addr);
 								msg.setData(b);
 								N_NavitGraphics.callback_handler.sendMessage(msg);
@@ -3301,8 +3391,16 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 								Message msg = new Message();
 								Bundle b = new Bundle();
 								b.putInt("Callback", 48);
-								b.putString("lat", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lat));
-								b.putString("lon", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+								if (Navit.use_index_search)
+								{
+									b.putString("lat", String.valueOf((float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat)));
+									b.putString("lon", String.valueOf((float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(destination_id).lon)));
+								}
+								else
+								{
+									b.putString("lat", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lat));
+									b.putString("lon", String.valueOf(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+								}
 								b.putString("q", Navit.NavitAddressResultList_foundItems.get(destination_id).addr);
 								msg.setData(b);
 								N_NavitGraphics.callback_handler.sendMessage(msg);
@@ -3326,7 +3424,14 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 								e2.printStackTrace();
 							}
 
-							show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+							if (Navit.use_index_search)
+							{
+								show_geo_on_screen((float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(destination_id).lat), (float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(destination_id).lon));
+							}
+							else
+							{
+								show_geo_on_screen(Navit.NavitAddressResultList_foundItems.get(destination_id).lat, Navit.NavitAddressResultList_foundItems.get(destination_id).lon);
+							}
 						}
 					}
 					catch (NumberFormatException e)
@@ -3438,6 +3543,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 								e.printStackTrace();
 							}
 
+							// DEBUG: clear route rectangle list
+							NavitGraphics.route_rects.clear();
+
 							if (NavitGraphics.navit_route_status == 0)
 							{
 								Navit.destination_set();
@@ -3512,6 +3620,9 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					String dest_name = Navit.map_points.get(destination_id).point_name;
 					float lat = Navit.map_points.get(destination_id).lat;
 					float lon = Navit.map_points.get(destination_id).lon;
+
+					// DEBUG: clear route rectangle list
+					NavitGraphics.route_rects.clear();
 
 					if (NavitGraphics.navit_route_status == 0)
 					{
@@ -3633,6 +3744,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		String lang;
 		int version;
 		String display_density_string;
+		int timeout_loop_counter = 0;
 
 		private final LinkedBlockingQueue<CMC_object> queue = new LinkedBlockingQueue<CMC_object>();
 		private final LinkedBlockingQueue<Integer> queue2 = new LinkedBlockingQueue<Integer>();
@@ -3664,6 +3776,14 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			tcbo.nt = nt;
 			queue4.offer(tcbo);
 			this.interrupt();
+			//timeout_loop_counter++;
+
+			//if (timeout_loop_counter > 100)
+			//{
+			//	timeout_loop_counter = 0;
+			//	// run GC at every 100th loop
+			//	// System.gc();
+			//}
 		}
 
 		public void CallbackMessageChannel(int i, String s)
@@ -3688,7 +3808,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 		public void NavitActivity2(int i)
 		{
-			queue2.offer(new Integer(i));
+			queue2.offer(Integer.valueOf(i));
 			this.interrupt();
 		}
 
@@ -3801,7 +3921,18 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			// SUN ----------------
 			//
 			//
-			this.calc_sun_stats();
+			try
+			{
+				this.calc_sun_stats();
+			}
+			catch (Exception e)
+			{
+				// on some systems BigInteger seems to crash, or maybe some values are out of range
+				// until the bug is found, night modus is deactivated
+				calc_sun_enabled = false;
+				is_twilight = false;
+				is_night = false;
+			}
 			//System.out.println("sunrise: " + sunrise_cache);
 			//System.out.println("sunset: " + sunset_cache);
 			//System.out.println("azimuth: " + roundTwoDecimals(azmiuth_cache));
@@ -3818,12 +3949,15 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			//System.out.println("CWorkerThread -- started --");
 			while (this.running)
 			{
-				try
+				if (queue4.size() == 0)
 				{
-					Thread.sleep(20000); // 20 secs.
-				}
-				catch (InterruptedException e)
-				{
+					try
+					{
+						Thread.sleep(20000); // 20 secs.
+					}
+					catch (InterruptedException e)
+					{
+					}
 				}
 
 				if (this.startmain)
@@ -3836,6 +3970,30 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					NavitMain(x, lang, version, display_density_string);
 					System.out.println("CWorkerThread -- NavitActivity(3) --");
 					NavitActivity(3);
+
+					// -- set map detail level (after app startup) --
+					// -- set map detail level (after app startup) --
+					// -- set map detail level (after app startup) --
+					try
+					{
+						getPrefs_more_map_detail();
+						if (PREF_more_map_detail > 0)
+						{
+							Message msg2 = new Message();
+							Bundle b2 = new Bundle();
+							b2.putInt("Callback", 78);
+							b2.putString("s", "" + PREF_more_map_detail);
+							msg2.setData(b2);
+							N_NavitGraphics.callback_handler.sendMessage(msg2);
+						}
+					}
+					catch (Exception e)
+					{
+						// e.printStackTrace();
+					}
+					// -- set map detail level (after app startup) --
+					// -- set map detail level (after app startup) --
+					// -- set map detail level (after app startup) --
 
 					Global_Init_Finished = 1;
 					//x.runOnUiThread(new Runnable()
@@ -3914,8 +4072,10 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 				}
 
-				while (queue4.size() > 0)
+				int count_timeout_callbacks = 0;
+				while (count_timeout_callbacks < 100 && queue4.size() > 0)
 				{
+					count_timeout_callbacks++;
 					try
 					{
 						// blocking call
@@ -4259,6 +4419,11 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				Log.e("Navit", "SearchResultsThread run1");
 				// need lowercase to find stuff !!
 				Navit_last_address_search_string = filter_bad_chars(Navit_last_address_search_string).toLowerCase();
+				if ((Navit_last_address_hn_string != null) && (Navit_last_address_hn_string.equals("")))
+				{
+					Navit_last_address_hn_string = filter_bad_chars(Navit_last_address_hn_string).toLowerCase();
+				}
+
 				if (Navit_last_address_full_file_search)
 				{
 					// flags (18)		-> order level to search at
@@ -4266,14 +4431,47 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					//   0#0   0		-> search full world
 					// lat#lon radius	-> search only this area, around lat,lon
 					// ================
-					N_NavitGraphics.SearchResultList(3, partial_match_i, Navit_last_address_search_string, 18, Navit_last_address_search_country_iso2_string, "0#0", 0);
+					N_NavitGraphics.SearchResultList(3, partial_match_i, Navit_last_address_search_string, "", "", 18, Navit_last_address_search_country_iso2_string, "0#0", 0);
 				}
 				else
 				{
-					// flags --> 3: search all countries
-					//           2: search <iso2 string> country
-					//           1: search default country (what you have set as language in prefs)
-					N_NavitGraphics.SearchResultList(2, partial_match_i, Navit_last_address_search_string, Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
+					if (Navit.use_index_search)
+					{
+						// new method with index search
+						// -----------------
+						//Navit_last_address_search_string
+						String street_ = "";
+						String town_ = "";
+						String hn_ = Navit_last_address_hn_string;
+
+						int last_space = Navit_last_address_search_string.lastIndexOf(" ");
+						if (last_space != -1)
+						{
+							street_ = Navit_last_address_search_string.substring(0, last_space);
+							town_ = Navit_last_address_search_string.substring(last_space);
+						}
+						else
+						{
+							street_ = Navit_last_address_search_string;
+							town_ = "";
+						}
+						N_NavitGraphics.SearchResultList(2, partial_match_i, street_, town_, hn_, Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
+
+						// sort result list
+						Collections.sort(Navit.NavitAddressResultList_foundItems);
+					}
+					else
+					{
+						// old method search
+						// -----------------
+						// flags --> 3: search all countries
+						//           2: search <iso2 string> country
+						//           1: search default country (what you have set as language in prefs)
+						N_NavitGraphics.SearchResultList(29, partial_match_i, Navit_last_address_search_string, "", "", Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
+
+						// sort result list
+						Collections.sort(Navit.NavitAddressResultList_foundItems);
+					}
 				}
 				Log.e("Navit", "SearchResultsThread run2");
 			}
@@ -4391,6 +4589,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		out = out.replaceAll("\\n", " "); // newline -> space
 		out = out.replaceAll("\\r", " "); // return -> space
 		out = out.replaceAll("\\t", " "); // tab -> space
+		out = out.trim();
 		return out;
 	}
 
@@ -4721,6 +4920,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			mapdownloader_dialog_sec.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			mapdownloader_dialog_sec.setTitle("--");
 			mapdownloader_dialog_sec.setMessage("--");
+
 			mapdownloader_dialog_sec.setCancelable(true);
 			mapdownloader_dialog_sec.setProgress(0);
 			mapdownloader_dialog_sec.setMax(200);
@@ -4832,6 +5032,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		// hold all map drawing -----------
 
@@ -4849,6 +5050,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		// follow mode ON -----------
 
@@ -4899,6 +5101,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public static void toggle_follow_button()
 	{
 		// the "red needle" OSD calls this function only!!
+		//Log.e("NavitVehicle", "toggle_follow_button");
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Navit.getBaseContext_);
 		SharedPreferences.Editor editor = prefs.edit();
 		if (PREF_follow_gps)
@@ -4917,6 +5120,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 			}
 			// follow mode OFF -----------
 		}
@@ -4936,6 +5140,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 			}
 			// follow mode ON -----------
 		}
@@ -4963,6 +5168,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		// hold all map drawing -----------
 
@@ -5004,6 +5210,20 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		System.out.println("2 save zoom level: " + Navit.GlobalScaleLevel);
 	}
 
+	private static void getPrefs_more_map_detail()
+	{
+		int ret = 0;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Navit.getBaseContext_);
+		try
+		{
+			PREF_more_map_detail = Integer.parseInt(prefs.getString("more_map_detail", "0"));
+		}
+		catch (Exception e)
+		{
+			PREF_more_map_detail = 0;
+		}
+	}
+
 	private static void getPrefs()
 	{
 		// Get the xml/preferences.xml preferences
@@ -5037,6 +5257,11 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		PREF_streetsearch_r = prefs.getString("streetsearch_r", "2");
 		PREF_route_style = prefs.getString("route_style", "2");
 		PREF_item_dump = prefs.getBoolean("item_dump", false);
+		PREF_show_route_rects = prefs.getBoolean("show_route_rects", false);
+		PREF_trafficlights_delay = prefs.getString("trafficlights_delay", "0");
+
+		PREF_show_multipolygons = prefs.getBoolean("show_multipolygons", true);
+		PREF_use_index_search = prefs.getBoolean("use_index_search", true);
 
 		try
 		{
@@ -5536,6 +5761,85 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		}
 		// route variant
 
+		// show route rectanlges -----
+		if (PREF_show_route_rects)
+		{
+			msg67 = new Message();
+			b67 = new Bundle();
+			b67.putInt("Callback", 76);
+			msg67.setData(b67);
+			try
+			{
+				N_NavitGraphics.callback_handler.sendMessage(msg67);
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		else
+		{
+			msg67 = new Message();
+			b67 = new Bundle();
+			b67.putInt("Callback", 77);
+			msg67.setData(b67);
+			try
+			{
+				N_NavitGraphics.callback_handler.sendMessage(msg67);
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		// show route rectanlges -----
+
+		// show route multipolygons -----
+		if (PREF_show_multipolygons)
+		{
+			msg67 = new Message();
+			b67 = new Bundle();
+			b67.putInt("Callback", 66);
+			msg67.setData(b67);
+			try
+			{
+				N_NavitGraphics.callback_handler.sendMessage(msg67);
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		else
+		{
+			msg67 = new Message();
+			b67 = new Bundle();
+			b67.putInt("Callback", 67);
+			msg67.setData(b67);
+			try
+			{
+				N_NavitGraphics.callback_handler.sendMessage(msg67);
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		// show route multipolygons -----
+
+		// traffic lights delay ----
+		msg67 = new Message();
+		b67 = new Bundle();
+		b67.putInt("Callback", 79);
+		System.out.println("traffic lights delay:" + PREF_trafficlights_delay);
+		// (PREF_trafficlights_delay / 10) seconds delay for each traffic light
+		b67.putString("s", PREF_trafficlights_delay); // (delay in 1/10 of a second)
+		msg67.setData(b67);
+		try
+		{
+			N_NavitGraphics.callback_handler.sendMessage(msg67);
+		}
+		catch (Exception e)
+		{
+		}
+		// traffic lights delay ----
+
 		// set vars for mapdir change (only really takes effect after restart!)
 		getPrefs_mapdir();
 	}
@@ -5578,19 +5882,19 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		MAPMD5_FILENAME_PATH = NavitDataDirectory_Maps + "/../md5/";
 		CFG_FILENAME_PATH = NavitDataDirectory_Maps + "/../";
 
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
-		System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
+		//System.out.println("xxxxxxxx************XXXXXXXXXXX");
 
 		Handler h_temp = null;
 		h_temp = NavitGraphics.callback_handler_s;
-		System.out.println("handler 1=" + h_temp.toString());
+		//System.out.println("handler 1=" + h_temp.toString());
 
 		Message msg1 = new Message();
 		Bundle b1 = new Bundle();
@@ -5687,8 +5991,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	 * Show a search activity with the string "search" filled in
 	 */
 	private void executeSearch(String search)
-
 	{
+		Navit.use_index_search = Navit.allow_use_index_search();
 		Intent search_intent = new Intent(this, NavitAddressSearchActivity.class);
 		search_intent.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
 		search_intent.putExtra("address_string", search);
@@ -6096,5 +6400,75 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	public String roundTwoDecimals(double d)
 	{
 		return String.format("%.2f", d);
+	}
+
+	public static int transform_from_geo_lat(double lat)
+	{
+		/* slower */
+		// int ret = log(tan(M_PI_4 + lat * M_PI / 360)) * 6371000.0;
+		/* slower */
+
+		/* fast */
+		int ret = (int) (Math.log(Math.tan((Math.PI / 4f) + lat * 0.008726646259971647884618)) * 6371000.0f); // already calced (M_PI/360)
+		/* fast */
+
+		return ret;
+	}
+
+	public static int transform_from_geo_lon(double lon)
+	{
+		/* slower */
+		// int ret = lon * 6371000.0 * M_PI / 180;
+		/* slower */
+
+		/* fast */
+		int ret = (int) (lon * 111194.9266445587373); // already calced (6371000.0*M_PI/180)
+		/* fast */
+
+		return ret;
+	}
+
+	public static double transform_to_geo_lat(float lat) // y
+	{
+		return (Math.atan(Math.exp(lat / 6371000.0)) / Math.PI * 360 - 90);
+	}
+
+	public static double transform_to_geo_lon(float lon) // x
+	{
+		// g->lng=c->x/6371000.0/M_PI*180;
+		return (lon * 0.00000899322); // simpler
+	}
+
+	public static boolean allow_use_index_search()
+	{
+		if ((!Navit_DonateVersion_Installed) && (!Navit_Largemap_DonateVersion_Installed))
+		{
+			// no donate version installed
+			Log.e("Navit", "no donate version installed");
+			return false;
+		}
+
+		if (!PREF_use_index_search)
+		{
+			// user does not want to use index search (it was disabled via preferences)
+			return false;
+		}
+
+		// MAP_FILENAME_PATH
+		File folder = new File(MAP_FILENAME_PATH);
+		File[] listOfFiles = folder.listFiles();
+
+		for (File file : listOfFiles)
+		{
+			if (file.isFile())
+			{
+				System.out.println(file.getName());
+				if (file.getName().endsWith(".bin.idx"))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

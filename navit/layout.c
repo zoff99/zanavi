@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2009 Navit Team
  *
@@ -28,15 +47,13 @@
 struct layout * layout_new(struct attr *parent, struct attr **attrs)
 {
 	struct layout *l;
-	struct color def_color =
-	{ COLOR_BACKGROUND_ };
+	struct color def_color = { COLOR_BACKGROUND_ };
 	struct attr *name_attr, *color_attr, *order_delta_attr, *font_attr, *day_attr, *night_attr, *active_attr;
 
 	if (!(name_attr = attr_search(attrs, NULL, attr_name)))
 	{
 		return NULL;
-	}
-	l = g_new0(struct layout, 1);
+	} l = g_new0(struct layout, 1);
 	l->name = g_strdup(name_attr->u.str);
 	if ((font_attr = attr_search(attrs, NULL, attr_font)))
 	{
@@ -203,7 +220,7 @@ cursor_new(struct attr *parent, struct attr **attrs)
 	{
 		this->sequence_range = NULL;
 	}
-	dbg(2, "ret=%p\n", this);
+	//dbg(2, "ret=%p\n", this);
 	return this;
 }
 
@@ -420,18 +437,18 @@ static void element_set_polyline_dash(struct element *e, struct attr **attrs)
 	if (dash)
 	{
 		/*
-		for (i = 0; i < 4; i++)
-		{
-			if (!dash->u.dash[i])
-			{
-				break;
-			}
-			dbg(0,"1 i=%d d=%d\n", i, dash->u.dash[i]);
-			//e->u.polyline.dash_table[i] = atoi(dash->u.dash[i]);
-			e->u.polyline.dash_table[i] = dash->u.dash[i];
-		}
-		*/
-		i=0;
+		 for (i = 0; i < 4; i++)
+		 {
+		 if (!dash->u.dash[i])
+		 {
+		 break;
+		 }
+		 dbg(0,"1 i=%d d=%d\n", i, dash->u.dash[i]);
+		 //e->u.polyline.dash_table[i] = atoi(dash->u.dash[i]);
+		 e->u.polyline.dash_table[i] = dash->u.dash[i];
+		 }
+		 */
+		i = 0;
 		if (!dash->u.dash[i])
 		{
 		}
@@ -500,10 +517,8 @@ struct circle *
 circle_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
-	struct color color_black =
-	{ COLOR_BLACK_ };
-	struct color color_white =
-	{ COLOR_WHITE_ };
+	struct color color_black = { COLOR_BLACK_ };
+	struct color color_white = { COLOR_WHITE_ };
 
 	e = g_new0(struct element, 1);
 	e->type = element_circle;
@@ -522,10 +537,8 @@ struct text *
 text_new(struct attr *parent, struct attr **attrs)
 {
 	struct element *e;
-	struct color color_black =
-	{ COLOR_BLACK_ };
-	struct color color_white =
-	{ COLOR_WHITE_ };
+	struct color color_black = { COLOR_BLACK_ };
+	struct color color_white = { COLOR_WHITE_ };
 
 	e = g_new0(struct element, 1);
 	e->type = element_text;

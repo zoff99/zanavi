@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -32,8 +51,7 @@ struct item_name
 	char *name;
 };
 
-struct item_range item_range_all =
-{ type_none, type_last };
+struct item_range item_range_all = { type_none, type_last };
 
 struct default_flags
 {
@@ -43,42 +61,9 @@ struct default_flags
 
 struct item busy_item;
 
-struct default_flags default_flags2[] =
-{
-{ type_street_nopass, AF_PBH },
-{ type_street_0, AF_ALL },
-{ type_street_1_city, AF_ALL },
-{ type_street_2_city, AF_ALL },
-{ type_street_3_city, AF_ALL },
-{ type_street_4_city, AF_ALL },
-{ type_highway_city, AF_MOTORIZED_FAST },
-{ type_street_1_land, AF_ALL },
-{ type_street_2_land, AF_ALL },
-{ type_street_3_land, AF_ALL },
-{ type_street_4_land, AF_ALL },
-{ type_street_n_lanes, AF_MOTORIZED_FAST },
-{ type_highway_land, AF_MOTORIZED_FAST },
-{ type_ramp, AF_MOTORIZED_FAST },
-{ type_roundabout, AF_ALL },
-{ type_ferry, AF_ALL },
-{ type_cycleway, AF_PBH },
-{ type_track_paved, AF_ALL },
-{ type_track_gravelled, AF_ALL },
-{ type_track_unpaved, AF_ALL },
-{ type_track_ground, AF_ALL },
-{ type_track_grass, AF_ALL },
-{ type_footway, AF_PBH },
-{ type_living_street, AF_ALL },
-{ type_street_service, AF_ALL },
-{ type_street_parking_lane, AF_ALL },
-{ type_bridleway, AF_PBH },
-{ type_path, AF_PBH },
-{ type_steps, AF_PBH },
-{ type_street_pedestrian, AF_PBH },
-};
+struct default_flags default_flags2[] = { { type_street_nopass, AF_PBH }, { type_street_0, AF_ALL }, { type_street_1_city, AF_ALL }, { type_street_2_city, AF_ALL }, { type_street_3_city, AF_ALL }, { type_street_4_city, AF_ALL }, { type_highway_city, AF_MOTORIZED_FAST }, { type_street_1_land, AF_ALL }, { type_street_2_land, AF_ALL }, { type_street_3_land, AF_ALL }, { type_street_4_land, AF_ALL }, { type_street_n_lanes, AF_MOTORIZED_FAST }, { type_highway_land, AF_MOTORIZED_FAST }, { type_ramp, AF_MOTORIZED_FAST }, { type_roundabout, AF_ALL }, { type_ferry, AF_ALL }, { type_cycleway, AF_PBH }, { type_track_paved, AF_ALL }, { type_track_gravelled, AF_ALL }, { type_track_unpaved, AF_ALL }, { type_track_ground, AF_ALL }, { type_track_grass, AF_ALL }, { type_footway, AF_PBH }, { type_living_street, AF_ALL }, { type_street_service, AF_ALL }, { type_street_parking_lane, AF_ALL }, { type_bridleway, AF_PBH }, { type_path, AF_PBH }, { type_steps, AF_PBH }, { type_street_pedestrian, AF_PBH }, };
 
-struct item_name item_names[] =
-{
+struct item_name item_names[] = {
 #define ITEM2(x,y) ITEM(y)
 #define ITEM(x) { type_##x, #x },
 #include "item_def.h"
@@ -211,25 +196,24 @@ struct item * item_new(char *type, int zoom)
 	return it;
 }
 
-
 // not working yet!!!!! ------
 /*
-void item_dup(struct item *src, struct item *dst)
-{
-	int size;
-	void *priv_data;
+ void item_dup(struct item *src, struct item *dst)
+ {
+ int size;
+ void *priv_data;
 
-	dst = g_new0(struct item, 1);
-	dst->type=src->type;
-	dst->id_hi=src->id_hi;
-	dst->id_lo=src->id_lo;
+ dst = g_new0(struct item, 1);
+ dst->type=src->type;
+ dst->id_hi=src->id_hi;
+ dst->id_lo=src->id_lo;
 
-	dst->priv_data=g_malloc(size);
-	memcpy(dst->priv_data, src->priv_data, size);
-	// int len = (ib->len + 1) * 4;
+ dst->priv_data=g_malloc(size);
+ memcpy(dst->priv_data, src->priv_data, size);
+ // int len = (ib->len + 1) * 4;
 
-}
-*/
+ }
+ */
 // not working yet!!!!! ------
 
 
@@ -297,7 +281,7 @@ item_hash_new(void)
 {
 	struct item_hash *ret=g_new(struct item_hash, 1);
 
-	ret->h = g_hash_table_new_full(item_hash_hash, item_hash_equal, g_free, NULL);
+	ret->h = g_hash_table_new_full(item_hash_hash, item_hash_equal, g_free_func, NULL);
 	return ret;
 }
 
@@ -350,10 +334,10 @@ int item_range_contains_item(struct item_range *range, enum item_type type)
 void item_dump_attr_stdout(struct item *item, struct map *map)
 {
 	struct attr attr;
-	dbg(0, "type=%s\n", item_to_name(item->type));
+	dbg(0, "type=%d:%s\n", item->type, item_to_name(item->type));
 	while (item_attr_get(item, attr_any, &attr))
 	{
-		dbg(0, " %s='%s'", attr_to_name(attr.type), attr_to_text(&attr, map, 1));
+		dbg(0, " %d:%s='%s'", attr.type, attr_to_name(attr.type), attr_to_text(&attr, map, 1));
 		// dbg(0," %s\n", attr_to_name(attr.type));
 	}
 }
@@ -363,7 +347,9 @@ void item_dump_attr(struct item *item, struct map *map, FILE *out)
 	struct attr attr;
 	fprintf(out, "type=%s", item_to_name(item->type));
 	while (item_attr_get(item, attr_any, &attr))
+	{
 		fprintf(out, " %s='%s'", attr_to_name(attr.type), attr_to_text(&attr, map, 1));
+	}
 }
 
 void item_dump_filedesc(struct item *item, struct map *map, FILE *out)

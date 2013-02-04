@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-15 19:29+0200\n"
+"POT-Creation-Date: 2012-09-16 17:09+0200\n"
 "PO-Revision-Date: 2012-05-14 08:30+0000\n"
 "Last-Translator: aitolos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
-"X-Generator: Launchpad (build 15342)\n"
+"X-Launchpad-Export-Date: 2012-09-16 15:32+0000\n"
+"X-Generator: Launchpad (build 15944)\n"
 
 #: NavitMapPreviewActivity.java:198
 msgid "Use as destination"
@@ -33,69 +33,69 @@ msgstr "εμφάνιση προορισμού στο χάρτη"
 msgid "touch map to zoom"
 msgstr "αγγίξτε το χάρτη για εστίαση"
 
-#: NavitMapDownloader.java:476 NavitMapDownloader.java:1373
-#: NavitMapDownloader.java:1387 NavitMapDownloader.java:1419
+#: NavitMapDownloader.java:479 NavitMapDownloader.java:1385
+#: NavitMapDownloader.java:1399 NavitMapDownloader.java:1431
 msgid "Error downloading map!"
 msgstr "Σφάλμα λήψης χάρτη!"
 
-#: NavitMapDownloader.java:577 NavitMapDownloader.java:1321
-#: NavitMapDownloader.java:1490 NavitMapDownloader.java:1623
-#: NavitMapDownloader.java:2024 NavitMapDownloader.java:2137
-#: NavitMapDownloader.java:2315 NavitMapDownloader.java:2329
+#: NavitMapDownloader.java:581 NavitMapDownloader.java:1333
+#: NavitMapDownloader.java:1526 NavitMapDownloader.java:1664
+#: NavitMapDownloader.java:2065 NavitMapDownloader.java:2178
+#: NavitMapDownloader.java:2356 NavitMapDownloader.java:2370
 msgid "Mapdownload"
 msgstr "Λήψη χάρτη"
 
-#: NavitMapDownloader.java:611 NavitMapDownloader.java:1322
+#: NavitMapDownloader.java:615 NavitMapDownloader.java:1334
 msgid "downloading"
 msgstr "λήψη"
 
-#: NavitMapDownloader.java:611
+#: NavitMapDownloader.java:615
 msgid "ETA"
 msgstr "ΕΧΑ"
 
-#: NavitMapDownloader.java:714
+#: NavitMapDownloader.java:718
 msgid "Error downloading map, resuming"
 msgstr "Σφάλμα λήψης χάρτη, συνέχεια"
 
-#: NavitMapDownloader.java:1404
+#: NavitMapDownloader.java:1416
 msgid "Map already up to date"
 msgstr "Ο χάρτης είναι ενημερωμένος"
 
-#: NavitMapDownloader.java:1491 NavitMapDownloader.java:2025
+#: NavitMapDownloader.java:1527 NavitMapDownloader.java:2066
 msgid "Creating outputfile, long time"
 msgstr "Δημιουργία εξαγόμενου αρχείου, αρκετός χρόνος"
 
-#: NavitMapDownloader.java:1556
+#: NavitMapDownloader.java:1597
 msgid "MD5 mismatch"
 msgstr "αναντιστοιχία MD5"
 
-#: NavitMapDownloader.java:1624
+#: NavitMapDownloader.java:1665
 msgid "ready"
 msgstr "έτοιμο"
 
-#: NavitMapDownloader.java:2138
+#: NavitMapDownloader.java:2179
 msgid "Creating outputfile, wait"
 msgstr "Δημιουργία εξαγόμενου αρχείου, περιμένετε"
 
-#: NavitMapDownloader.java:2316 NavitMapDownloader.java:2330
+#: NavitMapDownloader.java:2357 NavitMapDownloader.java:2371
 msgid "generating MD5 checksum"
 msgstr "δημιουργία MD5 checksum"
 
 #. . english text: Welcome to ZANavi
-#: Navit.java:875
+#: Navit.java:1060
 msgid "__INFO_BOX_TITLE__"
 msgstr "Καλώς ήλθατε στο ZANavi"
 
-#: Navit.java:901
+#: Navit.java:1086 Navit.java:4592 NavitAndroidOverlay.java:354
 msgid "Ok"
 msgstr "Εντάξει"
 
-#: Navit.java:910
+#: Navit.java:1095
 msgid "More info"
 msgstr "Περισσότερες πληροφορίες"
 
 #. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
-#: Navit.java:940
+#: Navit.java:1125
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
 "Τρέχετε το ZANavi για πρώτη φορά!\\n\\nΓια να ξεκινήσετε επιλέξτε \"λήψη "
@@ -105,137 +105,177 @@ msgstr ""
 "OpenStreetMap Project\\n\\nΓια περισσότερες πληροφορίες \\nεπισκεφτείτε την "
 "Ιστοσελίδα μας\\nhttp://zanavi.cc\\n\\nΕυχαριστηθείτε την χρήση του ZANavi."
 
-#: Navit.java:1919
+#: Navit.java:2340
 msgid "address search (online)"
 msgstr "αναζήτηση (με σύνδεση)"
 
-#: Navit.java:1920
+#: Navit.java:2341
 msgid "address search (offline)"
 msgstr "αναζήτηση (χωρίς σύνδεση)"
 
-#: Navit.java:1923
+#: Navit.java:2344
 msgid "Stop Navigation"
 msgstr "Διακοπή πλοήγησης"
 
-#: Navit.java:1924
+#: Navit.java:2345
 msgid "Zoom to Route"
 msgstr "Εστίαση στη Διαδρομή"
 
 #. . TRANSLATORS: it means: "show current target in google maps"
 #. . TRANSLATORS: please keep this text short, to fit in the android menu!
-#: Navit.java:1927
+#: Navit.java:2348
 msgid "Target in gmaps"
 msgstr "Στόχος στο gmaps"
 
 #. . TRANSLATORS: text to translate is: exit ZANavi
-#: Navit.java:1930
+#: Navit.java:2351
 msgid "exit navit"
 msgstr "Έξοδος από το ZANavi"
 
-#: Navit.java:1931
+#: Navit.java:2352
 msgid "toggle POI"
 msgstr "εναλλαγή POI"
 
-#: Navit.java:1932
+#: Navit.java:2353
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: Navit.java:1935
+#: Navit.java:2356
 msgid "Coord Dialog"
 msgstr "Συντεταγμένες"
 
-#: Navit.java:1939
+#: Navit.java:2360
 msgid "Announcer Off"
 msgstr "Εκφώνηση Κλειστή"
 
-#: Navit.java:1943
+#: Navit.java:2364
 msgid "Announcer On"
 msgstr "Εκφώνηση Ανοικτή"
 
-#: Navit.java:1946
+#: Navit.java:2367
 msgid "Recent destinations"
 msgstr "Πρόσφατοι προορισμοί"
 
-#: Navit.java:1947
+#: Navit.java:2368
+msgid "add Traffic block"
+msgstr ""
+
+#: Navit.java:2369
+msgid "clear Traffic blocks"
+msgstr ""
+
+#: Navit.java:2370
 msgid "download maps"
 msgstr "λήψη χαρτών"
 
-#: Navit.java:1948
+#: Navit.java:2371
 msgid "delete maps"
 msgstr "διαγραφή χαρτών"
 
-#: Navit.java:1949
+#: Navit.java:2372
 msgid "show Maps age"
 msgstr "Εμφάνιση παλαιότητας χάρτη"
 
-#: Navit.java:1950
+#: Navit.java:2373
 msgid "convert GPX file"
 msgstr ""
 
-#: Navit.java:1955
+#: Navit.java:2374
+msgid "clear GPX map"
+msgstr ""
+
+#: Navit.java:2379 Navit.java:2380
 msgid "Demo Vehicle"
 msgstr "Όχημα Επίδειξης"
 
-#: Navit.java:1956
+#: Navit.java:2381
 msgid "Speech Texts"
 msgstr "Εκφώνηση Κειμένων"
 
-#: Navit.java:1957
+#: Navit.java:2382
 msgid "Nav. Commands"
 msgstr "Εντ. Πλοήγησης"
 
-#: Navit.java:1961
+#: Navit.java:2383
+msgid "toggle Routegraph"
+msgstr ""
+
+#: Navit.java:2387
 msgid "online Help"
 msgstr "online Βοήθεια"
 
-#: Navit.java:2024
+#: Navit.java:2451
 msgid "No address found"
 msgstr "Δεν βρέθηκε διεύθυνση"
 
-#: Navit.java:2118 Navit.java:2132 Navit.java:4519
+#: Navit.java:2545 Navit.java:2559 Navit.java:5793
 msgid "Enter: City and Street"
 msgstr "Εισαγωγή: Πόλη και Οδός"
 
-#: Navit.java:2594
+#: Navit.java:3159
 msgid "No search string entered"
 msgstr "Δεν εισήχθηκε αλφαριθμητικό αναζήτησης"
 
-#: Navit.java:2724 Navit.java:2949
+#: Navit.java:3292 Navit.java:3530
 msgid "setting destination to"
 msgstr "καθορισμός προορισμού στο"
 
-#: Navit.java:2738 Navit.java:2963
+#: Navit.java:3306 Navit.java:3544
 msgid "new Waypoint"
 msgstr "νέο σημείο"
 
-#: Navit.java:3139 Navit.java:3194
+#: Navit.java:4226 Navit.java:4281
 msgid "getting search results"
 msgstr "λήψη αποτελεσμάτων αναζήτησης"
 
-#: Navit.java:3140 Navit.java:3195
+#: Navit.java:4227 Navit.java:4282
 msgid "searching ..."
 msgstr "αναζήτηση ..."
 
-#: Navit.java:3293 NavitGraphics.java:3515
+#: Navit.java:4380 NavitGraphics.java:5018
 msgid "loading search results"
 msgstr "φόρτωση αποτελεσμάτων αναζήτησης"
 
-#: Navit.java:3294 NavitGraphics.java:3516
+#: Navit.java:4381 NavitGraphics.java:5019
 msgid "towns"
 msgstr "πόλεις"
 
-#: Navit.java:3294 NavitGraphics.java:3516
+#: Navit.java:4381 NavitGraphics.java:5019
 msgid "Streets"
 msgstr "Οδοί"
 
-#: Navit.java:3317
+#: Navit.java:4404
 msgid "No Results found!"
 msgstr "Δεν βρέθηκαν Αποτελέσματα!"
 
+#: Navit.java:4592
+msgid "Possibly not enough space on your device!"
+msgstr ""
+
+#: Navit.java:4600
+msgid "device space"
+msgstr ""
+
 #. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
-#: Navit.java:3645 Navit.java:3671
+#: Navit.java:4753 Navit.java:4779
 msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
 msgstr "Δεδομένα χάρτη (c) OpenStreetMap contributors, CC-BY-SA"
+
+#: NavitGraphics.java:5368
+msgid "Destination set"
+msgstr ""
+
+#: NavitGraphics.java:5380
+msgid "No route found / Route blocked"
+msgstr ""
+
+#: NavitGraphics.java:5391
+msgid "Building route path"
+msgstr ""
+
+#: NavitGraphics.java:5401
+msgid "Building route graph"
+msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:35
@@ -311,233 +351,263 @@ msgstr "Χρήση Αγγλικών μονάδων αντί για μετρικ�
 
 #. . TRANSLATORS: see en_US for english text to translate!!
 #: NavitPreferences.java:63
-msgid "__PREF__title__show_3d_map"
-msgstr "3D"
-
-#. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:65
-msgid "__PREF__summ__show_3d_map"
-msgstr "εμφάνιση χάρτη σε 3D [BETA]"
-
-#. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:67
 msgid "__PREF__title__use_anti_aliasing"
 msgstr "Εξομάλυνση"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:69
+#: NavitPreferences.java:65
 msgid "__PREF__summ__use_anti_aliasing"
 msgstr ""
 "σχεδίαση με εξομάλυνση, ο χάρτης είναι πιο γρήγορος όταν αυτό δεν είναι "
 "ενεργοποιημένο"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:71
+#: NavitPreferences.java:67
 msgid "__PREF__title__gui_oneway_arrows"
 msgstr "Βέλη Μονόδρομων"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:73
+#: NavitPreferences.java:69
 msgid "__PREF__summ__gui_oneway_arrows"
 msgstr "εμφάνιση βελών κατεύθυνσης μονόδρομων [BETA]"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:75
+#: NavitPreferences.java:71
 msgid "__PREF__title__show_debug_messages"
 msgstr "Μην. Αποσφαλμάτωσης"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:77
+#: NavitPreferences.java:73
 msgid "__PREF__summ__show_debug_messages"
 msgstr "Εμφάνιση μηνυμάτων αποσφαλμάτωσης"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:79
+#: NavitPreferences.java:75
 msgid "__PREF__title__navit_lang"
 msgstr "Γλώσσα"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:81
+#: NavitPreferences.java:77
 msgid "__PREF__summ__navit_lang"
 msgstr "Επιλογή Γλώσσας μηνυμάτων. απαιτείται ΕΠΑΝΕΚΚΙΝΗΣΗ!!"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:83
+#: NavitPreferences.java:79
 msgid "__PREF__title__use_lock_on_roads"
 msgstr "κλείδωμα στους Δρόμους"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:85
+#: NavitPreferences.java:81
 msgid "__PREF__summ__use_lock_on_roads"
 msgstr ""
 "κλείδωμα του οχήματος στον κοντινότερο Δρόμο. απενεργοποιήστε αν περπατάτε ή "
 "οδηγείτε εκτός δρόμου"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:87
+#: NavitPreferences.java:83
 msgid "__PREF__title__use_route_highways"
 msgstr "προτίμηση Αυτοκινητοδρόμων"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:89
+#: NavitPreferences.java:85
 msgid "__PREF__summ__use_route_highways"
 msgstr ""
 "προτίμηση Αυτοκινητοδρόμων για δρομολόγηση (απενεργοποιώντας αυτό, "
 "χρησιμοποιεί περισσότερη μνήμη!!)"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:91
+#: NavitPreferences.java:87
 msgid "__PREF__title__save_zoomlevel"
 msgstr "Κλίμακα εστίασης"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:93
+#: NavitPreferences.java:89
 msgid "__PREF__summ__save_zoomlevel"
 msgstr "αποθήκευση τελευταίας Κλίμακας εστίασης"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:95
+#: NavitPreferences.java:91
 msgid "__PREF__title__show_sat_status"
 msgstr "Κατάσταση Δορυφόρων"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:97
+#: NavitPreferences.java:93
 msgid "__PREF__summ__show_sat_status"
 msgstr "εμφάνιση Κατάστασης Δορυφόρων"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:99
+#: NavitPreferences.java:95
 msgid "__PREF__title__use_agps"
 msgstr "aGPS"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:101
+#: NavitPreferences.java:97
 msgid "__PREF__summ__use_agps"
 msgstr "χρήση aGPS (με χρήση Internet !!)"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:103
+#: NavitPreferences.java:99
 msgid "__PREF__title__enable_debug_functions"
 msgstr "Ενεργοποίηση Λειτουργιών Αποσφαλμάτωσης"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:105
+#: NavitPreferences.java:101
 msgid "__PREF__summ__enable_debug_functions"
 msgstr "Ενεργοποίηση των λειτουργιών αποσφαλμάτωσης στο μενού του Android"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:107
+#: NavitPreferences.java:103
 msgid "__PREF__title__speak_street_names"
 msgstr "εκφώνηση ονομάτων δρόμων"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:109
+#: NavitPreferences.java:105
 msgid "__PREF__summ__speak_street_names"
 msgstr "εκφώνηση ονομάτων δρόμων κατά την πλοήγηση"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:111
+#: NavitPreferences.java:107
 msgid "__PREF__title__map_font_size"
 msgstr "Μέγεθος γραμματοσειράς χάρτη"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:113
+#: NavitPreferences.java:109
 msgid "__PREF__summ__map_font_size"
 msgstr "μέγεθος γραμματοσειράς χάρτη (ονόματα δρόμων, κλπ.)"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:115
+#: NavitPreferences.java:111
 msgid "__PREF__title__use_custom_font"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:117
+#: NavitPreferences.java:113
 msgid "__PREF__summ__use_custom_font"
 msgstr ""
 "χρήση γραμματοσειράς που περιέχεται στο ZANavi (αλλιώς, χρήση γραμματοσειράς "
 "συστήματος)"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:119
-msgid "__PREF__title__cancel_map_drawing_timeout"
-msgstr ""
-
-#. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:121
-msgid "__PREF__summ__cancel_map_drawing_timeout"
-msgstr ""
-
-#. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:123
+#: NavitPreferences.java:115
 msgid "__PREF__title__mapcache"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:125
+#: NavitPreferences.java:117
 msgid "__PREF__summ__mapcache"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:127
+#: NavitPreferences.java:119
 msgid "__PREF__title__drawatorder"
 msgstr "Σχεδίαση περισσότερων λεπτομερειών"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:129
+#: NavitPreferences.java:121
 msgid "__PREF__summ__drawatorder"
 msgstr ""
 "Σχεδιάζει περισσότερες λεπτομέρειες στο χάρτη. Αλλάξτε το μόνο σε γρήγορες "
 "συσκευές."
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:131
+#: NavitPreferences.java:123
 msgid "__PREF__title__streetsearch_r"
 msgstr "Ακτίνα αναζήτησης"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:133
+#: NavitPreferences.java:125
 msgid "__PREF__summ__streetsearch_r"
 msgstr ""
 "Ακτίνα αναζήτησης δρόμων μέσα σε πόλη, μεγαλύτερη ακτίνα βρίσκει δρόμους που "
 "είναι πιό μακρυά απο το κέντρο της πόλης."
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:135
+#: NavitPreferences.java:127
 msgid "__PREF__title__route_style"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:137
+#: NavitPreferences.java:129
 msgid "__PREF__summ__route_style"
 msgstr ""
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:162
+#: NavitPreferences.java:131
+msgid "__PREF__title__show_3d_map"
+msgstr "3D"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:133
+msgid "__PREF__summ__show_3d_map"
+msgstr "εμφάνιση χάρτη σε 3D [BETA]"
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:135
+msgid "__PREF__title__more_map_detail"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:137
+msgid "__PREF__summ__more_map_detail"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:139
+msgid "__PREF__title__trafficlights_delay"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:141
+msgid "__PREF__summ__trafficlights_delay"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:143
+msgid "__PREF__title__use_map_filtering"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:145
+msgid "__PREF__summ__use_map_filtering"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:147
+msgid "__PREF__title__use_smooth_drawing"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:149
+msgid "__PREF__summ__use_smooth_drawing"
+msgstr ""
+
+#. . TRANSLATORS: see en_US for english text to translate!!
+#: NavitPreferences.java:174
 msgid "__PREF__title__map_directory"
 msgstr "Κατάλογος χάρτη"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:164
+#: NavitPreferences.java:176
 msgid "__PREF__summ__map_directory"
 msgstr "ενεργοποιείται μόνο μετά από ΕΠΑΝΕΚΚΙΝΗΣΗ"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:166
+#: NavitPreferences.java:178
 msgid "__PREF__dialogtitle__map_directory"
 msgstr "Κατάλογος Χάρτη"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:168
+#: NavitPreferences.java:180
 msgid "__PREF__dialogcancel__map_directory"
 msgstr "Ακύρωση"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:170
+#: NavitPreferences.java:182
 msgid "__PREF__dialogok__map_directory"
 msgstr "Εντάξει"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:172
+#: NavitPreferences.java:184
 msgid "__PREF__dialogmsg__map_directory"
 msgstr "Καθορισμός καταλόγου χάρτη"
 
@@ -584,10 +654,12 @@ msgstr ""
 msgid "Using Voice for:"
 msgstr "Χρήση Γλώσσας για:"
 
-#: NavitAndroidOverlay.java:661
-msgid "drive here"
-msgstr "οδήγησε εδώ"
+#: NavitAndroidOverlay.java:362
+msgid "What's here"
+msgstr ""
 
-#: NavitAndroidOverlay.java:714
-msgid "wait ..."
-msgstr "περιμένετε ..."
+#~ msgid "drive here"
+#~ msgstr "οδήγησε εδώ"
+
+#~ msgid "wait ..."
+#~ msgstr "περιμένετε ..."

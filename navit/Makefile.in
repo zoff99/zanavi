@@ -124,7 +124,8 @@ am__lib@LIBNAVIT@_la_SOURCES_DIST = announcement.c atom.c attr.c \
 	route.h profile.h roadprofile.h search.h speech.h start_real.h \
 	transform.h track.h types.h util.h vehicle.h vehicleprofile.h \
 	window.h xmlconfig.h zipfile.h navit_nls.h sunriset.c \
-	sunriset.h glib_slice.h android.c event_glib.c builtin.c
+	sunriset.h glib_slice.h maptool/miniz.c android.c event_glib.c \
+	builtin.c
 @SUPPORT_ANDROID_TRUE@am__objects_1 = android.lo
 @EVENT_GLIB_TRUE@am__objects_2 = event_glib.lo
 @PLUGINS_FALSE@am__objects_3 = builtin.lo
@@ -137,8 +138,8 @@ am_lib@LIBNAVIT@_la_OBJECTS = announcement.lo atom.lo attr.lo cache.lo \
 	plugin.lo popup.lo profile.lo projection.lo roadprofile.lo \
 	route.lo routech.lo search.lo speech.lo start_real.lo \
 	transform.lo track.lo util.lo vehicle.lo vehicleprofile.lo \
-	xmlconfig.lo sunriset.lo $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3)
+	xmlconfig.lo sunriset.lo miniz.lo $(am__objects_1) \
+	$(am__objects_2) $(am__objects_3)
 lib@LIBNAVIT@_la_OBJECTS = $(am_lib@LIBNAVIT@_la_OBJECTS)
 lib@LIBNAVIT@_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -516,8 +517,8 @@ lib@LIBNAVIT@_la_SOURCES = announcement.c atom.c attr.c cache.c \
 	route.h profile.h roadprofile.h search.h speech.h start_real.h \
 	transform.h track.h types.h util.h vehicle.h vehicleprofile.h \
 	window.h xmlconfig.h zipfile.h navit_nls.h sunriset.c \
-	sunriset.h glib_slice.h $(am__append_7) $(am__append_8) \
-	$(am__append_9)
+	sunriset.h glib_slice.h maptool/miniz.c $(am__append_7) \
+	$(am__append_8) $(am__append_9)
 @SUPPORT_ANDROID_FALSE@navit_SOURCES = start.c
 @SUPPORT_ANDROID_TRUE@navit_SOURCES = 
 @SUPPORT_ANDROID_FALSE@navit_LDADD = lib@LIBNAVIT@.la @NAVIT_LIBS@ \
@@ -531,6 +532,7 @@ lib@LIBNAVIT@_la_SOURCES = announcement.c atom.c attr.c cache.c \
 @SUPPORT_ANDROID_TRUE@	$(am__append_13)
 @SUPPORT_ANDROID_TRUE@v_int = $$(cat $(srcdir)/android/Android_Market_Version_int.txt|grep v_int|cut -d ":" -f 2)
 @SUPPORT_ANDROID_TRUE@v_name = "1.0.0-"$$(LANG=C svnversion $(top_srcdir) 2> /dev/null|tr -d ":A-Z" 2> /dev/null)
+@SUPPORT_ANDROID_TRUE@b_arch = $(shell if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86";else echo "armeabi"; fi)
 navit_LDFLAGS = -export-dynamic
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -692,6 +694,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maptype.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/miniz.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navigation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osd.Plo@am__quote@
@@ -736,6 +739,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+miniz.lo: maptool/miniz.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT miniz.lo -MD -MP -MF $(DEPDIR)/miniz.Tpo -c -o miniz.lo `test -f 'maptool/miniz.c' || echo '$(srcdir)/'`maptool/miniz.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/miniz.Tpo $(DEPDIR)/miniz.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='maptool/miniz.c' object='miniz.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o miniz.lo `test -f 'maptool/miniz.c' || echo '$(srcdir)/'`maptool/miniz.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1143,9 +1153,10 @@ navit_android_xml: navit_shipped.xml
 @SUPPORT_ANDROID_TRUE@	android update project -t @ANDROID_PROJECT@ -p android
 
 @SUPPORT_ANDROID_TRUE@apkg-all: all android/build.xml navit.xml
-@SUPPORT_ANDROID_TRUE@	mkdir -p android/libs/armeabi
-@SUPPORT_ANDROID_TRUE@	cp .libs/*.so android/libs/armeabi/libnavit.so
-@SUPPORT_ANDROID_TRUE@	for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/armeabi/$$(basename $$i); done
+
+@SUPPORT_ANDROID_TRUE@	mkdir -p android/libs/$(b_arch)
+@SUPPORT_ANDROID_TRUE@	cp .libs/*.so android/libs/$(b_arch)/libnavit.so
+@SUPPORT_ANDROID_TRUE@	for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/$(b_arch)/$$(basename $$i); done
 
 @SUPPORT_ANDROID_TRUE@	mkdir -p android/res/drawable-ldpi
 @SUPPORT_ANDROID_TRUE@	mkdir -p android/res/drawable-mdpi
@@ -1201,16 +1212,17 @@ navit_android_xml: navit_shipped.xml
 #	cleanup svn dirs, they should never be in build dir
 @SUPPORT_ANDROID_TRUE@	if [ "$(builddir)" != "$(srcdir)" ]; then find $(builddir) -type d -name '\.svn' -exec rm -Rf {} \; ; fi; echo "ignore the find errors!!"
 
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/armeabi ; fi
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/toolchains/arm-linux-androideabi-4.4.3/prebuilt/gdbserver android/libs/armeabi/gdbserver ; fi
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/armeabi ; fi
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/obj/local/armeabi ; fi
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/libs/armeabi/*.so android/obj/local/armeabi/ ; fi
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "set solib-search-path $(builddir)/obj/local/armeabi" > android/libs/armeabi/gdb.setup ; fi
-@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/libs/armeabi/gdb.setup ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/toolchains/arm-linux-androideabi-4.4.3/prebuilt/gdbserver android/libs/$(b_arch)/gdbserver ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/obj/local/$(b_arch) ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/libs/$(b_arch)/*.so android/obj/local/$(b_arch)/ ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "set solib-search-path $(builddir)/obj/local/$(b_arch)" > android/libs/$(b_arch)/gdb.setup ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/libs/$(b_arch)/gdb.setup ; fi
 
 #	strip libs if release build is selected
 @SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi/* ; echo "done" ; fi
+@SUPPORT_ANDROID_TRUE@	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; i686-android-linux-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
 
 @SUPPORT_ANDROID_TRUE@apkg: apkg-all
 @SUPPORT_ANDROID_TRUE@	touch $(srcdir)/android/dummy.txt

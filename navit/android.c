@@ -56,6 +56,7 @@ jmethodID DrawMapPreview_text = NULL;
 jmethodID NavitGraphics_send_osd_values2 = NULL;
 jmethodID NavitGraphics_set_vehicle_values2 = NULL;
 jmethodID NavitGraphics_set_vehicle_values3 = NULL;
+jmethodID NavitGraphics_send_route_rect_to_java = NULL;
 
 struct attr attr;
 
@@ -409,6 +410,39 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	// dbg(0,"+#+:enter\n");
 #endif
 
+#ifdef DEBUG_GLIB_MEM_FUNCTIONS
+	// GLIB debugging
+	// GLIB debugging
+	// GLIB debugging
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging 1 --------------------");
+	g_mem_set_vtable(glib_mem_profiler_table);
+	//char *dummy_997;
+	//dummy_997 = g_malloc(1024*1024*10); // 10 MByte
+	//g_free(dummy_997);
+	//dummy_997 = NULL;
+	//g_mem_profile();
+	dbg(0,"GLIB debugging 2 --------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	dbg(0,"GLIB debugging ----------------------");
+	// GLIB debugging
+	// GLIB debugging
+	// GLIB debugging
+#endif
+
 	int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
 
@@ -449,6 +483,31 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	//// dbg(0,"before main_real call\n");
 	//main_real(1, strings);
 	//// dbg(0,"after main_real call\n");
+
+	/* -- mem test --
+	 char *dummy_99;
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_99 = g_malloc(1024*1024*10); // 10 MByte
+	 g_free(dummy_99);
+	 dummy_997 = NULL;
+	 */
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	// dbg(0,"+#+:leave\n");
@@ -733,7 +792,7 @@ void android_return_search_result(struct jni_object *jni_o, char *str)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	// dbg(0,"+#+:enter\n");
 #endif
-	//DBG // dbg(0,"EEnter\n");
+	// dbg(0,"EEnter\n");
 
 	// int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
@@ -786,7 +845,7 @@ void android_return_generic_int(int id, int i)
 }
 
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEnv* env, jobject thiz, int id, int partial, jobject str, int search_flags, jobject search_country, jobject latlon, int radius)
+Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEnv* env, jobject thiz, int id, int partial, jobject str, jobject str_town, jobject str_hn, int search_flags, jobject search_country, jobject latlon, int radius)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	// dbg(0,"+#+:enter\n");
@@ -824,8 +883,29 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEn
 		{
 			// unused now!!
 		}
-		// search for street in variable "s" within "search_country" -> return a list of streets as result
+		// new experimental street-index search
 		else if (id == 2)
+		{
+			offline_search_break_searching = 0;
+
+			struct jni_object my_jni_object;
+			my_jni_object.env = env;
+			my_jni_object.jo = thiz;
+			my_jni_object.jm = aMethodID;
+
+			const char *s_town;
+			s_town = (*env)->GetStringUTFChars(env, str_town, NULL);
+			const char *s_hn;
+			s_hn = (*env)->GetStringUTFChars(env, str_hn, NULL);
+
+			search_v2(s, s_town, s_hn, partial, &my_jni_object);
+
+			(*env)->ReleaseStringUTFChars(env, str_town, s_town);
+			(*env)->ReleaseStringUTFChars(env, str_hn, s_hn);
+
+		}
+		// search for street in variable "s" within "search_country" -> return a list of streets as result
+		else if (id == 29)
 		{
 			//struct attr s_attr4;
 			//struct gui_priv *gp4;
@@ -1559,6 +1639,16 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 		c24.pro = transform_get_projection(global_navit->trans);
 		result = navit_find_nearest_item_dump(global_navit->mapsets->data, &c24, 1);
 	}
+	else if (i == 11)
+	{
+		// coord to pixel-on-screen
+		struct coord c99;
+		c99.x = a;
+		c99.y = b;
+		struct point pnt;
+		transform(global_navit->trans, projection_mg, &c99, &pnt, 1, 0, 0, NULL);
+		result = g_strdup_printf("%d:%d", pnt.x, pnt.y);
+	}
 
 	// // dbg(0, "result=%s\n", result);
 	jstring js = (*env)->NewStringUTF(env, result);
@@ -1643,6 +1733,30 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
 		}
+		else if (i == 79)
+		{
+			// set traffic light delay
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_traffic_light_delay = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 78)
+		{
+			// shift layout "order" values
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			displaylist_shift_order_in_map_layers(global_navit, atoi(s));
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 77)
+		{
+			// do not show route rectangles
+			global_show_route_rectangles = 0;
+		}
+		else if (i == 76)
+		{
+			// show route rectangles
+			global_show_route_rectangles = 1;
+		}
 		else if (i == 75)
 		{
 			// stop demo vechile
@@ -1708,13 +1822,13 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 		}
 		else if (i == 67)
 		{
-			// disable "water from relations"
-			enable_water_from_relations = 0;
+			// disable "multipolygons"
+			global_draw_multipolygons = 0;
 		}
 		else if (i == 66)
 		{
-			// enable "water from relations"
-			enable_water_from_relations = 1;
+			// enable "multipolygons"
+			global_draw_multipolygons = 1;
 		}
 		else if (i == 65)
 		{
@@ -2148,6 +2262,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 			if (attr.u.navit->destination_valid != 0)
 			{
 				navit_set_destination(&attr.u.navit->self, NULL, NULL, 0);
+#ifdef DEBUG_GLIB_MEM_FUNCTIONS
+				g_mem_profile();
+#endif
 			}
 		}
 		else if (i == 6)
@@ -2444,5 +2561,33 @@ void set_vehicle_values_to_java_delta(int dx, int dy, int dangle)
 	}
 
 	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values3, dx, dy, dangle);
+}
+
+void send_route_rect_to_java(int x1, int y1, int x2, int y2, int order)
+{
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	//int thread_id = gettid();
+	//dbg(0, "THREAD ID=%d\n", thread_id);
+
+	if (NavitGraphicsClass2 == NULL)
+	{
+		if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitGraphics", &NavitGraphicsClass2))
+		{
+			NavitGraphicsClass2 = NULL;
+			return;
+		}
+	}
+
+	if (NavitGraphics_send_route_rect_to_java == NULL)
+	{
+		if (!android_find_static_method(NavitGraphicsClass2, "send_route_rect_to_java", "(IIIII)V", &NavitGraphics_send_route_rect_to_java))
+		{
+			return;
+		}
+	}
+
+	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_send_route_rect_to_java, x1, y1, x2, y2, order);
 }
 

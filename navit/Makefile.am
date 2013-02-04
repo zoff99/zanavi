@@ -58,7 +58,7 @@ lib@LIBNAVIT@_la_SOURCES = announcement.c atom.c attr.c cache.c callback.c comma
 	map_data.h mapset.h maptype.h menu.h messages.h navigation.h navit.h osd.h \
 	param.h phrase.h plugin.h point.h plugin_def.h projection.h popup.h route.h profile.h roadprofile.h search.h speech.h start_real.h \
 	transform.h track.h types.h util.h vehicle.h vehicleprofile.h window.h xmlconfig.h zipfile.h \
-	navit_nls.h sunriset.c sunriset.h glib_slice.h
+	navit_nls.h sunriset.c sunriset.h glib_slice.h maptool/miniz.c
 
 XSLTS=@XSLTS@
 navit.xml: navit_shipped.xml  $(foreach xslt, $(subst $(comma), ,$(XSLTS)), $(addsuffix .xslt,$(addprefix xslt/,$(xslt)))) navit_android_xml
@@ -100,6 +100,8 @@ if SUPPORT_ANDROID
 
 v_int = $$(cat $(srcdir)/android/Android_Market_Version_int.txt|grep v_int|cut -d ":" -f 2)
 v_name = "1.0.0-"$$(LANG=C svnversion $(top_srcdir) 2> /dev/null|tr -d ":A-Z" 2> /dev/null)
+b_arch = $(shell if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86";else echo "armeabi"; fi)
+
 
 android/AndroidManifest.xml: android/AndroidManifest.xml.in
 	mkdir -p $(builddir)/android
@@ -126,9 +128,10 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	android update project -t @ANDROID_PROJECT@ -p android
 
 apkg-all: all android/build.xml navit.xml
-	mkdir -p android/libs/armeabi
-	cp .libs/*.so android/libs/armeabi/libnavit.so
-	for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/armeabi/$$(basename $$i); done
+
+	mkdir -p android/libs/$(b_arch)
+	cp .libs/*.so android/libs/$(b_arch)/libnavit.so
+	for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/$(b_arch)/$$(basename $$i); done
 
 	mkdir -p android/res/drawable-ldpi
 	mkdir -p android/res/drawable-mdpi
@@ -185,16 +188,17 @@ apkg-all: all android/build.xml navit.xml
 #	cleanup svn dirs, they should never be in build dir
 	if [ "$(builddir)" != "$(srcdir)" ]; then find $(builddir) -type d -name '\.svn' -exec rm -Rf {} \; ; fi; echo "ignore the find errors!!"
 
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/armeabi ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/toolchains/arm-linux-androideabi-4.4.3/prebuilt/gdbserver android/libs/armeabi/gdbserver ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/armeabi ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/obj/local/armeabi ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/libs/armeabi/*.so android/obj/local/armeabi/ ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "set solib-search-path $(builddir)/obj/local/armeabi" > android/libs/armeabi/gdb.setup ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/libs/armeabi/gdb.setup ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/toolchains/arm-linux-androideabi-4.4.3/prebuilt/gdbserver android/libs/$(b_arch)/gdbserver ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/obj/local/$(b_arch) ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/libs/$(b_arch)/*.so android/obj/local/$(b_arch)/ ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "set solib-search-path $(builddir)/obj/local/$(b_arch)" > android/libs/$(b_arch)/gdb.setup ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/libs/$(b_arch)/gdb.setup ; fi
 
 #	strip libs if release build is selected
 	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi/* ; echo "done" ; fi
+	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; i686-android-linux-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
 
 
 apkg: apkg-all

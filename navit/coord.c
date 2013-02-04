@@ -165,7 +165,7 @@ coord_rect_destroy(struct coord_rect *r)
 int 
 coord_rect_overlap(struct coord_rect *r1, struct coord_rect *r2)
 {
-	dbg(1,"0x%x,0x%x - 0x%x,0x%x vs 0x%x,0x%x - 0x%x,0x%x\n", r1->lu.x, r1->lu.y, r1->rl.x, r1->rl.y, r2->lu.x, r2->lu.y, r2->rl.x, r2->rl.y);
+	//dbg(1,"0x%x,0x%x - 0x%x,0x%x vs 0x%x,0x%x - 0x%x,0x%x\n", r1->lu.x, r1->lu.y, r1->rl.x, r1->rl.y, r2->lu.x, r2->lu.y, r2->rl.x, r2->rl.y);
 
 	// ****** this sometimes causes a crash at startup!! ********
 	// ****** this sometimes causes a crash at startup!! ********
@@ -241,14 +241,14 @@ coord_parse(const char *c_str, enum projection pro, struct coord *c_ret)
 	struct coord c;
 	enum projection str_pro=projection_none;
 
-	dbg(1,"enter('%s',%d,%p)\n", c_str, pro, c_ret);
+	//dbg(1,"enter('%s',%d,%p)\n", c_str, pro, c_ret);
 	s=strchr(str,' ');
 	co=strchr(str,':');
 	if (co && co < s) {
 		proj=malloc(co-str+1);
 		strncpy(proj, str, co-str);
 		proj[co-str]='\0';
-		dbg(1,"projection=%s\n", proj);
+		//dbg(1,"projection=%s\n", proj);
 		str=co+1;
 		s=strchr(str,' ');
 		if (!strcmp(proj, "mg"))
@@ -273,8 +273,8 @@ coord_parse(const char *c_str, enum projection pro, struct coord *c_ret)
 		args=sscanf(str, "%i %i%n",&c.x, &c.y, &ret);
 		if (args < 2)
 			goto out;
-		dbg(1,"str='%s' x=0x%x y=0x%x c=%d\n", str, c.x, c.y, ret);
-		dbg(1,"rest='%s'\n", str+ret);
+		//dbg(1,"str='%s' x=0x%x y=0x%x c=%d\n", str, c.x, c.y, ret);
+		//dbg(1,"rest='%s'\n", str+ret);
 
 		if (str_pro == projection_none) 
 			str_pro=projection_mg;
@@ -286,13 +286,13 @@ coord_parse(const char *c_str, enum projection pro, struct coord *c_ret)
 	} else if (*s == 'N' || *s == 'n' || *s == 'S' || *s == 's') {
 		double lng, lat;
 		char ns, ew;
-		dbg(1,"str='%s'\n", str);
+		//dbg(1,"str='%s'\n", str);
 		args=sscanf(str, "%lf %c %lf %c%n", &lat, &ns, &lng, &ew, &ret);
-		dbg(1,"args=%d\n", args);
-		dbg(1,"lat=%f %c lon=%f %c\n", lat, ns, lng, ew);
+		//dbg(1,"args=%d\n", args);
+		//dbg(1,"lat=%f %c lon=%f %c\n", lat, ns, lng, ew);
 		if (args < 4)
 			goto out;
-		dbg(1,"projection=%d str_pro=%d projection_none=%d\n", pro, str_pro, projection_none);
+		//dbg(1,"projection=%d str_pro=%d projection_none=%d\n", pro, str_pro, projection_none);
 		if (str_pro == projection_none) {
 			g.lat=floor(lat/100);
 			lat-=g.lat*100;
@@ -304,30 +304,30 @@ coord_parse(const char *c_str, enum projection pro, struct coord *c_ret)
 				g.lat=-g.lat;
 			if (ew == 'w' || ew == 'W')
 				g.lng=-g.lng;
-			dbg(1,"transform_from_geo(%f,%f)",g.lat,g.lng);
+			//dbg(1,"transform_from_geo(%f,%f)",g.lat,g.lng);
 			transform_from_geo(pro, &g, c_ret);
-			dbg(1,"result 0x%x,0x%x\n", c_ret->x,c_ret->y);
+			//dbg(1,"result 0x%x,0x%x\n", c_ret->x,c_ret->y);
 		}
-		dbg(3,"str='%s' x=%f ns=%c y=%f ew=%c c=%d\n", str, lng, ns, lat, ew, ret);
-		dbg(3,"rest='%s'\n", str+ret);
+		//dbg(3,"str='%s' x=%f ns=%c y=%f ew=%c c=%d\n", str, lng, ns, lat, ew, ret);
+		//dbg(3,"rest='%s'\n", str+ret);
 	} else {
 		double lng, lat;
 		args=sscanf(str, "%lf %lf%n", &lng, &lat, &ret);
 		if (args < 2)
 			goto out;
-		dbg(1,"str='%s' x=%f y=%f  c=%d\n", str, lng, lat, ret);
-		dbg(1,"rest='%s'\n", str+ret);
+		//dbg(1,"str='%s' x=%f y=%f  c=%d\n", str, lng, lat, ret);
+		//dbg(1,"rest='%s'\n", str+ret);
 		g.lng=lng;
 		g.lat=lat;
 		transform_from_geo(pro, &g, c_ret);
 	}
-	if (debug)
-		printf("rest='%s'\n", str+ret);
+	//if (debug)
+	//	printf("rest='%s'\n", str+ret);
 	ret+=str-c_str;
-	if (debug) {
-		printf("args=%d\n", args);
-		printf("ret=%d delta=%d ret_str='%s'\n", ret, GPOINTER_TO_INT(str-c_str), c_str+ret);
-	}
+	//if (debug) {
+	//	printf("args=%d\n", args);
+	//	printf("ret=%d delta=%d ret_str='%s'\n", ret, GPOINTER_TO_INT(str-c_str), c_str+ret);
+	//}
 out:
 	free(proj);
 	return ret;
@@ -452,17 +452,20 @@ void coord_format(float lat,float lng, enum coord_format fmt, char * buffer, int
 unsigned int 
 coord_hash(const void *key)
 {
-        const struct coord *c=key;
+	const struct coord *c=key;
 	return c->x^c->y;
 }
 
 int
 coord_equal(const void *a, const void *b)
 {
-        const struct coord *c_a=a;
-        const struct coord *c_b=b;
+	const struct coord *c_a=a;
+	const struct coord *c_b=b;
+
 	if (c_a->x == c_b->x && c_a->y == c_b->y)
-                return TRUE;
-        return FALSE;
+	{
+		return TRUE;
+	}
+	return FALSE;
 }
 /** @} */

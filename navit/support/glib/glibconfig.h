@@ -247,7 +247,11 @@ union _GSystemThread
 #define HAVE_GOOD_PRINTF
 #define NO_SYS_SIGLIST_DECL
 #define GLIB_STATIC_COMPILATION
+
+
 #define G_DISABLE_CHECKS
+
+
 /* A GPid is an abstraction for a process "handle". It is *not* an
  * abstraction for a process identifier in general. GPid is used in
  * GLib only for descendant processes spawned with the g_spawn*

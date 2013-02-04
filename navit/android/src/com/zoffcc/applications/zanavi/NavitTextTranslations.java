@@ -332,13 +332,13 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Exit ZANavi", "ar", "خروج من زنافي", "pt", "sair", "pt_BR", "sair", "zh", "退出ZANvi", "zh_HK", "結束 ZANavi", "cs", "Ukončit ZANavi", "nl", "ZANavi afsluiten", "fr", "Quittez ZANavi", "de", "ZANavi beenden", "el", "Έξοδος από το ZANavi", "hu", "KIlépés a ZANavi-ból", "it", "esci da ZANavi", "pl", "wyjdź z ZANavi", "ru", "выйти", "sk", "Ukončiť ZANavi", "es", "Salir de ZANavi" };
 		p(k, v);
 		k = "toggle POI";
-		v = new String[] { "en", "toggle POI", "pt", "alternar POI", "pt_BR", "alternar POI", "zh", "显示/隐藏兴趣点", "zh_HK", "切換 POI", "cs", "toogle POI", "nl", "POI aan/uit", "fr", "POI on/off", "de", "POI ein/aus", "el", "εναλλαγή POI", "hu", "POI ki/be", "it", "attiva/disattiva POI", "pl", "włącz/wyłącz POI", "ru", "переключение POI", "sk", "Prepnúť POI" };
+		v = new String[] { "en", "toggle POI", "pt", "alternar POI", "pt_BR", "alternar POI", "zh", "显示/隐藏兴趣点", "zh_HK", "切換 POI", "cs", "toogle POI", "nl", "POI aan/uit", "fr", "POI on/off", "de", "POI ein/aus", "el", "εναλλαγή POI", "hu", "POI ki/be", "it", "attiva/disattiva POI", "pl", "włącz/wyłącz POI", "ru", "переключение POI", "sk", "Prepnúť POI", "es", "Conmutar POI" };
 		p(k, v);
 		k = "Settings";
 		v = new String[] { "en", "Settings", "ca", "Configuració", "ar", "إعدادات", "pt", "Configurações", "pt_BR", "Configurações", "zh", "设置", "zh_HK", "設定", "cs", "Nastavení", "nl", "Instellingen", "fr", "Réglages", "de", "Einstellungen", "el", "Ρυθμίσεις", "hu", "Beállitások", "it", "Impostazioni", "pl", "Ustawienia", "sk", "Nastavenia", "es", "Configuración" };
 		p(k, v);
 		k = "Coord Dialog";
-		v = new String[] { "en", "Coord Dialog", "de", "Koordinaten eingeben", "el", "Συντεταγμένες", "pl", "Wprowadź współrzędne", "sk", "Zadanie súradníc" };
+		v = new String[] { "en", "Coord Dialog", "pt_BR", "Coordenadas", "de", "Koordinaten eingeben", "el", "Συντεταγμένες", "pl", "Wprowadź współrzędne", "sk", "Zadanie súradníc" };
 		p(k, v);
 		k = "Announcer Off";
 		v = new String[] { "en", "Announcer Off", "ar", "إغلاق الإخباري", "pt", "Locutor desativado", "pt_BR", "Locutor desativado", "zh", "语音播报未启用", "zh_HK", "Announcer 關", "cs", "Vypnout ohlašování", "nl", "spraak uit", "fr", "Voix Off", "de", "Ansagen stumm", "el", "Εκφώνηση Κλειστή", "hu", "Hangbemondás ki", "it", "Annunciatore Spento", "pl", "Wyłącz komunikaty", "ru", "Отключить голос", "sk", "Hlásateľ Vyp" };
@@ -349,6 +349,12 @@ public class NavitTextTranslations
 		k = "Recent destinations";
 		v = new String[] { "en", "Recent destinations", "ca", "Destinacions recents", "ar", "آخر الوجهات", "pt", "Destinos recentes", "pt_BR", "Destinos recentes", "zh", "最近的目的地", "zh_HK", "最近的目的地", "cs", "Poslední cíle", "nl", "Recente locaties", "fr", "Destinations récentes", "de", "Letzte Ziele", "el", "Πρόσφατοι προορισμοί", "hu", "Legutóbbi úticélok", "it", "Destinazioni recenti", "pl", "Ostatnie cele", "ru", "Последние места назначения", "sk", "Nedávne ciele", "es", "Destinos recientes" };
 		p(k, v);
+		k = "add Traffic block";
+		v = new String[] { "en", "add Traffic block", "de", "Baustelle markieren" };
+		p(k, v);
+		k = "clear Traffic blocks";
+		v = new String[] { "en", "clear Traffic blocks", "de", "alle Baustellen entfernen" };
+		p(k, v);
 		k = "download maps";
 		v = new String[] { "en", "download maps", "ca", "descarregar mapes", "ar", "تحميل خرائط", "pt", "baixar mapas", "pt_BR", "baixar mapas", "zh", "下载地图", "zh_HK", "下載地圖", "cs", "stahování map", "nl", "download kaarten", "fr", "télécharchez carte", "de", "Karten laden", "el", "λήψη χαρτών", "hu", "térképek letöltése", "it", "scarica mappe", "pl", "Pobierz mapy", "ru", "скачать карты", "sk", "Stiahnuť mapy", "es", "descargar mapas" };
 		p(k, v);
@@ -356,22 +362,28 @@ public class NavitTextTranslations
 		v = new String[] { "en", "delete maps", "ca", "esborrar mapes", "ar", "حذف خرائط", "pt", "apagar mapas", "pt_BR", "apagar mapas", "zh", "删除地图", "zh_HK", "刪除地圖", "cs", "smazat mapy", "nl", "kaarten verwijderen", "fr", "supprimer des cartes", "de", "Karten löschen", "el", "διαγραφή χαρτών", "hu", "térképek törlése", "it", "cancella mappe", "pl", "usuń mapy", "ru", "удаление карты", "sk", "Zmazať mapy", "es", "eliminar mapas" };
 		p(k, v);
 		k = "show Maps age";
-		v = new String[] { "en", "show Maps age", "zh_HK", "顯示地圖建立日期表", "de", "Karten Erstelldatum", "el", "Εμφάνιση παλαιότητας χάρτη", "pl", "Pokaż wiek map", "sk", "Zobraziť vek máp" };
+		v = new String[] { "en", "show Maps age", "pt_BR", "mostrar idade do mapa", "zh_HK", "顯示地圖建立日期表", "de", "Karten Erstelldatum", "el", "Εμφάνιση παλαιότητας χάρτη", "pl", "Pokaż wiek map", "sk", "Zobraziť vek máp" };
 		p(k, v);
 		k = "convert GPX file";
-		v = new String[] { "en", "convert GPX file", "zh_HK", "轉換成GPX檔案", "de", "GPX file konvertieren", "pl", "Konwertuj plik GPX", "sk", "Skonvertovať GPX súbor" };
+		v = new String[] { "en", "convert GPX file", "pt_BR", "converter arquivo GPX", "zh_HK", "轉換成GPX檔案", "de", "GPX file konvertieren", "pl", "Konwertuj plik GPX", "sk", "Skonvertovať GPX súbor", "es", "Convertir fichero GPX" };
+		p(k, v);
+		k = "clear GPX map";
+		v = new String[] { "en", "clear GPX map", "de", "GPX routen entfernen" };
 		p(k, v);
 		k = "Demo Vehicle";
 		v = new String[] { "en", "Demo Vehicle", "ca", "Vehicle Demo", "pt", "Demonstração", "pt_BR", "Demonstração", "zh", "演示汽车", "zh_HK", "Demo 車輛", "nl", "Demo voertuig", "de", "Demo Fahrzeug", "el", "Όχημα Επίδειξης", "hu", "Demo jármű", "pl", "Pojazd demo", "ru", "Демо-автомобиль", "sk", "Predvádzacie vozidlo", "es", "Vehículo Demo" };
 		p(k, v);
 		k = "Speech Texts";
-		v = new String[] { "en", "Speech Texts", "ar", "خاصية قراءة النصوص", "zh", "朗读文本", "zh_HK", "話音文字", "nl", "Gesproken tekst", "de", "Texte für Sprache", "el", "Εκφώνηση Κειμένων", "hu", "Beszéd szövegek", "pl", "Czytaj teksty", "ru", "Речевые Тексты", "sk", "Rečové texty" };
+		v = new String[] { "en", "Speech Texts", "ar", "خاصية قراءة النصوص", "pt_BR", "Textos falados", "zh", "朗读文本", "zh_HK", "話音文字", "nl", "Gesproken tekst", "de", "Texte für Sprache", "el", "Εκφώνηση Κειμένων", "hu", "Beszéd szövegek", "pl", "Czytaj teksty", "ru", "Речевые Тексты", "sk", "Rečové texty" };
 		p(k, v);
 		k = "Nav. Commands";
 		v = new String[] { "en", "Nav. Commands", "ar", "أوامر التجول", "pt", "Comandos", "pt_BR", "Comandos", "zh", "导航命令", "zh_HK", "導航指令", "nl", "Nav. Opdrachten", "de", "Nav. Kommandos", "el", "Εντ. Πλοήγησης", "hu", "Navigációs utasítások", "pl", "Komendy nawigacji", "ru", "комманды Nav.", "sk", "Nav. povely" };
 		p(k, v);
+		k = "toggle Routegraph";
+		v = new String[] { "en", "toggle Routegraph", "de", "Routegraph anzeigen" };
+		p(k, v);
 		k = "online Help";
-		v = new String[] { "en", "online Help", "ar", "المساعدة (أونلاين)", "pt", "ajuda online", "pt_BR", "ajuda online", "zh", "在线帮助", "zh_HK", "網上求助", "nl", "online help", "fr", "aide en ligne", "de", "online Hilfe", "el", "online Βοήθεια", "hu", "Online súgó", "pl", "Pomoc online", "ru", "Справка (онлайн)", "sk", "Online pomoc" };
+		v = new String[] { "en", "online Help", "ar", "المساعدة (أونلاين)", "pt", "ajuda online", "pt_BR", "ajuda online", "zh", "在线帮助", "zh_HK", "網上求助", "nl", "online help", "fr", "aide en ligne", "de", "online Hilfe", "el", "online Βοήθεια", "hu", "Online súgó", "pl", "Pomoc online", "ru", "Справка (онлайн)", "sk", "Online pomoc", "es", "Ayuda en línea" };
 		p(k, v);
 		k = "No address found";
 		v = new String[] { "en", "No address found", "ar", "لم يتم إيجاد عنوان", "pt", "Endereço não encontrado", "pt_BR", "Endereço não encontrado", "zh", "没有找到任何地点", "zh_HK", "沒有地址", "cs", "Adresa nenalezena", "nl", "Adres niet gevonden", "fr", "Pas d'adresse trouvée", "de", "Keine Adresse gefunden", "el", "Δεν βρέθηκε διεύθυνση", "hu", "Cím nem található", "it", "Nessun indirizzo trovato", "pl", "Nie znaleziono adresu", "sk", "Nenájdená žiadna adresa", "es",
@@ -383,7 +395,7 @@ public class NavitTextTranslations
 		p(k, v);
 		k = "No search string entered";
 		v = new String[] { "en", "No search string entered", "ar", "لا يوجد قيمة للبحث", "pt", "Não há texto a ser procurado", "pt_BR", "Não há texto a ser procurado", "zh", "没有输入任何搜索", "zh_HK", "未輸入搜尋文字", "cs", "Vyhledávací řetězec je prázdný", "nl", "geen waarde opgegeven", "fr", "aucun élément entré", "de", "Keine Eingabe", "el", "Δεν εισήχθηκε αλφαριθμητικό αναζήτησης", "hu", "Keresőmező üres", "it", "Nessuna stringa di ricerca inserita", "pl", "Nie wprowadzono żadnych znaków", "ru",
-				"Строка поиска не введена", "sk", "Nezadaný žiadny výraz" };
+				"Строка поиска не введена", "sk", "Nezadaný žiadny výraz", "es", "No se introdujo una cadena de búsqueda" };
 		p(k, v);
 		k = "setting destination to";
 		v = new String[] { "en", "setting destination to", "ar", "تحديد الوجهة إلي", "pt", "definindo destino para", "pt_BR", "definindo destino para", "zh", "将目的地设为", "zh_HK", "將目的地設為", "cs", "Nastavuji cíl do", "nl", "bestemming ingesteld op", "fr", "destination vers", "de", "neues Fahrziel:", "el", "καθορισμός προορισμού στο", "hu", "Cél beállítva:", "it", "imposta destinazione a", "pl", "ustawianie celu trasy do", "sk", "Nastavuje sa cieľ na" };
@@ -412,9 +424,27 @@ public class NavitTextTranslations
 		v = new String[] { "en", "No Results found!", "ar", "لم يتمكن من إيجاد نتيجة!", "pt", "Nada foi encontrado!", "pt_BR", "Nada foi encontrado!", "zh", "没有找到结果！", "zh_HK", "無結果！", "cs", "Nic nenalzeno", "nl", "Geen resultaat gevonden!", "fr", "Pas de résultat trouvé!", "de", "Suche liefert kein Ergebnis!", "el", "Δεν βρέθηκαν Αποτελέσματα!", "hu", "Nincs találat!", "it", "Nessun risultato trovato!", "pl", "Nic nie znaleziono!", "ru", "Ничего не найдено!", "sk",
 				"Žiadny výsledok nenájdený!", "es", "No se encontraron resultados!" };
 		p(k, v);
+		k = "Possibly not enough space on your device!";
+		v = new String[] { "en", "Possibly not enough space on your device!", "de", "Möglicherweise ist nicht genung Platz vorhanden!" };
+		p(k, v);
+		k = "device space";
+		v = new String[] { "en", "device space", "de", "Speicherplatz" };
+		p(k, v);
 		k = "Map data (c) OpenStreetMap contributors, CC-BY-SA";
 		v = new String[] { "en", "Map data (c) OpenStreetMap contributors, CC-BY-SA", "ar", "بيانات الخريطة محفوظة لـ OpenStreetMap، تحت رخصة CC-BY-SA", "zh", "地图数据 (c) OpenStreetMap contributors, CC-BY-SA", "zh_HK", "地圖 資料(c) OpenStreetMap contributors, CC-BY-SA", "cs", "Mapové podklady (c) OpenStreetMap contributors, CC-BY-SA", "nl", "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA", "de", "Kartendaten: (c) OpenStreetMap contributors, CC-BY-SA", "el",
 				"Δεδομένα χάρτη (c) OpenStreetMap contributors, CC-BY-SA", "hu", "Térképadatok: (c) OpenStreetMap contributors, CC-BY-SA", "it", "Dati mappa (c) OpenStreetMap contributors, CC-BY-SA", "pl", "Dane map (c) OpenStreetMap contributors, CC-BY-SA", "sk", "Mapové údaje (c) OpenStreetMap contributors, CC-BY-SA", "es", "Datos de mapas (c) OpenStreetMap contributors, CC-BY-SA" };
+		p(k, v);
+		k = "Destination set";
+		v = new String[] { "en", "Destination set", "de", "Ziel gesetzt" };
+		p(k, v);
+		k = "No route found / Route blocked";
+		v = new String[] { "en", "No route found / Route blocked", "de", "keine Route gefunden / blockiert" };
+		p(k, v);
+		k = "Building route path";
+		v = new String[] { "en", "Building route path", "de", "generiere Route Path" };
+		p(k, v);
+		k = "Building route graph";
+		v = new String[] { "en", "Building route graph", "de", "generiere Route Graph" };
 		p(k, v);
 		k = "__PREF__title__use_fast_provider";
 		v = new String[] { "en", "GSM/3g/Wireless", "pt", "GSM/3G/Sem fio", "pt_BR", "GSM/3G/Sem fio", "zh", "GSM/3g/无线", "cs", "GSM/3g/WiFi", "nl", "GSM/3G/WiFi", "fr", "GSM/3G/Sans-fil", "de", "GSM/3g/Wireless", "el", "GSM/3g/Ασύρματο", "hu", "GSM/3g/Wireless", "pl", "GSM/3g/WiFi", "sk", "GSM/3g/Bezdrôtové" };
@@ -464,12 +494,6 @@ public class NavitTextTranslations
 		k = "__PREF__summ__use_imperial";
 		v = new String[] { "en", "Use Imperial units instead of metric units", "pt", "Usa sistema imperial ao invés do sistema métrico", "pt_BR", "Usa sistema imperial ao invés do sistema métrico", "zh", "使用英制单位，而不是公制单位", "cs", "Používej imperiální jednotky (míle, ...) místo metrických.", "nl", "Gebruik Engelse eenheden in plaats van metrische", "fr", "Utilise les unités impériales au lieu des unités métriques", "de", "Englische Maßeinheiten wie Meilen benutzen", "el",
 				"Χρήση Αγγλικών μονάδων αντί για μετρικές", "hu", "Mérföld, láb stb. km, méter helyett", "pl", "Użyj jednostek imperialnych (brytyjskich) zamiast metrycznych", "sk", "Použiť imperiálne jednotky namiesto metrických" };
-		p(k, v);
-		k = "__PREF__title__show_3d_map";
-		v = new String[] { "en", "3D", "pt", "3D", "pt_BR", "3D", "zh", "3D", "cs", "3D", "nl", "Kaart in 3D", "fr", "3D", "de", "3D", "el", "3D", "hu", "3D térkép", "pl", "3D", "sk", "3D" };
-		p(k, v);
-		k = "__PREF__summ__show_3d_map";
-		v = new String[] { "en", "show map in 3D [BETA]", "pt", "mostra mapa em 3D [BETA]", "pt_BR", "mostra mapa em 3D [BETA]", "zh", "显示3D地图[BETA]", "cs", "Zobrazení mapy v 3D [BETA]", "nl", "3D weergave van de kaart [BETA]", "fr", "Afficher la carte en 3D [BETA]", "de", "Karte in 3D [BETA]", "el", "εμφάνιση χάρτη σε 3D [BETA]", "hu", "3D térkép bekapcsolása 2D helyett [BETA]", "pl", "Pokaż mapę w 3D [BETA]", "sk", "Zobraziť mapu v 3D [BETA]" };
 		p(k, v);
 		k = "__PREF__title__use_anti_aliasing";
 		v = new String[] { "en", "AntiAlias", "zh", "反走样", "cs", "Vyhlazování", "nl", "Anti Aliasing", "fr", "AntiAlias", "de", "Antialiasing", "el", "Εξομάλυνση", "hu", "Kontúrsimítás", "pl", "Antyaliasing", "sk", "Vyhladzovanie" };
@@ -556,12 +580,6 @@ public class NavitTextTranslations
 		v = new String[] { "en", "use Font included in ZANavi (otherwise use System Font)", "zh", "使用ZANavi内置的字体（否则使用系统字体）", "fr", "Utilise les polices incluses dans ZANavi (sinon les polices du système sont utilisées)", "de", "Font von ZANavi verwenden (sonst Systemschriftart verwenden)", "el", "χρήση γραμματοσειράς που περιέχεται στο ZANavi (αλλιώς, χρήση γραμματοσειράς συστήματος)", "hu", "Saját font használatának engedélyezése", "pl", "Użyj własnej czcionki ZANavi zamiast systemowej", "sk",
 				"Použiť písmo zahrnuté v ZANavi (inak použiť systémové písmo)" };
 		p(k, v);
-		k = "__PREF__title__cancel_map_drawing_timeout";
-		v = new String[] { "en", "Map drawing Timeout", "zh", "地图绘制超时时间", "de", "Kartenaufbau Timeout", "hu", "Térképrajzolás időkorlát lejárata", "pl", "Ogr. czasu rysowania mapy", "sk", "Časový limit vykresľovania mapy" };
-		p(k, v);
-		k = "__PREF__summ__cancel_map_drawing_timeout";
-		v = new String[] { "en", "Map drawing Timeout. Set to \"long\" only on fast devices!", "zh", "地图绘制的超时时间。请只在高端设备上启用“长”。", "de", "nur bei schnellen Geräten auf \"long\" setzen", "hu", "Leállítja a térképrajzolás időtúllépését", "pl", "Ograniczenie czasu rysowania mapy (ustaw na \"długi\" tylko na szybkich urządzeniach)", "sk", "Časový limit vykresľovania mapy. Nastavte ho na \"dlhý\" iba na rýchlych zariadeniach!" };
-		p(k, v);
 		k = "__PREF__title__mapcache";
 		v = new String[] { "en", "Mapcache", "zh", "地图缓存", "de", "Mapcache", "hu", "Térkép gyorsítótár", "pl", "Bufor mapy", "sk", "Vyrovnávacia pamäť mapy" };
 		p(k, v);
@@ -586,6 +604,36 @@ public class NavitTextTranslations
 		p(k, v);
 		k = "__PREF__summ__route_style";
 		v = new String[] { "en", "graphic style of route", "de", "wählt den graphischen Stil wie die Route gezeichnet wird", "pl", "Styl rysowania trasy", "sk", "Vykreslenie trasy na mape v rôznych štýloch" };
+		p(k, v);
+		k = "__PREF__title__show_3d_map";
+		v = new String[] { "en", "3D", "pt", "3D", "pt_BR", "3D", "zh", "3D", "cs", "3D", "nl", "Kaart in 3D", "fr", "3D", "de", "3D", "el", "3D", "hu", "3D térkép", "pl", "3D", "sk", "3D" };
+		p(k, v);
+		k = "__PREF__summ__show_3d_map";
+		v = new String[] { "en", "show map in 3D [BETA]", "pt", "mostra mapa em 3D [BETA]", "pt_BR", "mostra mapa em 3D [BETA]", "zh", "显示3D地图[BETA]", "cs", "Zobrazení mapy v 3D [BETA]", "nl", "3D weergave van de kaart [BETA]", "fr", "Afficher la carte en 3D [BETA]", "de", "Karte in 3D [BETA]", "el", "εμφάνιση χάρτη σε 3D [BETA]", "hu", "3D térkép bekapcsolása 2D helyett [BETA]", "pl", "Pokaż mapę w 3D [BETA]", "sk", "Zobraziť mapu v 3D [BETA]" };
+		p(k, v);
+		k = "__PREF__title__more_map_detail";
+		v = new String[] { "en", "more Map Detail", "de", "mehr Details anzeigen" };
+		p(k, v);
+		k = "__PREF__summ__more_map_detail";
+		v = new String[] { "en", "show more Map Detail [needs RESTART]", "de", "Zeigt noch mehr Details auf der Karte an, braucht aber mehr Leistung! [braucht RESTART]" };
+		p(k, v);
+		k = "__PREF__title__trafficlights_delay";
+		v = new String[] { "en", "traffic lights", "de", "Ampeln" };
+		p(k, v);
+		k = "__PREF__summ__trafficlights_delay";
+		v = new String[] { "en", "set delay of traffic lights for routing", "de", "Verzögerung durch Amplen auf der Route" };
+		p(k, v);
+		k = "__PREF__title__use_map_filtering";
+		v = new String[] { "en", "filtering", "de", "filtering" };
+		p(k, v);
+		k = "__PREF__summ__use_map_filtering";
+		v = new String[] { "en", "filtering draws map more smoothly, but needs more CPU", "de", "filtering einschalten, zeichnet die Karte schöner. braucht aber mehr Leistung" };
+		p(k, v);
+		k = "__PREF__title__use_smooth_drawing";
+		v = new String[] { "en", "smooth driving", "de", "flüssiger fahren" };
+		p(k, v);
+		k = "__PREF__summ__use_smooth_drawing";
+		v = new String[] { "en", "scroll map more smoothly when driving", "de", "verschiebt die Karte beim Fahren schöner und flüssiger, braucht jedoch mehr Leistung!" };
 		p(k, v);
 		k = "__PREF__title__map_directory";
 		v = new String[] { "en", "Map directory", "zh", "地图目录", "fr", "Répertoire des cartes", "de", "Karten Verzeichnis", "el", "Κατάλογος χάρτη", "hu", "Térkép könyvtár", "pl", "Katalog map", "sk", "Adresár pre mapy" };
@@ -638,11 +686,20 @@ public class NavitTextTranslations
 		k = "Using Voice for:";
 		v = new String[] { "en", "Using Voice for:", "pt", "Usando Voz para:", "pt_BR", "Usando Voz para:", "zh", "启用语音：", "zh_HK", "用語音", "cs", "Používám hlas pro:", "nl", "Gebruik taal voor:", "fr", "Utiliser la voix pour:", "de", "Sprache für Ansagen:", "el", "Χρήση Γλώσσας για:", "hu", "A hangbemondás nyelve:", "it", "Utilizzare Voce per:", "pl", "Używam głosu dla:", "sk", "Použitý hlas:", "es", "Usando voz para:" };
 		p(k, v);
+		k = "What's here";
+		v = new String[] { "en", "What's here", "de", "Was ist hier" };
+		p(k, v);
 		k = "drive here";
 		v = new String[] { "en", "drive here", "ca", "anar aquí", "ar", "قيادة إلي هنا", "pt", "dirija para cá", "pt_BR", "dirija para cá", "zh", "驱车前往此处", "zh_HK", "駕車到這裡", "cs", "navigovat sem", "nl", "hierheen rijden", "fr", "conduisez", "de", "Ziel setzen", "el", "οδήγησε εδώ", "hu", "Ide menj!", "it", "guida qui", "pl", "Jedź tutaj", "sk", "Cestovať sem", "es", "ir aquí" };
 		p(k, v);
 		k = "wait ...";
 		v = new String[] { "en", "wait ...", "ca", "espereu ...", "ar", "أنتظر", "pt", "aguarde...", "pt_BR", "aguarde...", "zh", "请稍等.....", "zh_HK", "稍候 ...", "cs", "čekejte...", "nl", "wachten ...", "fr", "patientez ...", "de", "warten ...", "el", "περιμένετε ...", "hu", "Várj...", "it", "attendere ...", "pl", "czekaj ...", "sk", "Čakajte ...", "es", "espere ..." };
+		p(k, v);
+		k = "__PREF__summ__cancel_map_drawing_timeout";
+		v = new String[] { "en", "Map drawing Timeout. Set to \"long\" only on fast devices!", "zh", "地图绘制的超时时间。请只在高端设备上启用“长”。", "de", "nur bei schnellen Geräten auf \"long\" setzen", "hu", "Leállítja a térképrajzolás időtúllépését", "pl", "Ograniczenie czasu rysowania mapy (ustaw na \"długi\" tylko na szybkich urządzeniach)", "sk", "Časový limit vykresľovania mapy. Nastavte ho na \"dlhý\" iba na rýchlych zariadeniach!" };
+		p(k, v);
+		k = "__PREF__title__cancel_map_drawing_timeout";
+		v = new String[] { "en", "Map drawing Timeout", "zh", "地图绘制超时时间", "de", "Kartenaufbau Timeout", "hu", "Térképrajzolás időkorlát lejárata", "pl", "Ogr. czasu rysowania mapy", "sk", "Časový limit vykresľovania mapy" };
 		p(k, v);
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -657,7 +714,7 @@ public class NavitTextTranslations
 	{
 		HashMap<String, String> t = null;
 		t = new HashMap<String, String>();
-		Log.e("NavitTextTranslations", "trying: " + key);
+		//Log.e("NavitTextTranslations", "trying: " + key);
 		try
 		{
 			for (int i = 0; i < (int) (values.length / 2); i++)

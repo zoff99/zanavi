@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-04 15:19+0200\n"
-"PO-Revision-Date: 2012-04-08 19:10+0000\n"
+"PO-Revision-Date: 2012-06-24 13:35+0000\n"
 "Last-Translator: Nicolas Croiset <Unknown>\n"
 "Language-Team: KaZeR <kazer@altern.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
-"X-Generator: Launchpad (build 15342)\n"
+"X-Launchpad-Export-Date: 2012-09-08 21:00+0000\n"
+"X-Generator: Launchpad (build 15914)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -35,7 +35,7 @@ msgstr "Ajouter aux favoris"
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
 #: navigation.c:340
 msgid "zeroth"
-msgstr "zéroième"
+msgstr "prochaine"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
 #: navigation.c:346
@@ -85,7 +85,7 @@ msgstr "neuvième"
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
 #: navigation.c:409
 msgid "zeroth exit"
-msgstr "zéroième sortie"
+msgstr "prochaine sortie"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
 #: navigation.c:415
@@ -423,7 +423,7 @@ msgstr "Numéros de maison"
 
 #: gui/internal/gui_internal.c:3852 gui/internal/gui_internal.c:3861
 msgid "House number"
-msgstr "Numéro de maison"
+msgstr "Numéro de rue"
 
 #: gui/internal/gui_internal.c:3868 gui/internal/gui_internal.c:3877
 msgid "Street"
@@ -455,7 +455,7 @@ msgstr "Afficher les infos satellite"
 
 #: gui/internal/gui_internal.c:4161
 msgid " Elevation "
-msgstr " Elévation "
+msgstr " Altitude "
 
 #: gui/internal/gui_internal.c:4162
 msgid " Azimuth "
@@ -509,7 +509,7 @@ msgstr "Règles"
 
 #: gui/internal/gui_internal.c:4437
 msgid "Lock on road"
-msgstr "Coller à la route"
+msgstr "Verrouiller sur la route"
 
 #: gui/internal/gui_internal.c:4443
 msgid "Northing"
@@ -529,7 +529,7 @@ msgstr "Description de la route"
 
 #: gui/internal/gui_internal.c:6238
 msgid "Height Profile"
-msgstr "Profil de hauteur"
+msgstr "Profil d'altitude"
 
 #: osd/core/osd_core.c:1882
 msgid "Look out! Camera!"

@@ -4758,7 +4758,7 @@ else
   ac_save_c_werror_flag=$ac_c_werror_flag
    ac_c_werror_flag=yes
    ac_cv_prog_cc_g=no
-   CFLAGS=""
+   CFLAGS="-g"
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -4789,7 +4789,7 @@ if ac_fn_c_try_compile "$LINENO"; then :
 
 else
   ac_c_werror_flag=$ac_save_c_werror_flag
-	 CFLAGS=""
+	 CFLAGS="-g"
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -4817,13 +4817,13 @@ if test "$ac_test_CFLAGS" = set; then
   CFLAGS=$ac_save_CFLAGS
 elif test $ac_cv_prog_cc_g = yes; then
   if test "$GCC" = yes; then
-    CFLAGS=""
+    CFLAGS="-g  "
   else
-    CFLAGS=""
+    CFLAGS="-g"
   fi
 else
   if test "$GCC" = yes; then
-    CFLAGS=""
+    CFLAGS=" "
   else
     CFLAGS=
   fi
@@ -5688,7 +5688,7 @@ else
   ac_save_objc_werror_flag=$ac_objc_werror_flag
    ac_objc_werror_flag=yes
    ac_cv_prog_objc_g=no
-   OBJCFLAGS=""
+   OBJCFLAGS="-g"
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5719,7 +5719,7 @@ if ac_fn_objc_try_compile "$LINENO"; then :
 
 else
   ac_objc_werror_flag=$ac_save_objc_werror_flag
-	 OBJCFLAGS=""
+	 OBJCFLAGS="-g"
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5747,13 +5747,13 @@ if test "$ac_test_OBJCFLAGS" = set; then
   OBJCFLAGS=$ac_save_OBJCFLAGS
 elif test $ac_cv_prog_objc_g = yes; then
   if test "$GOBJC" = yes; then
-    OBJCFLAGS=""
+    OBJCFLAGS="-g  "
   else
-    OBJCFLAGS=""
+    OBJCFLAGS="-g"
   fi
 else
   if test "$GOBJC" = yes; then
-    OBJCFLAGS=""
+    OBJCFLAGS=" "
   else
     OBJCFLAGS=
   fi
@@ -6262,7 +6262,7 @@ else
   ac_save_c_werror_flag=$ac_c_werror_flag
    ac_c_werror_flag=yes
    ac_cv_prog_cc_g=no
-   CFLAGS=""
+   CFLAGS="-g"
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6293,7 +6293,7 @@ if ac_fn_c_try_compile "$LINENO"; then :
 
 else
   ac_c_werror_flag=$ac_save_c_werror_flag
-	 CFLAGS=""
+	 CFLAGS="-g"
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6321,13 +6321,13 @@ if test "$ac_test_CFLAGS" = set; then
   CFLAGS=$ac_save_CFLAGS
 elif test $ac_cv_prog_cc_g = yes; then
   if test "$GCC" = yes; then
-    CFLAGS=""
+    CFLAGS="-g  "
   else
-    CFLAGS=""
+    CFLAGS="-g"
   fi
 else
   if test "$GCC" = yes; then
-    CFLAGS=""
+    CFLAGS=" "
   else
     CFLAGS=
   fi
@@ -6731,7 +6731,7 @@ else
   ac_save_objc_werror_flag=$ac_objc_werror_flag
    ac_objc_werror_flag=yes
    ac_cv_prog_objc_g=no
-   OBJCFLAGS=""
+   OBJCFLAGS="-g"
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6762,7 +6762,7 @@ if ac_fn_objc_try_compile "$LINENO"; then :
 
 else
   ac_objc_werror_flag=$ac_save_objc_werror_flag
-	 OBJCFLAGS=""
+	 OBJCFLAGS="-g"
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6790,13 +6790,13 @@ if test "$ac_test_OBJCFLAGS" = set; then
   OBJCFLAGS=$ac_save_OBJCFLAGS
 elif test $ac_cv_prog_objc_g = yes; then
   if test "$GOBJC" = yes; then
-    OBJCFLAGS=""
+    OBJCFLAGS="-g  "
   else
-    OBJCFLAGS=""
+    OBJCFLAGS="-g"
   fi
 else
   if test "$GOBJC" = yes; then
-    OBJCFLAGS=""
+    OBJCFLAGS=" "
   else
     OBJCFLAGS=
   fi
@@ -7248,7 +7248,7 @@ else
   ac_save_cxx_werror_flag=$ac_cxx_werror_flag
    ac_cxx_werror_flag=yes
    ac_cv_prog_cxx_g=no
-   CXXFLAGS=""
+   CXXFLAGS="-g"
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -7279,7 +7279,7 @@ if ac_fn_cxx_try_compile "$LINENO"; then :
 
 else
   ac_cxx_werror_flag=$ac_save_cxx_werror_flag
-	 CXXFLAGS=""
+	 CXXFLAGS="-g"
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -7307,13 +7307,13 @@ if test "$ac_test_CXXFLAGS" = set; then
   CXXFLAGS=$ac_save_CXXFLAGS
 elif test $ac_cv_prog_cxx_g = yes; then
   if test "$GXX" = yes; then
-    CXXFLAGS=""
+    CXXFLAGS="-g  "
   else
-    CXXFLAGS=""
+    CXXFLAGS="-g"
   fi
 else
   if test "$GXX" = yes; then
-    CXXFLAGS=""
+    CXXFLAGS=" "
   else
     CXXFLAGS=
   fi
@@ -11447,7 +11447,7 @@ else
   ac_save_cxx_werror_flag=$ac_cxx_werror_flag
    ac_cxx_werror_flag=yes
    ac_cv_prog_cxx_g=no
-   CXXFLAGS=""
+   CXXFLAGS="-g"
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -11478,7 +11478,7 @@ if ac_fn_cxx_try_compile "$LINENO"; then :
 
 else
   ac_cxx_werror_flag=$ac_save_cxx_werror_flag
-	 CXXFLAGS=""
+	 CXXFLAGS="-g"
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -11506,13 +11506,13 @@ if test "$ac_test_CXXFLAGS" = set; then
   CXXFLAGS=$ac_save_CXXFLAGS
 elif test $ac_cv_prog_cxx_g = yes; then
   if test "$GXX" = yes; then
-    CXXFLAGS=""
+    CXXFLAGS="-g  "
   else
-    CXXFLAGS=""
+    CXXFLAGS="-g"
   fi
 else
   if test "$GXX" = yes; then
-    CXXFLAGS=""
+    CXXFLAGS=" "
   else
     CXXFLAGS=
   fi
@@ -25179,7 +25179,7 @@ NAVIT_LIBS="$NAVIT_LIBS $GLIB_LIBS $GMODULE_LIBS $LIBINTL"
 
 
 
-ac_config_files="$ac_config_files Makefile navit/Makefile navit/autoload/Makefile navit/autoload/osso/Makefile navit/binding/Makefile navit/binding/python/Makefile navit/binding/dbus/Makefile navit/map/Makefile navit/map/mg/Makefile navit/map/textfile/Makefile navit/map/csv/Makefile navit/map/shapefile/Makefile navit/map/filter/Makefile navit/map/binfile/Makefile navit/map/garmin/Makefile navit/maptool/Makefile navit/fib-1.1/Makefile navit/font/Makefile navit/font/freetype/Makefile navit/fonts/Makefile navit/graphics/Makefile navit/graphics/android/Makefile navit/graphics/gd/Makefile navit/graphics/gtk_drawing_area/Makefile navit/graphics/opengl/Makefile navit/graphics/null/Makefile navit/graphics/sdl/Makefile navit/graphics/qt_qpainter/Makefile navit/graphics/win32/Makefile navit/gui/Makefile navit/gui/gtk/Makefile navit/gui/internal/Makefile navit/gui/win32/Makefile navit/gui/qml/Makefile navit/gui/qml/skins/Makefile navit/gui/qml/skins/navit/Makefile navit/osd/Makefile navit/osd/core/Makefile navit/plugin/Makefile navit/plugin/pedestrian/Makefile navit/speech/Makefile navit/speech/android/Makefile navit/speech/cmdline/Makefile navit/speech/dbus/Makefile navit/speech/espeak/Makefile navit/speech/speech_dispatcher/Makefile navit/support/Makefile navit/support/espeak/Makefile navit/support/ezxml/Makefile navit/support/glib/Makefile navit/support/libc/Makefile navit/support/libpng/Makefile navit/support/win32/Makefile navit/support/wordexp/Makefile navit/support/zlib/Makefile navit/vehicle/Makefile navit/vehicle/android/Makefile navit/vehicle/file/Makefile navit/vehicle/gpsd/Makefile navit/vehicle/gpsd_dbus/Makefile navit/vehicle/gypsy/Makefile navit/vehicle/maemo/Makefile navit/vehicle/null/Makefile navit/vehicle/demo/Makefile navit/vehicle/wince/Makefile navit/vehicle/iphone/Makefile navit/vehicle/webos/Makefile navit/xpm/Makefile navit/maps/Makefile intl/Makefile po/Makefile man/Makefile"
+ac_config_files="$ac_config_files Makefile navit/Makefile navit/autoload/Makefile navit/autoload/osso/Makefile navit/binding/Makefile navit/binding/python/Makefile navit/binding/dbus/Makefile navit/map/Makefile navit/map/mg/Makefile navit/map/textfile/Makefile navit/map/csv/Makefile navit/map/shapefile/Makefile navit/map/filter/Makefile navit/map/binfile/Makefile navit/map/garmin/Makefile navit/maptool/Makefile navit/maptool/p2t/Makefile navit/maptool/p2t/sweep/Makefile navit/maptool/p2t/common/Makefile navit/maptool/libcfu-0.03-zanavi/Makefile navit/maptool/libcfu-0.03-zanavi/src/Makefile navit/maptool/refine/Makefile navit/fib-1.1/Makefile navit/font/Makefile navit/font/freetype/Makefile navit/fonts/Makefile navit/graphics/Makefile navit/graphics/android/Makefile navit/graphics/gd/Makefile navit/graphics/gtk_drawing_area/Makefile navit/graphics/opengl/Makefile navit/graphics/null/Makefile navit/graphics/sdl/Makefile navit/graphics/qt_qpainter/Makefile navit/graphics/win32/Makefile navit/gui/Makefile navit/gui/gtk/Makefile navit/gui/internal/Makefile navit/gui/win32/Makefile navit/gui/qml/Makefile navit/gui/qml/skins/Makefile navit/gui/qml/skins/navit/Makefile navit/osd/Makefile navit/osd/core/Makefile navit/plugin/Makefile navit/plugin/pedestrian/Makefile navit/speech/Makefile navit/speech/android/Makefile navit/speech/cmdline/Makefile navit/speech/dbus/Makefile navit/speech/espeak/Makefile navit/speech/speech_dispatcher/Makefile navit/support/Makefile navit/support/espeak/Makefile navit/support/ezxml/Makefile navit/support/glib/Makefile navit/support/libc/Makefile navit/support/libpng/Makefile navit/support/win32/Makefile navit/support/wordexp/Makefile navit/support/zlib/Makefile navit/vehicle/Makefile navit/vehicle/android/Makefile navit/vehicle/file/Makefile navit/vehicle/gpsd/Makefile navit/vehicle/gpsd_dbus/Makefile navit/vehicle/gypsy/Makefile navit/vehicle/maemo/Makefile navit/vehicle/null/Makefile navit/vehicle/demo/Makefile navit/vehicle/wince/Makefile navit/vehicle/iphone/Makefile navit/vehicle/webos/Makefile navit/xpm/Makefile navit/maps/Makefile intl/Makefile po/Makefile man/Makefile"
 
 #src/data/garmin_img/Makefile
 
@@ -26588,6 +26588,12 @@ do
     "navit/map/binfile/Makefile") CONFIG_FILES="$CONFIG_FILES navit/map/binfile/Makefile" ;;
     "navit/map/garmin/Makefile") CONFIG_FILES="$CONFIG_FILES navit/map/garmin/Makefile" ;;
     "navit/maptool/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/Makefile" ;;
+    "navit/maptool/p2t/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/p2t/Makefile" ;;
+    "navit/maptool/p2t/sweep/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/p2t/sweep/Makefile" ;;
+    "navit/maptool/p2t/common/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/p2t/common/Makefile" ;;
+    "navit/maptool/libcfu-0.03-zanavi/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/libcfu-0.03-zanavi/Makefile" ;;
+    "navit/maptool/libcfu-0.03-zanavi/src/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/libcfu-0.03-zanavi/src/Makefile" ;;
+    "navit/maptool/refine/Makefile") CONFIG_FILES="$CONFIG_FILES navit/maptool/refine/Makefile" ;;
     "navit/fib-1.1/Makefile") CONFIG_FILES="$CONFIG_FILES navit/fib-1.1/Makefile" ;;
     "navit/font/Makefile") CONFIG_FILES="$CONFIG_FILES navit/font/Makefile" ;;
     "navit/font/freetype/Makefile") CONFIG_FILES="$CONFIG_FILES navit/font/freetype/Makefile" ;;

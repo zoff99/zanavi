@@ -70,7 +70,22 @@
 		<!-- android layout -->
 		<!-- android layout -->
 			<layer name="polygons001">
-				<itemgra item_types="poly_wood" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+
+				<!-- forest (converted from relations) -->
+				<itemgra item_types="poly_wood_from_triang" order="6-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polygon color="#8ec78d"/>
+					<!--<polyline color="#ff0000"/>-->
+					<text text_size="8"/>
+				</itemgra>
+				<itemgra item_types="poly_wood_from_triang" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#8ec78d"/>
+					<!--<polyline color="#ff0000"/>-->
+					<text text_size="10"/>
+				</itemgra>
+				<!-- forest (converted from relations) -->
+
+
+				<itemgra item_types="poly_wood" order="9-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polygon color="#8ec78d"/>
 					<text text_size="8"/>
 				</itemgra>
@@ -78,7 +93,20 @@
 					<polygon color="#8ec78d"/>
 					<text text_size="10"/>
 				</itemgra>
-				<itemgra item_types="poly_park" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}-">
+
+				<itemgra item_types="wood_from_relations" order="8-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polyline color="#478f46"/>
+					<!--<polyline color="#ff0000"/>-->
+					<text text_size="8"/>
+				</itemgra>
+				<itemgra item_types="wood_from_relations" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polyline color="#478f46"/>
+					<!--<polyline color="#ff0000"/>-->
+					<text text_size="10"/>
+				</itemgra>
+
+
+				<itemgra item_types="poly_park,poly_playground" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#7cc334"/>
 					<text text_size="8"/>
 				</itemgra>
@@ -92,8 +120,21 @@
 				</itemgra>
 				<!-- ocean -->
 
+				<!-- waterbodies (converted from relations) -->
+				<itemgra item_types="poly_water_from_triang" order="6-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+					<polygon color="#82c8ea"/>
+					<!--<polyline color="#ff0000"/>-->
+					<!--<text text_size="8"/>-->
+				</itemgra>
+				<itemgra item_types="poly_water_from_triang" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#82c8ea"/>
+					<!--<polyline color="#ff0000"/>-->
+					<!--<text text_size="10"/>-->
+				</itemgra>
+				<!-- waterbodies (converted from relations) -->
+
 				<!-- rivers with text -->
-				<itemgra item_types="poly_water" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+				<itemgra item_types="poly_water" order="9-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polygon color="#82c8ea"/>
 					<polyline color="#5096b8"/>
 					<text text_size="8"/>
@@ -106,7 +147,7 @@
 				<!-- rivers with text -->
 
 				<!-- rivers with text (converted from relations) -->
-				<itemgra item_types="poly_water_from_relations" order="{round(10-number($LAYOUT_001_ORDER_DELTA_1))}-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+				<itemgra item_types="poly_water_from_relations" order="6-{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polygon color="#82c8ea"/>
 					<polyline color="#5096b8"/>
 					<text text_size="8"/>
@@ -118,10 +159,12 @@
 				</itemgra>
 				<!-- rivers with text (converted from relations) -->
 
-				<itemgra item_types="poly_flats,poly_scrub,poly_military_zone,poly_marine,plantation,tundra" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
+
+				<itemgra item_types="poly_flats,poly_reservoir,poly_zoo,poly_beach,poly_airfield,poly_railway,poly_scrub,poly_military_zone,poly_marine,plantation,tundra" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#a0a0a0"/>
 					<text text_size="8"/>
 				</itemgra>
+
 				<itemgra item_types="poly_pedestrian" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="13"/>
 					<polyline color="#dddddd" width="9"/>
@@ -142,11 +185,16 @@
 					<polyline color="#dddddd" width="21"/>
 					<polygon color="#dddddd"/>
 				</itemgra>
-				<itemgra item_types="poly_pedestrian" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
+				<itemgra item_types="poly_pedestrian" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#d2d2d2" width="40"/>
 					<polyline color="#dddddd" width="34"/>
 					<polygon color="#dddddd"/>
 				</itemgra>
+
+				<itemgra item_types="poly_plaza" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#dddddd"/>
+				</itemgra>
+
 				<itemgra item_types="poly_airport" order="{round(5-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#a0a0a0"/>
 				</itemgra>
@@ -258,8 +306,21 @@
 					<polygon color="#e7cf87"/>
 				</itemgra>
 
+				<!-- buildings from mutlipolygons -->
+				<itemgra item_types="poly_building_from_triang" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#b6a6a6"/>
+				</itemgra>
+				<!-- buildings from mutlipolygons -->
 				<!-- buildings -->
 				<itemgra item_types="poly_building" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#b6a6a6"/>
+					<polyline color="#dddddd" width="1"/>
+				</itemgra>
+				<itemgra item_types="poly_university" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<polygon color="#b6a6a6"/>
+					<polyline color="#dddddd" width="1"/>
+				</itemgra>
+				<itemgra item_types="poly_college" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polygon color="#b6a6a6"/>
 					<polyline color="#dddddd" width="1"/>
 				</itemgra>

@@ -81,7 +81,6 @@
 #include "pthread.h"
 #endif
 
-
 static pthread_cond_t uiConditionVariable = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t uiConditionMutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -1765,6 +1764,10 @@ static int clip_line(struct wpoint *p1, struct wpoint *p2, struct point_rect *r)
 
 static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics_gc *gc, struct point *pa, int count, int *width, int step, int poly, int order, int oneway, int dashes, struct color *c)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
 	struct point *p = g_alloca(sizeof(struct point) * (count + 1));
 	struct wpoint p1, p2;
 	int i;
@@ -2186,6 +2189,10 @@ static int limit_count(struct coord *c, int count)
 
 static void displayitem_draw(struct displayitem *di, void *dummy, struct display_context *dc, int order, int allow_dashed, int run_type)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
 	//// dbg(0, "EEnter\n");
 
 	int *width = g_alloca(sizeof(int) * dc->maxlen);
@@ -2266,17 +2273,39 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		{
 			count = limit_count(di->c, count);
 		}
+
 		if (dc->type == type_poly_water_tiled)
 		{
 			mindist = 0;
+			if (order < 10)
+			{
+				mindist = 3;
+			}
 		}
-		if (dc->type == type_border_country)
+		else if (dc->type == type_border_country)
 		{
 			if (order < 10)
 			{
 				mindist = 3;
 			}
 		}
+		else if (dc->type == type_poly_wood_from_triang)
+		{
+			if (order > 4)
+			{
+				// always show triangulates triangles normally
+				mindist = 0;
+			}
+		}
+		else if (dc->type == type_poly_water_from_triang)
+		{
+			if (order > 4)
+			{
+				// always show triangulates triangles normally
+				mindist = 0;
+			}
+		}
+
 		if (dc->e->type == element_polyline)
 		{
 			count = transform(dc->trans, dc->pro, di->c, pa, count, mindist, e->u.polyline.width, width);
@@ -2524,10 +2553,26 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 			dc->type = GPOINTER_TO_INT(types->data);
 			//// dbg(0,"**type=%d\n", dc->type);
 
-			if (dc->type == type_poly_water_from_relations)
+			if (global_draw_multipolygons == 0)
 			{
-				// ok "poly_water_from_relations" is found, now what?
-				if (enable_water_from_relations == 0)
+				if (dc->type == type_poly_water_from_relations)
+				{
+					// ok "poly_water_from_relations" is found, now what?
+					draw_it = 0;
+				}
+				else if (dc->type == type_poly_water_from_triang)
+				{
+					draw_it = 0;
+				}
+				else if (dc->type == type_wood_from_relations)
+				{
+					draw_it = 0;
+				}
+				else if (dc->type == type_poly_wood_from_triang)
+				{
+					draw_it = 0;
+				}
+				else if (dc->type == type_poly_building_from_triang)
 				{
 					draw_it = 0;
 				}
@@ -3019,11 +3064,10 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 {
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
-	int rnd = rand();
-
+	// int rnd = rand();
 	// dbg(0, "DO__DRAW:%d enter\n", rnd);
 
 	// try to cancel any previous drawing that might be going on ...
@@ -3189,7 +3233,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 				// ------ READ all items in this map rectangle ---------
 				// ------ READ all items in this map rectangle ---------
 				// ------ READ all items in this map rectangle ---------
-				//// dbg(0,"#+* start reading map file #+*\n");
+				// dbg(0,"#+* start reading map file #+*\n");
 				int _item_counter_ = 0;
 				while ((item = map_rect_get_item(displaylist->mr)))
 				{
@@ -3258,6 +3302,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 					if (displaylist->dc.pro != pro)
 					{
+						dbg(0,"from to\n");
 						transform_from_to_count(ca, displaylist->dc.pro, ca, pro, count);
 					}
 
@@ -3270,9 +3315,13 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					if (item_is_custom_poi(*item))
 					{
 						if (item_attr_get(item, attr_icon_src, &attr2))
+						{
 							labels[1] = map_convert_string(displaylist->m, attr2.u.str);
+						}
 						else
+						{
 							labels[1] = NULL;
+						}
 						label_count = 2;
 					}
 					else
@@ -3280,6 +3329,14 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 						labels[1] = NULL;
 						label_count = 0;
 					}
+
+					// DEBUG -------- zoffzoff
+					// DEBUG -------- zoffzoff
+					// DEBUG -------- zoffzoff
+					// item_dump_attr_stdout(item, displaylist->m);
+					// DEBUG -------- zoffzoff
+					// DEBUG -------- zoffzoff
+					// DEBUG -------- zoffzoff
 
 					if (item_attr_get(item, attr_label, &attr))
 					{
@@ -3364,6 +3421,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					 return;
 					 }
 					 */
+
 				} // while item=map_rect_get_item
 				// ------ READ all items in this map rectangle ---------
 				// ------ READ all items in this map rectangle ---------
@@ -3538,7 +3596,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	// dbg(0, "DO__DRAW:%d __\n", rnd);
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:leave\n");
+	dbg(0,"+#+:leave\n");
 #endif
 
 }
@@ -3552,7 +3610,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 void graphics_displaylist_draw(struct graphics *gra, struct displaylist *displaylist, struct transformation *trans, struct layout *l, int flags)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	// // dbg(0,"ooo enter ooo flags=%d\n", flags);
@@ -3565,11 +3623,15 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 	// *********DISABLED*******
 	// *********DISABLED*******
 	// *********DISABLED*******
-	// set min. distanct of 2 points on line at which a point will be left out when zoomed out too much!!
+	// set min. distancte of 2 points on line at which a point will be left out when zoomed out too much!!
 	// *********DISABLED******* displaylist->dc.mindist = transform_get_scale(trans) / 2;
 	//// dbg(0,"mindist would be:%d\n", (int)(transform_get_scale(trans) / 2));
 	displaylist->dc.mindist = 0;
-	if (order < 13)
+	if (order < 8)
+	{
+		displaylist->dc.mindist = transform_get_scale(trans) * 2;
+	}
+	else if (order < 13)
 	{
 		displaylist->dc.mindist = transform_get_scale(trans);
 	}
@@ -3618,7 +3680,7 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 	}
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:leave\n");
+	dbg(0,"+#+:leave\n");
 #endif
 
 }

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-04 15:19+0200\n"
-"PO-Revision-Date: 2011-12-01 12:39+0000\n"
-"Last-Translator: zoff99 <Unknown>\n"
+"PO-Revision-Date: 2012-07-06 12:36+0000\n"
+"Last-Translator: Omega-xis <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
-"X-Generator: Launchpad (build 15342)\n"
+"X-Launchpad-Export-Date: 2012-09-08 21:00+0000\n"
+"X-Generator: Launchpad (build 15914)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -39,97 +39,97 @@ msgstr ""
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
 #: navigation.c:346
 msgid "first"
-msgstr ""
+msgstr "一つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
 #: navigation.c:352
 msgid "second"
-msgstr ""
+msgstr "二つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
 #: navigation.c:358
 msgid "third"
-msgstr ""
+msgstr "三つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
 #: navigation.c:364
 msgid "fourth"
-msgstr ""
+msgstr "四つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
 #: navigation.c:370
 msgid "fifth"
-msgstr ""
+msgstr "五つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
 #: navigation.c:376
 msgid "sixth"
-msgstr ""
+msgstr "六つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
 #: navigation.c:382
 msgid "seventh"
-msgstr ""
+msgstr "七つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
 #: navigation.c:388
 msgid "eighth"
-msgstr ""
+msgstr "八つの"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
 #: navigation.c:394
 msgid "ninth"
-msgstr ""
+msgstr "九つの"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
 #: navigation.c:409
 msgid "zeroth exit"
-msgstr ""
+msgstr "ゼロの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
 #: navigation.c:415
 msgid "first exit"
-msgstr ""
+msgstr "一つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
 #: navigation.c:421
 msgid "second exit"
-msgstr ""
+msgstr "二つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
 #: navigation.c:427
 msgid "third exit"
-msgstr ""
+msgstr "三つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
 #: navigation.c:433
 msgid "fourth exit"
-msgstr ""
+msgstr "四つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
 #: navigation.c:439
 msgid "fifth exit"
-msgstr ""
+msgstr "五つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
 #: navigation.c:445
 msgid "sixth exit"
-msgstr ""
+msgstr "六つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
 #: navigation.c:451
 msgid "seventh exit"
-msgstr ""
+msgstr "七つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
 #: navigation.c:457
 msgid "eighth exit"
-msgstr ""
+msgstr "八つの出口"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
 #: navigation.c:463
 msgid "ninth exit"
-msgstr ""
+msgstr "九つの出口"
 
 #: navigation.c:557
 #, c-format
@@ -139,17 +139,17 @@ msgstr "%d m"
 #: navigation.c:564
 #, c-format
 msgid "in %d m"
-msgstr ""
+msgstr "後 %d m"
 
 #: navigation.c:582
 #, c-format
 msgid "%d feet"
-msgstr ""
+msgstr "%d フェート"
 
 #: navigation.c:589
 #, c-format
 msgid "in %d feet"
-msgstr ""
+msgstr "後 %d フェート"
 
 #: navigation.c:606
 #, c-format
@@ -159,34 +159,33 @@ msgstr "%d メートル"
 #: navigation.c:616
 #, c-format
 msgid "in %d meters"
-msgstr ""
+msgstr "後 %d メートル"
 
 #: navigation.c:642
 #, c-format
 msgid "%d.%d miles"
-msgstr ""
+msgstr "後 %d,%d マイル"
 
 #: navigation.c:649
 #, c-format
 msgid "in %d.%d miles"
-msgstr ""
+msgstr "後 %d,%d マイル"
 
 #: navigation.c:660
 #, c-format
 msgid "%d.%d kilometers"
-msgstr ""
+msgstr "%d,%d キロメートル"
 
 #: navigation.c:668
 #, c-format
 msgid "in %d.%d kilometers"
-msgstr ""
+msgstr "後 %d,%d キロメートル"
 
 #: navigation.c:678
 #, c-format
 msgid "one mile"
 msgid_plural "%d miles"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d マイル"
 
 #: navigation.c:681
 #, c-format
@@ -211,7 +210,7 @@ msgstr[1] ""
 
 #: navigation.c:1800
 msgid "exit"
-msgstr ""
+msgstr "出口"
 
 #: navigation.c:1810
 msgid "into the ramp"
@@ -221,7 +220,7 @@ msgstr ""
 #: navigation.c:1872
 #, c-format
 msgid "%sinto the street %s%s%s"
-msgstr ""
+msgstr "%s%s%s%sに入ります"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
 #: navigation.c:1892

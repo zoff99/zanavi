@@ -39,7 +39,6 @@
 #ifndef NAVIT_NAVIT_H
 #define NAVIT_NAVIT_H
 
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -70,9 +69,11 @@ extern int draw_polylines_fast; // 1 -> dont draw circles at the end of polyline
 extern int limit_order_corrected;
 extern int shift_order;
 extern int global_search_street_size_factor;
-extern int enable_water_from_relations;
 extern int hold_drawing;
 extern int global_stop_demo_vehicle;
+extern int global_show_route_rectangles;
+extern int global_traffic_light_delay;
+extern int global_draw_multipolygons;
 
 extern long long draw_lines_count_2;
 extern long long draw_lines_count_3;
@@ -82,6 +83,10 @@ extern int mapdraw_time[11 + 5];
 extern int cur_mapdraw_time_index;
 
 extern int route_status_previous;
+extern long long global_route_memory_size;
+
+extern GHashTable *global_transform_hash;
+extern GHashTable *global_transform_hash2;
 
 /* prototypes */
 enum attr_type;
@@ -164,6 +169,7 @@ void navit_layout_switch(struct navit *n);
 int navit_set_vehicle_by_name(struct navit *n, const char *name);
 void navit_layer_set_active(struct navit *this, char *name, int active, int draw);
 void navit_motion(void *data, struct point *p);
+void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value);
 
 void navit_set_cursors(struct navit *this_);
 

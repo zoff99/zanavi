@@ -35,7 +35,7 @@ public enum Zenith
 	/** Official sunrise/set is when the sun is 50' below the horizon. */
 	OFFICIAL(BigDecimal.valueOf(90.8333)); // 90deg, 50'
 
-	private final BigDecimal	degrees;
+	private final BigDecimal degrees;
 
 	private Zenith(BigDecimal degrees)
 	{

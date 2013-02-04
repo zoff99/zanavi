@@ -89,6 +89,8 @@ struct timeval {
 
 #endif
 
+
+
 void
 g_get_current_time (GTimeVal *result)
 {

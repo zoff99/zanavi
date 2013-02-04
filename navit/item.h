@@ -35,20 +35,23 @@ enum item_type {
 };
 
 #define route_item_first type_street_0
-#define route_item_last type_path
+#define route_item_last type_footway_and_piste_nordic
 extern int default_flags[];
 
 #include "attr.h"
 
 
-/* NOTE: we treat districts as towns for now, since
+/* NOTE OLD: we treat districts as towns for now, since
    a) navit does not implement district search yet
    b) OSM "place=suburb" maps to type_district in maptool. with the OSM USA maps,
       there are many "suburbs" that users will consider towns (not districts/counties);
       we want navit's town search to find them
+
+   NOTE NEW: oct.2012: now we DONT treat districts as towns
+
 */
 #define item_type_is_area(type) ((type) >= type_area)
-#define item_is_town(item) ((item).type >= type_town_label && (item).type <= type_district_label_1e7)
+#define item_is_town(item) ((item).type >= type_town_label && (item).type < type_district_label)
 #define item_is_district(item) ((item).type >= type_district_label && (item).type <= type_district_label_1e7)
 #define item_is_poly_place(item) ((item).type >= type_poly_place1 && (item).type <= type_poly_place6)
 #define item_is_point(item) ((item).type < type_line) 

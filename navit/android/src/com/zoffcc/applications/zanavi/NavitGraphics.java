@@ -38,6 +38,7 @@
 
 package com.zoffcc.applications.zanavi;
 
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.Activity;
@@ -49,6 +50,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -89,6 +91,8 @@ public class NavitGraphics
 
 	static Camera camera = new Camera();
 	static Matrix cam_m = new Matrix();
+	static float strech_factor_3d_map = 2.0f;
+	static int rotate_3d_map_angle = 61;
 
 	private Canvas draw_canvas;
 	private Bitmap draw_bitmap;
@@ -753,7 +757,7 @@ public class NavitGraphics
 					// 3D modus -----------------
 					NavitGraphics.camera.save();
 					//NavitGraphics.camera.translate(0, 0, 40);
-					NavitGraphics.camera.rotateX(65);
+					NavitGraphics.camera.rotateX(rotate_3d_map_angle);
 					NavitGraphics.camera.getMatrix(NavitGraphics.cam_m);
 					NavitGraphics.camera.restore();
 					// C-Code: (50 + offset) * height / 100 // offset = 30%
@@ -762,7 +766,7 @@ public class NavitGraphics
 					float y_point = bitmap_h * 0.7f;
 					NavitGraphics.cam_m.preTranslate(-bitmap_w / 2, -y_offset - y_point);
 					NavitGraphics.cam_m.postTranslate(bitmap_w / 2, y_offset + y_point);
-					NavitGraphics.cam_m.postScale(2.5f, 2.5f, bitmap_w / 2, y_offset + y_point);
+					NavitGraphics.cam_m.postScale(strech_factor_3d_map, strech_factor_3d_map, bitmap_w / 2, y_offset + y_point);
 					//NavitGraphics.cam_m.postTranslate(0, 50);
 					// 3D modus -----------------
 
@@ -2146,12 +2150,12 @@ public class NavitGraphics
 			}
 			else if (msg.getData().getInt("Callback") == 66)
 			{
-				// enable "water from relations"
+				// enable "multipolygons"
 				CallbackMessageChannel(66, "");
 			}
 			else if (msg.getData().getInt("Callback") == 67)
 			{
-				// disable "water from relations"
+				// disable "multipolygons"
 				CallbackMessageChannel(67, "");
 			}
 			else if (msg.getData().getInt("Callback") == 68)
@@ -2201,7 +2205,28 @@ public class NavitGraphics
 				// stop demo vechile
 				CallbackMessageChannel(75, "");
 			}
-
+			else if (msg.getData().getInt("Callback") == 76)
+			{
+				// show route rectangles
+				CallbackMessageChannel(76, "");
+			}
+			else if (msg.getData().getInt("Callback") == 77)
+			{
+				// do not show route rectangles
+				CallbackMessageChannel(77, "");
+			}
+			else if (msg.getData().getInt("Callback") == 78)
+			{
+				// shift layout "order" values
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(78, s);
+			}
+			else if (msg.getData().getInt("Callback") == 79)
+			{
+				// set traffic light delay/cost
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(79, s);
+			}
 		}
 	};
 
@@ -3894,6 +3919,66 @@ public class NavitGraphics
 		try
 		{
 			draw_canvas_screen_s.drawBitmap(draw_bitmap_s, 0, 0, null);
+
+			if (Navit.PREF_show_route_rects)
+			{
+				// --- draw debug route rects ----
+				int i3 = 0;
+				for (i3 = 0; i3 < route_rects.size(); i3++)
+				{
+					route_rect rr = route_rects.get(i3);
+					Paint paint78 = new Paint();
+					if (rr.order == -99)
+					{
+						// rectangle to just include all waypoints
+						paint78.setColor(Color.RED);
+					}
+					else if (rr.order == 8)
+					{
+						// rectangle around every waypoint with low detail (order = 8)
+						paint78.setColor(Color.GREEN);
+					}
+					else if (rr.order == 18)
+					{
+						// rectangle around every waypoint with high detail (order = 18)
+						paint78.setColor(Color.MAGENTA);
+					}
+					else if (rr.order == 4)
+					{
+						// rectangles ??
+						paint78.setColor(Color.BLUE);
+					}
+					else if (rr.order == 6)
+					{
+						// rectangles ??
+						paint78.setColor(Color.CYAN);
+					}
+					else if (rr.order == 7)
+					{
+						// rectangles ??
+						paint78.setColor(Color.YELLOW);
+					}
+
+					paint78.setStrokeWidth(15);
+					paint78.setStyle(Style.STROKE);
+
+					String left_top_on_screen_string = CallbackGeoCalc(11, rr.x1, rr.y1);
+					String tmp[] = left_top_on_screen_string.split(":", 2);
+					int xx1 = Integer.parseInt(tmp[0]);
+					int yy1 = Integer.parseInt(tmp[1]);
+					//System.out.println(" " + xx1 + "," + yy1);
+
+					left_top_on_screen_string = CallbackGeoCalc(11, rr.x2, rr.y2);
+					tmp = left_top_on_screen_string.split(":", 2);
+					int xx2 = Integer.parseInt(tmp[0]);
+					int yy2 = Integer.parseInt(tmp[1]);
+					//System.out.println(" " + xx2 + "," + yy2);
+
+					// draw the route rectanlge
+					draw_canvas_screen_s.drawRect(xx1, yy1, xx2, yy2, paint78);
+				}
+				// --- draw debug route rects ----
+			}
 		}
 		catch (Exception e)
 		{
@@ -4902,18 +4987,24 @@ public class NavitGraphics
 				String[] tmp_s = s.split(":");
 				tmp_addr.result_type = tmp_s[0];
 				tmp_addr.item_id = tmp_s[1];
-				tmp_addr.lat = Float.parseFloat(tmp_s[2]);
-				tmp_addr.lon = Float.parseFloat(tmp_s[3]);
+
+				if (Navit.use_index_search)
+				{
+					tmp_addr.lat = Integer.parseInt(tmp_s[2]);
+					tmp_addr.lon = Integer.parseInt(tmp_s[3]);
+				}
+				else
+				{
+					tmp_addr.lat = Float.parseFloat(tmp_s[2]);
+					tmp_addr.lon = Float.parseFloat(tmp_s[3]);
+				}
 				// the rest ist address
 				tmp_addr.addr = s.substring(4 + tmp_s[0].length() + tmp_s[1].length() + tmp_s[2].length() + tmp_s[3].length(), s.length());
 
-				// if "type" and "H id" and "text" is the same, treat it as a double entry!
-				//    this is just a crude estimate now
-				// *OLD* String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id.split("L")[0] + ":" + tmp_addr.addr;
-				// String hash_id = tmp_addr.result_type + ":" + tmp_addr.item_id + ":" + tmp_addr.addr;
-				String hash_id = tmp_addr.result_type + ":" + tmp_addr.lat + ":" + tmp_addr.lon + ":" + tmp_addr.addr;
+				// String hash_id = tmp_addr.result_type + ":" + tmp_addr.lat + ":" + tmp_addr.lon + ":" + tmp_addr.addr;
+				String hash_id = tmp_addr.result_type + ":" + tmp_addr.addr;
 				//System.out.println("hash_id=" + hash_id);
-				if (!Navit.Navit_Address_Result_double_index.contains(hash_id))
+				if ((!Navit.search_hide_duplicates) || (!Navit.Navit_Address_Result_double_index.contains(hash_id)))
 				{
 					Navit.NavitAddressResultList_foundItems.add(tmp_addr);
 					Navit.Navit_Address_Result_double_index.add(hash_id);
@@ -4971,12 +5062,12 @@ public class NavitGraphics
 		//		Navit.msg_to_msg_handler(b, 10);
 	}
 
-	public void SearchResultList(int i, int partial_match, String text, int flags, String country_iso2, String search_latlon, int search_radius)
+	public void SearchResultList(int i, int partial_match, String text, String t_town, String t_hn, int flags, String country_iso2, String search_latlon, int search_radius)
 	{
-		CallbackSearchResultList(i, partial_match, text, flags, country_iso2, search_latlon, search_radius);
+		CallbackSearchResultList(i, partial_match, text, t_town, t_hn, flags, country_iso2, search_latlon, search_radius);
 	}
 
-	public native void CallbackSearchResultList(int i, int partial_match, String s, int flags, String country_iso2, String search_latlon, int search_radius);
+	public native void CallbackSearchResultList(int i, int partial_match, String s, String s_town, String s_hn, int flags, String country_iso2, String search_latlon, int search_radius);
 
 	/**
 	 * get localized string
@@ -5028,6 +5119,18 @@ public class NavitGraphics
 				// set cache size for (map-)files
 				String s = msg.getData().getString("s");
 				CallbackMessageChannel(55, s);
+			}
+			else if (msg.getData().getInt("Callback") == 78)
+			{
+				// shift layout "order" values
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(78, s);
+			}
+			else if (msg.getData().getInt("Callback") == 79)
+			{
+				// set traffic light delay
+				String s = msg.getData().getString("s");
+				CallbackMessageChannel(79, s);
 			}
 			else if (msg.getData().getInt("Callback") == 9901)
 			{
@@ -5264,6 +5367,8 @@ public class NavitGraphics
 				busyspinnertext_.setVisibility(View.INVISIBLE);
 				busyspinnertext_.setText("");
 				Navit.set_debug_messages1("");
+				// DEBUG: clear route rectangle list
+				route_rects.clear();
 			}
 			else if (i == 1)
 			{
@@ -5451,6 +5556,48 @@ public class NavitGraphics
 
 		// recreate the new Bitmap
 		return (Bitmap.createBitmap(in, 0, 0, width, height, matrix, true));
+	}
+
+	public static class route_rect
+	{
+		int x1;
+		int y1;
+		int x2;
+		int y2;
+		int order;
+	};
+
+	public static ArrayList<route_rect> route_rects = new ArrayList<route_rect>();
+
+	// value are NOT in pixels!! they need to be converted to pixels before drawing
+	public static void send_route_rect_to_java(int x1, int y1, int x2, int y2, int order)
+	{
+		//System.out.println("send_route_rect_to_java: " + x1 + "," + y1 + " " + x2 + "," + y2 + " o=" + order);
+
+		//String left_top_on_screen_string = CallbackGeoCalc(11, x1, y1);
+		//String tmp[] = left_top_on_screen_string.split(":", 2);
+		//int pixel_top_left_x = Integer.parseInt(tmp[0]);
+		//int pixel_top_left_y = Integer.parseInt(tmp[1]);
+		//System.out.println(" " + pixel_top_left_x + "," + pixel_top_left_y);
+
+		//left_top_on_screen_string = CallbackGeoCalc(11, x2, y2);
+		//tmp = left_top_on_screen_string.split(":", 2);
+		//pixel_top_left_x = Integer.parseInt(tmp[0]);
+		//pixel_top_left_y = Integer.parseInt(tmp[1]);
+		//System.out.println(" " + pixel_top_left_x + "," + pixel_top_left_y);
+
+		if (route_rects == null)
+		{
+			route_rects = new ArrayList<route_rect>();
+		}
+
+		route_rect rr = new route_rect();
+		rr.x1 = x1;
+		rr.y1 = y1;
+		rr.x2 = x2;
+		rr.y2 = y2;
+		rr.order = order;
+		route_rects.add(rr);
 	}
 
 }

@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -40,8 +59,7 @@ gui_new(struct attr *parent, struct attr **attrs)
 {
 	struct gui *this_;
 	struct attr *type_attr;
-	struct gui_priv *(*guitype_new)(struct navit *nav,
-			struct gui_methods *meth, struct attr **attrs, struct gui *gui);
+	struct gui_priv *(*guitype_new)(struct navit *nav, struct gui_methods *meth, struct attr **attrs, struct gui *gui);
 	struct attr cbl;
 	if (!(type_attr = attr_search(attrs, NULL, attr_type)))
 	{
@@ -57,14 +75,12 @@ gui_new(struct attr *parent, struct attr **attrs)
 	cbl.type = attr_callback_list;
 	cbl.u.callback_list = callback_list_new();
 	this_->attrs = attr_generic_add_attr(this_->attrs, &cbl);
-	this_->priv = guitype_new(parent->u.navit, &this_->meth, this_->attrs,
-			this_);
+	this_->priv = guitype_new(parent->u.navit, &this_->meth, this_->attrs, this_);
 	this_->parent = *parent;
 	return this_;
 }
 
-int gui_get_attr(struct gui *this_, enum attr_type type, struct attr *attr,
-		struct attr_iter *iter)
+int gui_get_attr(struct gui *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
 	int ret;
 	if (this_->meth.get_attr)
@@ -104,7 +120,7 @@ gui_menubar_new(struct gui *gui)
 {
 	struct menu *this_;
 	if (!gui->meth.menubar_new)
-		return NULL; this_=g_new0(struct menu, 1);
+		return NULL;this_=g_new0(struct menu, 1);
 	this_->priv = gui->meth.menubar_new(gui->priv, &this_->meth);
 	if (!this_->priv)
 	{
@@ -119,7 +135,7 @@ gui_popup_new(struct gui *gui)
 {
 	struct menu *this_;
 	if (!gui->meth.popup_new)
-		return NULL; this_=g_new0(struct menu, 1);
+		return NULL;this_=g_new0(struct menu, 1);
 	this_->priv = gui->meth.popup_new(gui->priv, &this_->meth);
 	if (!this_->priv)
 	{
@@ -130,14 +146,12 @@ gui_popup_new(struct gui *gui)
 }
 
 struct datawindow *
-gui_datawindow_new(struct gui *gui, char *name, struct callback *click,
-		struct callback *close)
+gui_datawindow_new(struct gui *gui, char *name, struct callback *click, struct callback *close)
 {
 	struct datawindow *this_;
 	if (!gui->meth.datawindow_new)
-		return NULL; this_=g_new0(struct datawindow, 1);
-	this_->priv = gui->meth.datawindow_new(gui->priv, name, click, close,
-			&this_->meth);
+		return NULL;this_=g_new0(struct datawindow, 1);
+	this_->priv = gui->meth.datawindow_new(gui->priv, name, click, close, &this_->meth);
 	if (!this_->priv)
 	{
 		g_free(this_);

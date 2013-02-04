@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011 -2012 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -258,6 +258,9 @@ public class NavitAndroidOverlay extends ImageView
 					{
 						e.printStackTrace();
 					}
+
+					// DEBUG: clear route rectangle list
+					NavitGraphics.route_rects.clear();
 
 					if (NavitGraphics.navit_route_status == 0)
 					{
@@ -624,9 +627,9 @@ public class NavitAndroidOverlay extends ImageView
 		zoomout_lty = h_2;
 		this.zoomout_button_rect = new RectF(w_2, h_2, Navit.zoomout.getWidth() + w_2, h_button_zoom + h_2);
 
-		int mapdrawing_width = 75;
-		int mapdrawing_height = 75;
-		w_2 = (int) (((this.mCanvasWidth - mapdrawing_width) / 1.5f) * draw_factor) - 5;
+		int mapdrawing_width = (int) ((75f / 1.5f) * draw_factor);
+		int mapdrawing_height = (int) ((75f / 1.5f) * draw_factor);
+		w_2 = (int) ((this.mCanvasWidth - mapdrawing_width) - 5);
 		h_2 = (int) ((70f / 1.5f) * draw_factor) + 5 + 25;
 		mapdrawing_ltx = w_2;
 		mapdrawing_lty = h_2;
@@ -817,7 +820,14 @@ public class NavitAndroidOverlay extends ImageView
 			//paint.setAlpha(30);
 			c.drawRoundRect(this.zoomout_button_rect, 10, 10, paint);
 			c.drawRoundRect(this.mapdrawing_button_rect, 10, 10, paint);
-			paint.setStrokeWidth(10);
+			if ((draw_factor == 0.7f) || (draw_factor == 1.0f))
+			{
+				paint.setStrokeWidth(6);
+			}
+			else
+			{
+				paint.setStrokeWidth(10);
+			}
 			paint.setAlpha(80);
 			c.drawLine(this.mapdrawing_button_rect.left + 10, this.mapdrawing_button_rect.bottom - 10, this.mapdrawing_button_rect.right - 10, this.mapdrawing_button_rect.top + 10, paint);
 		}

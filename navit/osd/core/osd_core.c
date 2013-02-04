@@ -1597,16 +1597,26 @@ osd_nav_next_turn_new(struct navit *nav, struct osd_methods *meth,
 		this->icon_h = attr->u.num;
 
 	attr = attr_search(attrs, NULL, attr_icon_src);
-	if (attr) {
+
+
+	if (attr)
+	{
+		/*
 		struct file_wordexp *we;
 		char **array;
 		we = file_wordexp_new(attr->u.str);
 		array = file_wordexp_get_array(we);
 		this->icon_src = graphics_icon_path(array[0]);
 		file_wordexp_destroy(we);
-	} else {
+		*/
+
+		this->icon_src = graphics_icon_path(attr->u.str);		
+	}
+	else
+	{
 		this->icon_src = graphics_icon_path("%s_wh.svg");
 	}
+
 	
 	attr = attr_search(attrs, NULL, attr_level);
 	if (attr)
@@ -1722,6 +1732,8 @@ osd_nav_toggle_announcer_new(struct navit *nav, struct osd_methods *meth, struct
     this->last_state = -1;
 
     attr = attr_search(attrs, NULL, attr_icon_src);
+
+	/*
 	if (attr) {
 		struct file_wordexp *we;
 		char **array;
@@ -1731,6 +1743,7 @@ osd_nav_toggle_announcer_new(struct navit *nav, struct osd_methods *meth, struct
 		file_wordexp_destroy(we);
 	} else
 		this->icon_src = graphics_icon_path("%s_32.xpm");
+	*/
 
     this->item.command = g_strdup(command);
 
@@ -3066,6 +3079,7 @@ osd_gps_status_new(struct navit *nav, struct osd_methods *meth,
 		this->icon_h = attr->u.num;
 
 	attr = attr_search(attrs, NULL, attr_icon_src);
+	/*
 	if (attr) {
 		struct file_wordexp *we;
 		char **array;
@@ -3075,6 +3089,7 @@ osd_gps_status_new(struct navit *nav, struct osd_methods *meth,
 		file_wordexp_destroy(we);
 	} else
 		this->icon_src = graphics_icon_path("gui_strength_%d_32_32.png");
+	*/
 
 	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_gps_status_init), attr_graphics_ready, this));
 	return (struct osd_priv *) this;
@@ -3169,6 +3184,8 @@ osd_volume_new(struct navit *nav, struct osd_methods *meth,
 		this->icon_h = attr->u.num;
 
 	attr = attr_search(attrs, NULL, attr_icon_src);
+
+	/*
 	if (attr) {
 		struct file_wordexp *we;
 		char **array;
@@ -3178,6 +3195,7 @@ osd_volume_new(struct navit *nav, struct osd_methods *meth,
 		file_wordexp_destroy(we);
 	} else
 		this->icon_src = graphics_icon_path("gui_strength_%d_32_32.png");
+	*/
 
 	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_volume_init), attr_graphics_ready, this));
 	return (struct osd_priv *) this;
@@ -3443,20 +3461,36 @@ osd_auxmap_new(struct navit *nav, struct osd_methods *meth, struct attr **attrs)
 void
 plugin_init(void)
 {
+	//dbg(0,"osd plugin init\n");
 	plugin_register_osd_type("compass", osd_compass_new);
+	//dbg(0,"osd 1\n");
 	plugin_register_osd_type("navigation_next_turn", osd_nav_next_turn_new);
+	//dbg(0,"osd 2\n");
 	plugin_register_osd_type("button", osd_button_new);
+	//dbg(0,"osd 3\n");
    	plugin_register_osd_type("toggle_announcer", osd_nav_toggle_announcer_new);
+	//dbg(0,"osd 4\n");
    	plugin_register_osd_type("speed_warner", osd_speed_warner_new);
+	//dbg(0,"osd 5\n");
    	plugin_register_osd_type("speed_cam", osd_speed_cam_new);
+	//dbg(0,"osd 6\n");
    	plugin_register_osd_type("text", osd_text_new);
+	//dbg(0,"osd 7\n");
    	plugin_register_osd_type("gps_status", osd_gps_status_new);
+	//dbg(0,"osd 8\n");
    	plugin_register_osd_type("volume", osd_volume_new);
+	//dbg(0,"osd 10\n");
    	plugin_register_osd_type("scale", osd_scale_new);
+	//dbg(0,"osd 11\n");
 	plugin_register_osd_type("image", osd_image_new);
+	//dbg(0,"osd 12\n");
 	plugin_register_osd_type("stopwatch", osd_stopwatch_new);
+	//dbg(0,"osd 13\n");
 	plugin_register_osd_type("odometer", osd_odometer_new);
+	//dbg(0,"osd 14\n");
 	plugin_register_osd_type("auxmap", osd_auxmap_new);
+	//dbg(0,"osd 15\n");
 	plugin_register_osd_type("cmd_interface", osd_cmd_interface_new);
+	//dbg(0,"osd ready\n");
 }
 

@@ -213,7 +213,7 @@ routech_search_new(int dir)
 {
 	struct routech_search *ret=g_new0(struct routech_search, 1);
 	ret->pq=pq_new();
-	ret->hash=g_hash_table_new_full(item_id_hash, item_id_equal, g_free, NULL);
+	ret->hash=g_hash_table_new_full(item_id_hash, item_id_equal, g_free_func, NULL);
 	ret->upper=UINT_MAX;
 	ret->dir=dir;
 

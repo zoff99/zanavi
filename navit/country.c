@@ -369,6 +369,17 @@ country_search_new(struct attr *search, int partial)
 	return ret;
 }
 
+char* str_tolower(char *name)
+{
+	int i;
+	char *str;
+	str = g_strdup(name);
+	for(i = 0; str[i]; i++)
+	{
+		str[i] = tolower(str[i]);
+	}
+	return str;
+}
 
 static int
 match(struct country_search *this_, enum attr_type type, const char *name)
@@ -376,15 +387,58 @@ match(struct country_search *this_, enum attr_type type, const char *name)
 	int ret;
 	char *s1 = NULL;
 	char *s2 = NULL; 
+
 	if (!name)
 		return 0;
+
+	if (!this_->search.u.str)
+	{
+		return 0;
+	}
+
 	if (this_->search.type != type && this_->search.type != attr_country_all)
 		return 0;
-	s1=linguistics_casefold(this_->search.u.str);
-	s2=linguistics_casefold(name);
-	ret=linguistics_compare(s2,s1,this_->partial)==0;
-	g_free(s1);
-	g_free(s2);
+
+
+	//fprintf(stderr, "1 name=%s str=%s\n", name, this_->search.u.str);
+
+	//s1=linguistics_casefold(this_->search.u.str);
+	s1=str_tolower(this_->search.u.str);
+
+	//fprintf(stderr, "2 name=%s str=%s\n", name, this_->search.u.str);
+	//fprintf(stderr, "3 s1=%s\n", s1);
+
+	//s2=linguistics_casefold(name);
+	s2=str_tolower(name);
+
+	//fprintf(stderr, "4 name=%s str=%s\n", name, this_->search.u.str);
+	//fprintf(stderr, "5 s2=%s\n", s2);
+
+	//if ((s1 == NULL)||(s2 == NULL))
+	//{
+	//	// ok i give up, i cant find the damn bug. so here is a stupid!! stupid!! workaround
+	//	fprintf(stderr, "2 name=%s str=%s\n", name, this_->search.u.str);
+	//	fprintf(stderr, "3 s1=%s\n", s1);
+	//	fprintf(stderr, "5 s2=%s\n", s2);
+	//	return 0;
+	//}
+	//else
+	//{
+		ret=linguistics_compare(s2,s1,this_->partial)==0;
+	//}
+	//fprintf(stderr, "6 s1=%s\n", s1);
+	//fprintf(stderr, "7 s2=%s\n", s2);
+
+	if (s1)
+	{
+		g_free(s1);
+	}
+
+	if (s2)
+	{
+		g_free(s2);
+	}
+
 	return ret;
 }
 

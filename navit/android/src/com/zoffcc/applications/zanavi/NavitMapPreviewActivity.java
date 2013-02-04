@@ -182,6 +182,9 @@ public class NavitMapPreviewActivity extends Activity
 		{
 		}
 
+		//System.out.println("my_lat=" + my_lat);
+		//System.out.println("my_lat=" + my_lon);
+
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 
 		// scrollview

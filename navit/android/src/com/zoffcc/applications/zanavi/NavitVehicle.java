@@ -183,7 +183,7 @@ public class NavitVehicle
 						}
 
 						//System.out.println("send values 1");
-						//Log.e("NavitVehicle", "LocationChanged provider=fast Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
+						Log.e("NavitVehicle", "LocationChanged provider=fast Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
 						last_location = location;
 						if (!Navit.DemoVehicle)
 						{

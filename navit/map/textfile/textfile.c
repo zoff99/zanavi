@@ -354,31 +354,38 @@ map_new_textfile(struct map_methods *meth, struct attr **attrs, struct callback_
 	char *wdata;
 	char **wexp_data;
 	if (! data)
+	{
 		return NULL;
-	dbg(1,"map_new_textfile %s\n", data->u.str);	
-	wdata=g_strdup(data->u.str);
-	len=strlen(wdata);
-	if (len && wdata[len-1] == '|') {
-		wdata[len-1]='\0';
-		is_pipe=1;
 	}
-	wexp=file_wordexp_new(wdata);
-	wexp_data=file_wordexp_get_array(wexp);
+
+	// **	dbg(1,"map_new_textfile %s\n", data->u.str);	
+
+	//wdata=g_strdup(data->u.str);
+	//len=strlen(wdata);
+	//if (len && wdata[len-1] == '|') {
+	//	wdata[len-1]='\0';
+	//	is_pipe=1;
+	//}
+	//wexp=file_wordexp_new(wdata);
+	//wexp_data=file_wordexp_get_array(wexp);
 	*meth=map_methods_textfile;
 
 	m=g_new0(struct map_priv, 1);
 	m->id=++map_id;
-	m->filename=g_strdup(wexp_data[0]);
+	m->filename=g_strdup(data->u.str);
 	m->is_pipe=is_pipe;
-	if (flags) 
+	if (flags)
+	{
 		m->flags=flags->u.num;
-	dbg(1,"map_new_textfile %s %s\n", m->filename, wdata);
-	if (charset) {
+	}
+	// dbg(1,"map_new_textfile %s %s\n", m->filename, wdata);
+	if (charset)
+	{
 		m->charset=g_strdup(charset->u.str);
 		meth->charset=m->charset;
 	}
-	file_wordexp_destroy(wexp);
-	g_free(wdata);
+	//file_wordexp_destroy(wexp);
+	//g_free(wdata);
 	return m;
 }
 

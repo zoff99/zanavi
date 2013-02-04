@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-04 15:19+0200\n"
-"PO-Revision-Date: 2012-01-20 09:17+0000\n"
-"Last-Translator: pataquets <Unknown>\n"
+"PO-Revision-Date: 2012-08-19 21:19+0000\n"
+"Last-Translator: José Ernesto Dávila Pantoja <josernestodavila@ubuntu.com>\n"
 "Language-Team: Chris Eubank <cteubank@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-06-02 12:24+0000\n"
-"X-Generator: Launchpad (build 15342)\n"
+"X-Launchpad-Export-Date: 2012-09-08 21:00+0000\n"
+"X-Generator: Launchpad (build 15914)\n"
 "X-Poedit-Bookmarks: -1,-1,-1,23,-1,-1,-1,-1,-1,-1\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
@@ -268,13 +268,13 @@ msgstr "suavemente "
 #. TRANSLATORS: EXAMPLE: turn hard right
 #: navigation.c:2067
 msgid "hard "
-msgstr ""
+msgstr "difícil "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn really hard right
 #: navigation.c:2076
 msgid "really hard "
-msgstr ""
+msgstr "realmente difícil "
 
 #: navigation.c:2099
 msgid "When possible, please turn around"
@@ -396,7 +396,7 @@ msgstr "Guía"
 
 #: navit.c:3683
 msgid "Waypoint reached"
-msgstr ""
+msgstr "Waypoint alcanzado"
 
 #: navit.c:3693
 msgid "You have reached your destination"

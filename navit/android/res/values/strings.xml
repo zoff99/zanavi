@@ -14,6 +14,16 @@
         <item>large</item>
         <item>very large</item>
     </string-array>
+    <string-array name="trafficlights_delayValues">
+        <item>0</item>
+        <item>100</item>
+        <item>300</item>
+    </string-array>
+    <string-array name="trafficlights_delayArray">
+        <item>*no delay*</item>
+        <item>small delay</item>
+        <item>huge delay</item>
+    </string-array>
     <string-array name="mapcacheValues">
         <item>1024</item>
         <item>7168</item>
@@ -51,6 +61,20 @@
         <item>very fast device</item>
         <item>crazy fast device</item>
         <item>device from the future!</item>
+    </string-array>
+    <string-array name="drawatorder2Values">
+        <item>0</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>7</item>
+    </string-array>
+    <string-array name="drawatorder2Array">
+        <item>*normal*</item>
+        <item>fast device</item>
+        <item>very fast device</item>
+        <item>device from the future!</item>
+        <item>++ I am god !! ++</item>
     </string-array>
     <string-array name="mapfontsizeValues">
         <item>1</item>

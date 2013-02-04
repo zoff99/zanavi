@@ -557,6 +557,12 @@ binfile_extract(struct map_priv *m, char *dir, char *filename, int partial)
 
 static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	// try to return "0" on any problem, to avoid crash!!
+
 	struct map_rect_priv *mr = priv_data;
 	struct tile *t = mr->t;
 	enum attr_type type;
@@ -567,10 +573,25 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 		t->pos_attr = t->pos_attr_start;
 		mr->attr_last = attr_type;
 	}
+
 	while (t->pos_attr < t->pos_next)
 	{
+		//dbg(0,"batg:002 %d %d\n",t->pos_attr,(t->pos_attr+1));
 		size = le32_to_cpu(*(t->pos_attr++));
+		// dbg(0,"batg:002.1 %d %d\n",t->pos_attr, t->pos_attr[0]);
 		type = le32_to_cpu(t->pos_attr[0]);
+		// dbg(0, "type=%d\n", type);
+
+#ifdef NAVIT_ATTR_SAFETY_CHECK
+		// safety check (always keep value in sync with "attr_def.h" !!) ---------------
+		if (type > 0x000effff)
+		{
+			return 0;
+		}
+		// safety check (always keep value in sync with "attr_def.h" !!) ---------------
+#endif
+
+		//dbg(0,"batg:002.2\n");
 		if (type == attr_label)
 			mr->label = 1;
 		if (type == attr_house_number)
@@ -583,6 +604,7 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 			mr->label_attr[3] = t->pos_attr;
 		if (type == attr_town_name && mr->item.type < type_line)
 			mr->label_attr[4] = t->pos_attr;
+
 		if (type == attr_type || attr_type == attr_any)
 		{
 			if (attr_type == attr_any)
@@ -606,6 +628,7 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 					size_rem -= subsize + 1;
 					i++;
 				}
+
 				mr->attrs[i].type = type_none;
 				mr->attrs[i].u.data = NULL;
 				attr->u.attrs = mr->attrs;
@@ -619,8 +642,11 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 					mr->url = binfile_extract(mr->m, mr->m->cachedir, attr->u.str, 1);
 					attr->u.str = mr->url;
 				}
+
 				if (type == attr_flags && mr->m->map_version < 1)
+				{
 					attr->u.num |= AF_CAR;
+				}
 			}
 			t->pos_attr += size;
 			return 1;
@@ -630,6 +656,7 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 			t->pos_attr += size;
 		}
 	}
+
 	if (!mr->label && (attr_type == attr_any || attr_type == attr_label))
 	{
 		for (i = 0; i < sizeof(mr->label_attr) / sizeof(int *); i++)
@@ -643,6 +670,11 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 			}
 		}
 	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return 0;
 }
 
@@ -678,7 +710,7 @@ binfile_item_dup(struct map_priv *m, struct item *item, struct tile *t, int exte
 
 	memcpy(ret, t->pos, (size + 1) * sizeof(int));
 	if (!m->changes)
-		m->changes = g_hash_table_new_full(binfile_hash_entry_hash, binfile_hash_entry_equal, g_free, NULL);
+		m->changes = g_hash_table_new_full(binfile_hash_entry_hash, binfile_hash_entry_equal, g_free_func, NULL);
 	g_hash_table_replace(m->changes, entry, entry);
 	// dbg(0, "ret %p\n", ret);
 	return ret;
@@ -1694,7 +1726,7 @@ static void load_changes(struct map_priv *m)
 		g_free(changes_file);
 		return;
 	}
-	m->changes = g_hash_table_new_full(binfile_hash_entry_hash, binfile_hash_entry_equal, g_free, NULL);
+	m->changes = g_hash_table_new_full(binfile_hash_entry_hash, binfile_hash_entry_equal, g_free_func, NULL);
 	while (fread(&entry, sizeof(entry), 1, changes) == 1)
 	{
 		if (fread(&size, sizeof(size), 1, changes) != 1)
@@ -1834,38 +1866,74 @@ static int push_modified_item(struct map_rect_priv *mr)
 static struct item *
 map_rect_get_item_binfile(struct map_rect_priv *mr)
 {
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
 	struct tile *t;
 	struct map_priv *m = mr->m;
+
 	if (m->download)
 	{
 		download(m, NULL, NULL, 0, 0, 0, 2);
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+		dbg(0,"+#+:leave9\n");
+#endif
 		return &busy_item;
 	}
+
 	if (mr->status == 1)
 	{
 		mr->status = 0;
 		if (push_zipfile_tile(mr, m->zip_members - 1, 0, 0, 1))
+		{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+			dbg(0,"+#+:leave8\n");
+#endif
 			return &busy_item;
+		}
 	}
+
 	for (;;)
 	{
 		t = mr->t;
+
 		if (!t)
+		{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+			dbg(0,"+#+:leave6\n");
+#endif
 			return NULL;
+		}
+
 		t->pos = t->pos_next;
+
 		if (t->pos >= t->end)
 		{
 			if (pop_tile(mr))
+			{
 				continue;
+			}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+			dbg(0,"+#+:leave5\n");
+#endif
+
 			return NULL;
 		}
+
 		setup_pos(mr);
 		binfile_coord_rewind(mr);
 		binfile_attr_rewind(mr);
 		if ((mr->item.type == type_submap) && (!mr->country_id))
 		{
 			if (map_parse_submap(mr, 1))
+			{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+				dbg(0,"+#+:leave4\n");
+#endif
 				return &busy_item;
+			}
 			continue;
 		}
 		if (t->mode != 2)
@@ -1883,6 +1951,9 @@ map_rect_get_item_binfile(struct map_rect_priv *mr)
 			}
 			if (item_is_town(mr->item))
 			{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+				dbg(0,"+#+:leave3\n");
+#endif
 				return &mr->item;
 			}
 			else
@@ -1890,8 +1961,15 @@ map_rect_get_item_binfile(struct map_rect_priv *mr)
 				continue;
 			}
 		}
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+		dbg(0,"+#+:leave 2\n");
+#endif
 		return &mr->item;
 	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
 }
 
 static struct item *
@@ -2255,7 +2333,7 @@ static int duplicate(struct map_search_priv *msp, struct item *item, enum attr_t
 {
 	struct attr attr;
 	if (!msp->search_results)
-		msp->search_results = g_hash_table_new_full(duplicate_hash, duplicate_equal, g_free, NULL);
+		msp->search_results = g_hash_table_new_full(duplicate_hash, duplicate_equal, g_free_func, NULL);
 	binfile_attr_rewind(item->priv_data);
 	if (!item_attr_get(item, attr_type, &attr))
 		return 1;
@@ -2957,16 +3035,16 @@ map_new_binfile(struct map_methods *meth, struct attr **attrs, struct callback_l
 	if (!data)
 		return NULL;
 
-	wexp = file_wordexp_new(data->u.str);
-	wexp_data = file_wordexp_get_array(wexp);
+	// wexp = file_wordexp_new(data->u.str);
+	// wexp_data = file_wordexp_get_array(wexp);
 	// dbg(0, "map_new_binfile %s\n", data->u.str);
 	*meth = map_methods_binfile;
 
 	m=g_new0(struct map_priv, 1);
 	m->cbl = cbl;
 	m->id = ++map_id;
-	m->filename = g_strdup(wexp_data[0]);
-	file_wordexp_destroy(wexp);
+	m->filename = g_strdup(data->u.str);
+	// file_wordexp_destroy(wexp);
 	check_version = attr_search(attrs, NULL, attr_check_version);
 	if (check_version)
 		m->check_version = check_version->u.num;

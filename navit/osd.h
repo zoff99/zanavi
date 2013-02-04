@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -23,18 +42,21 @@
 struct osd_priv;
 struct attr;
 
-struct osd_methods {
+struct osd_methods
+{
 	void (*osd_destroy)(struct osd_priv *osd);
 	void (*set_attr)(struct osd_priv *osd, struct attr* attr);
 };
 
 #define osd_draw_cast(x) (void (*)(struct osd_priv *osd, struct navit *navit, struct vehicle *v))(x)
 
-struct osd_item_methods {
+struct osd_item_methods
+{
 	void (*draw)(struct osd_priv *osd, struct navit *navit, struct vehicle *v);
 };
 
-struct osd_item {
+struct osd_item
+{
 	struct point p;
 	struct osd_item_methods meth;
 	int flags, attr_flags, w, h, fg_line_width, font_size, osd_configuration, configured;

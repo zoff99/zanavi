@@ -44,11 +44,16 @@
 
 struct element
 {
-	enum { element_point, element_polyline, element_polygon, element_circle, element_text, element_icon, element_image, element_arrows } type;
+	enum
+	{
+		element_point, element_polyline, element_polygon, element_circle, element_text, element_icon, element_image, element_arrows
+	} type;
 	struct color color;
 	int text_size;
-	union {
-		struct element_point {
+	union
+	{
+		struct element_point
+		{
 			char stub;
 		} point;
 		struct element_polyline
@@ -60,21 +65,25 @@ struct element
 			//unsigned char dash_table[4];
 			short dash_table[4];
 		} polyline;
-		struct element_polygon {
+		struct element_polygon
+		{
 			char stub;
 		} polygon;
-		struct element_circle {
+		struct element_circle
+		{
 			int width;
 			int radius;
 			struct color background_color;
 		} circle;
-		struct element_icon {
+		struct element_icon
+		{
 			char *src;
 			int width;
 			int height;
 			int rotation;
 		} icon;
-		struct element_text {
+		struct element_text
+		{
 			struct color background_color;
 		} text;
 	} u;
@@ -82,29 +91,42 @@ struct element
 	struct coord *coord;
 };
 
-
-struct itemgra { 
-	struct range order,sequence_range,speed_range,angle_range;
+struct itemgra
+{
+	struct range order, sequence_range, speed_range, angle_range;
 	GList *type;
 	GList *elements;
 };
 
-struct layer { 
+struct layer
+{
 	char *name;
 	int details;
 	GList *itemgras;
 	int active;
 };
 
-struct cursor {
+struct cursor
+{
 	struct attr **attrs;
 	struct range *sequence_range;
 	char *name;
-	int w,h;
+	int w, h;
 	int interval;
 };
 
-struct layout { char *name; char* dayname; char* nightname; char *font; struct color color; GList *layers; GList *cursors; int order_delta; int active; };
+struct layout
+{
+	char *name;
+	char* dayname;
+	char* nightname;
+	char *font;
+	struct color color;
+	GList *layers;
+	GList *cursors;
+	int order_delta;
+	int active;
+};
 
 /* prototypes */
 enum attr_type;

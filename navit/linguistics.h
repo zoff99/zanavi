@@ -7,6 +7,11 @@ char *linguistics_next_word(char *str);
 void linguistics_init(void);
 char *linguistics_casefold(char *in);
 int linguistics_compare(char *str, char *match, int partial);
+char *linguistics_remove_all_spaces(char *str);
+char *linguistics_remove_all_specials(char *str);
+int linguistics_compare_anywhere(char *str, char *match);
+char* linguistics_fold_and_prepare_complete(char *in, int free_input);
+char* linguistics_check_utf8_string(char* in);
 #ifdef __cplusplus
 }
 #endif

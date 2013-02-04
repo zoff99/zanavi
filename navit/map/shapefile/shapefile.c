@@ -242,7 +242,7 @@ static struct longest_match *
 longest_match_new(void)
 {
 	struct longest_match *ret=g_new0(struct longest_match,1);
-	ret->match_hash=g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+	ret->match_hash=g_hash_table_new_full(g_str_hash, g_str_equal, g_free_func, NULL);
 	ret->match_present_count=1;
 	return ret;
 }

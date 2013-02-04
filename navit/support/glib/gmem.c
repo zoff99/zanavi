@@ -1,3 +1,22 @@
+/**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
 /* GLIB - Library of useful routines for C programming
  * Copyright (C) 1995-1997  Peter Mattis, Spencer Kimball and Josh MacDonald
  *
@@ -38,8 +57,9 @@
 #include "gthreadprivate.h"
 #include "galias.h"
 
-#define MEM_PROFILE_TABLE_SIZE 4096
+#include "debug.h"
 
+#define MEM_PROFILE_TABLE_SIZE 4096
 
 /* notes on macros:
  * having G_DISABLE_CHECKS defined disables use of glib_mem_profiler_table and
@@ -52,19 +72,16 @@
 
 /* --- prototypes --- */
 static gboolean g_mem_initialized = FALSE;
-static void     g_mem_init_nomessage (void);
-
+static void g_mem_init_nomessage(void);
 
 /* --- malloc wrappers --- */
 #ifndef	REALLOC_0_WORKS
-static gpointer
-standard_realloc (gpointer mem,
-		  gsize    n_bytes)
+static gpointer standard_realloc(gpointer mem, gsize n_bytes)
 {
-  if (!mem)
-    return malloc (n_bytes);
-  else
-    return realloc (mem, n_bytes);
+	if (!mem)
+		return malloc(n_bytes);
+	else
+		return realloc(mem, n_bytes);
 }
 #endif	/* !REALLOC_0_WORKS */
 
@@ -78,174 +95,186 @@ standard_realloc (gpointer mem,
 #  define standard_try_malloc	malloc
 #  define standard_try_realloc	realloc
 #else	/* !SANE_MALLOC_PROTOS */
-static gpointer
-standard_malloc (gsize n_bytes)
+static gpointer standard_malloc(gsize n_bytes)
 {
-  return malloc (n_bytes);
+	return malloc(n_bytes);
 }
 #  ifdef REALLOC_0_WORKS
 static gpointer
 standard_realloc (gpointer mem,
-		  gsize    n_bytes)
+		gsize n_bytes)
 {
-  return realloc (mem, n_bytes);
+	return realloc (mem, n_bytes);
 }
 #  endif /* REALLOC_0_WORKS */
-static void
-standard_free (gpointer mem)
+static void standard_free(gpointer mem)
 {
-  free (mem);
+	free(mem);
 }
-static gpointer
-standard_calloc (gsize n_blocks,
-		 gsize n_bytes)
+static gpointer standard_calloc(gsize n_blocks, gsize n_bytes)
 {
-  return calloc (n_blocks, n_bytes);
+	return calloc(n_blocks, n_bytes);
 }
 #define	standard_try_malloc	standard_malloc
 #define	standard_try_realloc	standard_realloc
 #endif	/* !SANE_MALLOC_PROTOS */
 
-
 /* --- variables --- */
-static GMemVTable glib_mem_vtable = {
-  standard_malloc,
-  standard_realloc,
-  standard_free,
-  standard_calloc,
-  standard_try_malloc,
-  standard_try_realloc,
-};
-
+static GMemVTable glib_mem_vtable = { standard_malloc, standard_realloc, standard_free, standard_calloc, standard_try_malloc, standard_try_realloc, };
 
 /* --- functions --- */
-gpointer
-g_malloc (gsize n_bytes)
+gpointer g_malloc(gsize n_bytes)
 {
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
-  if (G_LIKELY (n_bytes))
-    {
-      gpointer mem;
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(n_bytes))
+	{
+		gpointer mem;
 
-      mem = glib_mem_vtable.malloc (n_bytes);
-      if (mem)
-	return mem;
+		mem = glib_mem_vtable.malloc(n_bytes);
+		if (mem)
+			return mem;
 
 #if NOT_NEEDED_FOR_NAVIT
-      g_error ("%s: failed to allocate %"G_GSIZE_FORMAT" bytes",
-               G_STRLOC, n_bytes);
+		g_error ("%s: failed to allocate %"G_GSIZE_FORMAT" bytes",
+				G_STRLOC, n_bytes);
 #endif /* NOT_NEEDED_FOR_NAVIT */
-    }
+	}
 
-  return NULL;
+	return NULL;
 }
 
-gpointer
-g_malloc0 (gsize n_bytes)
+gpointer g_malloc0(gsize n_bytes)
 {
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
-  if (G_LIKELY (n_bytes))
-    {
-      gpointer mem;
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(n_bytes))
+	{
+		gpointer mem;
 
-      mem = glib_mem_vtable.calloc (1, n_bytes);
-      if (mem)
-	return mem;
+		mem = glib_mem_vtable.calloc(1, n_bytes);
+		if (mem)
+			return mem;
 
 #if NOT_NEEDED_FOR_NAVIT
-      g_error ("%s: failed to allocate %"G_GSIZE_FORMAT" bytes",
-               G_STRLOC, n_bytes);
+		g_error ("%s: failed to allocate %"G_GSIZE_FORMAT" bytes",
+				G_STRLOC, n_bytes);
 #endif /* NOT_NEEDED_FOR_NAVIT */
-    }
+	}
 
-  return NULL;
+	return NULL;
 }
 
-gpointer
-g_realloc (gpointer mem,
-	   gsize    n_bytes)
+gpointer g_realloc(gpointer mem, gsize n_bytes)
 {
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
-  if (G_LIKELY (n_bytes))
-    {
-      mem = glib_mem_vtable.realloc (mem, n_bytes);
-      if (mem)
-	return mem;
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(n_bytes))
+	{
+		mem = glib_mem_vtable.realloc(mem, n_bytes);
+		if (mem)
+			return mem;
 
 #if NOT_NEEDED_FOR_NAVIT
-      g_error ("%s: failed to allocate %"G_GSIZE_FORMAT" bytes",
-               G_STRLOC, n_bytes);
+		g_error ("%s: failed to allocate %"G_GSIZE_FORMAT" bytes",
+				G_STRLOC, n_bytes);
 #endif /* NOT_NEEDED_FOR_NAVIT */
-    }
+	}
 
-  if (mem)
-    glib_mem_vtable.free (mem);
+	if (mem)
+		glib_mem_vtable.free(mem);
 
-  return NULL;
+	return NULL;
 }
 
+void g_free_debug_func(const char *file, const int line, const char *function, gpointer mem)
+{
+#ifdef HAVE_API_ANDROID
+#ifdef DEBUG_GLIB_MEM_FUNCTIONS
+	gsize *p = mem;
+	p -= 2;
+	gsize n_bytes = p[1];
+	dbg(0,"%s:%s:%d: g_free %p size=%"G_GSIZE_FORMAT" bytes\n", file, function, line, mem, n_bytes);
+#else
+	dbg(0,"%s:%s:%d: g_free %p\n", file, function, line, mem);
+#endif
+#endif
+
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(mem))
+		glib_mem_vtable.free(mem);
+}
+
+#ifndef DEBUG_GLIB_FREE
+void g_free(gpointer mem)
+{
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(mem))
+		glib_mem_vtable.free(mem);
+}
+#else
 void
-g_free (gpointer mem)
+g_debug_free_func(gpointer mem)
 {
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
-  if (G_LIKELY (mem))
-    glib_mem_vtable.free (mem);
+	// g_free_debug_func("unknown",0,"unknown",mem);
+
+#ifdef HAVE_API_ANDROID
+	dbg(0,"%s:%s:%d: g_free %p\n", "unknown", "unknown", "0", mem);
+#endif
+
+	if (G_UNLIKELY (!g_mem_initialized))
+	g_mem_init_nomessage();
+	if (G_LIKELY (mem))
+	glib_mem_vtable.free (mem);
+}
+#endif
+
+gpointer g_try_malloc(gsize n_bytes)
+{
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(n_bytes))
+		return glib_mem_vtable.try_malloc(n_bytes);
+	else
+		return NULL;
 }
 
-gpointer
-g_try_malloc (gsize n_bytes)
+gpointer g_try_malloc0(gsize n_bytes)
 {
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
-  if (G_LIKELY (n_bytes))
-    return glib_mem_vtable.try_malloc (n_bytes);
-  else
-    return NULL;
+	gpointer mem;
+
+	mem = g_try_malloc(n_bytes);
+
+	if (mem)
+		memset(mem, 0, n_bytes);
+
+	return mem;
 }
 
-gpointer
-g_try_malloc0 (gsize n_bytes)
-{ 
-  gpointer mem;
+gpointer g_try_realloc(gpointer mem, gsize n_bytes)
+{
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+	if (G_LIKELY(n_bytes))
+		return glib_mem_vtable.try_realloc(mem, n_bytes);
 
-  mem = g_try_malloc (n_bytes);
-  
-  if (mem)
-    memset (mem, 0, n_bytes);
+	if (mem)
+		glib_mem_vtable.free(mem);
 
-  return mem;
+	return NULL;
 }
 
-gpointer
-g_try_realloc (gpointer mem,
-	       gsize    n_bytes)
+static gpointer fallback_calloc(gsize n_blocks, gsize n_block_bytes)
 {
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
-  if (G_LIKELY (n_bytes))
-    return glib_mem_vtable.try_realloc (mem, n_bytes);
+	gsize l = n_blocks * n_block_bytes;
+	gpointer mem = glib_mem_vtable.malloc(l);
 
-  if (mem)
-    glib_mem_vtable.free (mem);
+	if (mem)
+		memset(mem, 0, l);
 
-  return NULL;
-}
-
-static gpointer
-fallback_calloc (gsize n_blocks,
-		 gsize n_block_bytes)
-{
-  gsize l = n_blocks * n_block_bytes;
-  gpointer mem = glib_mem_vtable.malloc (l);
-
-  if (mem)
-    memset (mem, 0, l);
-
-  return mem;
+	return mem;
 }
 
 static gboolean vtable_set = FALSE;
@@ -263,52 +292,52 @@ static gboolean vtable_set = FALSE;
  *
  * Return value: if %TRUE, malloc() and g_malloc() can be mixed.
  **/
-gboolean
-g_mem_is_system_malloc (void)
+gboolean g_mem_is_system_malloc(void)
 {
-  return !vtable_set;
+	return !vtable_set;
 }
 
-void
-g_mem_set_vtable (GMemVTable *vtable)
+void g_mem_set_vtable(GMemVTable *vtable)
 {
-  if (!vtable_set)
-    {
-      if (vtable->malloc && vtable->realloc && vtable->free)
+	if (!vtable_set)
 	{
-	  glib_mem_vtable.malloc = vtable->malloc;
-	  glib_mem_vtable.realloc = vtable->realloc;
-	  glib_mem_vtable.free = vtable->free;
-	  glib_mem_vtable.calloc = vtable->calloc ? vtable->calloc : fallback_calloc;
-	  glib_mem_vtable.try_malloc = vtable->try_malloc ? vtable->try_malloc : glib_mem_vtable.malloc;
-	  glib_mem_vtable.try_realloc = vtable->try_realloc ? vtable->try_realloc : glib_mem_vtable.realloc;
-	  vtable_set = TRUE;
+		if (vtable->malloc && vtable->realloc && vtable->free)
+		{
+			glib_mem_vtable.malloc = vtable->malloc;
+			glib_mem_vtable.realloc = vtable->realloc;
+			glib_mem_vtable.free = vtable->free;
+			glib_mem_vtable.calloc = vtable->calloc ? vtable->calloc : fallback_calloc;
+			glib_mem_vtable.try_malloc = vtable->try_malloc ? vtable->try_malloc : glib_mem_vtable.malloc;
+			glib_mem_vtable.try_realloc = vtable->try_realloc ? vtable->try_realloc : glib_mem_vtable.realloc;
+			vtable_set = TRUE;
+		}
+		//#if NOT_NEEDED_FOR_NAVIT
+		else
+		{
+			//g_warning (G_STRLOC ": memory allocation vtable lacks one of malloc(), realloc() or free()");
+		}
+		//#endif /* NOT_NEEDED_FOR_NAVIT */
 	}
-#if NOT_NEEDED_FOR_NAVIT
-      else
-	g_warning (G_STRLOC ": memory allocation vtable lacks one of malloc(), realloc() or free()");
-#endif /* NOT_NEEDED_FOR_NAVIT */
-    }
-#if NOT_NEEDED_FOR_NAVIT
-  else
-    g_warning (G_STRLOC ": memory allocation vtable can only be set once at startup");
-#endif /* NOT_NEEDED_FOR_NAVIT */
+	//#if NOT_NEEDED_FOR_NAVIT
+	else
+	{
+		//g_warning (G_STRLOC ": memory allocation vtable can only be set once at startup");
+	}
+	//#endif /* NOT_NEEDED_FOR_NAVIT */
 }
-
 
 /* --- memory profiling and checking --- */
-#ifdef	G_DISABLE_CHECKS
+
+#ifdef	G_DISABLE_CHECKS_X
 GMemVTable *glib_mem_profiler_table = &glib_mem_vtable;
 void
 g_mem_profile (void)
 {
 }
 #else	/* !G_DISABLE_CHECKS */
-typedef enum {
-  PROFILER_FREE		= 0,
-  PROFILER_ALLOC	= 1,
-  PROFILER_RELOC	= 2,
-  PROFILER_ZINIT	= 4
+typedef enum
+{
+	PROFILER_FREE = 0, PROFILER_ALLOC = 1, PROFILER_RELOC = 2, PROFILER_ZINIT = 4
 } ProfilerJob;
 static guint *profile_data = NULL;
 static gsize profile_allocs = 0;
@@ -323,287 +352,308 @@ static volatile gsize g_trap_malloc_size = 0;
 
 #define	PROFILE_TABLE(f1,f2,f3)   ( ( ((f3) << 2) | ((f2) << 1) | (f1) ) * (MEM_PROFILE_TABLE_SIZE + 1))
 
-static void
-profiler_log (ProfilerJob job,
-	      gsize       n_bytes,
-	      gboolean    success)
+static void profiler_log(ProfilerJob job, gsize n_bytes, gboolean success)
 {
-  g_mutex_lock (gmem_profile_mutex);
-  if (!profile_data)
-    {
-      profile_data = standard_calloc ((MEM_PROFILE_TABLE_SIZE + 1) * 8, 
-                                      sizeof (profile_data[0]));
-      if (!profile_data)	/* memory system kiddin' me, eh? */
+	g_mutex_lock(gmem_profile_mutex);
+	if (!profile_data)
 	{
-	  g_mutex_unlock (gmem_profile_mutex);
-	  return;
+		profile_data = standard_calloc((MEM_PROFILE_TABLE_SIZE + 1) * 8, sizeof(profile_data[0]));
+		if (!profile_data) /* memory system kiddin' me, eh? */
+		{
+			g_mutex_unlock(gmem_profile_mutex);
+			return;
+		}
 	}
-    }
 
-  if (n_bytes < MEM_PROFILE_TABLE_SIZE)
-    profile_data[n_bytes + PROFILE_TABLE ((job & PROFILER_ALLOC) != 0,
-                                          (job & PROFILER_RELOC) != 0,
-                                          success != 0)] += 1;
-  else
-    profile_data[MEM_PROFILE_TABLE_SIZE + PROFILE_TABLE ((job & PROFILER_ALLOC) != 0,
-                                                         (job & PROFILER_RELOC) != 0,
-                                                         success != 0)] += 1;
-  if (success)
-    {
-      if (job & PROFILER_ALLOC)
-        {
-          profile_allocs += n_bytes;
-          if (job & PROFILER_ZINIT)
-            profile_zinit += n_bytes;
-        }
-      else
-        profile_frees += n_bytes;
-    }
-  g_mutex_unlock (gmem_profile_mutex);
-}
-
-static void
-profile_print_locked (guint   *local_data,
-		      gboolean success)
-{
-  gboolean need_header = TRUE;
-  guint i;
-
-  for (i = 0; i <= MEM_PROFILE_TABLE_SIZE; i++)
-    {
-      glong t_malloc = local_data[i + PROFILE_TABLE (1, 0, success)];
-      glong t_realloc = local_data[i + PROFILE_TABLE (1, 1, success)];
-      glong t_free = local_data[i + PROFILE_TABLE (0, 0, success)];
-      glong t_refree = local_data[i + PROFILE_TABLE (0, 1, success)];
-      
-      if (!t_malloc && !t_realloc && !t_free && !t_refree)
-	continue;
-      else if (need_header)
+	if (n_bytes < MEM_PROFILE_TABLE_SIZE)
 	{
-	  need_header = FALSE;
-	  g_print (" blocks of | allocated  | freed      | allocated  | freed      | n_bytes   \n");
-	  g_print ("  n_bytes  | n_times by | n_times by | n_times by | n_times by | remaining \n");
-	  g_print ("           | malloc()   | free()     | realloc()  | realloc()  |           \n");
-	  g_print ("===========|============|============|============|============|===========\n");
+		profile_data[n_bytes + PROFILE_TABLE ((job & PROFILER_ALLOC) != 0,
+				(job & PROFILER_RELOC) != 0,
+				success != 0)] += 1;
 	}
-      if (i < MEM_PROFILE_TABLE_SIZE)
-	g_print ("%10u | %10ld | %10ld | %10ld | %10ld |%+11ld\n",
-		 i, t_malloc, t_free, t_realloc, t_refree,
-		 (t_malloc - t_free + t_realloc - t_refree) * i);
-      else if (i >= MEM_PROFILE_TABLE_SIZE)
-	g_print ("   >%6u | %10ld | %10ld | %10ld | %10ld |        ***\n",
-		 i, t_malloc, t_free, t_realloc, t_refree);
-    }
-  if (need_header)
-    g_print (" --- none ---\n");
+	else
+	{
+		profile_data[MEM_PROFILE_TABLE_SIZE + PROFILE_TABLE ((job & PROFILER_ALLOC) != 0,
+				(job & PROFILER_RELOC) != 0,
+				success != 0)] += 1;
+	}
+
+	if (success)
+	{
+		if (job & PROFILER_ALLOC)
+		{
+			profile_allocs += n_bytes;
+			if (job & PROFILER_ZINIT)
+				profile_zinit += n_bytes;
+		}
+		else
+			profile_frees += n_bytes;
+	}
+	g_mutex_unlock(gmem_profile_mutex);
 }
 
-void
-g_mem_profile (void)
+static void profile_print_locked(guint *local_data, gboolean success)
 {
-  guint local_data[(MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof (profile_data[0])];
-  gsize local_allocs;
-  gsize local_zinit;
-  gsize local_frees;
+	gboolean need_header = TRUE;
+	guint i;
 
-  if (G_UNLIKELY (!g_mem_initialized))
-    g_mem_init_nomessage();
+	for (i = 0; i <= MEM_PROFILE_TABLE_SIZE; i++)
+	{
+		glong t_malloc = local_data[i + PROFILE_TABLE (1, 0, success)];
+		glong t_realloc = local_data[i + PROFILE_TABLE (1, 1, success)];
+		glong t_free = local_data[i + PROFILE_TABLE (0, 0, success)];
+		glong t_refree = local_data[i + PROFILE_TABLE (0, 1, success)];
 
-  g_mutex_lock (gmem_profile_mutex);
+		if (!t_malloc && !t_realloc && !t_free && !t_refree)
+		{
+			continue;
+		}
+		else if (need_header)
+		{
+			need_header = FALSE;
+#ifdef HAVE_API_ANDROID
+			dbg(0, " blocks of | allocated  | freed      | allocated  | freed      | n_bytes   \n");
+			dbg(0, "  n_bytes  | n_times by | n_times by | n_times by | n_times by | remaining \n");
+			dbg(0, "           | malloc()   | free()     | realloc()  | realloc()  |           \n");
+			dbg(0, "===========|============|============|============|============|===========\n");
+#endif
+		}
 
-  local_allocs = profile_allocs;
-  local_zinit = profile_zinit;
-  local_frees = profile_frees;
+		if (i < MEM_PROFILE_TABLE_SIZE)
+		{
+#ifdef HAVE_API_ANDROID
+			dbg(0, "%10u | %10ld | %10ld | %10ld | %10ld |%+11ld\n",
+					i, t_malloc, t_free, t_realloc, t_refree,
+					(t_malloc - t_free + t_realloc - t_refree) * i);
+#endif
+		}
+		else if (i >= MEM_PROFILE_TABLE_SIZE)
+		{
+#ifdef HAVE_API_ANDROID
+			dbg(0, "   >%6u | %10ld | %10ld | %10ld | %10ld |        ***\n",
+					i, t_malloc, t_free, t_realloc, t_refree);
+#endif
+		}
+	}
 
-  if (!profile_data)
-    {
-      g_mutex_unlock (gmem_profile_mutex);
-      return;
-    }
-
-  memcpy (local_data, profile_data, 
-	  (MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof (profile_data[0]));
-  
-  g_mutex_unlock (gmem_profile_mutex);
-
-  g_print ("GLib Memory statistics (successful operations):\n");
-  profile_print_locked (local_data, TRUE);
-  g_print ("GLib Memory statistics (failing operations):\n");
-  profile_print_locked (local_data, FALSE);
-  g_print ("Total bytes: allocated=%"G_GSIZE_FORMAT", "
-           "zero-initialized=%"G_GSIZE_FORMAT" (%.2f%%), "
-           "freed=%"G_GSIZE_FORMAT" (%.2f%%), "
-           "remaining=%"G_GSIZE_FORMAT"\n",
-	   local_allocs,
-	   local_zinit,
-	   ((gdouble) local_zinit) / local_allocs * 100.0,
-	   local_frees,
-	   ((gdouble) local_frees) / local_allocs * 100.0,
-	   local_allocs - local_frees);
+	if (need_header)
+	{
+#ifdef HAVE_API_ANDROID
+		dbg(0, " --- none ---\n");
+#endif
+	}
 }
 
-static gpointer
-profiler_try_malloc (gsize n_bytes)
+void g_mem_profile(void)
 {
-  gsize *p;
+	guint local_data[(MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof(profile_data[0])];
+	gsize local_allocs;
+	gsize local_zinit;
+	gsize local_frees;
+
+	if (G_UNLIKELY(!g_mem_initialized))
+		g_mem_init_nomessage();
+
+	g_mutex_lock(gmem_profile_mutex);
+
+	local_allocs = profile_allocs;
+	local_zinit = profile_zinit;
+	local_frees = profile_frees;
+
+	if (!profile_data)
+	{
+		g_mutex_unlock(gmem_profile_mutex);
+		return;
+	}
+
+	memcpy(local_data, profile_data, (MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof(profile_data[0]));
+
+	g_mutex_unlock(gmem_profile_mutex);
+
+	//
+#ifdef HAVE_API_ANDROID
+	//  dbg(0, "GLib Memory statistics (successful operations):\n");
+#endif
+	//
+	// dont print the table for successful memory stats
+	// profile_print_locked (local_data, TRUE);
+
+#ifdef HAVE_API_ANDROID
+	dbg(0, "GLib Memory statistics (failing operations):\n");
+#endif
+	profile_print_locked(local_data, FALSE);
+#ifdef HAVE_API_ANDROID
+	dbg(0, "Total bytes: allocated=%"G_GSIZE_FORMAT", "
+			"zero-initialized=%"G_GSIZE_FORMAT" (%.2f%%), "
+			"freed=%"G_GSIZE_FORMAT" (%.2f%%), "
+			"remaining=%"G_GSIZE_FORMAT"\n",
+			local_allocs,
+			local_zinit,
+			((gdouble) local_zinit) / local_allocs * 100.0,
+			local_frees,
+			((gdouble) local_frees) / local_allocs * 100.0,
+			local_allocs - local_frees);
+#endif
+}
+
+static gpointer profiler_try_malloc(gsize n_bytes)
+{
+	gsize *p;
 
 #ifdef  G_ENABLE_DEBUG
-  if (g_trap_malloc_size == n_bytes)
-    G_BREAKPOINT ();
-#endif  /* G_ENABLE_DEBUG */
-
-  p = standard_malloc (sizeof (gsize) * 2 + n_bytes);
-
-  if (p)
-    {
-      p[0] = 0;		/* free count */
-      p[1] = n_bytes;	/* length */
-      profiler_log (PROFILER_ALLOC, n_bytes, TRUE);
-      p += 2;
-    }
-  else
-    profiler_log (PROFILER_ALLOC, n_bytes, FALSE);
-  
-  return p;
-}
-
-static gpointer
-profiler_malloc (gsize n_bytes)
-{
-  gpointer mem = profiler_try_malloc (n_bytes);
-
-  if (!mem)
-    g_mem_profile ();
-
-  return mem;
-}
-
-static gpointer
-profiler_calloc (gsize n_blocks,
-		 gsize n_block_bytes)
-{
-  gsize l = n_blocks * n_block_bytes;
-  gsize *p;
-
-#ifdef  G_ENABLE_DEBUG
-  if (g_trap_malloc_size == l)
-    G_BREAKPOINT ();
-#endif  /* G_ENABLE_DEBUG */
-  
-  p = standard_calloc (1, sizeof (gsize) * 2 + l);
-
-  if (p)
-    {
-      p[0] = 0;		/* free count */
-      p[1] = l;		/* length */
-      profiler_log (PROFILER_ALLOC | PROFILER_ZINIT, l, TRUE);
-      p += 2;
-    }
-  else
-    {
-      profiler_log (PROFILER_ALLOC | PROFILER_ZINIT, l, FALSE);
-      g_mem_profile ();
-    }
-
-  return p;
-}
-
-static void
-profiler_free (gpointer mem)
-{
-  gsize *p = mem;
-
-  p -= 2;
-  if (p[0])	/* free count */
-    {
-      g_warning ("free(%p): memory has been freed %"G_GSIZE_FORMAT" times already",
-                 p + 2, p[0]);
-      profiler_log (PROFILER_FREE,
-		    p[1],	/* length */
-		    FALSE);
-    }
-  else
-    {
-#ifdef  G_ENABLE_DEBUG
-      if (g_trap_free_size == p[1])
+	if (g_trap_malloc_size == n_bytes)
 	G_BREAKPOINT ();
 #endif  /* G_ENABLE_DEBUG */
 
-      profiler_log (PROFILER_FREE,
-		    p[1],	/* length */
-		    TRUE);
-      memset (p + 2, 0xaa, p[1]);
+	p = standard_malloc(sizeof(gsize) * 2 + n_bytes);
 
-      /* for all those that miss standard_free (p); in this place, yes,
-       * we do leak all memory when profiling, and that is intentional
-       * to catch double frees. patch submissions are futile.
-       */
-    }
-  p[0] += 1;
+	if (p)
+	{
+		p[0] = 0; /* free count */
+		p[1] = n_bytes; /* length */
+		profiler_log(PROFILER_ALLOC, n_bytes, TRUE);
+		p += 2;
+	}
+	else
+		profiler_log(PROFILER_ALLOC, n_bytes, FALSE);
+
+	return p;
 }
 
-static gpointer
-profiler_try_realloc (gpointer mem,
-		      gsize    n_bytes)
+static gpointer profiler_malloc(gsize n_bytes)
 {
-  gsize *p = mem;
+	gpointer mem = profiler_try_malloc(n_bytes);
 
-  p -= 2;
+	if (!mem)
+		g_mem_profile();
+
+	return mem;
+}
+
+static gpointer profiler_calloc(gsize n_blocks, gsize n_block_bytes)
+{
+	gsize l = n_blocks * n_block_bytes;
+	gsize *p;
 
 #ifdef  G_ENABLE_DEBUG
-  if (g_trap_realloc_size == n_bytes)
-    G_BREAKPOINT ();
+	if (g_trap_malloc_size == l)
+	G_BREAKPOINT ();
 #endif  /* G_ENABLE_DEBUG */
-  
-  if (mem && p[0])	/* free count */
-    {
-      g_warning ("realloc(%p, %"G_GSIZE_FORMAT"): "
-                 "memory has been freed %"G_GSIZE_FORMAT" times already",
-                 p + 2, (gsize) n_bytes, p[0]);
-      profiler_log (PROFILER_ALLOC | PROFILER_RELOC, n_bytes, FALSE);
 
-      return NULL;
-    }
-  else
-    {
-      p = standard_realloc (mem ? p : NULL, sizeof (gsize) * 2 + n_bytes);
+	p = standard_calloc(1, sizeof(gsize) * 2 + l);
 
-      if (p)
+	if (p)
 	{
-	  if (mem)
-	    profiler_log (PROFILER_FREE | PROFILER_RELOC, p[1], TRUE);
-	  p[0] = 0;
-	  p[1] = n_bytes;
-	  profiler_log (PROFILER_ALLOC | PROFILER_RELOC, p[1], TRUE);
-	  p += 2;
+		p[0] = 0; /* free count */
+		p[1] = l; /* length */
+		profiler_log(PROFILER_ALLOC | PROFILER_ZINIT, l, TRUE);
+		p += 2;
 	}
-      else
-	profiler_log (PROFILER_ALLOC | PROFILER_RELOC, n_bytes, FALSE);
+	else
+	{
+		profiler_log(PROFILER_ALLOC | PROFILER_ZINIT, l, FALSE);
+		g_mem_profile();
+	}
 
-      return p;
-    }
+	return p;
 }
 
-static gpointer
-profiler_realloc (gpointer mem,
-		  gsize    n_bytes)
+static void profiler_free(gpointer mem)
 {
-  mem = profiler_try_realloc (mem, n_bytes);
+	gsize *p = mem;
 
-  if (!mem)
-    g_mem_profile ();
+	p -= 2;
+	if (p[0]) /* free count */
+	{
+#ifdef HAVE_API_ANDROID
+		dbg (0, "free(%p): memory has been freed %"G_GSIZE_FORMAT" times already",
+				p + 2, p[0]);
+#endif
+		profiler_log(PROFILER_FREE, p[1], /* length */
+		FALSE);
+	}
+	else
+	{
+#ifdef  G_ENABLE_DEBUG
+		if (g_trap_free_size == p[1])
+		G_BREAKPOINT ();
+#endif  /* G_ENABLE_DEBUG */
 
-  return mem;
+		profiler_log(PROFILER_FREE, p[1], /* length */
+		TRUE);
+		memset(p + 2, 0xaa, p[1]);
+
+#ifdef DEBUG_GLIB_REALLY_FREE
+		/* for all those that miss standard_free (p); in this place, yes,
+		 * we do leak all memory when profiling, and that is intentional
+		 * to catch double frees. patch submissions are futile.
+		 */
+		// update: we want to free the mem! (Zoff)
+		standard_free(p);
+#endif
+
+	}
+
+#ifndef DEBUG_GLIB_REALLY_FREE
+	// update: we want to free the mem! (Zoff)
+	p[0] += 1;
+#endif
+
 }
 
-static GMemVTable profiler_table = {
-  profiler_malloc,
-  profiler_realloc,
-  profiler_free,
-  profiler_calloc,
-  profiler_try_malloc,
-  profiler_try_realloc,
-};
+static gpointer profiler_try_realloc(gpointer mem, gsize n_bytes)
+{
+	gsize *p = mem;
+
+	p -= 2;
+
+#ifdef  G_ENABLE_DEBUG
+	if (g_trap_realloc_size == n_bytes)
+	G_BREAKPOINT ();
+#endif  /* G_ENABLE_DEBUG */
+
+	if (mem && p[0]) /* free count */
+	{
+#ifdef HAVE_API_ANDROID
+		dbg(0, "realloc(%p, %"G_GSIZE_FORMAT"): "
+				"memory has been freed %"G_GSIZE_FORMAT" times already",
+				p + 2, (gsize) n_bytes, p[0]);
+#endif
+		profiler_log(PROFILER_ALLOC | PROFILER_RELOC, n_bytes, FALSE);
+
+		return NULL;
+	}
+	else
+	{
+		p = standard_realloc(mem ? p : NULL, sizeof(gsize) * 2 + n_bytes);
+
+		if (p)
+		{
+			if (mem)
+				profiler_log(PROFILER_FREE | PROFILER_RELOC, p[1], TRUE);
+			p[0] = 0;
+			p[1] = n_bytes;
+			profiler_log(PROFILER_ALLOC | PROFILER_RELOC, p[1], TRUE);
+			p += 2;
+		}
+		else
+			profiler_log(PROFILER_ALLOC | PROFILER_RELOC, n_bytes, FALSE);
+
+		return p;
+	}
+}
+
+static gpointer profiler_realloc(gpointer mem, gsize n_bytes)
+{
+	mem = profiler_try_realloc(mem, n_bytes);
+
+	if (!mem)
+		g_mem_profile();
+
+	return mem;
+}
+
+static GMemVTable profiler_table = { profiler_malloc, profiler_realloc, profiler_free, profiler_calloc, profiler_try_malloc, profiler_try_realloc, };
 GMemVTable *glib_mem_profiler_table = &profiler_table;
 
 #endif	/* !G_DISABLE_CHECKS */
@@ -611,89 +661,89 @@ GMemVTable *glib_mem_profiler_table = &profiler_table;
 /* --- MemChunks --- */
 #ifndef G_ALLOC_AND_FREE
 typedef struct _GAllocator GAllocator;
-typedef struct _GMemChunk  GMemChunk;
+typedef struct _GMemChunk GMemChunk;
 #define G_ALLOC_ONLY	  1
 #define G_ALLOC_AND_FREE  2
 #endif
 
-struct _GMemChunk {
-  guint alloc_size;           /* the size of an atom */
+struct _GMemChunk
+{
+	guint alloc_size; /* the size of an atom */
 };
 
 GMemChunk*
-g_mem_chunk_new (const gchar  *name,
-		 gint          atom_size,
-		 gsize         area_size,
-		 gint          type)
+g_mem_chunk_new(const gchar *name, gint atom_size, gsize area_size, gint type)
 {
-  GMemChunk *mem_chunk;
-  g_return_val_if_fail (atom_size > 0, NULL);
+	GMemChunk *mem_chunk;
+	g_return_val_if_fail(atom_size > 0, NULL);
 
-  mem_chunk = g_slice_new (GMemChunk);
-  mem_chunk->alloc_size = atom_size;
-  return mem_chunk;
+	mem_chunk = g_slice_new(GMemChunk);
+	mem_chunk->alloc_size = atom_size;
+	return mem_chunk;
 }
 
-void
-g_mem_chunk_destroy (GMemChunk *mem_chunk)
+void g_mem_chunk_destroy(GMemChunk *mem_chunk)
 {
-  g_return_if_fail (mem_chunk != NULL);
-  
-  g_slice_free (GMemChunk, mem_chunk);
+	g_return_if_fail(mem_chunk != NULL);
+
+	g_slice_free(GMemChunk, mem_chunk);
 }
 
-gpointer
-g_mem_chunk_alloc (GMemChunk *mem_chunk)
+gpointer g_mem_chunk_alloc(GMemChunk *mem_chunk)
 {
-  g_return_val_if_fail (mem_chunk != NULL, NULL);
-  
-  return g_slice_alloc (mem_chunk->alloc_size);
+	g_return_val_if_fail(mem_chunk != NULL, NULL);
+
+	return g_slice_alloc(mem_chunk->alloc_size);
 }
 
-gpointer
-g_mem_chunk_alloc0 (GMemChunk *mem_chunk)
+gpointer g_mem_chunk_alloc0(GMemChunk *mem_chunk)
 {
-  g_return_val_if_fail (mem_chunk != NULL, NULL);
-  
-  return g_slice_alloc0 (mem_chunk->alloc_size);
+	g_return_val_if_fail(mem_chunk != NULL, NULL);
+
+	return g_slice_alloc0(mem_chunk->alloc_size);
 }
 
-void
-g_mem_chunk_free (GMemChunk *mem_chunk,
-		  gpointer   mem)
+void g_mem_chunk_free(GMemChunk *mem_chunk, gpointer mem)
 {
-  g_return_if_fail (mem_chunk != NULL);
-  
-  g_slice_free1 (mem_chunk->alloc_size, mem);
+	g_return_if_fail(mem_chunk != NULL);
+
+	g_slice_free1(mem_chunk->alloc_size, mem);
 }
 
-void	g_mem_chunk_clean	(GMemChunk *mem_chunk)	{}
-void	g_mem_chunk_reset	(GMemChunk *mem_chunk)	{}
-void	g_mem_chunk_print	(GMemChunk *mem_chunk)	{}
-void	g_mem_chunk_info	(void)			{}
-void	g_blow_chunks		(void)			{}
+void g_mem_chunk_clean(GMemChunk *mem_chunk)
+{
+}
+void g_mem_chunk_reset(GMemChunk *mem_chunk)
+{
+}
+void g_mem_chunk_print(GMemChunk *mem_chunk)
+{
+}
+void g_mem_chunk_info(void)
+{
+}
+void g_blow_chunks(void)
+{
+}
 
 GAllocator*
-g_allocator_new (const gchar *name,
-		 guint        n_preallocs)
+g_allocator_new(const gchar *name, guint n_preallocs)
 {
-  static struct _GAllocator {
-    gchar      *name;
-    guint16     n_preallocs;
-    guint       is_unused : 1;
-    guint       type : 4;
-    GAllocator *last;
-    GMemChunk  *mem_chunk;
-    gpointer    free_list;
-  } dummy = {
-    "GAllocator is deprecated", 1, TRUE, 0, NULL, NULL, NULL,
-  };
-  /* some (broken) GAllocator uses depend on non-NULL allocators */
-  return (void*) &dummy;
+	static struct _GAllocator
+	{
+		gchar *name;
+		guint16 n_preallocs;
+		guint is_unused :1;
+		guint type :4;
+		GAllocator *last;
+		GMemChunk *mem_chunk;
+		gpointer free_list;
+	} dummy = { "GAllocator is deprecated", 1, TRUE, 0, NULL, NULL, NULL, };
+	/* some (broken) GAllocator uses depend on non-NULL allocators */
+	return (void*) &dummy;
 }
 
-void
-g_allocator_free (GAllocator *allocator)
+void g_allocator_free(GAllocator *allocator)
 {
 }
 
@@ -703,38 +753,37 @@ gboolean g_mem_gc_friendly = TRUE;
 gboolean g_mem_gc_friendly = FALSE;
 #endif
 
-static void
-g_mem_init_nomessage (void)
+static void g_mem_init_nomessage(void)
 {
 #if NOT_NEEDED_FOR_NAVIT
-  gchar buffer[1024];
-  const gchar *val;
-  const GDebugKey keys[] = {
-    { "gc-friendly", 1 },
-  };
-  gint flags;
-  if (g_mem_initialized)
-    return;
-  /* don't use g_malloc/g_message here */
-  val = _g_getenv_nomalloc ("G_DEBUG", buffer);
-  flags = !val ? 0 : g_parse_debug_string (val, keys, G_N_ELEMENTS (keys));
-  if (flags & 1)        /* gc-friendly */
-    {
-      g_mem_gc_friendly = TRUE;
-    }
+	gchar buffer[1024];
+	const gchar *val;
+	const GDebugKey keys[] =
+	{
+		{	"gc-friendly", 1},
+	};
+	gint flags;
+	if (g_mem_initialized)
+	return;
+	/* don't use g_malloc/g_message here */
+	val = _g_getenv_nomalloc ("G_DEBUG", buffer);
+	flags = !val ? 0 : g_parse_debug_string (val, keys, G_N_ELEMENTS (keys));
+	if (flags & 1) /* gc-friendly */
+	{
+		g_mem_gc_friendly = TRUE;
+	}
 #endif /* NOT_NEEDED_FOR_NAVIT */
-  g_mem_initialized = TRUE;
+	g_mem_initialized = TRUE;
 }
 
-void
-_g_mem_thread_init_noprivate_nomessage (void)
+void _g_mem_thread_init_noprivate_nomessage(void)
 {
-  /* we may only create mutexes here, locking/
-   * unlocking a mutex does not yet work.
-   */
-  g_mem_init_nomessage();
-#ifndef G_DISABLE_CHECKS
-  gmem_profile_mutex = g_mutex_new ();
+	/* we may only create mutexes here, locking/
+	 * unlocking a mutex does not yet work.
+	 */
+	g_mem_init_nomessage();
+#ifndef G_DISABLE_CHECKS_X
+	gmem_profile_mutex = g_mutex_new();
 #endif
 }
 

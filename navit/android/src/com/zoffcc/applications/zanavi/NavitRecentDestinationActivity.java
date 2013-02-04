@@ -61,6 +61,16 @@ public class NavitRecentDestinationActivity extends ListActivity
 		context_items = new String[] { Navit.get_text("delete Destination"), Navit.get_text("rename Destination") }; // TRANS
 
 		listview_items.clear();
+
+		// crash reported on google play store
+		// gueard against nullpointer
+		if (Navit.map_points == null)
+		{
+			Navit.map_points = new ArrayList<Navit_Point_on_Map>();
+		}
+		// crash reported on google play store
+		// gueard against nullpointer
+
 		String[] t = new String[Navit.map_points.size()];
 		try
 		{

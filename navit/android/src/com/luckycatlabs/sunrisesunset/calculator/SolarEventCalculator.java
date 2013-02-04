@@ -29,17 +29,17 @@ import com.luckycatlabs.sunrisesunset.dto.Location2;
  */
 public class SolarEventCalculator
 {
-	private Location2	location;
-	private TimeZone	timeZone;
+	private Location2 location;
+	private TimeZone timeZone;
 
 	/**
 	 * Constructs a new <code>SolarEventCalculator</code> using the given parameters.
 	 * 
 	 * @param location
-	 *           <code>Location</code> of the place where the solar event should be calculated from.
+	 *            <code>Location</code> of the place where the solar event should be calculated from.
 	 * @param timeZoneIdentifier
-	 *           time zone identifier of the timezone of the location parameter. For example,
-	 *           "America/New_York".
+	 *            time zone identifier of the timezone of the location parameter. For example,
+	 *            "America/New_York".
 	 */
 	public SolarEventCalculator(Location2 location, String timeZoneIdentifier)
 	{
@@ -88,10 +88,7 @@ public class SolarEventCalculator
 
 		if (El_geometric > 10.2)
 		{
-			El_observed = El_geometric
-					+ 0.01617
-					* (Math.cos(Radians(Math.abs(El_geometric))) / Math.sin(Radians(Math
-							.abs(El_geometric))));
+			El_observed = El_geometric + 0.01617 * (Math.cos(Radians(Math.abs(El_geometric))) / Math.sin(Radians(Math.abs(El_geometric))));
 		}
 		else
 		{
@@ -142,12 +139,12 @@ public class SolarEventCalculator
 
 	public class cart_ret
 	{
-		double	x;
-		double	y;
-		double	z;
-		double	radius;
-		double	lat;
-		double	lon;
+		double x;
+		double y;
+		double z;
+		double radius;
+		double lat;
+		double lon;
 	}
 
 	public cart_ret EquPolar2Cart(double lon, double lat, double distance)
@@ -196,25 +193,25 @@ public class SolarEventCalculator
 
 	public class moonCoor_ret
 	{
-		public double	lon;
-		public double	lat;
-		public double	orbitLon;
-		public double	distance;
-		public double	diameter;
-		public double	parallax;
-		public double	raGeocentric;
-		public double	decGeocentric;
-		public double	ra;
-		public double	dec;
-		public double	raTopocentric;
-		public double	decTopocentric;
-		public double	distanceTopocentric;
-		public double	moonAge;
-		public double	phase;
-		public double	az;
-		public double	alt;
-		public String	moonPhase;
-		public String	sign;
+		public double lon;
+		public double lat;
+		public double orbitLon;
+		public double distance;
+		public double diameter;
+		public double parallax;
+		public double raGeocentric;
+		public double decGeocentric;
+		public double ra;
+		public double dec;
+		public double raTopocentric;
+		public double decTopocentric;
+		public double distanceTopocentric;
+		public double moonAge;
+		public double phase;
+		public double az;
+		public double alt;
+		public String moonPhase;
+		public String sign;
 	}
 
 	public double Mod2Pi(double x)
@@ -229,15 +226,12 @@ public class SolarEventCalculator
 		double DEG = pi / 180.0;
 
 		double T = (TDT - 2451545.0) / 36525.; // Epoch 2000 January 1.5
-		double eps = (23. + (26 + 21.45 / 60.) / 60. + T * (-46.815 + T * (-0.0006 + T * 0.00181))
-				/ 3600.)
-				* DEG;
+		double eps = (23. + (26 + 21.45 / 60.) / 60. + T * (-46.815 + T * (-0.0006 + T * 0.00181)) / 3600.) * DEG;
 		double coseps = Math.cos(eps);
 		double sineps = Math.sin(eps);
 
 		double sinlon = Math.sin(coor.lon);
-		coor.ra = Mod2Pi(Math.atan2((sinlon * coseps - Math.tan(coor.lat) * sineps), Math
-				.cos(coor.lon)));
+		coor.ra = Mod2Pi(Math.atan2((sinlon * coseps - Math.tan(coor.lat) * sineps), Math.cos(coor.lon)));
 		coor.dec = Math.asin(Math.sin(coor.lat) * coseps + Math.cos(coor.lat) * sineps * sinlon);
 
 		return coor;
@@ -284,8 +278,8 @@ public class SolarEventCalculator
 
 	public class sunCoor_ret
 	{
-		double	lon;
-		double	anomalyMean;
+		double lon;
+		double anomalyMean;
 	}
 
 	public moonCoor_ret MoonPosition(sunCoor_ret sunCoor, double TDT, cart_ret observer, double lmst)
@@ -414,11 +408,8 @@ public class SolarEventCalculator
 
 		date.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-		double JD0 = CalcJD((double) date.get(Calendar.DAY_OF_MONTH), (double) date
-				.get(Calendar.MONTH) + 1, (double) date.get(Calendar.YEAR));
-		double JD = JD0
-				+ ((double) date.get(Calendar.HOUR_OF_DAY) + (double) date.get(Calendar.MINUTE) / 60 + (double) date
-						.get(Calendar.SECOND) / 3600) / 24;
+		double JD0 = CalcJD((double) date.get(Calendar.DAY_OF_MONTH), (double) date.get(Calendar.MONTH) + 1, (double) date.get(Calendar.YEAR));
+		double JD = JD0 + ((double) date.get(Calendar.HOUR_OF_DAY) + (double) date.get(Calendar.MINUTE) / 60 + (double) date.get(Calendar.SECOND) / 3600) / 24;
 		// UTC
 		double TDT = JD;
 		//System.out.println("TDT=" + TDT);
@@ -456,8 +447,7 @@ public class SolarEventCalculator
 		double Hour = date.get(Calendar.HOUR_OF_DAY);
 		double Minute = date.get(Calendar.MINUTE);
 		double Second = date.get(Calendar.SECOND);
-		double d = 367 * Year - div((7 * (Year + (div((Month + 9), 12)))), 4) + div((275 * Month), 9)
-				+ Day - 730530;
+		double d = 367 * Year - div((7 * (Year + (div((Month + 9), 12)))), 4) + div((275 * Month), 9) + Day - 730530;
 		//System.out.println("dd=" + d);
 		d = d + Hour / 24 + Minute / (60 * 24) + Second / (24 * 60 * 60); // OK
 
@@ -486,8 +476,7 @@ public class SolarEventCalculator
 		M = Rev(M);
 		N = Rev(N);
 
-		double E = M + (180 / Math.PI) * e * Math.sin(Math.toRadians(M))
-				* (1 + e * Math.cos(Math.toRadians(M)));
+		double E = M + (180 / Math.PI) * e * Math.sin(Math.toRadians(M)) * (1 + e * Math.cos(Math.toRadians(M)));
 		E = Rev(E); // OK
 
 		double Ebeforeit = E;
@@ -505,8 +494,7 @@ public class SolarEventCalculator
 		{
 			Iterations = Iterations + 1;
 			E0 = E;
-			E1 = E0 - (E0 - (180 / Math.PI) * e * Math.sin(Math.toRadians(E0)) - M)
-					/ (1 - e * Math.cos(Math.toRadians(E0)));
+			E1 = E0 - (E0 - (180 / Math.PI) * e * Math.sin(Math.toRadians(E0)) - M) / (1 - e * Math.cos(Math.toRadians(E0)));
 			//alert('1 E0='+E0+'\nNew E1='+E1+'\nE='+E+'\Diff='+Rev(E0-E1));
 			E = Rev(E1);
 			//alert(Math.abs(E-E0));
@@ -549,7 +537,7 @@ public class SolarEventCalculator
 
 		//alert('E='+E);
 
-		// ok så langt
+		// ok sï¿½ langt
 
 		double sunlon = Rev(v + w); // trolig ok
 
@@ -557,19 +545,12 @@ public class SolarEventCalculator
 		y = r * Math.sin(Math.toRadians(sunlon));
 		double z = 0;
 
-		double xeclip = r
-				* (Math.cos(Math.toRadians(N)) * Math.cos(Math.toRadians(v + w)) - Math.sin(Math
-						.toRadians(N))
-						* Math.sin(Math.toRadians(v + w)) * Math.cos(Math.toRadians(i)));
-		double yeclip = r
-				* (Math.sin(Math.toRadians(N)) * Math.cos(Math.toRadians(v + w)) + Math.cos(Math
-						.toRadians(N))
-						* Math.sin(Math.toRadians(v + w)) * Math.cos(Math.toRadians(i)));
+		double xeclip = r * (Math.cos(Math.toRadians(N)) * Math.cos(Math.toRadians(v + w)) - Math.sin(Math.toRadians(N)) * Math.sin(Math.toRadians(v + w)) * Math.cos(Math.toRadians(i)));
+		double yeclip = r * (Math.sin(Math.toRadians(N)) * Math.cos(Math.toRadians(v + w)) + Math.cos(Math.toRadians(N)) * Math.sin(Math.toRadians(v + w)) * Math.cos(Math.toRadians(i)));
 		double zeclip = r * Math.sin(Math.toRadians(v + w)) * Math.sin(Math.toRadians(i));
 
 		double moon_longitude = Rev(Math.toDegrees(Math.atan2(yeclip, xeclip))); // OK
-		double moon_latitude = Math.toDegrees(Math.atan2(zeclip, Math.sqrt(xeclip * xeclip + yeclip
-				* yeclip))); // trolig OK
+		double moon_latitude = Math.toDegrees(Math.atan2(zeclip, Math.sqrt(xeclip * xeclip + yeclip * yeclip))); // trolig OK
 
 		// ----------- SUN -----------
 		// ----------- SUN -----------
@@ -579,12 +560,12 @@ public class SolarEventCalculator
 		//BigDecimal sunTrueLong = getSunTrueLongitude(meanAnomaly);
 		//BigDecimal cosineSunLocalHour = getCosineSunLocalHour(sunTrueLong, Zenith.OFFICIAL);
 
-//		System.out.println("Sun MA=" + meanAnomaly);
+		//		System.out.println("Sun MA=" + meanAnomaly);
 
-		// geschätzt!!!!!
+		// geschï¿½tzt!!!!!
 		// see -> http://www.obliquity.com/info/meaning.html
 		double sun_Obliquity = 23.45;
-		// geschätzt!!!!!
+		// geschï¿½tzt!!!!!
 
 		// sunangles[11] ????
 		double w_S = 282.9404 + 4.70935E-5 * d; //OK
@@ -602,13 +583,12 @@ public class SolarEventCalculator
 		L_S = Rev(L_S);
 		sun_Obliquity = oblecl_S;
 
-//		System.out.println("GMST0_sun=" + GMST0_sun);
-//		System.out.println("L_S=" + L_S);
-//		System.out.println("oblecl_S=" + oblecl_S);
+		//		System.out.println("GMST0_sun=" + GMST0_sun);
+		//		System.out.println("L_S=" + L_S);
+		//		System.out.println("oblecl_S=" + oblecl_S);
 		// sunangles[11] ????
 		// ----------- SUN -----------
 		// ----------- SUN -----------
-
 
 		double Mm = Rev(M); // Moons mean anomaly
 		double Lm = Rev(N + w + M); // moon mean longitude
@@ -617,7 +597,6 @@ public class SolarEventCalculator
 		double Ls = L_S;
 		double D = Rev(Lm - Ls); //Moons mean elongation
 		double F = Rev(Lm - N); //Moons argument of latitude
-
 
 		// Perbutations Moons Longitude
 
@@ -635,18 +614,15 @@ public class SolarEventCalculator
 		double P_lon12 = +0.011 * Math.sin(Radians(Mm - 4 * D));
 		// Perbutations Moons Latitude
 
-
 		double P_lat1 = -0.173 * Math.sin(Radians(F - 2 * D));
 		double P_lat2 = -0.055 * Math.sin(Radians(Mm - F - 2 * D));
 		double P_lat3 = -0.046 * Math.sin(Radians(Mm + F - 2 * D));
 		double P_lat4 = +0.033 * Math.sin(Radians(F + 2 * D));
 		double P_lat5 = +0.017 * Math.sin(Radians(2 * Mm + F));
 
-		double P_lon = P_lon1 + P_lon2 + P_lon3 + P_lon4 + P_lon5 + P_lon6 + P_lon7 + P_lon8 + P_lon9
-				+ P_lon10 + P_lon11 + P_lon12;
+		double P_lon = P_lon1 + P_lon2 + P_lon3 + P_lon4 + P_lon5 + P_lon6 + P_lon7 + P_lon8 + P_lon9 + P_lon10 + P_lon11 + P_lon12;
 		double P_lat = P_lat1 + P_lat2 + P_lat3 + P_lat4 + P_lat5;
-		double P_moondistance = -0.58 * Math.cos(Radians(Mm - 2 * D)) - 0.46
-				* Math.cos(Radians(2 * D));
+		double P_moondistance = -0.58 * Math.cos(Radians(Mm - 2 * D)) - 0.46 * Math.cos(Radians(2 * D));
 
 		//alert('P_lon='+P_lon+'\nP_lat='+P_lat+'\nP_moondistance='+P_moondistance);
 
@@ -672,20 +648,19 @@ public class SolarEventCalculator
 		Moon_RA = Rev(Deg(Math.atan2(yequat, xequat))); // OK
 		Moon_Decl = Deg(Math.atan2(zequat, Math.sqrt(xequat * xequat + yequat * yequat))); // trolig OK
 
-//		System.out.println("Moon Ra=" + Moon_RA);
+		//		System.out.println("Moon Ra=" + Moon_RA);
 
-//		System.out.println("Ls=" + Ls);
+		//		System.out.println("Ls=" + Ls);
 		// war "+180" mit "-180" funkts aber besser :-)
 		double GMST0 = (Ls - 180);
-//		System.out.println("GMST0=" + GMST0);
-
+		//		System.out.println("GMST0=" + GMST0);
 
 		//*********CALCULATE TIME *********************
 
-//		System.out.println("d1=" + d);
+		//		System.out.println("d1=" + d);
 		double UT = d - Math.floor(d);
 		//UT = 0.9;
-//		System.out.println("d1=" + UT);
+		//		System.out.println("d1=" + UT);
 		//alert("UT="+UT);
 
 		// ???????????????????
@@ -702,7 +677,6 @@ public class SolarEventCalculator
 		//		System.out.println("SIDEREALTIME=" + SIDEREALTIME);
 		//		System.out.println("HourAngle=" + HourAngle);
 
-
 		// make things easier!!
 		double pi = Math.PI;
 
@@ -715,8 +689,7 @@ public class SolarEventCalculator
 		double yhor = y;
 		double zhor = x * Math.cos(SiteLat * pi / 180) + z * Math.sin(SiteLat * pi / 180);
 
-
-		double MoonElevation = Deg(Math.asin(zhor)); // ok regner ikke måne elevation helt riktig...
+		double MoonElevation = Deg(Math.asin(zhor)); // ok regner ikke mï¿½ne elevation helt riktig...
 		//System.out.println("MoonElevation=" + MoonElevation);
 
 		MoonElevation = MoonElevation - Deg(Math.asin(1 / r * Math.cos(Radians(MoonElevation))));
@@ -741,9 +714,9 @@ public class SolarEventCalculator
 	 * Computes the sunrise time for the given zenith at the given date.
 	 * 
 	 * @param solarZenith
-	 *           <code>Zenith</code> enum corresponding to the type of sunrise to compute.
+	 *            <code>Zenith</code> enum corresponding to the type of sunrise to compute.
 	 * @param date
-	 *           <code>Calendar</code> object representing the date to compute the sunrise for.
+	 *            <code>Calendar</code> object representing the date to compute the sunrise for.
 	 * @return the sunrise time, in HH:MM format (24-hour clock), 00:00 if the sun does not rise on the given
 	 *         date.
 	 */
@@ -756,9 +729,9 @@ public class SolarEventCalculator
 	 * Computes the sunset time for the given zenith at the given date.
 	 * 
 	 * @param solarZenith
-	 *           <code>Zenith</code> enum corresponding to the type of sunset to compute.
+	 *            <code>Zenith</code> enum corresponding to the type of sunset to compute.
 	 * @param date
-	 *           <code>Calendar</code> object representing the date to compute the sunset for.
+	 *            <code>Calendar</code> object representing the date to compute the sunset for.
 	 * @return the sunset time, in HH:MM format (24-hour clock), 00:00 if the sun does not set on the given
 	 *         date.
 	 */
@@ -775,7 +748,10 @@ public class SolarEventCalculator
 		BigDecimal meanAnomaly = getMeanAnomaly(longitudeHour);
 		BigDecimal sunTrueLong = getSunTrueLongitude(meanAnomaly);
 		BigDecimal cosineSunLocalHour = getCosineSunLocalHour(sunTrueLong, solarZenith);
-		if ((cosineSunLocalHour.doubleValue() < -1.0) || (cosineSunLocalHour.doubleValue() > 1.0)) { return "99:99"; }
+		if ((cosineSunLocalHour.doubleValue() < -1.0) || (cosineSunLocalHour.doubleValue() > 1.0))
+		{
+			return "99:99";
+		}
 
 		BigDecimal sunLocalHour = getSunLocalHour(cosineSunLocalHour, isSunrise);
 		BigDecimal localMeanTime = getLocalMeanTime(sunTrueLong, longitudeHour, sunLocalHour);
@@ -786,8 +762,7 @@ public class SolarEventCalculator
 	/**
 	 * Computes the base longitude hour, lngHour in the algorithm.
 	 * 
-	 * @return the longitude of the location of the solar event divided by 15 (deg/hour), in
-	 *         <code>BigDecimal</code> form.
+	 * @return the longitude of the location of the solar event divided by 15 (deg/hour), in <code>BigDecimal</code> form.
 	 */
 	private BigDecimal getBaseLongitudeHour()
 	{
@@ -819,8 +794,7 @@ public class SolarEventCalculator
 	 */
 	private BigDecimal getMeanAnomaly(BigDecimal longitudeHour)
 	{
-		BigDecimal meanAnomaly = multiplyBy(new BigDecimal("0.9856"), longitudeHour).subtract(
-				new BigDecimal("3.289"));
+		BigDecimal meanAnomaly = multiplyBy(new BigDecimal("0.9856"), longitudeHour).subtract(new BigDecimal("3.289"));
 		return setScale(meanAnomaly);
 	}
 
@@ -829,19 +803,16 @@ public class SolarEventCalculator
 	 * the range [0-360].
 	 * 
 	 * @param meanAnomaly
-	 *           the suns mean anomaly.
+	 *            the suns mean anomaly.
 	 * @return the suns true longitude, in <code>BigDecimal</code> form.
 	 */
 	private BigDecimal getSunTrueLongitude(BigDecimal meanAnomaly)
 	{
-		BigDecimal sinMeanAnomaly = new BigDecimal(Math.sin(convertDegreesToRadians(meanAnomaly)
-				.doubleValue()));
-		BigDecimal sinDoubleMeanAnomaly = new BigDecimal(Math.sin(multiplyBy(
-				convertDegreesToRadians(meanAnomaly), BigDecimal.valueOf(2)).doubleValue()));
+		BigDecimal sinMeanAnomaly = new BigDecimal(Math.sin(convertDegreesToRadians(meanAnomaly).doubleValue()));
+		BigDecimal sinDoubleMeanAnomaly = new BigDecimal(Math.sin(multiplyBy(convertDegreesToRadians(meanAnomaly), BigDecimal.valueOf(2)).doubleValue()));
 
 		BigDecimal firstPart = meanAnomaly.add(multiplyBy(sinMeanAnomaly, new BigDecimal("1.916")));
-		BigDecimal secondPart = multiplyBy(sinDoubleMeanAnomaly, new BigDecimal("0.020")).add(
-				new BigDecimal("282.634"));
+		BigDecimal secondPart = multiplyBy(sinDoubleMeanAnomaly, new BigDecimal("0.020")).add(new BigDecimal("282.634"));
 		BigDecimal trueLongitude = firstPart.add(secondPart);
 
 		if (trueLongitude.doubleValue() > 360)
@@ -856,7 +827,7 @@ public class SolarEventCalculator
 	 * into degree-hours. Will be in the range [0,360].
 	 * 
 	 * @param sunTrueLong
-	 *           Suns true longitude, in <code>BigDecimal</code>
+	 *            Suns true longitude, in <code>BigDecimal</code>
 	 * @return suns right ascension in degree-hours, in <code>BigDecimal</code> form.
 	 */
 	private BigDecimal getRightAscension(BigDecimal sunTrueLong)
@@ -864,8 +835,7 @@ public class SolarEventCalculator
 		BigDecimal tanL = new BigDecimal(Math.tan(convertDegreesToRadians(sunTrueLong).doubleValue()));
 
 		BigDecimal innerParens = multiplyBy(convertRadiansToDegrees(tanL), new BigDecimal("0.91764"));
-		BigDecimal rightAscension = new BigDecimal(Math.atan(convertDegreesToRadians(innerParens)
-				.doubleValue()));
+		BigDecimal rightAscension = new BigDecimal(Math.atan(convertDegreesToRadians(innerParens).doubleValue()));
 		rightAscension = setScale(convertRadiansToDegrees(rightAscension));
 
 		if (rightAscension.doubleValue() < 0)
@@ -895,10 +865,8 @@ public class SolarEventCalculator
 
 		BigDecimal zenithInRads = convertDegreesToRadians(zenith.degrees());
 		BigDecimal cosineZenith = BigDecimal.valueOf(Math.cos(zenithInRads.doubleValue()));
-		BigDecimal sinLatitude = BigDecimal.valueOf(Math.sin(convertDegreesToRadians(
-				location.getLatitude()).doubleValue()));
-		BigDecimal cosLatitude = BigDecimal.valueOf(Math.cos(convertDegreesToRadians(
-				location.getLatitude()).doubleValue()));
+		BigDecimal sinLatitude = BigDecimal.valueOf(Math.sin(convertDegreesToRadians(location.getLatitude()).doubleValue()));
+		BigDecimal cosLatitude = BigDecimal.valueOf(Math.cos(convertDegreesToRadians(location.getLatitude()).doubleValue()));
 
 		BigDecimal sinDeclinationTimesSinLat = sinSunDeclination.multiply(sinLatitude);
 		BigDecimal dividend = cosineZenith.subtract(sinDeclinationTimesSinLat);
@@ -909,18 +877,15 @@ public class SolarEventCalculator
 
 	private BigDecimal getSinOfSunDeclination(BigDecimal sunTrueLong)
 	{
-		BigDecimal sinTrueLongitude = BigDecimal.valueOf(Math
-				.sin(convertDegreesToRadians(sunTrueLong).doubleValue()));
+		BigDecimal sinTrueLongitude = BigDecimal.valueOf(Math.sin(convertDegreesToRadians(sunTrueLong).doubleValue()));
 		BigDecimal sinOfDeclination = sinTrueLongitude.multiply(new BigDecimal("0.39782"));
 		return setScale(sinOfDeclination);
 	}
 
 	private BigDecimal getCosineOfSunDeclination(BigDecimal sinSunDeclination)
 	{
-		BigDecimal arcSinOfSinDeclination = BigDecimal.valueOf(Math.asin(sinSunDeclination
-				.doubleValue()));
-		BigDecimal cosDeclination = BigDecimal
-				.valueOf(Math.cos(arcSinOfSinDeclination.doubleValue()));
+		BigDecimal arcSinOfSinDeclination = BigDecimal.valueOf(Math.asin(sinSunDeclination.doubleValue()));
+		BigDecimal cosDeclination = BigDecimal.valueOf(Math.cos(arcSinOfSinDeclination.doubleValue()));
 		return setScale(cosDeclination);
 	}
 
@@ -935,8 +900,7 @@ public class SolarEventCalculator
 		return divideBy(localHour, BigDecimal.valueOf(15));
 	}
 
-	private BigDecimal getLocalMeanTime(BigDecimal sunTrueLong, BigDecimal longitudeHour,
-			BigDecimal sunLocalHour)
+	private BigDecimal getLocalMeanTime(BigDecimal sunTrueLong, BigDecimal longitudeHour, BigDecimal sunLocalHour)
 	{
 		BigDecimal rightAscension = this.getRightAscension(sunTrueLong);
 		BigDecimal innerParens = longitudeHour.multiply(new BigDecimal("0.06571"));
@@ -980,7 +944,7 @@ public class SolarEventCalculator
 	 * Returns the local rise/set time in the form HH:MM.
 	 * 
 	 * @param localTime
-	 *           <code>BigDecimal</code> representation of the local rise/set time.
+	 *            <code>BigDecimal</code> representation of the local rise/set time.
 	 * @return <code>String</code> representation of the local rise/set time in HH:MM format.
 	 */
 	private String getLocalTimeAsString(BigDecimal localTime)
@@ -996,8 +960,7 @@ public class SolarEventCalculator
 			hour += 1;
 		}
 
-		String minuteString = minutes.intValue() < 10 ? "0" + minutes.toPlainString() : minutes
-				.toPlainString();
+		String minuteString = minutes.intValue() < 10 ? "0" + minutes.toPlainString() : minutes.toPlainString();
 		String hourString = (hour < 10) ? "0" + String.valueOf(hour) : String.valueOf(hour);
 		return hourString + ":" + minuteString;
 	}

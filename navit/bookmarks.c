@@ -220,12 +220,16 @@ bookmarks_load_hash(struct bookmarks *this_) {
 }
 
 struct bookmarks *
-bookmarks_new(struct attr *parent, struct attr **attrs, struct transformation *trans) {
+bookmarks_new(struct attr *parent, struct attr **attrs, struct transformation *trans)
+{
 	struct bookmarks *this_;
 
-	if (parent->type!=attr_navit) {
+	if (parent->type!=attr_navit)
+	{
 		return NULL;
 	}
+
+	dbg(0,"bb 001\n");
 
 	this_ = g_new0(struct bookmarks,1);
 	this_->attr_cbl=callback_list_new();
@@ -233,10 +237,20 @@ bookmarks_new(struct attr *parent, struct attr **attrs, struct transformation *t
 	//this_->attrs=attr_list_dup(attrs);
 	this_->trans=trans;
 
+
+	return this_;
+
+#if 0
+	dbg(0,"bb 002\n");
+
 	this_->bookmark_file=g_strjoin(NULL, navit_get_user_data_directory(TRUE), "/bookmark.txt", NULL);
 	this_->working_file=g_strjoin(NULL, navit_get_user_data_directory(TRUE), "/bookmark.txt.tmp", NULL);
 
+	dbg(0,"bb 003\n");
+
 	this_->clipboard=g_new0(struct bookmark_item_priv,1);
+
+	dbg(0,"bb 004\n");
 
 	{
 		//Load map now
@@ -244,11 +258,17 @@ bookmarks_new(struct attr *parent, struct attr **attrs, struct transformation *t
 		struct attr *attrs[]={&type, &data, NULL};
 		this_->bookmark=map_new(this_->parent, attrs);
 		if (!this_->bookmark)
+		{
 			return NULL;
+		}
+		dbg(0,"bb 005\n");
 		bookmarks_load_hash(this_);
 	}
 
+	dbg(0,"bb 006\n");
+
 	return this_;
+#endif
 }
 
 void
@@ -287,7 +307,7 @@ bookmarks_store_bookmarks_to_file(struct bookmarks *this_,  int limit,int replac
 	char *fullname;
 	const char *prostr;
 	int result;
-	GHashTable *dedup=g_hash_table_new_full(g_str_hash,g_str_equal,g_free,NULL);
+	GHashTable *dedup=g_hash_table_new_full(g_str_hash,g_str_equal,g_free_func,NULL);
 
 	f=fopen(this_->working_file, replace ? "w+" : "a+");
 	if (f==NULL) {
@@ -414,7 +434,8 @@ bookmarks_set_center_from_file(struct bookmarks *this_, char *file)
 		return;
 	getline(&line, &line_size, f);
 	fclose(f);
-	if (line) {
+	if (line)
+	{
 		center = transform_center(this_->trans);
 		pro = transform_get_projection(this_->trans);
 		coord_parse(g_strchomp(line), pro, center);

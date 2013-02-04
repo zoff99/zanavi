@@ -201,8 +201,20 @@ public class NavitAddressResultListActivity extends ListActivity
 
 		Intent search_intent = new Intent(this, NavitMapPreviewActivity.class);
 
-		search_intent.putExtra("lat", Navit.NavitAddressResultList_foundItems.get(pos).lat);
-		search_intent.putExtra("lon", Navit.NavitAddressResultList_foundItems.get(pos).lon);
+		if (Navit.use_index_search)
+		{
+			//Log.e("Navit", "long click lat=" + Navit.NavitAddressResultList_foundItems.get(pos).lat);
+			//Log.e("Navit", "long click lon=" + Navit.NavitAddressResultList_foundItems.get(pos).lon);
+			//Log.e("Navit", "long click lat=" + Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(pos).lat));
+			//Log.e("Navit", "long click lon=" + Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(pos).lon));
+			search_intent.putExtra("lat", (float) Navit.transform_to_geo_lat(Navit.NavitAddressResultList_foundItems.get(pos).lat));
+			search_intent.putExtra("lon", (float) Navit.transform_to_geo_lon(Navit.NavitAddressResultList_foundItems.get(pos).lon));
+		}
+		else
+		{
+			search_intent.putExtra("lat", Navit.NavitAddressResultList_foundItems.get(pos).lat);
+			search_intent.putExtra("lon", Navit.NavitAddressResultList_foundItems.get(pos).lon);
+		}
 		search_intent.putExtra("q", Navit.NavitAddressResultList_foundItems.get(pos).addr);
 		this.startActivityForResult(search_intent, Navit.NavitMapPreview_id);
 	}

@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -479,6 +498,7 @@ ITEM(former_itinerary)
 ITEM(former_itinerary_part)
 ITEM(gpx_track)
 ITEM(gpx_route)
+ITEM(wood_from_relations)
 /* Area */
 ITEM2(0xc0000000,area)
 ITEM2(0xc0000001,area_unspecified)
@@ -583,4 +603,7 @@ ITEM(poly_place5)
 ITEM(poly_place6)
 ITEM(poly_water_tiled)
 ITEM(poly_water_from_relations)
+ITEM(poly_water_from_triang)
+ITEM(poly_wood_from_triang)
+ITEM(poly_building_from_triang)
 ITEM2(0xffffffff,last)

@@ -1,3 +1,22 @@
+/**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
 /* GLIB - Library of useful routines for C programming
  * Copyright (C) 1995-1997  Peter Mattis, Spencer Kimball and Josh MacDonald
  *
@@ -34,10 +53,11 @@
 #include <glib/gslice.h>
 #include <glib/gtypes.h>
 
+#include "debug.h"
+
 G_BEGIN_DECLS
 
 typedef struct _GMemVTable GMemVTable;
-
 
 #if GLIB_SIZEOF_VOID_P > GLIB_SIZEOF_LONG
 #  define G_MEM_ALIGN	GLIB_SIZEOF_VOID_P
@@ -45,19 +65,37 @@ typedef struct _GMemVTable GMemVTable;
 #  define G_MEM_ALIGN	GLIB_SIZEOF_LONG
 #endif	/* GLIB_SIZEOF_VOID_P <= GLIB_SIZEOF_LONG */
 
-
 /* Memory allocation functions
  */
-gpointer g_malloc         (gsize	 n_bytes) G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
-gpointer g_malloc0        (gsize	 n_bytes) G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
-gpointer g_realloc        (gpointer	 mem,
-			   gsize	 n_bytes) G_GNUC_WARN_UNUSED_RESULT;
-void	 g_free	          (gpointer	 mem);
-gpointer g_try_malloc     (gsize	 n_bytes) G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
-gpointer g_try_malloc0    (gsize	 n_bytes) G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
-gpointer g_try_realloc    (gpointer	 mem,
-			   gsize	 n_bytes) G_GNUC_WARN_UNUSED_RESULT;
+//#ifdef DEBUG_GLIB_MALLOC
+//	gpointer g_malloc_debug_func(const char *file_, const int line_, const char *function_, gsize	 n_bytes) G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
+//	#define g_malloc(n_bytes) g_malloc_debug_func(__FILE__,__LINE__,__PRETTY_FUNCTION__,n_bytes)
+//#else
+gpointer g_malloc(gsize n_bytes)
+G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
+//#endif
 
+gpointer g_malloc0(gsize n_bytes)
+G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
+gpointer g_realloc(gpointer mem, gsize n_bytes)
+G_GNUC_WARN_UNUSED_RESULT;
+
+#ifdef DEBUG_GLIB_FREE
+void g_free_debug_func(const char *file, const int line, const char *function, gpointer mem);
+void g_debug_free_func(gpointer mem);
+#define g_free(mem) g_free_debug_func(__FILE__,__LINE__,__PRETTY_FUNCTION__,mem)
+#define g_free_func g_debug_free_func
+#else
+void g_free(gpointer mem);
+#define g_free_func g_free
+#endif
+
+gpointer g_try_malloc(gsize n_bytes)
+G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
+gpointer g_try_malloc0(gsize n_bytes)
+G_GNUC_MALLOC G_GNUC_ALLOC_SIZE(1);
+gpointer g_try_realloc(gpointer mem, gsize n_bytes)
+G_GNUC_WARN_UNUSED_RESULT;
 
 /* Convenience memory allocators
  */
@@ -75,39 +113,34 @@ gpointer g_try_realloc    (gpointer	 mem,
 #define g_try_renew(struct_type, mem, n_structs)	\
     ((struct_type *) g_try_realloc ((mem), ((gsize) sizeof (struct_type)) * ((gsize) (n_structs))))
 
-
 /* Memory allocation virtualization for debugging purposes
  * g_mem_set_vtable() has to be the very first GLib function called
  * if being used
  */
 struct _GMemVTable
 {
-  gpointer (*malloc)      (gsize    n_bytes);
-  gpointer (*realloc)     (gpointer mem,
-			   gsize    n_bytes);
-  void     (*free)        (gpointer mem);
-  /* optional; set to NULL if not used ! */
-  gpointer (*calloc)      (gsize    n_blocks,
-			   gsize    n_block_bytes);
-  gpointer (*try_malloc)  (gsize    n_bytes);
-  gpointer (*try_realloc) (gpointer mem,
-			   gsize    n_bytes);
+	gpointer (*malloc)(gsize n_bytes);
+	gpointer (*realloc)(gpointer mem, gsize n_bytes);
+	void (*free)(gpointer mem);
+	/* optional; set to NULL if not used ! */
+	gpointer (*calloc)(gsize n_blocks, gsize n_block_bytes);
+	gpointer (*try_malloc)(gsize n_bytes);
+	gpointer (*try_realloc)(gpointer mem, gsize n_bytes);
 };
-void	 g_mem_set_vtable (GMemVTable	*vtable);
-gboolean g_mem_is_system_malloc (void);
+void g_mem_set_vtable(GMemVTable *vtable);
+gboolean g_mem_is_system_malloc(void);
 
 GLIB_VAR gboolean g_mem_gc_friendly;
 
 /* Memory profiler and checker, has to be enabled via g_mem_set_vtable()
  */
-GLIB_VAR GMemVTable	*glib_mem_profiler_table;
-void	g_mem_profile	(void);
-
+GLIB_VAR GMemVTable *glib_mem_profiler_table;
+void g_mem_profile(void);
 
 /* deprecated memchunks and allocators */
 #if !defined (G_DISABLE_DEPRECATED) || defined (GTK_COMPILATION) || defined (GDK_COMPILATION)
 typedef struct _GAllocator GAllocator;
-typedef struct _GMemChunk  GMemChunk;
+typedef struct _GMemChunk GMemChunk;
 #define g_mem_chunk_create(type, pre_alloc, alloc_type)	( \
   g_mem_chunk_new (#type " mem chunks (" #pre_alloc ")", \
 		   sizeof (type), \
@@ -125,23 +158,18 @@ typedef struct _GMemChunk  GMemChunk;
 } G_STMT_END
 #define G_ALLOC_ONLY	  1
 #define G_ALLOC_AND_FREE  2
-GMemChunk* g_mem_chunk_new     (const gchar *name,
-				gint         atom_size,
-				gsize        area_size,
-				gint         type);
-void       g_mem_chunk_destroy (GMemChunk   *mem_chunk);
-gpointer   g_mem_chunk_alloc   (GMemChunk   *mem_chunk);
-gpointer   g_mem_chunk_alloc0  (GMemChunk   *mem_chunk);
-void       g_mem_chunk_free    (GMemChunk   *mem_chunk,
-				gpointer     mem);
-void       g_mem_chunk_clean   (GMemChunk   *mem_chunk);
-void       g_mem_chunk_reset   (GMemChunk   *mem_chunk);
-void       g_mem_chunk_print   (GMemChunk   *mem_chunk);
-void       g_mem_chunk_info    (void);
-void	   g_blow_chunks       (void);
-GAllocator*g_allocator_new     (const gchar  *name,
-				guint         n_preallocs);
-void       g_allocator_free    (GAllocator   *allocator);
+GMemChunk* g_mem_chunk_new(const gchar *name, gint atom_size, gsize area_size, gint type);
+void g_mem_chunk_destroy(GMemChunk *mem_chunk);
+gpointer g_mem_chunk_alloc(GMemChunk *mem_chunk);
+gpointer g_mem_chunk_alloc0(GMemChunk *mem_chunk);
+void g_mem_chunk_free(GMemChunk *mem_chunk, gpointer mem);
+void g_mem_chunk_clean(GMemChunk *mem_chunk);
+void g_mem_chunk_reset(GMemChunk *mem_chunk);
+void g_mem_chunk_print(GMemChunk *mem_chunk);
+void g_mem_chunk_info(void);
+void g_blow_chunks(void);
+GAllocator*g_allocator_new(const gchar *name, guint n_preallocs);
+void g_allocator_free(GAllocator *allocator);
 #define	G_ALLOCATOR_LIST       (1)
 #define	G_ALLOCATOR_SLIST      (2)
 #define	G_ALLOCATOR_NODE       (3)

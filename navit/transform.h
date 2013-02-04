@@ -72,7 +72,20 @@ struct transformation {
 	int order_base;
 };
 
+extern GHashTable *global_transform_hash;
+extern GHashTable *global_transform_hash2;
 
+struct hash_entry_transform
+{
+	int id;
+	int x;
+	int y;
+	navit_float lat;
+	navit_float lng;
+};
+
+
+void transform_init(void);
 struct transformation *transform_new(void);
 int transform_get_hog(struct transformation *this_);
 void transform_set_hog(struct transformation *this_, int hog);
