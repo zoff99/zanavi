@@ -1078,7 +1078,7 @@ static int check_roundabout(struct navigation_itm *itm, struct map *graph_map)
 		sitem = sitem_attr.u.item;
 		if (item_is_equal(itm->way.item, *sitem))
 		{
-			if (item_attr_get(i, attr_flags, &flags_attr) && (flags_attr.u.num & AF_ROUNDABOUT))
+			if (item_attr_get(i, attr_flags, &flags_attr) && (flags_attr.u.num & NAVIT_AF_ROUNDABOUT))
 			{
 				map_rect_destroy(g_rect);
 				return 1;
@@ -1154,7 +1154,7 @@ navigation_itm_new(struct navigation *this_, struct item *ritem)
 		graph_map = route_get_graph_map(route_attr.u.route);
 		if (check_roundabout(ret, graph_map))
 		{
-			ret->way.flags |= AF_ROUNDABOUT;
+			ret->way.flags |= NAVIT_AF_ROUNDABOUT;
 		}
 
 		// dbg(1, "i=%d start %d end %d '%s' '%s'\n", i, ret->way.angle2, ret->angle_end, ret->way.name1, ret->way.name2);
@@ -1478,16 +1478,16 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	}
 	if (!r)
 	{
-		if ((old->way.flags & AF_ROUNDABOUT) && !(new->way.flags & AF_ROUNDABOUT))
+		if ((old->way.flags & NAVIT_AF_ROUNDABOUT) && !(new->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			r = "yes: leaving roundabout";
 			ret = 1;
 		}
-		else if (!(old->way.flags & AF_ROUNDABOUT) && (new->way.flags & AF_ROUNDABOUT))
+		else if (!(old->way.flags & NAVIT_AF_ROUNDABOUT) && (new->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			r = "no: entering roundabout";
 		}
-		else if ((old->way.flags & AF_ROUNDABOUT) && (new->way.flags & AF_ROUNDABOUT))
+		else if ((old->way.flags & NAVIT_AF_ROUNDABOUT) && (new->way.flags & NAVIT_AF_ROUNDABOUT))
 			r = "no: staying in roundabout";
 	}
 	if (!r && abs(d) > 75)
@@ -1670,7 +1670,7 @@ command_new(struct navigation *this_, struct navigation_itm *itm, int delta)
 	//dbg(1, "enter this_=%p itm=%p delta=%d\n", this_, itm, delta);
 	ret->delta = delta;
 	ret->itm = itm;
-	if (itm && itm->prev && itm->way.next && itm->prev->way.next && !(itm->way.flags & AF_ROUNDABOUT) && (itm->prev->way.flags & AF_ROUNDABOUT))
+	if (itm && itm->prev && itm->way.next && itm->prev->way.next && !(itm->way.flags & NAVIT_AF_ROUNDABOUT) && (itm->prev->way.flags & NAVIT_AF_ROUNDABOUT))
 	{
 		int len = 0;
 		int angle = 0;
@@ -1678,7 +1678,7 @@ command_new(struct navigation *this_, struct navigation_itm *itm, int delta)
 		struct navigation_itm *itm2 = itm->prev;
 		int exit_angle = angle_median(itm->prev->angle_end, itm->way.next->angle2);
 		//dbg(1, "exit %d median from %d,%d\n", exit_angle, itm->prev->angle_end, itm->way.next->angle2);
-		while (itm2 && (itm2->way.flags & AF_ROUNDABOUT))
+		while (itm2 && (itm2->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			len += itm2->length;
 			angle = itm2->angle_end;
@@ -2123,11 +2123,11 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigat
 		// dbg(1,"distance=%d level=%d type=0x%x\n", distance, level, itm->way.item.type);
 	}
 
-	if (cmd->itm->prev->way.flags & AF_ROUNDABOUT)
+	if (cmd->itm->prev->way.flags & NAVIT_AF_ROUNDABOUT)
 	{
 		cur = cmd->itm->prev;
 		count_roundabout = 0;
-		while (cur && (cur->way.flags & AF_ROUNDABOUT))
+		while (cur && (cur->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			// If the next segment has no exit or the exit isn't allowed, don't count it
 			if (cur->next->way.next && is_way_allowed(nav, cur->next->way.next, 3))
@@ -3021,7 +3021,7 @@ navigation_map_get_item(struct map_rect_priv *priv)
 			ret->type = type_nav_destination;
 		else
 		{
-			if (priv->itm && priv->itm->prev && !(priv->itm->way.flags & AF_ROUNDABOUT) && (priv->itm->prev->way.flags & AF_ROUNDABOUT))
+			if (priv->itm && priv->itm->prev && !(priv->itm->way.flags & NAVIT_AF_ROUNDABOUT) && (priv->itm->prev->way.flags & NAVIT_AF_ROUNDABOUT))
 			{
 				enum item_type r = type_none, l = type_none;
 				switch (((180 + 22) - priv->cmd->roundabout_delta) / 45)
@@ -3127,7 +3127,8 @@ navigation_map_new(struct map_methods *meth, struct attr **attrs, struct callbac
 
 	navigation_attr = attr_search(attrs, NULL, attr_navigation);
 	if (!navigation_attr)
-		return NULL;ret=g_new0(struct map_priv, 1);
+		return NULL;
+	ret=g_new0(struct map_priv, 1);
 	*meth = navigation_map_meth;
 	ret->navigation = navigation_attr->u.navigation;
 

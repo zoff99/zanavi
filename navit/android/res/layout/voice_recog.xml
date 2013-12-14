@@ -1,0 +1,56 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recogscrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000" >
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000" >
+
+        <TextView
+            android:id="@+id/Header"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="10dip"
+            android:text="Voice Search, speak your Destination"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/speakButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="#000000"
+            android:drawableTop="@drawable/microphone_icon"
+            android:gravity="center"
+            android:onClick="speakButtonClicked"
+            android:paddingBottom="20dip"
+            android:paddingTop="20dip"
+            android:text="Click to talk\nzum sprechen drücken" />
+
+        <com.zoffcc.applications.zanavi.ZANaviBGTextView
+            android:id="@+id/Line1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+            android:clickable="true"
+            android:gravity="center|center_horizontal"
+            android:onClick="Line1Clicked"
+            android:paddingBottom="10dip"
+            android:paddingTop="10dip"
+            android:textSize="26sp" />
+
+        <com.zoffcc.applications.zanavi.ZANaviBGTextView
+            android:id="@+id/Line2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center|center_horizontal"
+            android:onClick="Line1Clicked"
+            android:textSize="22sp" />
+    </TableLayout>
+
+</ScrollView>

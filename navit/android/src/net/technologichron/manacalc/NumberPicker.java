@@ -1,6 +1,6 @@
 /**
  * 
- * Enhanced by Zoff (c) 2011 - 2012
+ * Enhanced by Zoff (c) 2011 - 2013
  * zoff@zanavi.cc
  * 
  */
@@ -44,6 +44,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -65,8 +66,8 @@ public class NumberPicker extends LinearLayout
 
 	private final long REPEAT_DELAY = 50;
 
-	private final int ELEMENT_HEIGHT = 120;
-	private final int ELEMENT_WIDTH = 70;
+	//private final int ELEMENT_HEIGHT = 120;
+	//private final int ELEMENT_WIDTH = 70;
 
 	private final int MINIMUM = 0;
 	private final int MAXIMUM = 9;
@@ -110,17 +111,48 @@ public class NumberPicker extends LinearLayout
 		}
 	}
 
+	public int dpToPx(int dp)
+	{
+		try
+		{
+			DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+			int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+			System.out.println("dpToPx:in=" + dp + " out=" + px);
+			return px;
+		}
+		catch (Exception e)
+		{
+			return dp;
+		}
+	}
+
+	public int pxToDp(int px)
+	{
+		try
+		{
+			DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+			int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+			System.out.println("pxToDp:in=" + px + " out=" + dp);
+			return dp;
+		}
+		catch (Exception e)
+		{
+			return px;
+		}
+	}
+
 	public NumberPicker(Context context, AttributeSet attributeSet)
 	{
 		super(context, attributeSet);
 
-		int nW = attributeSet.getAttributeIntValue(null, "nwidth", android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-		int nH = attributeSet.getAttributeIntValue(null, "nheight", android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+		int nW = dpToPx(attributeSet.getAttributeIntValue(null, "nwidth", android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+		int nH = dpToPx(attributeSet.getAttributeIntValue(null, "nheight", android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 		mMinValue = attributeSet.getAttributeIntValue(null, "minValue", mMinValue);
 		mMaxValue = attributeSet.getAttributeIntValue(null, "maxValue", mMaxValue);
 
 		this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		LayoutParams elementParams = new LinearLayout.LayoutParams(nW, nH);
+		// LayoutParams elementParams = new LinearLayout.
 
 		// init the individual elements
 		initDecrementButton(context);

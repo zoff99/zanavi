@@ -188,14 +188,21 @@ void gui_disable_suspend(struct gui *this_)
 int gui_has_main_loop(struct gui *this_)
 {
 	if (!this_->meth.run_main_loop)
+	{
+		dbg(0, "gui_has_main_loop:FALSE\n");
 		return 0;
+	}
+	dbg(0, "gui_has_main_loop:TRUE\n");
 	return 1;
 }
 
 int gui_run_main_loop(struct gui *this_)
 {
 	if (!gui_has_main_loop(this_))
+	{
 		return 1;
+	}
+	dbg(0,"gui_run_main_loop:calling -> run_main_loop(this_)\n");
 	return this_->meth.run_main_loop(this_->priv);
 }
 

@@ -138,9 +138,9 @@ struct route_segment_data
 	int flags;
 	int len; /**< Length of this segment */
 /*NOTE: After a segment, various fields may follow, depending on what flags are set. Order of fields:
- 1.) maxspeed			Maximum allowed speed on this segment. Present if AF_SPEED_LIMIT is set.
+ 1.) maxspeed			Maximum allowed speed on this segment. Present if NAVIT_AF_SPEED_LIMIT is set.
  2.) offset				If the item is segmented (i.e. represented by more than one segment), this
- indicates the position of this segment in the item. Present if AF_SEGMENTED is set.
+ indicates the position of this segment in the item. Present if NAVIT_AF_SEGMENTED is set.
  */
 };
 
@@ -494,15 +494,15 @@ static int route_check_roundabout(struct route_graph_segment *seg, int level, in
 	{
 		return 0;
 	}
-	if (!direction && !(seg->data.flags & AF_ONEWAY))
+	if (!direction && !(seg->data.flags & NAVIT_AF_ONEWAY))
 	{
 		return 0;
 	}
-	if (direction && !(seg->data.flags & AF_ONEWAYREV))
+	if (direction && !(seg->data.flags & NAVIT_AF_ONEWAYREV))
 	{
 		return 0;
 	}
-	if (seg->data.flags & AF_ROUNDABOUT_VALID)
+	if (seg->data.flags & NAVIT_AF_ROUNDABOUT_VALID)
 		return 0;
 
 	if (!origin)
@@ -543,13 +543,13 @@ static int route_check_roundabout(struct route_graph_segment *seg, int level, in
 
 		if (cur == origin)
 		{
-			seg->data.flags |= AF_ROUNDABOUT;
+			seg->data.flags |= NAVIT_AF_ROUNDABOUT;
 			return 1;
 		}
 
 		if (route_check_roundabout(cur, (level - 1), rp_iterator_end(&it), origin))
 		{
-			seg->data.flags |= AF_ROUNDABOUT;
+			seg->data.flags |= NAVIT_AF_ROUNDABOUT;
 			return 1;
 		}
 
@@ -721,12 +721,12 @@ int route_destination_reached(struct route *this)
 		return 0;
 	}
 
-	if ((sd->flags & AF_ONEWAY) && (this->pos->lenneg >= dst->lenneg))
+	if ((sd->flags & NAVIT_AF_ONEWAY) && (this->pos->lenneg >= dst->lenneg))
 	{ // We would have to drive against the one-way road
 		return 0;
 	}
 
-	if ((sd->flags & AF_ONEWAYREV) && (this->pos->lenpos >= dst->lenpos))
+	if ((sd->flags & NAVIT_AF_ONEWAYREV) && (this->pos->lenpos >= dst->lenpos))
 	{
 		return 0;
 	}
@@ -1629,25 +1629,25 @@ route_segment_data_field_pos(struct route_segment_data *seg, enum attr_type type
 
 	ptr = ((unsigned char*) seg) + sizeof(struct route_segment_data);
 
-	if (seg->flags & AF_SPEED_LIMIT)
+	if (seg->flags & NAVIT_AF_SPEED_LIMIT)
 	{
 		if (type == attr_maxspeed)
 			return (void*) ptr;
 		ptr += sizeof(int);
 	}
-	if (seg->flags & AF_SEGMENTED)
+	if (seg->flags & NAVIT_AF_SEGMENTED)
 	{
 		if (type == attr_offset)
 			return (void*) ptr;
 		ptr += sizeof(int);
 	}
-	if (seg->flags & AF_SIZE_OR_WEIGHT_LIMIT)
+	if (seg->flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT)
 	{
 		if (type == attr_vehicle_width)
 			return (void*) ptr;
 		ptr += sizeof(struct size_weight_limit);
 	}
-	if (seg->flags & AF_DANGEROUS_GOODS)
+	if (seg->flags & NAVIT_AF_DANGEROUS_GOODS)
 	{
 		if (type == attr_vehicle_dangerous_goods)
 			return (void*) ptr;
@@ -1666,13 +1666,13 @@ static int route_segment_data_size(int flags)
 	//// dbg(0, "enter\n");
 
 	int ret = sizeof(struct route_segment_data);
-	if (flags & AF_SPEED_LIMIT)
+	if (flags & NAVIT_AF_SPEED_LIMIT)
 		ret += sizeof(int);
-	if (flags & AF_SEGMENTED)
+	if (flags & NAVIT_AF_SEGMENTED)
 		ret += sizeof(int);
-	if (flags & AF_SIZE_OR_WEIGHT_LIMIT)
+	if (flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT)
 		ret += sizeof(struct size_weight_limit);
-	if (flags & AF_DANGEROUS_GOODS)
+	if (flags & NAVIT_AF_DANGEROUS_GOODS)
 		ret += sizeof(int);
 	return ret;
 }
@@ -1687,7 +1687,7 @@ static int route_graph_segment_is_duplicate(struct route_graph_point *start, str
 	{
 		if (item_is_equal(*data->item, s->data.item))
 		{
-			if (data->flags & AF_SEGMENTED)
+			if (data->flags & NAVIT_AF_SEGMENTED)
 			{
 				if (RSD_OFFSET(&s->data) == data->offset)
 				{
@@ -1747,16 +1747,16 @@ static void route_graph_add_segment(struct route_graph *this, struct route_graph
 	s->data.item = *data->item;
 	s->data.flags = data->flags;
 
-	if (data->flags & AF_SPEED_LIMIT)
+	if (data->flags & NAVIT_AF_SPEED_LIMIT)
 		RSD_MAXSPEED(&s->data) = data->maxspeed;
 
-	if (data->flags & AF_SEGMENTED)
+	if (data->flags & NAVIT_AF_SEGMENTED)
 		RSD_OFFSET(&s->data) = data->offset;
 
-	if (data->flags & AF_SIZE_OR_WEIGHT_LIMIT)
+	if (data->flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT)
 		RSD_SIZE_WEIGHT(&s->data) = data->size_weight;
 
-	if (data->flags & AF_DANGEROUS_GOODS)
+	if (data->flags & NAVIT_AF_DANGEROUS_GOODS)
 		RSD_DANGEROUS_GOODS(&s->data) = data->dangerous_goods;
 
 	s->next = this->route_segments;
@@ -1842,7 +1842,7 @@ route_extract_segment_from_path(struct route_path *path, struct item *item, int 
 	{
 		if (item_is_equal(s->data->item, *item))
 		{
-			if (s->data->flags & AF_SEGMENTED)
+			if (s->data->flags & NAVIT_AF_SEGMENTED)
 				soffset = RSD_OFFSET(s->data);
 			else
 				soffset = 1;
@@ -1949,7 +1949,7 @@ static int route_path_add_item_from_graph(struct route_path *this, struct route_
 	int offset = 1;
 	int seg_size, seg_dat_size;
 	int len = rgs->data.len;
-	if (rgs->data.flags & AF_SEGMENTED)
+	if (rgs->data.flags & NAVIT_AF_SEGMENTED)
 	{
 		offset = RSD_OFFSET(&rgs->data);
 	}
@@ -2066,7 +2066,7 @@ static int route_path_add_item_from_graph(struct route_path *this, struct route_
 
 	/* We check if the route graph segment is part of a roundabout here, because this
 	 * only matters for route graph segments which form parts of the route path */
-	if (!(rgs->data.flags & AF_ROUNDABOUT))
+	if (!(rgs->data.flags & NAVIT_AF_ROUNDABOUT))
 	{ // We identified this roundabout earlier
 		route_check_roundabout(rgs, 13, (dir < 1), NULL);
 	}
@@ -2145,7 +2145,7 @@ static int route_seg_speed(struct vehicleprofile *profile, struct route_segment_
 	speed = roadprofile->route_weight;
 	if (profile->maxspeed_handling != 2)
 	{
-		if (over->flags & AF_SPEED_LIMIT)
+		if (over->flags & NAVIT_AF_SPEED_LIMIT)
 		{
 			maxspeed = RSD_MAXSPEED(over);
 			if (!profile->maxspeed_handling)
@@ -2159,13 +2159,13 @@ static int route_seg_speed(struct vehicleprofile *profile, struct route_segment_
 			speed = maxspeed;
 	}
 
-	if (over->flags & AF_DANGEROUS_GOODS)
+	if (over->flags & NAVIT_AF_DANGEROUS_GOODS)
 	{
 		if (profile->dangerous_goods & RSD_DANGEROUS_GOODS(over))
 			return 0;
 	}
 
-	if (over->flags & AF_SIZE_OR_WEIGHT_LIMIT)
+	if (over->flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT)
 	{
 		struct size_weight_limit *size_weight = &RSD_SIZE_WEIGHT(over);
 		if (size_weight->width != -1 && profile->width != -1 && profile->width > size_weight->width)
@@ -2229,7 +2229,7 @@ static int route_get_traffic_distortion(struct route_graph_segment *seg, struct 
 	if (found)
 	{
 		ret->delay = found->data.len;
-		if (found->data.flags & AF_SPEED_LIMIT)
+		if (found->data.flags & NAVIT_AF_SPEED_LIMIT)
 			ret->maxspeed = RSD_MAXSPEED(&found->data);
 		else
 			ret->maxspeed = INT_MAX;
@@ -2242,7 +2242,7 @@ static int route_through_traffic_allowed(struct vehicleprofile *profile, struct 
 {
 	//// dbg(0, "enter\n");
 
-	return (seg->data.flags & AF_THROUGH_TRAFFIC_LIMIT) == 0;
+	return (seg->data.flags & NAVIT_AF_THROUGH_TRAFFIC_LIMIT) == 0;
 }
 
 /**
@@ -2364,7 +2364,7 @@ static void route_process_traffic_distortion(struct route_graph *this, struct it
 
 		if (item_attr_get(item, attr_maxspeed, &maxspeed_attr))
 		{
-			data.flags |= AF_SPEED_LIMIT;
+			data.flags |= NAVIT_AF_SPEED_LIMIT;
 			data.maxspeed = maxspeed_attr.u.num;
 		}
 
@@ -2479,7 +2479,7 @@ static void route_process_street_graph(struct route_graph *this, struct item *it
 		if (item_attr_get(item, attr_flags, &attr))
 		{
 			data.flags = attr.u.num;
-			if (data.flags & AF_SEGMENTED)
+			if (data.flags & NAVIT_AF_SEGMENTED)
 			{
 				segmented = 1;
 			}
@@ -2489,14 +2489,14 @@ static void route_process_street_graph(struct route_graph *this, struct item *it
 			data.flags = *default_flags;
 		}
 
-		if (data.flags & AF_SPEED_LIMIT)
+		if (data.flags & NAVIT_AF_SPEED_LIMIT)
 		{
 			if (item_attr_get(item, attr_maxspeed, &attr))
 			{
 				data.maxspeed = attr.u.num;
 			}
 		}
-		if (data.flags & AF_DANGEROUS_GOODS)
+		if (data.flags & NAVIT_AF_DANGEROUS_GOODS)
 		{
 			if (item_attr_get(item, attr_vehicle_dangerous_goods, &attr))
 			{
@@ -2504,10 +2504,10 @@ static void route_process_street_graph(struct route_graph *this, struct item *it
 			}
 			else
 			{
-				data.flags &= ~AF_DANGEROUS_GOODS;
+				data.flags &= ~NAVIT_AF_DANGEROUS_GOODS;
 			}
 		}
-		if (data.flags & AF_SIZE_OR_WEIGHT_LIMIT)
+		if (data.flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT)
 		{
 			if (item_attr_get(item, attr_vehicle_width, &attr))
 				data.size_weight.width = attr.u.num;
@@ -3033,7 +3033,21 @@ static int route_graph_build_next_map(struct route_graph *rg)
 	{
 		rg->m = mapset_next(rg->h, 2);
 		if (!rg->m)
+		{
 			return 0;
+		}
+
+#if 0
+		struct attr map_name_attr;
+		if (map_get_attr(rg->m, attr_name, &map_name_attr, NULL))
+		{
+			if (strncmp("_ms_sdcard_map:-special-:worldmap", map_name_attr.u.str, 34) == 0)
+			{
+				continue;
+			}
+		}
+#endif
+
 		map_rect_destroy(rg->mr);
 		rg->mr = map_rect_new(rg->m, rg->sel);
 	}
@@ -3125,9 +3139,9 @@ static void route_graph_clone_segment(struct route_graph *this, struct route_gra
 	data.maxspeed = -1;
 	data.item = &s->data.item;
 	data.len = s->data.len + 1;
-	if (s->data.flags & AF_SPEED_LIMIT)
+	if (s->data.flags & NAVIT_AF_SPEED_LIMIT)
 		data.maxspeed = RSD_MAXSPEED(&s->data);
-	if (s->data.flags & AF_SEGMENTED)
+	if (s->data.flags & NAVIT_AF_SEGMENTED)
 		data.offset = RSD_OFFSET(&s->data);
 	//dbg(1, "cloning segment from %p (0x%x,0x%x) to %p (0x%x,0x%x)\n", start,
 	//		start->c.x, start->c.y, end, end->c.x, end->c.y);
@@ -3150,30 +3164,30 @@ static void route_graph_process_restriction_segment(struct route_graph *this, st
 	if (dir > 0)
 	{ /* going away */
 		//dbg(1, "other 0x%x,0x%x\n", s->end->c.x, s->end->c.y);
-		if (s->data.flags & AF_ONEWAY)
+		if (s->data.flags & NAVIT_AF_ONEWAY)
 		{
 			//dbg(1, "Not possible\n");
 			return;
 		}
-		route_graph_clone_segment(this, s, pn, s->end, AF_ONEWAYREV);
+		route_graph_clone_segment(this, s, pn, s->end, NAVIT_AF_ONEWAYREV);
 	}
 	else
 	{ /* coming in */
 		//dbg(1, "other 0x%x,0x%x\n", s->start->c.x, s->start->c.y);
-		if (s->data.flags & AF_ONEWAYREV)
+		if (s->data.flags & NAVIT_AF_ONEWAYREV)
 		{
 			//dbg(1, "Not possible\n");
 			return;
 		}
-		route_graph_clone_segment(this, s, s->start, pn, AF_ONEWAY);
+		route_graph_clone_segment(this, s, s->start, pn, NAVIT_AF_ONEWAY);
 	}
 
 	tmp = p->start;
 	while (tmp)
 	{
-		if (tmp != s && tmp->data.item.type != type_street_turn_restriction_no && tmp->data.item.type != type_street_turn_restriction_only && !(tmp->data.flags & AF_ONEWAYREV) && is_turn_allowed(p, s, tmp))
+		if (tmp != s && tmp->data.item.type != type_street_turn_restriction_no && tmp->data.item.type != type_street_turn_restriction_only && !(tmp->data.flags & NAVIT_AF_ONEWAYREV) && is_turn_allowed(p, s, tmp))
 		{
-			route_graph_clone_segment(this, tmp, pn, tmp->end, AF_ONEWAY);
+			route_graph_clone_segment(this, tmp, pn, tmp->end, NAVIT_AF_ONEWAY);
 			//dbg(1, "To start %s\n", item_to_name(tmp->data.item.type));
 		}
 		tmp = tmp->start_next;
@@ -3182,9 +3196,9 @@ static void route_graph_process_restriction_segment(struct route_graph *this, st
 	tmp = p->end;
 	while (tmp)
 	{
-		if (tmp != s && tmp->data.item.type != type_street_turn_restriction_no && tmp->data.item.type != type_street_turn_restriction_only && !(tmp->data.flags & AF_ONEWAY) && is_turn_allowed(p, s, tmp))
+		if (tmp != s && tmp->data.item.type != type_street_turn_restriction_no && tmp->data.item.type != type_street_turn_restriction_only && !(tmp->data.flags & NAVIT_AF_ONEWAY) && is_turn_allowed(p, s, tmp))
 		{
-			route_graph_clone_segment(this, tmp, tmp->start, pn, AF_ONEWAYREV);
+			route_graph_clone_segment(this, tmp, tmp->start, pn, NAVIT_AF_ONEWAYREV);
 			//dbg(1, "To end %s\n", item_to_name(tmp->data.item.type));
 		}
 		tmp = tmp->end_next;
@@ -3602,7 +3616,7 @@ street_get_data(struct item *item)
 	}
 
 	ret->maxspeed = -1;
-	if (ret->flags & AF_SPEED_LIMIT)
+	if (ret->flags & NAVIT_AF_SPEED_LIMIT)
 	{
 		if (item_attr_get(item, attr_maxspeed, &maxspeed_attr))
 		{
@@ -4009,7 +4023,7 @@ static int rm_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 			return 0;
 		case attr_maxspeed:
 			mr->attr_next = attr_street_item;
-			if (seg && seg->data->flags & AF_SPEED_LIMIT)
+			if (seg && seg->data->flags & NAVIT_AF_SPEED_LIMIT)
 			{
 				attr->u.num = RSD_MAXSPEED(seg->data);
 
@@ -4146,7 +4160,7 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 			mr->attr_next = attr_label;
 			if (mr->item.type != type_rg_segment)
 				return 0;
-			if (seg && (seg->data.flags & AF_SPEED_LIMIT))
+			if (seg && (seg->data.flags & NAVIT_AF_SPEED_LIMIT))
 			{
 				attr->type = attr_maxspeed;
 				attr->u.num = RSD_MAXSPEED(&seg->data);

@@ -500,6 +500,18 @@ draw_image_warp(struct graphics_priv *gr, struct graphics_gc_priv *fg, struct po
 	imlib_context_set_image(image);
 	w = imlib_image_get_width();
 	h = imlib_image_get_height();
+
+
+/*
+        void imlib_render_image_on_drawable_skewed(int source_x, int source_y,
+                                                   int source_width,
+                                                   int source_height,
+                                                   int destination_x,
+                                                   int destination_y,
+                                                   int h_angle_x, int h_angle_y,
+                                                   int v_angle_x, int v_angle_y);
+*/
+
 	if (count == 3) {
 		/* 0 1
         	   2   */

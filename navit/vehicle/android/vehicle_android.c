@@ -181,7 +181,7 @@ static int vehicle_android_position_attr_get(struct vehicle_priv *priv, enum att
 	return 1;
 }
 
-static void vehicle_android_update_location_direct(jobject location)
+static void vehicle_android_update_location_direct(double lat, double lon, float speed, float direction, double height, float radius, long gpstime)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
@@ -196,8 +196,8 @@ static void vehicle_android_update_location_direct(jobject location)
 
 	struct vehicle_priv *v = priv_global_android;
 
-	JNIEnv *jnienv2;
-	jnienv2 = jni_getenv();
+	// +++JNIEnv *jnienv2;
+	// +++jnienv2 = jni_getenv();
 
 	//dbg(0,"jnienv=%p\n", jnienv);
 	//dbg(0,"priv_global_android=%p\n", priv_global_android);
@@ -207,17 +207,16 @@ static void vehicle_android_update_location_direct(jobject location)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
-	v->geo.lat = (*jnienv2)->CallDoubleMethod(jnienv2, location, v->Location_getLatitude);
-	v->geo.lng = (*jnienv2)->CallDoubleMethod(jnienv2, location, v->Location_getLongitude);
-	v->speed = (*jnienv2)->CallFloatMethod(jnienv2, location, v->Location_getSpeed) * 3.6; // convert from m/s -> km/h
-	v->direction = (*jnienv2)->CallFloatMethod(jnienv2, location, v->Location_getBearing);
-	v->height = (*jnienv2)->CallDoubleMethod(jnienv2, location, v->Location_getAltitude);
-	v->radius = (*jnienv2)->CallFloatMethod(jnienv2, location, v->Location_getAccuracy);
-	tnow = (*jnienv2)->CallLongMethod(jnienv2, location, v->Location_getTime) / 1000;
+	v->geo.lat = lat;
+	v->geo.lng = lon;
+	v->speed = speed;
+	v->direction = direction;
+	v->height = height;
+	v->radius = radius;
+	tnow = gpstime;
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
 	// this seems to slow and stupid, try to give those values directly (instead of calling those functions every time!!)
-
 
 	tm = gmtime(&tnow);
 	strftime(v->fixiso8601, sizeof(v->fixiso8601), "%Y-%m-%dT%TZ", tm);
@@ -225,7 +224,7 @@ static void vehicle_android_update_location_direct(jobject location)
 	v->have_coords = 1;
 
 	// remove globalref again
-	(*jnienv2)->DeleteGlobalRef(jnienv2, location);
+	//+++(*jnienv2)->DeleteGlobalRef(jnienv2, location);
 
 	// ***** calls: navit.c -> navit_vehicle_update
 	// xxx stupid callback stuff -> remove me!!  xxx

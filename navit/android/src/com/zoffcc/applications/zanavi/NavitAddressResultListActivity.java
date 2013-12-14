@@ -38,26 +38,32 @@
 
 package com.zoffcc.applications.zanavi;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
-import android.app.ListActivity;
+import android.app.ExpandableListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 
-public class NavitAddressResultListActivity extends ListActivity
+import com.zoffcc.applications.zanavi.NavitSearchResultListArrayAdapter.search_result_entry;
+
+public class NavitAddressResultListActivity extends ExpandableListActivity
 {
 	// public static NavitAddressResultListActivity self_ = null;
-	ArrayAdapter<String> adapter_ = null;
+	NavitSearchResultListArrayAdapter adapter_ = null;
 	private int selected_id = -1;
 	private int selected_id_passthru = -1;
 	private Boolean is_empty = true;
-	public String[] result_list = new String[] { "loading results ..." };
+	// public ArrayList<HashMap<Integer, search_result_entry>> result_list;
+	public Map<Integer, List<search_result_entry>> result_list;
+
 	public static int mode = 1; // 0 .. hide towns if streets/housenumbers available
 								// 1 .. show towns and streets and housenumbers
 								// 2 .. show only towns
@@ -72,130 +78,112 @@ public class NavitAddressResultListActivity extends ListActivity
 
 		Log.e("Navit", "########### full result count: " + Navit.NavitAddressResultList_foundItems.size());
 
-		if (mode == 0)
-		{
-			// show "town names" as results only when we dont have any street names in resultlist
-			if ((Navit.search_results_streets > 0) || (Navit.search_results_streets_hn > 0))
-			{
-				// clear out towns from result list
-				for (Iterator<Navit.Navit_Address_Result_Struct> k = Navit.NavitAddressResultList_foundItems.iterator(); k.hasNext();)
-				{
-					tmp = k.next();
-					if (tmp.result_type.equals("TWN"))
-					{
-						k.remove();
-					}
-				}
-			}
-		}
-		else if (mode == 1)
-		{
-			// fine, show them all
-		}
-		else if (mode == 2)
-		{
-			// show only town names
-			// clear out streets and housenumbers from result list
-			for (Iterator<Navit.Navit_Address_Result_Struct> k = Navit.NavitAddressResultList_foundItems.iterator(); k.hasNext();)
-			{
-				tmp = k.next();
-				if (tmp.result_type.equals("STR"))
-				{
-					k.remove();
-				}
-				else if (tmp.result_type.equals("SHN"))
-				{
-					k.remove();
-				}
-			}
-		}
+		//		if (mode == 0)
+		//		{
+		//			// show "town names" as results only when we dont have any street names in resultlist
+		//			if ((Navit.search_results_streets > 0) || (Navit.search_results_streets_hn > 0))
+		//			{
+		//				// clear out towns from result list
+		//				for (Iterator<Navit.Navit_Address_Result_Struct> k = Navit.NavitAddressResultList_foundItems.iterator(); k.hasNext();)
+		//				{
+		//					tmp = k.next();
+		//					if (tmp.result_type.equals("TWN"))
+		//					{
+		//						k.remove();
+		//					}
+		//				}
+		//			}
+		//		}
+		//		else if (mode == 1)
+		//		{
+		//			// fine, show them all
+		//		}
+		//		else if (mode == 2)
+		//		{
+		//			// show only town names
+		//			// clear out streets and housenumbers from result list
+		//			for (Iterator<Navit.Navit_Address_Result_Struct> k = Navit.NavitAddressResultList_foundItems.iterator(); k.hasNext();)
+		//			{
+		//				tmp = k.next();
+		//				if (tmp.result_type.equals("STR"))
+		//				{
+		//					k.remove();
+		//				}
+		//				else if (tmp.result_type.equals("SHN"))
+		//				{
+		//					k.remove();
+		//				}
+		//			}
+		//		}
 
 		Log.e("Navit", "########### final result count: " + Navit.NavitAddressResultList_foundItems.size());
 
-		this.result_list = new String[Navit.NavitAddressResultList_foundItems.size()];
+		// this.result_list = new String[Navit.NavitAddressResultList_foundItems.size()];
+		this.result_list = new LinkedHashMap<Integer, List<search_result_entry>>();
+		ArrayList<search_result_entry> l1 = new ArrayList<search_result_entry>();
+		ArrayList<search_result_entry> l2 = new ArrayList<search_result_entry>();
+		ArrayList<search_result_entry> l3 = new ArrayList<search_result_entry>();
+
 		int j = 0;
 		for (Iterator<Navit.Navit_Address_Result_Struct> i = Navit.NavitAddressResultList_foundItems.iterator(); i.hasNext();)
 		{
 			tmp = i.next();
-			this.result_list[j] = tmp.addr;
+			if (tmp.result_type.equals("TWN"))
+			{
+				l2.add(new search_result_entry(2, tmp.addr, j)); // town
+			}
+			else if (tmp.result_type.equals("POI"))
+			{
+				l3.add(new search_result_entry(3, tmp.addr, j)); // POI
+			}
+			else
+			{
+				l1.add(new search_result_entry(1, tmp.addr, j)); // street or housenumber
+			}
+			// [j] = tmp.addr;
 			j++;
 		}
 
+		this.result_list.put(1, l1);
+		this.result_list.put(2, l2);
+		this.result_list.put(3, l3);
+
+		//System.out.println("LL:in:l1=" + l1.size() + " l2=" + l2.size() + " l3=" + l3.size());
+
 		// self_ = this;
 
-		adapter_ = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result_list);
+		// adapter_ = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result_list);
+		adapter_ = new NavitSearchResultListArrayAdapter(this, result_list);
+
 		setListAdapter(adapter_);
-		this.getListView().setFastScrollEnabled(true);
+		// this.getListView().setFastScrollEnabled(true);
 		is_empty = true;
 
 		// ListActivity has a ListView, which you can get with:
-		ListView lv = getListView();
+		ExpandableListView lv = getExpandableListView();
+		lv.setOnChildClickListener(this);
+		// lv.setFastScrollEnabled(true);
 
 		// Then you can create a listener like so:
-		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
-		{
-			@Override
-			public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id)
-			{
-				onLongListItemClick(v, pos, id);
-				return true;
-			}
-
-		});
+		//		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+		//		{
+		//			@Override
+		//			public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id)
+		//			{
+		//				//onLongListItemClick(v, pos, id);
+		//				//return true;
+		//			}
+		//
+		//		});
 
 	}
 
-	public void fillStringArray_later(String s)
+	protected void onLongListItemClick(View v, int gpos, int pos2, long id)
 	{
-		System.out.println("fillStringArray_later: " + s);
-	}
+		// get the global resultposition from the result object
+		int pos = this.result_list.get(gpos + 1).get(pos2).getgpos();
 
-	public static void add_item_later(String item)
-	{
-		try
-		{
-			// self_.add_item_(item);
-			// adapter_.notifyDataSetChanged();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void add_item_(String item)
-	{
-		if (item == null)
-		{
-			// empty item?
-			return;
-		}
-
-		if (this.is_empty)
-		{
-			// clear dummy text, and add this item
-			this.result_list = new String[1];
-			this.result_list[0] = item;
-		}
-		else
-		{
-			// add the item to the end of the list
-			String[] tmp_list = this.result_list;
-			this.result_list = new String[tmp_list.length + 1];
-			for (int i = 0; i < tmp_list.length; i = i + 1)
-			{
-				this.result_list[i] = tmp_list[i];
-			}
-			this.result_list[tmp_list.length] = item;
-		}
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result_list);
-		setListAdapter(adapter);
-		this.is_empty = false;
-	}
-
-	protected void onLongListItemClick(View v, int pos, long id)
-	{
-		Log.e("Navit", "long click id=" + id + " pos=" + pos);
+		Log.e("Navit", "long click id=" + id + " gpos=" + gpos + " pos=" + pos);
 		// remember what pos we clicked
 		this.selected_id_passthru = pos;
 
@@ -259,32 +247,11 @@ public class NavitAddressResultListActivity extends ListActivity
 	}
 
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id)
+	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id)
 	{
-		super.onListItemClick(l, v, position, id);
-
-		// --- OLD --- set as target
-		// --- OLD --- set as target
-		// **this.selected_id = position;
-		// Log.e("Navit", "p:" + position);
-		// Log.e("Navit", "i:" + id);
-		// **executeDone();
-		// --- OLD --- set as target
-		// --- OLD --- set as target
-
-		// --- NEW --- preview map
-		// --- NEW --- preview map
-		onLongListItemClick(v, position, id);
-		// --- NEW --- preview map
-		// --- NEW --- preview map
+		onLongListItemClick(v, groupPosition, childPosition, id);
+		return true;
 	}
-
-	//	@Override
-	//	public void onBackPressed()
-	//	{
-	//		executeDone();
-	//		super.onBackPressed();
-	//	}
 
 	private void executeDone(String what)
 	{

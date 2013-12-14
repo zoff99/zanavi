@@ -47,6 +47,7 @@
 #endif
 #include "config_.h"
 #include "version.h"
+#include "navit.h"
 #include "item.h"
 #include "coord.h"
 #include "main.h"
@@ -74,7 +75,7 @@ char **main_argv;
 
 static void print_usage(void)
 {
-	printf("navit usage:\nnavit [options] [configfile]\n\t-c <file>: use <file> as config file\n\t-d <n>: set the debug output level to <n>. (TODO)\n\t-h: print this usage info and exit.\n\t-v: Print the version and exit.\n");
+	printf("ZANavi usage:\nZANavi [options] [configfile]\n\t-c <file>: use <file> as config file\n\t-d <n>: set the debug output level to <n>. (TODO)\n\t-h: print this usage info and exit.\n\t-v: Print the version and exit.\n");
 }
 
 #ifndef USE_PLUGINS
@@ -187,28 +188,29 @@ int main_real(int argc, char **argv)
 	}
 
 	// if config file is explicitely given only look for it, otherwise try std paths
-	if (config_file)
-	{
-		list = g_list_append(list, g_strdup(config_file));
-	}
-	else
-	{
+	//if (config_file)
+	//{
+	//	list = g_list_append(list, g_strdup(config_file));
+	//}
+	//else
+	//{
 
-		list = g_list_append(list, g_strjoin(NULL, getenv("NAVIT_USER_DATADIR"), "/navit.xml", NULL));
-		list = g_list_append(list, g_strdup("navit.xml"));
+		dbg(0, "navit_share_dir=%s\n", navit_share_dir);
+		list = g_list_append(list, g_strjoin(NULL, navit_share_dir, "/navit.xml", NULL));
+		//list = g_list_append(list, g_strdup("navit.xml"));
 
 #ifdef HAVE_API_ANDROID
 		// **disabled** // new preferred location (the new one should have priority over the legacy!)
 		// **disabled** // list = g_list_append(list,g_strdup("/sdcard/zanavi/navit.xml"));
 #endif
 
-		list = g_list_append(list, g_strjoin(NULL, getenv("NAVIT_SHAREDIR"), "/navit.xml", NULL));
+		//list = g_list_append(list, g_strjoin(NULL, getenv("NAVIT_SHAREDIR"), "/navit.xml", NULL));
 
 #ifndef _WIN32
-		list = g_list_append(list, g_strdup("/etc/navit/navit.xml"));
+		//list = g_list_append(list, g_strdup("/etc/navit/navit.xml"));
 #endif
 
-	}
+	//}
 	li = list;
 	for (;;)
 	{

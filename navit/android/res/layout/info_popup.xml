@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fb_sv"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent" >
+
+    <!-- android:background="@drawable/rounded_bg" -->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="10sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="0sp"
+        android:background="@android:color/transparent"
+        android:paddingLeft="5sp"
+        android:paddingRight="5sp" >
+
+        <TextView
+            android:id="@+id/text_i1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="email"
+            android:linksClickable="true"
+            android:text="We urgently need a new mapserver.\nIf you can help please contact us at:\nhelp@zanavi.cc\n\nWir suchen dringend neue Mapserver\nBetreibst du einen Webserver?\nKontaktiere uns unter:\nhelp@zanavi.cc\n"
+            android:textColor="#fafafa"
+            android:textColorLink="#57BDE9"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/dialogButtonOK_i1"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_i1"
+            android:layout_centerHorizontal="true"
+            android:background="#a0a0a0"
+            android:paddingBottom="5sp"
+            android:paddingTop="5sp"
+            android:text="Ok"
+            android:textColor="#fafafa"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+</ScrollView>

@@ -379,6 +379,7 @@ int itemgra_add_attr(struct itemgra *itemgra, struct attr *attr)
 		case attr_text:
 		case attr_icon:
 		case attr_image:
+		case attr_maptile:
 		case attr_arrows:
 			itemgra->elements = g_list_append(itemgra->elements, attr->u.element);
 			return 1;
@@ -587,6 +588,17 @@ image_new(struct attr *parent, struct attr **attrs)
 	e->type = element_image;
 
 	return (struct image *) e;
+}
+
+struct maptile *
+maptile_new(struct attr *parent, struct attr **attrs)
+{
+	struct element *e;
+
+	e = g_malloc0(sizeof(*e));
+	e->type = element_maptile;
+
+	return (struct maptile *) e;
 }
 
 struct arrows *

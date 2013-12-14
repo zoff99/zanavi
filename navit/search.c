@@ -1055,7 +1055,9 @@ search_split_phrases(char *str)
 	return ret;
 }
 
-static void search_address_housenumber_for_street(char *hn_name_match, char *street_name_match, char *town_string, struct coord *c, int partial, struct jni_object *jni)
+#define MAX_INDEXSEARCH_TOWNNAME 300
+
+static int search_address_housenumber_for_street(char *hn_name_match, char *street_name_match, char *town_string, struct coord *c, int partial, struct jni_object *jni)
 {
 	struct item *item;
 	struct map_rect *mr = NULL;
@@ -1073,6 +1075,8 @@ static void search_address_housenumber_for_street(char *hn_name_match, char *str
 	char *town_string2;
 	char *hn_fold = NULL;
 	char *street_name_fold = NULL;
+	int search_results_found_ = 0;
+	int max_townname_plus_1 = MAX_INDEXSEARCH_TOWNNAME + 1;
 
 	ms = global_navit->mapsets->data;
 	msh = mapset_open(ms);
@@ -1121,10 +1125,10 @@ static void search_address_housenumber_for_street(char *hn_name_match, char *str
 		return;
 	}
 
-	if (strlen(town_string) > 100)
+	if (strlen(town_string) > MAX_INDEXSEARCH_TOWNNAME)
 	{
 		town_string2 = town_string;
-		town_string2[101] = '\0';
+		town_string2[max_townname_plus_1] = '\0';
 		town_string2 = linguistics_check_utf8_string(town_string2);
 	}
 	else
@@ -1157,7 +1161,7 @@ static void search_address_housenumber_for_street(char *hn_name_match, char *str
 		{
 			if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
 			{
-				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 38) == 0)
+				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 43) == 0)
 				{
 					// its an sdcard map
 					mr = map_rect_new(map, sel);
@@ -1196,18 +1200,20 @@ static void search_address_housenumber_for_street(char *hn_name_match, char *str
 													// SHN -> street with house number
 													// return a string like: "SHN:H111L5555:16.766:48.76:full address name is at the end"
 													// ca. 9 chars : ca. 9 chars : max. 100 max. 100 max. 100 max. 15 chars -> this sould be max. about 335 chars long
-													if (town_string)
+													if (town_string2)
 													{
-														buffer = g_strdup_printf("SHN:H0L0:%d:%d:%s %s, %.101s", c2.y, c2.x, att2.u.str, att.u.str, town_string);
+														buffer = g_strdup_printf("SHN:H0L0:%d:%d:%s %s, %.*s", c2.y, c2.x, att2.u.str, att.u.str, max_townname_plus_1, town_string2);
 													}
 													else
 													{
 														buffer = g_strdup_printf("SHN:H0L0:%d:%d:%s %s", c2.y, c2.x, att2.u.str, att.u.str);
 													}
+													//dbg(0,"buffer HN=%s\n", buffer);
 
 #ifdef HAVE_API_ANDROID
 													// return results to android as they come in ...
 													android_return_search_result(jni,buffer);
+													search_results_found_++;
 #endif
 													g_free(buffer);
 												}
@@ -1240,6 +1246,8 @@ static void search_address_housenumber_for_street(char *hn_name_match, char *str
 #ifdef DEBUG_GLIB_MEM_FUNCTIONS
 	g_mem_profile();
 #endif
+
+	return search_results_found_;
 }
 
 static GList *
@@ -1543,6 +1551,8 @@ search_address__country(GList *result_list, struct search_list *sl, GList *phras
 	return result_list;
 }
 
+
+
 struct country2
 {
 	int id;
@@ -1552,44 +1562,9 @@ struct country2
 	char *name;
 };
 
-static struct country2
-		all_country_list[] =
-				{ { 20, "AND", "AD", "AND", /* 020 */"Andorra" }, { 784, "UAE", "AE", "ARE", /* 784 */
-				"United Arab Emirates" }, { 4, "AFG", "AF", "AFG", /* 004 */"Afghanistan" }, { 28, "AG", "AG", "ATG", /* 028 */"Antigua and Barbuda" }, { 660, NULL, "AI", "AIA", /* 660 */"Anguilla" }, { 8, "AL", "AL", "ALB", /* 008 */"Albania" }, { 51, "ARM", "AM", "ARM", /* 051 */"Armenia" }, { 530, "NA", "AN", "ANT", /* 530 */
-				"Netherlands Antilles" }, { 24, "ANG", "AO", "AGO", /* 024 */"Angola" }, { 10, NULL, "AQ", "ATA", /* 010 */"Antarctica" }, { 32, "RA", "AR", "ARG", /* 032 */"Argentina" }, { 16, NULL, "AS", "ASM", /* 016 */"American Samoa" }, { 40, "A", "AT", "AUT", /* 040 */"Austria" }, { 36, "AUS", "AU", "AUS", /* 036 */"Australia" }, { 533, "ARU", "AW", "ABW", /* 533 */"Aruba" }, { 248, "AX", "AX", "ALA", /* 248 */"Aland Islands" }, { 31, "AZ", "AZ", "AZE", /* 031 */"Azerbaijan" }, { 70, "BiH", "BA", "BIH", /* 070 */
-				"Bosnia and Herzegovina" }, { 52, "BDS", "BB", "BRB", /* 052 */"Barbados" }, { 50, "BD", "BD", "BGD", /* 050 */"Bangladesh" }, { 56, "B", "BE", "BEL", /* 056 */"Belgium" }, { 854, "BF", "BF", "BFA", /* 854 */"Burkina Faso" }, { 100, "BG", "BG", "BGR", /* 100 */"Bulgaria" }, { 48, "BRN", "BH", "BHR", /* 048 */"Bahrain" }, { 108, "RU", "BI", "BDI", /* 108 */"Burundi" }, { 204, "BJ", "BJ", "BEN", /* 204 */"Benin" }, { 652, NULL, "BL", "BLM", /* 652 */"Saint Barthelemy" }, { 60, NULL, "BM", "BMU", /* 060 */"Bermuda" }, { 96, "BRU", "BN", "BRN", /* 096 */"Brunei Darussalam" }, { 68, "BOL", "BO", "BOL", /* 068 */"Bolivia" }, { 76, "BR", "BR", "BRA", /* 076 */"Brazil" }, { 44, "BS", "BS", "BHS", /* 044 */"Bahamas" }, { 64, "BHT", "BT", "BTN", /* 064 */"Bhutan" }, { 74, NULL, "BV", "BVT", /* 074 */"Bouvet Island" }, { 72, "RB", "BW", "BWA", /* 072 */"Botswana" }, { 112, "BY", "BY", "BLR", /* 112 */"Belarus" }, { 84, "BZ", "BZ", "BLZ", /* 084 */"Belize" }, { 124, "CDN", "CA", "CAN", /* 124 */"Canada" }, { 166, NULL, "CC", "CCK", /* 166 */
-				"Cocos (Keeling) Islands" }, { 180, "CGO", "CD", "COD", /* 180 */
-				"Congo, Democratic Republic of the" }, { 140, "RCA", "CF", "CAF", /* 140 */
-				"Central African Republic" }, { 178, NULL, "CG", "COG", /* 178 */"Congo" }, { 756, "CH", "CH", "CHE", /* 756 */"Switzerland" }, { 384, "CI", "CI", "CIV", /* 384 */"Cote d'Ivoire" }, { 184, NULL, "CK", "COK", /* 184 */"Cook Islands" }, { 152, "RCH", "CL", "CHL", /* 152 */"Chile" }, { 120, "CAM", "CM", "CMR", /* 120 */"Cameroon" }, { 156, "RC", "CN", "CHN", /* 156 */"China" }, { 170, "CO", "CO", "COL", /* 170 */"Colombia" }, { 188, "CR", "CR", "CRI", /* 188 */"Costa Rica" }, { 192, "C", "CU", "CUB", /* 192 */"Cuba" }, { 132, "CV", "CV", "CPV", /* 132 */"Cape Verde" }, { 162, NULL, "CX", "CXR", /* 162 */"Christmas Island" }, { 196, "CY", "CY", "CYP", /* 196 */"Cyprus" }, { 203, "CZ", "CZ", "CZE", /* 203 */"Czech Republic" }, { 276, "D", "DE", "DEU", /* 276 */"Germany" }, { 262, "DJI", "DJ", "DJI", /* 262 */"Djibouti" }, { 208, "DK", "DK", "DNK", /* 208 */"Denmark" }, { 212, "WD", "DM", "DMA", /* 212 */"Dominica" }, { 214, "DOM", "DO", "DOM", /* 214 */
-				"Dominican Republic" }, { 12, "DZ", "DZ", "DZA", /* 012 */"Algeria" }, { 218, "EC", "EC", "ECU", /* 218 */"Ecuador" }, { 233, "EST", "EE", "EST", /* 233 */"Estonia" }, { 818, "ET", "EG", "EGY", /* 818 */"Egypt" }, { 732, "WSA", "EH", "ESH", /* 732 */"Western Sahara" }, { 232, "ER", "ER", "ERI", /* 232 */"Eritrea" }, { 724, "E", "ES", "ESP", /* 724 */"Spain" }, { 231, "ETH", "ET", "ETH", /* 231 */"Ethiopia" }, { 246, "FIN", "FI", "FIN", /* 246 */"Finland" }, { 242, "FJI", "FJ", "FJI", /* 242 */"Fiji" }, { 238, NULL, "FK", "FLK", /* 238 */
-				"Falkland Islands (Malvinas)" }, { 583, "FSM", "FM", "FSM", /* 583 */
-				"Micronesia, Federated States of" }, { 234, "FO", "FO", "FRO", /* 234 */"Faroe Islands" }, { 250, "F", "FR", "FRA", /* 250 */"France" }, { 266, "G", "GA", "GAB", /* 266 */"Gabon" }, { 826, "GB", "GB", "GBR", /* 826 */"United Kingdom" }, { 308, "WG", "GD", "GRD", /* 308 */"Grenada" }, { 268, "GE", "GE", "GEO", /* 268 */"Georgia" }, { 254, NULL, "GF", "GUF", /* 254 */"French Guiana" }, { 831, NULL, "GG", "GGY", /* 831 */"Guernsey" }, { 288, "GH", "GH", "GHA", /* 288 */"Ghana" }, { 292, "GBZ", "GI", "GIB", /* 292 */"Gibraltar" }, { 304, "KN", "GL", "GRL", /* 304 */"Greenland" }, { 270, "WAG", "GM", "GMB", /* 270 */"Gambia" }, { 324, "RG", "GN", "GIN", /* 324 */"Guinea" }, { 312, NULL, "GP", "GLP", /* 312 */"Guadeloupe" }, { 226, "GQ", "GQ", "GNQ", /* 226 */"Equatorial Guinea" }, { 300, "GR", "GR", "GRC", /* 300 */"Greece" }, { 239, NULL, "GS", "SGS", /* 239 */
-				"South Georgia and the South Sandwich Islands" }, { 320, "GCA", "GT", "GTM", /* 320 */"Guatemala" }, { 316, NULL, "GU", "GUM", /* 316 */"Guam" }, { 624, "GUB", "GW", "GNB", /* 624 */"Guinea-Bissau" }, { 328, "GUY", "GY", "GUY", /* 328 */"Guyana" }, { 344, "HK", "HK", "HKG", /* 344 */"Hong Kong" }, { 334, NULL, "HM", "HMD", /* 334 */
-				"Heard Island and McDonald Islands" }, { 340, "HN", "HN", "HND", /* 340 */"Honduras" }, { 191, "HR", "HR", "HRV", /* 191 */"Croatia" }, { 332, "RH", "HT", "HTI", /* 332 */"Haiti" }, { 348, "H", "HU", "HUN", /* 348 */"Hungary" }, { 360, "RI", "ID", "IDN", /* 360 */"Indonesia" }, { 372, "IRL", "IE", "IRL", /* 372 */"Ireland" }, { 376, "IL", "IL", "ISR", /* 376 */"Israel" }, { 833, NULL, "IM", "IMN", /* 833 */"Isle of Man" }, { 356, "IND", "IN", "IND", /* 356 */"India" }, { 86, NULL, "IO", "IOT", /* 086 */
-				"British Indian Ocean Territory" }, { 368, "IRQ", "IQ", "IRQ", /* 368 */"Iraq" }, { 364, "IR", "IR", "IRN", /* 364 */
-				"Iran, Islamic Republic of" }, { 352, "IS", "IS", "ISL", /* 352 */"Iceland" }, { 380, "I", "IT", "ITA", /* 380 */"Italy" }, { 832, NULL, "JE", "JEY", /* 832 */"Jersey" }, { 388, "JA", "JM", "JAM", /* 388 */"Jamaica" }, { 400, "JOR", "JO", "JOR", /* 400 */"Jordan" }, { 392, "J", "JP", "JPN", /* 392 */"Japan" }, { 404, "EAK", "KE", "KEN", /* 404 */"Kenya" }, { 417, "KS", "KG", "KGZ", /* 417 */"Kyrgyzstan" }, { 116, "K", "KH", "KHM", /* 116 */"Cambodia" }, { 296, "KIR", "KI", "KIR", /* 296 */"Kiribati" }, { 174, "COM", "KM", "COM", /* 174 */"Comoros" }, { 659, "KAN", "KN", "KNA", /* 659 */
-				"Saint Kitts and Nevis" }, { 408, "KP", "KP", "PRK", /* 408 */
-				"Korea, Democratic People's Republic of" }, { 410, "ROK", "KR", "KOR", /* 410 */
-				"Korea, Republic of" }, { 414, "KWT", "KW", "KWT", /* 414 */"Kuwait" }, { 136, NULL, "KY", "CYM", /* 136 */"Cayman Islands" }, { 398, "KZ", "KZ", "KAZ", /* 398 */"Kazakhstan" }, { 418, "LAO", "LA", "LAO", /* 418 */
-				"Lao People's Democratic Republic" }, { 422, "RL", "LB", "LBN", /* 422 */"Lebanon" }, { 662, "WL", "LC", "LCA", /* 662 */"Saint Lucia" }, { 438, "FL", "LI", "LIE", /* 438 */"Liechtenstein" }, { 144, "CL", "LK", "LKA", /* 144 */"Sri Lanka" }, { 430, "LB", "LR", "LBR", /* 430 */"Liberia" }, { 426, "LS", "LS", "LSO", /* 426 */"Lesotho" }, { 440, "LT", "LT", "LTU", /* 440 */"Lithuania" }, { 442, "L", "LU", "LUX", /* 442 */"Luxembourg" }, { 428, "LV", "LV", "LVA", /* 428 */"Latvia" }, { 434, "LAR", "LY", "LBY", /* 434 */
-				"Libyan Arab Jamahiriya" }, { 504, "MA", "MA", "MAR", /* 504 */"Morocco" }, { 492, "MC", "MC", "MCO", /* 492 */"Monaco" }, { 498, "MD", "MD", "MDA", /* 498 */
-				"Moldova, Republic of" }, { 499, "MNE", "ME", "MNE", /* 499 */"Montenegro" }, { 663, NULL, "MF", "MAF", /* 663 */
-				"Saint Martin (French part)" }, { 450, "RM", "MG", "MDG", /* 450 */"Madagascar" }, { 584, "MH", "MH", "MHL", /* 584 */"Marshall Islands" }, { 807, "MK", "MK", "MKD", /* 807 */
-				"Macedonia, the former Yugoslav Republic of" }, { 466, "RMM", "ML", "MLI", /* 466 */"Mali" }, { 104, "MYA", "MM", "MMR", /* 104 */"Myanmar" }, { 496, "MGL", "MN", "MNG", /* 496 */"Mongolia" }, { 446, NULL, "MO", "MAC", /* 446 */"Macao" }, { 580, NULL, "MP", "MNP", /* 580 */
-				"Northern Mariana Islands" }, { 474, NULL, "MQ", "MTQ", /* 474 */"Martinique" }, { 478, "RIM", "MR", "MRT", /* 478 */"Mauritania" }, { 500, NULL, "MS", "MSR", /* 500 */"Montserrat" }, { 470, "M", "MT", "MLT", /* 470 */"Malta" }, { 480, "MS", "MU", "MUS", /* 480 */"Mauritius" }, { 462, "MV", "MV", "MDV", /* 462 */"Maldives" }, { 454, "MW", "MW", "MWI", /* 454 */"Malawi" }, { 484, "MEX", "MX", "MEX", /* 484 */"Mexico" }, { 458, "MAL", "MY", "MYS", /* 458 */"Malaysia" }, { 508, "MOC", "MZ", "MOZ", /* 508 */"Mozambique" }, { 516, "NAM", "NA", "NAM", /* 516 */"Namibia" }, { 540, "NCL", "NC", "NCL", /* 540 */"New Caledonia" }, { 562, "RN", "NE", "NER", /* 562 */"Niger" }, { 574, NULL, "NF", "NFK", /* 574 */"Norfolk Island" }, { 566, "NGR", "NG", "NGA", /* 566 */"Nigeria" }, { 558, "NIC", "NI", "NIC", /* 558 */"Nicaragua" }, { 528, "NL", "NL", "NLD", /* 528 */"Netherlands" }, { 578, "N", "NO", "NOR", /* 578 */"Norway" }, { 524, "NEP", "NP", "NPL", /* 524 */"Nepal" }, { 520, "NAU", "NR", "NRU", /* 520 */"Nauru" }, { 570, NULL, "NU", "NIU", /* 570 */"Niue" }, { 554, "NZ", "NZ", "NZL", /* 554 */"New Zealand" }, { 512, "OM", "OM", "OMN", /* 512 */"Oman" }, { 591, "PA", "PA", "PAN", /* 591 */"Panama" }, { 604, "PE", "PE", "PER", /* 604 */"Peru" }, { 258, NULL, "PF", "PYF", /* 258 */"French Polynesia" }, { 598, "PNG", "PG", "PNG", /* 598 */"Papua New Guinea" }, { 608, "RP", "PH", "PHL", /* 608 */"Philippines" }, { 586, "PK", "PK", "PAK", /* 586 */"Pakistan" }, { 616, "PL", "PL", "POL", /* 616 */"Poland" }, { 666, NULL, "PM", "SPM", /* 666 */
-				"Saint Pierre and Miquelon" }, { 612, NULL, "PN", "PCN", /* 612 */"Pitcairn" }, { 630, "PRI", "PR", "PRI", /* 630 */"Puerto Rico" }, { 275, "AUT", "PS", "PSE", /* 275 */
-				"Palestinian Territory, Occupied" }, { 620, "P", "PT", "PRT", /* 620 */"Portugal" }, { 585, "PAL", "PW", "PLW", /* 585 */"Palau" }, { 600, "PY", "PY", "PRY", /* 600 */"Paraguay" }, { 634, "Q", "QA", "QAT", /* 634 */"Qatar" }, { 638, NULL, "RE", "REU", /* 638 */"Reunion" }, { 642, "RO", "RO", "ROU", /* 642 */"Romania" }, { 688, "SRB", "RS", "SRB", /* 688 */"Serbia" }, { 643, "RUS", "RU", "RUS", /* 643 */
-				"Russian Federation" }, { 646, "RWA", "RW", "RWA", /* 646 */"Rwanda" }, { 682, "KSA", "SA", "SAU", /* 682 */"Saudi Arabia" }, { 90, "SOL", "SB", "SLB", /* 090 */"Solomon Islands" }, { 690, "SY", "SC", "SYC", /* 690 */"Seychelles" }, { 736, "SUD", "SD", "SDN", /* 736 */"Sudan" }, { 752, "S", "SE", "SWE", /* 752 */"Sweden" }, { 702, "SGP", "SG", "SGP", /* 702 */"Singapore" }, { 654, NULL, "SH", "SHN", /* 654 */"Saint Helena" }, { 705, "SLO", "SI", "SVN", /* 705 */"Slovenia" }, { 744, NULL, "SJ", "SJM", /* 744 */
-				"Svalbard and Jan Mayen" }, { 703, "SK", "SK", "SVK", /* 703 */"Slovakia" }, { 694, "WAL", "SL", "SLE", /* 694 */"Sierra Leone" }, { 674, "RSM", "SM", "SMR", /* 674 */"San Marino" }, { 686, "SN", "SN", "SEN", /* 686 */"Senegal" }, { 706, "SO", "SO", "SOM", /* 706 */"Somalia" }, { 740, "SME", "SR", "SUR", /* 740 */"Suriname" }, { 678, "STP", "ST", "STP", /* 678 */
-				"Sao Tome and Principe" }, { 222, "ES", "SV", "SLV", /* 222 */"El Salvador" }, { 760, "SYR", "SY", "SYR", /* 760 */
-				"Syrian Arab Republic" }, { 748, "SD", "SZ", "SWZ", /* 748 */"Swaziland" }, { 796, NULL, "TC", "TCA", /* 796 */
-				"Turks and Caicos Islands" }, { 148, "TD", "TD", "TCD", /* 148 */"Chad" }, { 260, "ARK", "TF", "ATF", /* 260 */
-				"French Southern Territories" }, { 768, "RT", "TG", "TGO", /* 768 */"Togo" }, { 764, "T", "TH", "THA", /* 764 */"Thailand" }, { 762, "TJ", "TJ", "TJK", /* 762 */"Tajikistan" }, { 772, NULL, "TK", "TKL", /* 772 */"Tokelau" }, { 626, "TL", "TL", "TLS", /* 626 */"Timor-Leste" }, { 795, "TM", "TM", "TKM", /* 795 */"Turkmenistan" }, { 788, "TN", "TN", "TUN", /* 788 */"Tunisia" }, { 776, "TON", "TO", "TON", /* 776 */"Tonga" }, { 792, "TR", "TR", "TUR", /* 792 */"Turkey" }, { 780, "TT", "TT", "TTO", /* 780 */
-				"Trinidad and Tobago" }, { 798, "TUV", "TV", "TUV", /* 798 */"Tuvalu" }, { 158, NULL, "TW", "TWN", /* 158 */
-				"Taiwan, Province of China" }, { 834, "EAT", "TZ", "TZA", /* 834 */
-				"Tanzania, United Republic of" }, { 804, "UA", "UA", "UKR", /* 804 */"Ukraine" }, { 800, "EAU", "UG", "UGA", /* 800 */"Uganda" }, { 581, NULL, "UM", "UMI", /* 581 */
-				"United States Minor Outlying Islands" }, { 840, "USA", "US", "USA", /* 840 */"United States" }, { 858, "ROU", "UY", "URY", /* 858 */"Uruguay" }, { 860, "UZ", "UZ", "UZB", /* 860 */"Uzbekistan" }, { 336, "SCV", "VA", "VAT", /* 336 */
-				"Holy See (Vatican City State)" }, { 670, "WV", "VC", "VCT", /* 670 */"Saint Vincent and the Grenadines" }, { 862, "YV", "VE", "VEN", /* 862 */"Venezuela" }, { 92, NULL, "VG", "VGB", /* 092 */"Virgin Islands, British" }, { 850, NULL, "VI", "VIR", /* 850 */"Virgin Islands, U.S." }, { 704, "VN", "VN", "VNM", /* 704 */"Viet Nam" }, { 548, "VAN", "VU", "VUT", /* 548 */"Vanuatu" }, { 876, NULL, "WF", "WLF", /* 876 */"Wallis and Futuna" }, { 882, "WS", "WS", "WSM", /* 882 */"Samoa" }, { 887, "YAR", "YE", "YEM", /* 887 */"Yemen" }, { 175, NULL, "YT", "MYT", /* 175 */"Mayotte" }, { 710, "ZA", "ZA", "ZAF", /* 710 */"South Africa" }, { 894, "Z", "ZM", "ZMB", /* 894 */"Zambia" }, { 716, "ZW", "ZW", "ZWE", /* 716 */"Zimbabwe" }, { 999, "*", "*", "*", /* 999 */"Unknown" }, };
+#include "search_countrytable.h"
+
+
 
 // @return  =0 strings matched, =1 not matched
 static int ascii_cmp_local(char *name, char *match, int partial)
@@ -1753,7 +1728,7 @@ void search_full_world(char *addr, int partial, int search_order, struct jni_obj
 		{
 			if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
 			{
-				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 38) == 0)
+				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 43) == 0)
 				{
 					// its an sdcard map
 					//// dbg(0,"map name=%s",map_name_attr.u.str);
@@ -2169,28 +2144,50 @@ search_by_address(GList *result_list, struct mapset *ms, char *addr, int partial
 // IN_BUF_SIZE2 is the size of the file read buffer.
 // IN_BUF_SIZE2 must be >= 1
 //#define IN_BUF_SIZE2 (1024*16)
-int IN_BUF_SIZE2 = sizeof(struct streets_index_data_block) * 1024;
-int t_IN_BUF_SIZE2 = sizeof(struct town_index_data_block) * 1024;
-static uint8 s_inbuf[(sizeof(struct streets_index_data_block) * 1024)];
-static uint8 t_s_inbuf[(sizeof(struct town_index_data_block) * 1024)];
+//x/ int IN_BUF_SIZE2 = sizeof(struct streets_index_data_block) * 1024;
+//x/ int t_IN_BUF_SIZE2 = sizeof(struct town_index_data_block) * 1024;
+//x/ static uint8 s_inbuf[(sizeof(struct streets_index_data_block) * 1024)];
+//x/ static uint8 t_s_inbuf[(sizeof(struct town_index_data_block) * 1024)];
 //static uint8 s_inbuf[IN_BUF_SIZE2];
 
+int IN_BUF_SIZE2 = sizeof(struct streets_index_data_block) * 2048;
+int t_IN_BUF_SIZE2 = sizeof(struct town_index_data_block) * 2048;
+uint8 *s_inbuf;
+uint8 *t_s_inbuf;
+
 // OUT_BUF_SIZE2 is the size of the output buffer used during decompression.
-// OUT_BUF_SIZE2 must be a power of 2 >= TINFL_LZ_DICT_SIZE (because the low-level decompressor
+// OUT_BUF_SIZE2 must be a power of 2 >= TINFL_LZ_DICT_SIZE(==32768) (because the low-level decompressor
 //              not only writes, but reads from the output buffer as it decompresses)
 //#define OUT_BUF_SIZE2 (TINFL_LZ_DICT_SIZE)
 //#define OUT_BUF_SIZE2 (1024*32)
-int OUT_BUF_SIZE2 = sizeof(struct streets_index_data_block) * 1024;
-int t_OUT_BUF_SIZE2 = sizeof(struct town_index_data_block) * 1024;
-static uint8 s_outbuf[(sizeof(struct streets_index_data_block) * 1024)];
-static uint8 t_s_outbuf[(sizeof(struct town_index_data_block) * 1024)];
+
+
+// -- OLD --
+//int OUT_BUF_SIZE2 = sizeof(struct streets_index_data_block) * 1024;
+//int t_OUT_BUF_SIZE2 = sizeof(struct town_index_data_block) * 1024;
+//static uint8 s_outbuf[(sizeof(struct streets_index_data_block) * 1024)];
+//static uint8 t_s_outbuf[(sizeof(struct town_index_data_block) * 1024)];
+// -- OLD --
+// -- NEW --
+//x/ int OUT_BUF_SIZE2 = TINFL_LZ_DICT_SIZE * 32;
+//x/ int t_OUT_BUF_SIZE2 = TINFL_LZ_DICT_SIZE * 32;
+//x/ static uint8 s_outbuf[(sizeof(struct streets_index_data_block) * 1024 * 32)];
+//x/ static uint8 t_s_outbuf[(sizeof(struct town_index_data_block) * 1024 * 32)];
+// -- NEW --
+
+// TINFL_LZ_DICT_SIZE = 32768
+int OUT_BUF_SIZE2 =   (sizeof(struct streets_index_data_block) * 512);
+int t_OUT_BUF_SIZE2 = (sizeof(struct town_index_data_block) * 512);
+uint8 *s_outbuf;
+uint8 *t_s_outbuf;
+
 //static uint8 s_outbuf[OUT_BUF_SIZE2];
 
 static long long street_index_size = 0; // this is the offset for town index start
 // street index starts at "+sizeof(long long)"
 
 #define my_min(a,b) (((a) < (b)) ? (a) : (b))
-#define NUMBER_OF_TOWNS_TO_CACHE 10
+#define NUMBER_OF_TOWNS_TO_CACHE 1024
 
 static struct town_index_data_block_c *town_lookup_cache = NULL;
 static struct town_index_data_block_c *town_lookup_cache_cur = NULL;
@@ -2200,6 +2197,8 @@ static int town_lookup_cache_cur_item = 0;
 
 void town_index_init_cache()
 {
+	//dbg(0,"+#+:enter\n");
+
 	int s = sizeof(struct town_index_data_block_c) * NUMBER_OF_TOWNS_TO_CACHE;
 	// dbg(0, "cache size=%d\n", s);
 
@@ -2208,10 +2207,14 @@ void town_index_init_cache()
 	town_lookup_cache_found = NULL;
 	town_lookup_cache_items = 0;
 	town_lookup_cache_cur_item = 0;
+
+	//dbg(0,"+#+:leave\n");
 }
 
 void town_index_insert_cache(struct town_index_data_block* t, char* townname_long)
 {
+	//dbg(0,"+#+:enter\n");
+
 	if (town_lookup_cache_items < NUMBER_OF_TOWNS_TO_CACHE)
 	{
 		// fill up cache until all slots are filled
@@ -2242,6 +2245,8 @@ void town_index_insert_cache(struct town_index_data_block* t, char* townname_lon
 
 int town_index_lookup_cache(long long townid)
 {
+	//dbg(0,"+#+:enter\n");
+
 	int i;
 	struct town_index_data_block_c* t;
 
@@ -2267,6 +2272,8 @@ int town_index_lookup_cache(long long townid)
 
 char* town_index_lookup(struct street_index_head *sih, long long townid)
 {
+	//dbg(0,"+#+:enter\n");
+
 	char *townname = NULL;
 	char *townname2 = NULL;
 	int found = 0;
@@ -2317,12 +2324,12 @@ char* town_index_lookup(struct street_index_head *sih, long long townid)
 
 		while (town_index_read_data(sih))
 		{
+			//dbg(0, "id=%lld\n", sih->ti_db_ptr->town_id);
+
 			if (offline_search_break_searching == 1)
 			{
 				break;
 			}
-
-			//dbg(0, "id=%lld\n", sih->ti_db_ptr->town_id);
 
 			if (sih->ti_db_ptr->town_id == townid)
 			{
@@ -2371,6 +2378,8 @@ char* town_index_lookup(struct street_index_head *sih, long long townid)
 
 struct street_index_head* street_index_init(const char* idxfile_name)
 {
+	//dbg(0,"+#+:enter\n");
+
 	struct street_index_head *ret=g_new0(struct street_index_head, 1);
 	long s1;
 	int b;
@@ -2431,6 +2440,8 @@ struct street_index_head* street_index_init(const char* idxfile_name)
 
 void town_index_setpos(struct street_index_head *sih, int town_data_block_num)
 {
+	//dbg(0,"+#+:enter\n");
+
 	if (sih->t_comp_status == 1)
 	{
 		town_index_close_compr(sih);
@@ -2460,6 +2471,7 @@ void town_index_setpos(struct street_index_head *sih, int town_data_block_num)
 
 void street_index_setpos(struct street_index_head *sih, int data_block_num)
 {
+	//dbg(0,"+#+:enter\n");
 
 	if (sih->comp_status == 1)
 	{
@@ -2490,6 +2502,8 @@ void street_index_setpos(struct street_index_head *sih, int data_block_num)
 
 int street_index_read_data(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	// fread(&sih->si_db, sizeof(struct streets_index_data_block), 1, sih->sif);
 
 
@@ -2566,6 +2580,8 @@ int street_index_read_data(struct street_index_head *sih)
 
 int town_index_read_data(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	// fread(&sih->si_db, sizeof(struct streets_index_data_block), 1, sih->sif);
 
 
@@ -2644,18 +2660,28 @@ int town_index_read_data(struct street_index_head *sih)
 
 void street_index_close_compr(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	g_free(sih->inflator);
 	sih->comp_status = 2;
+
+	//dbg(0,"+#+:leave\n");
 }
 
 void town_index_close_compr(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	g_free(sih->t_inflator);
 	sih->t_comp_status = 2;
+
+	//dbg(0,"+#+:leave\n");
 }
 
 void street_index_init_compr(struct street_index_head *sih, long long size)
 {
+	//dbg(0,"+#+:enter\n");
+
 	// decompress structure
 	sih->inflator = g_new0(tinfl_decompressor, 1);
 	sih->comp_status = 1;
@@ -2673,10 +2699,14 @@ void street_index_init_compr(struct street_index_head *sih, long long size)
 	sih->data_count = 0;
 
 	tinfl_init(sih->inflator);
+
+	//dbg(0,"+#+:leave\n");
 }
 
 void town_index_init_compr(struct street_index_head *sih, long long size)
 {
+	//dbg(0,"+#+:enter\n");
+
 	// decompress structure
 	sih->t_inflator = g_new0(tinfl_decompressor, 1);
 	sih->t_comp_status = 1;
@@ -2694,10 +2724,14 @@ void town_index_init_compr(struct street_index_head *sih, long long size)
 	sih->t_data_count = 0;
 
 	tinfl_init(sih->t_inflator);
+
+	//dbg(0,"+#+:leave\n");
 }
 
 int street_index_decompress_data_block(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	// size_t total_in = 0, total_out = 0;
 	// long file_loc;
 
@@ -2794,6 +2828,8 @@ int street_index_decompress_data_block(struct street_index_head *sih)
 
 int town_index_decompress_data_block(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	// size_t total_in = 0, total_out = 0;
 	// long file_loc;
 
@@ -2890,6 +2926,8 @@ int town_index_decompress_data_block(struct street_index_head *sih)
 
 void street_index_close(struct street_index_head *sih)
 {
+	//dbg(0,"+#+:enter\n");
+
 	g_free(sih->si_ib_mem);
 	g_free(sih->ti_ib_mem);
 	if (town_lookup_cache)
@@ -2899,11 +2937,13 @@ void street_index_close(struct street_index_head *sih)
 	}
 	fclose(sih->sif);
 	g_free(sih);
+
+	//dbg(0,"+#+:leave\n");
 }
 
 
 // func defs
-void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_object *jni, const char* idxfile_name);
+int search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_object *jni, const char* idxfile_name);
 void search_v2(char *addr, char *town, char* hn, int partial, struct jni_object *jni);
 // func defs
 
@@ -2911,40 +2951,160 @@ void search_v2(char *addr, char *town, char* hn, int partial, struct jni_object 
 #include <sys/types.h>
 #include <dirent.h>
 
+void spill_index()
+{
+	// do not use anymore !!!!!!!
+}
+
 void search_v2(char *addr, char *town, char* hn, int partial, struct jni_object *jni)
 {
+	//dbg(0,"+#+:enter\n");
+
 	int len;
 	int len2;
 	int len3;
 	char *last_four;
 	DIR* dirp;
 	struct dirent *dp;
+	int result_count = 0;
+	int this_res_count = 0;
+	void *p1;
+	void *p2;
+	void *p3;
+	void *p4;
+
+	s_outbuf = g_malloc(OUT_BUF_SIZE2);
+	t_s_outbuf = g_malloc(t_OUT_BUF_SIZE2);
+	p1 = s_outbuf;
+	p2 = t_s_outbuf;
+
+	s_inbuf = g_malloc(IN_BUF_SIZE2);
+	t_s_inbuf = g_malloc(t_IN_BUF_SIZE2);
+	p3 = s_inbuf;
+	p4 = t_s_inbuf;
+
 
 	len2 = strlen("navitmap_");
 	len = len2 + 11; // should be 21 'navitmap_0%%.bin.idx'
 
-	// look for all the navitmap_0**.bin.idx files in mapdir, then call search in all of them
-	dirp = opendir(navit_maps_dir);
-	while ((dp = readdir(dirp)) != NULL)
+	if ((town == NULL) || (strlen(town) == 0))
 	{
-		if ((strlen(dp->d_name) == len) && (!strncmp(dp->d_name, "navitmap_", len2)))
+		result_count = 0;
+		this_res_count = 0;
+
+		// ------------- SEARCH LOOP -------------
+		// look for all the navitmap_0**.bin.idx files in mapdir, then call search in all of them
+		// we dont have a TOWN name, so just search for "addr"
+		dirp = opendir(navit_maps_dir);
+		while ((dp = readdir(dirp)) != NULL)
 		{
-			//dbg(0, "2 file=%s\n", dp->d_name);
-			len3 = strlen(dp->d_name);
-			last_four = &dp->d_name[len3-4];
-			//dbg(0, "3 l4=%s\n", last_four);
-			if (!strcmp(last_four, ".idx"))
+			if ((strlen(dp->d_name) == len) && (!strncmp(dp->d_name, "navitmap_", len2)))
 			{
-				search_v2_work(addr, town, hn, partial, jni, dp->d_name);
+				len3 = strlen(dp->d_name);
+				last_four = &dp->d_name[len3 - 4];
+				if (!strcmp(last_four, ".idx"))
+				{
+					this_res_count = search_v2_work(addr, NULL, hn, partial, jni, dp->d_name);
+					//dbg(0, "SLOOP:s=%s t=%s c=%i\n", addr, NULL, this_res_count);
+					result_count = result_count + this_res_count;
+				}
 			}
 		}
+		closedir(dirp);
+		//dbg(0, "SLOOP:sumc=%i\n", result_count)
+		// ------------- SEARCH LOOP -------------
 	}
-	closedir(dirp);
+	else
+	{
+		result_count = 0;
+		this_res_count = 0;
 
+		// ------------- SEARCH LOOP 1 -------------
+		// look for all the navitmap_0**.bin.idx files in mapdir, then call search in all of them
+		// first search for "addr<space>town" concated as street name
+		char *addr_concat = g_strdup_printf("%s %s", addr, town);
+		dirp = opendir(navit_maps_dir);
+		while ((dp = readdir(dirp)) != NULL)
+		{
+			if ((strlen(dp->d_name) == len) && (!strncmp(dp->d_name, "navitmap_", len2)))
+			{
+				len3 = strlen(dp->d_name);
+				last_four = &dp->d_name[len3 - 4];
+				if (!strcmp(last_four, ".idx"))
+				{
+					this_res_count = search_v2_work(addr_concat, NULL, hn, partial, jni, dp->d_name);
+					//dbg(0, "SLOOP1:s=%s t=%s c=%i\n", addr_concat, NULL, this_res_count);
+					result_count = result_count + this_res_count;
+				}
+			}
+		}
+		closedir(dirp);
+		//dbg(0, "SLOOP1:sumc=%i\n", result_count)
+		g_free(addr_concat);
+		// ------------- SEARCH LOOP 1 -------------
+
+		// ------------- SEARCH LOOP 2 -------------
+		// look for all the navitmap_0**.bin.idx files in mapdir, then call search in all of them
+		// then search for "addr" and "town"
+		dirp = opendir(navit_maps_dir);
+		while ((dp = readdir(dirp)) != NULL)
+		{
+			if ((strlen(dp->d_name) == len) && (!strncmp(dp->d_name, "navitmap_", len2)))
+			{
+				len3 = strlen(dp->d_name);
+				last_four = &dp->d_name[len3 - 4];
+				if (!strcmp(last_four, ".idx"))
+				{
+					this_res_count = search_v2_work(addr, town, hn, partial, jni, dp->d_name);
+					//dbg(0, "SLOOP2:s=%s t=%s c=%i\n", addr, town, this_res_count);
+					result_count = result_count + this_res_count;
+				}
+			}
+		}
+		closedir(dirp);
+		//dbg(0, "SLOOP2:sumc=%i\n", result_count)
+		// ------------- SEARCH LOOP 2 -------------
+
+		// if still no result then search only for "addr" as streetname
+		if (result_count == 0)
+		{
+			// ------------- SEARCH LOOP 3 -------------
+			// look for all the navitmap_0**.bin.idx files in mapdir, then call search in all of them
+			dirp = opendir(navit_maps_dir);
+			while ((dp = readdir(dirp)) != NULL)
+			{
+				if ((strlen(dp->d_name) == len) && (!strncmp(dp->d_name, "navitmap_", len2)))
+				{
+					len3 = strlen(dp->d_name);
+					last_four = &dp->d_name[len3 - 4];
+					if (!strcmp(last_four, ".idx"))
+					{
+						this_res_count = search_v2_work(addr, NULL, hn, partial, jni, dp->d_name);
+						//dbg(0, "SLOOP3:s=%s t=%s c=%i\n", addr, NULL, this_res_count);
+						result_count = result_count + this_res_count;
+					}
+				}
+			}
+			closedir(dirp);
+			//dbg(0, "SLOOP3:sumc=%i\n", result_count)
+			// ------------- SEARCH LOOP 3 -------------
+		}
+
+	}
+
+	g_free(p1);
+	g_free(p2);
+
+	g_free(p3);
+	g_free(p4);
+
+	//dbg(0,"+#+:leave\n");
 }
 
-void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_object *jni, const char* idxfile_name)
+int search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_object *jni, const char* idxfile_name)
 {
+	//dbg(0,"+#+:enter\n");
+
 	char *buffer = NULL;
 	float lat;
 	float lng;
@@ -2967,8 +3127,13 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 	int want_result;
 	struct coord c3;
 	static const char *alpha = "abcdefghijklmnopqrstuvwxyz";
-	char tmp_letter[STREET_INDEX_STREET_NAME_SIZE];
+	// char tmp_letter[STREET_INDEX_STREET_NAME_SIZE - 1];
 	struct street_index_head *sih;
+	int res_hn = 0;
+	int search_results_found_ = 0;
+	long long pos_now_pre;
+	long long pos_now_aft;
+	int max_townname_plus_1 = MAX_INDEXSEARCH_TOWNNAME + 1;
 
 
 	if ((!addr) || (strlen(addr) < 1))
@@ -3075,7 +3240,7 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 		}
 	}
 
-	//dbg(0, "found pos=%d\n", found);
+	// dbg(0, "found pos=%d\n", found);
 
 	street_index_setpos(sih, found);
 	int found_data = 0;
@@ -3083,6 +3248,33 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 
 	while (street_index_read_data(sih))
 	{
+		// ------------------------------------------
+		// ------------------------------------------
+		// what streettypes do we want to include in search:
+		// 1  -> normal street in native language
+		// 2  -> english streetname
+		// 3  -> alternative name
+		// 4  -> town name
+		// 40 -> POI
+		// ------------------------------------------
+		// ------------------------------------------
+		//
+		// dbg(0,"STREETINDEX:type=%d name=%s\n", (int)sih->si_db_ptr->street_type, sih->si_db_ptr->street_name);
+#if 0
+		if ((int)sih->si_db_ptr->street_type == 2)
+		{
+			continue;
+		}
+
+		if ((int)sih->si_db_ptr->street_type == 3)
+		{
+			continue;
+		}
+#endif
+		//
+		// ------------------------------------------
+		// ------------------------------------------
+
 		//ddd++;
 
 		//if (ddd > 3)
@@ -3095,13 +3287,37 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 			break;
 		}
 
+
+		// -- SANITY CHECK -- ----------------------
+		if (! sih->si_db_ptr->street_name)
+		{
+			// the end is here
+			break;
+		}
+
+		if (strlen(sih->si_db_ptr->street_name) == 0)
+		{
+			// the end is here
+			break;
+		}
+		// -- SANITY CHECK -- ----------------------
+
+
 		//dbg(0,"data=%s addr=%s\n", sih->si_db_ptr->street_name, addr_copy);
 		if (!ascii_cmp_local_faster(sih->si_db_ptr->street_name, addr_copy, 1))
 		{
 			found_data = 1;
 			if ((partial == 1) || (!ascii_cmp_local_faster(sih->si_db_ptr->street_name, addr_copy, partial)))
 			{
+				// townname = NULL;
+				pos_now_pre = ftello(sih->sif); // 64bit
 				townname = town_index_lookup(sih, sih->si_db_ptr->town_id);
+				pos_now_aft = ftello(sih->sif); // 64bit
+				if (pos_now_pre != pos_now_aft)
+				{
+					// dbg(0, "correct seek position\n");
+					fseeko(sih->sif, (off_t)pos_now_pre, SEEK_SET);
+				}
 
 				// if we also have a search-town-name then check here
 				if ((!town_fold)||(strlen(town_fold) < 1))
@@ -3124,10 +3340,11 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 						// now set coord of this item/street
 						c3.y = sih->si_db_ptr->lat;
 						c3.x = sih->si_db_ptr->lon;
-						search_address_housenumber_for_street(hn, sih->si_db_ptr->street_name, townname, &c3, partial, jni);
+						res_hn = search_address_housenumber_for_street(hn, sih->si_db_ptr->street_name, townname, &c3, partial, jni);
+						search_results_found_ = search_results_found_ + res_hn;
 					}
 
-					if (townname != NULL)
+					if ((townname)&&(strcmp(townname, "(null)")))
 					{
 						address = g_strdup_printf("%s, %s", sih->si_db_ptr->street_name, townname);
 					}
@@ -3137,20 +3354,37 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 					}
 
 
-					if (strlen(address) > 100)
+					if (strlen(address) > MAX_INDEXSEARCH_TOWNNAME)
 					{
 						address2 = address;
-						address2[101] = '\0';
+						address2[max_townname_plus_1] = '\0';
 						address2 = linguistics_check_utf8_string(address2);
 					}
 					else
 					{
 						address2 = address;
 					}
-					buffer = g_strdup_printf("STR:H0L0:%d:%d:%.101s", sih->si_db_ptr->lat, sih->si_db_ptr->lon, address2);
+
+					if ((int)sih->si_db_ptr->street_type == 4)
+					{
+						// result is town/district
+						buffer = g_strdup_printf("TWN:H0L0:%d:%d:%.*s", sih->si_db_ptr->lat, sih->si_db_ptr->lon, max_townname_plus_1, address2);
+					}
+					else if ((int)sih->si_db_ptr->street_type == 40)
+					{
+						// result is town/district
+						buffer = g_strdup_printf("POI:H0L0:%d:%d:%.*s", sih->si_db_ptr->lat, sih->si_db_ptr->lon, max_townname_plus_1, address2);
+					}
+					else
+					{
+						// result is street
+						buffer = g_strdup_printf("STR:H0L0:%d:%d:%.*s", sih->si_db_ptr->lat, sih->si_db_ptr->lon, max_townname_plus_1, address2);
+					}
+					// dbg(0,"buffer=%s\n", buffer);
 #ifdef HAVE_API_ANDROID
 					// return results to android as they come in ...
 					android_return_search_result(jni, buffer);
+					search_results_found_++;
 #endif
 					if (townname)
 					{
@@ -3184,5 +3418,8 @@ void search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_ob
 	g_free(addr_copy);
 	street_index_close(sih);
 
+	//dbg(0,"+#+:leave\n");
+
+	return search_results_found_;
 }
 

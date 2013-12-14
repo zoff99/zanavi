@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -127,6 +127,8 @@ int MYSTERY_SPEED = 2;
 int offline_search_filter_duplicates = 0;
 int offline_search_break_searching = 0;
 char *navit_maps_dir;
+char *navit_share_dir;
+char *navit_data_dir;
 int cancel_drawing_global = 0;
 int global_speak_streetnames = 1;
 int allow_large_mapfiles = 1; // allow the use of large (>2GB) mapfiles // -> value unused for now
@@ -141,6 +143,12 @@ int global_stop_demo_vehicle = 0; // 0 -> demo vehicle can move, 1 -> demo vehic
 int global_show_route_rectangles = 0; // 1 -> show route rectangles, 0 -> dont show route rectangles
 int global_traffic_light_delay = 0; // 0 -> dont account for traffic lights in route, >0 -> calc a delay for each traffic light
 int global_draw_multipolygons = 1; // 0 -> dont draw lines and triangles from multipolygons, 1 -> draw them
+int global_have_dpi_value = 240;
+float global_dpi_factor = 1.0f;
+int global_order_level_for_fast_draw = 13;
+int global_show_english_labels = 1; // 0 -> only "normal" names/labels shown on map
+									// 1 -> show "normal, english"
+									// 2 -> show only "english" labels
 
 GHashTable *global_transform_hash = NULL;
 GHashTable *global_transform_hash2 = NULL;
@@ -148,12 +156,19 @@ GHashTable *global_transform_hash2 = NULL;
 long long draw_lines_count_2 = 0;
 long long draw_lines_count_3 = 0;
 long long draw_lines_count_4 = 0;
+int poi_on_map_count = 0;
+int label_on_map_count = 0;
+int label_district_on_map_count = 0;
+int label_major_on_map_count = 0;
+int poi_icon_on_map_count = 0;
 
 int mapdraw_time[11 + 5]; // time to draw map on screen (in 1/1000 of a second) [add 5, just in case we inc it 2 times at same time because of threads]
 int cur_mapdraw_time_index = 0;
 
 int route_status_previous = 0;
 long long global_route_memory_size = 0;
+int global_old_vehicle_speed = -1;
+int global_old_vehicle_speed_for_autozoom = -1;
 
 void navit_add_mapset(struct navit *this_, struct mapset *ms)
 {
@@ -213,7 +228,8 @@ navit_get_user_data_directory(int create)
 #endif
 	////DBG dbg(0,"EEnter\n");
 	char *dir;
-	dir = getenv("NAVIT_USER_DATADIR");
+	// dir = getenv("NAVIT_USER_DATADIR");
+	dir = navit_share_dir;
 	if (create && !file_exists(dir))
 	{
 		//DBG dbg(0, "creating dir %s\n", dir);
@@ -774,6 +790,9 @@ static void navit_scale(struct navit *this_, long scale, struct point *p, int dr
 	android_return_generic_int(3, (int)scale);
 #endif
 
+	//dbg(0, "zoom to scale=%d", (int)scale);
+
+
 	if (p)
 	{
 		transform_reverse(this_->trans, p, &c1);
@@ -810,26 +829,65 @@ static void navit_scale(struct navit *this_, long scale, struct point *p, int dr
  * @param speed The vehicles speed in meters per second
  * @param dir The direction into which the vehicle moves
  */
-static void navit_autozoom(struct navit *this_, struct coord *center, int speed, int draw)
+static long navit_autozoom(struct navit *this_, struct coord *center, int speed, int draw)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
 	struct point pc;
 	int distance, w, h;
-	double new_scale;
+	long new_scale;
 	long scale;
 
 	if (!this_->autozoom_active)
 	{
-		return;
+		return -1;
 	}
 
-	distance = speed * this_->autozoom_secs;
+	if (global_old_vehicle_speed < 1)
+	{
+		return -1;
+	}
+
+	if (speed < 20)
+	{
+		return -1;
+	}
+
+// this is kaputt!!
+#if 0
+	if (global_old_vehicle_speed_for_autozoom > 0)
+	{
+		if (abs(global_old_vehicle_speed_for_autozoom - speed) < 10)
+		{
+			// change in speed not significant
+			return;
+		}
+	}
+	global_old_vehicle_speed_for_autozoom = speed;
+#endif
+// this is kaputt!!
+
+	// distance = speed * this_->autozoom_secs;
+	if (speed > 109)
+	{
+		distance = speed * 10;
+	}
+	else
+	{
+		distance = speed * 5;
+	}
+
+	// scale = this_->trans->scale * 16;
+	scale = transform_get_scale(this_->trans);
 
 	transform_get_size(this_->trans, &w, &h);
 	transform(this_->trans, transform_get_projection(this_->trans), center, &pc, 1, 0, 0, NULL);
-	scale = transform_get_scale(this_->trans);
+
+	//dbg(0,"autozoom:   dist=%d\n", distance);
+	//dbg(0,"autozoom:  scale=%d\n", (int)scale);
+	//dbg(0,"autozoom:o speed=%d\n", speed);
+	//dbg(0,"autozoom:n speed=%d\n", global_old_vehicle_speed);
 
 	/* We make sure that the point we want to see is within a certain range
 	 * around the vehicle. The radius of this circle is the size of the
@@ -838,29 +896,77 @@ static void navit_autozoom(struct navit *this_, struct coord *center, int speed,
 
 	if (w > h)
 	{
-		new_scale = (double) distance / h * 16;
+		new_scale = (long)( ((float)distance / (float)h) * 16);
 	}
 	else
 	{
-		new_scale = (double) distance / w * 16;
+		new_scale = (long)( ((float)distance / (float)w) * 16);
 	}
 
-	if (abs(new_scale - scale) < 2)
+	if (new_scale < this_->autozoom_min)
 	{
-		return; // Smoothing
+		new_scale = this_->autozoom_min;
 	}
 
-	if (new_scale >= this_->autozoom_min)
+	//dbg(0,"autozoom:w scale=%d\n", (int)new_scale);
+
+	//if (abs(new_scale - scale) < 2)
+	//{
+	//	return; // Smoothing
+	//}
+
+	if (new_scale > scale)
 	{
-		navit_scale(this_, (long) new_scale, &pc, 0);
-	}
-	else
-	{
-		if (scale != this_->autozoom_min)
+		if (new_scale > (scale + 20))
 		{
-			navit_scale(this_, this_->autozoom_min, &pc, 0);
+			scale = scale + 10;
+		}
+		else if (new_scale > (scale + 5))
+		{
+			scale = scale + 4;
+		}
+		else
+		{
+			scale = scale++;
 		}
 	}
+	else if (new_scale < scale)
+	{
+		if ((new_scale + 20) < scale)
+		{
+			scale = scale - 10;
+		}
+		else if ((new_scale + 5) < scale)
+		{
+			scale = scale - 4;
+		}
+		else
+		{
+			scale = scale--;
+		}
+	}
+	else
+	{
+		// no change
+		return -1;
+	}
+
+	//dbg(0,"autozoom:n scale=%d\n", (int)scale);
+
+	if (scale >= this_->autozoom_min)
+	{
+		navit_scale(this_, (long) scale, &pc, 0);
+	}
+	else
+	{
+		//if (scale != this_->autozoom_min)
+		//{
+			navit_scale(this_, this_->autozoom_min, &pc, 0);
+		//}
+	}
+
+	// return new scale value
+	return scale;
 }
 
 /**
@@ -879,7 +985,9 @@ void navit_zoom_in(struct navit *this_, int factor, struct point *p)
 	////DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans) / factor;
 	if (scale < 1)
+	{
 		scale = 1;
+	}
 	////DBG dbg(0,"zoom in -> scale=%d",scale);
 	navit_scale(this_, scale, p, 1);
 }
@@ -925,7 +1033,9 @@ void navit_zoom_in_cursor(struct navit *this_, int factor)
 		this_->vehicle->follow_curr = this_->vehicle->follow;
 	}
 	else
+	{
 		navit_zoom_in(this_, factor, NULL);
+	}
 }
 
 void navit_zoom_to_scale(struct navit *this_, int new_scale)
@@ -957,8 +1067,9 @@ void navit_zoom_to_scale_with_center_point(struct navit *this_, int new_scale, s
 	//DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans);
 	long new_scale_long = new_scale;
-	// dbg(0, "zoom to scale -> old scale=%d", scale);
-	// dbg(0, "zoom to scale -> want scale=%d", new_scale_long);
+
+	//dbg(0, "zoom to scale -> old scale=%d", scale);
+	//dbg(0, "zoom to scale -> want scale=%d", new_scale_long);
 
 	// only do something if scale changed!
 	if (scale != new_scale_long)
@@ -980,7 +1091,9 @@ void navit_zoom_out_cursor(struct navit *this_, int factor)
 		this_->vehicle->follow_curr = this_->vehicle->follow;
 	}
 	else
+	{
 		navit_zoom_out(this_, 2, NULL);
+	}
 }
 
 static int navit_cmd_zoom_in(struct navit *this_)
@@ -1720,7 +1833,7 @@ navit_new(struct attr *parent, struct attr **attrs)
 	this_->center_timeout = 1;
 	this_->use_mousewheel = 1;
 	this_->autozoom_secs = 10;
-	this_->autozoom_min = 7;
+	this_->autozoom_min = 6;
 	this_->autozoom_active = 0;
 	this_->zoom_min = 1;
 	this_->zoom_max = 1048576; //-> order=-2  // 2097152 -> order=-3;
@@ -2433,6 +2546,11 @@ void navit_remove_all_maps(struct navit *this_)
 	//}
 
 
+	if (this_->tracking)
+	{
+		tracking_flush(this_->tracking);
+	}
+
 	if (this_->route)
 	{
 		struct attr callback;
@@ -2623,6 +2741,10 @@ void navit_add_all_maps(struct navit *this_)
 			active.type = attr_active;
 			active.u.num = 0;
 			//map_set_attr(map2, &active);
+
+			active.type = attr_route_active;
+			active.u.num = 0; // by default deactivate rounting on this map
+			map_set_attr(map2, &active);
 		}
 		g_free(map_file);
 
@@ -2653,6 +2775,10 @@ void navit_add_all_maps(struct navit *this_)
 			active.type = attr_active;
 			active.u.num = 0;
 			//map_set_attr(map2, &active);
+
+			active.type = attr_route_active;
+			active.u.num = 0; // by default deactivate rounting on this map
+			map_set_attr(map2, &active);
 		}
 		g_free(map_file);
 
@@ -2714,6 +2840,118 @@ void navit_add_all_maps(struct navit *this_)
 		}
 		g_free(map_file);
 		// traffic map --------------------
+
+
+
+		// world map2 --------------------
+		parent.type = attr_navit;
+		parent.u.navit = this_;
+		type.type = attr_type;
+		type.u.str = "textfile";
+		data.type = attr_data;
+		map_file = g_strdup_printf("%sworldmap2.txt", navit_maps_dir);
+		data.u.str = map_file;
+
+		dbg(0, "activate map:%s\n", map_file);
+
+		flags.type = attr_flags;
+		flags.u.num = 0;
+		attrs[0] = &type;
+		attrs[1] = &data;
+		attrs[2] = &flags;
+		attrs[3] = NULL;
+		map2 = map_new(&parent, attrs);
+		if (map2)
+		{
+			map2_attr.u.data = map2;
+			map2_attr.type = attr_map;
+			mapset_add_attr_name_str(ms, &map2_attr, "-special-:worldmap2.txt");
+			struct attr active;
+			active.type = attr_active;
+			active.u.num = 1; // by default activate map
+			// map_set_attr(map2, &active);
+
+			active.type = attr_route_active;
+			active.u.num = 0; // by default deactivate routing on this map
+			map_set_attr(map2, &active);
+
+		}
+		g_free(map_file);
+		// world map2 --------------------
+
+
+		// world map5 --------------------
+		parent.type = attr_navit;
+		parent.u.navit = this_;
+		type.type = attr_type;
+		type.u.str = "textfile";
+		data.type = attr_data;
+		map_file = g_strdup_printf("%sworldmap5.txt", navit_maps_dir);
+		data.u.str = map_file;
+
+		dbg(0, "activate map:%s\n", map_file);
+
+		flags.type = attr_flags;
+		flags.u.num = 0;
+		attrs[0] = &type;
+		attrs[1] = &data;
+		attrs[2] = &flags;
+		attrs[3] = NULL;
+		map2 = map_new(&parent, attrs);
+		if (map2)
+		{
+			map2_attr.u.data = map2;
+			map2_attr.type = attr_map;
+			mapset_add_attr_name_str(ms, &map2_attr, "-special-:worldmap5.txt");
+			struct attr active;
+			active.type = attr_active;
+			active.u.num = 1; // by default activate map
+			// map_set_attr(map2, &active);
+
+			active.type = attr_route_active;
+			active.u.num = 0; // by default deactivate routing on this map
+			map_set_attr(map2, &active);
+		}
+		g_free(map_file);
+		// world map5 --------------------
+
+
+#if 0
+		// world map6 --------------------
+		parent.type = attr_navit;
+		parent.u.navit = this_;
+		type.type = attr_type;
+		type.u.str = "textfile";
+		data.type = attr_data;
+		map_file = g_strdup_printf("%sworldmap6.txt", navit_maps_dir);
+		data.u.str = map_file;
+
+		dbg(0, "activate map:%s\n", map_file);
+
+		flags.type = attr_flags;
+		flags.u.num = 0;
+		attrs[0] = &type;
+		attrs[1] = &data;
+		attrs[2] = &flags;
+		attrs[3] = NULL;
+		map2 = map_new(&parent, attrs);
+		if (map2)
+		{
+			map2_attr.u.data = map2;
+			map2_attr.type = attr_map;
+			mapset_add_attr_name_str(ms, &map2_attr, "-special-:worldmap6.txt");
+			struct attr active;
+			active.type = attr_active;
+			active.u.num = 1; // by default activate map
+			// map_set_attr(map2, &active);
+
+			active.type = attr_route_active;
+			active.u.num = 0; // by default deactivate routing on this map
+			map_set_attr(map2, &active);
+		}
+		g_free(map_file);
+		// world map6 --------------------
+#endif
 
 
 		int i = 1;
@@ -3216,6 +3454,7 @@ void navit_set_center(struct navit *this_, struct pcoord *center, int set_timeou
 	struct coord *c = transform_center(this_->trans);
 	struct coord c1, c2;
 	enum projection pro = transform_get_projection(this_->trans);
+
 	if (pro != center->pro)
 	{
 		c1.x = center->x;
@@ -3227,11 +3466,13 @@ void navit_set_center(struct navit *this_, struct pcoord *center, int set_timeou
 		c2.x = center->x;
 		c2.y = center->y;
 	}
+
 	*c = c2;
 	if (set_timeout)
 	{
 		navit_set_timeout(this_);
 	}
+
 	if (this_->ready == 3)
 	{
 		navit_draw(this_);
@@ -3399,10 +3640,7 @@ void navit_set_center_cursor(struct navit *this_, int autozoom, int keep_orienta
 	navit_get_cursor_pnt(this_, &pn, keep_orientation, &dir);
 	transform_set_yaw(this_->trans, dir);
 	navit_set_center_coord_screen(this_, &nv->coord, &pn, 0);
-	if (autozoom)
-	{
-		navit_autozoom(this_, &nv->coord, nv->speed, 0);
-	}
+	// OLD // navit_autozoom(this_, &nv->coord, nv->speed, 0);
 }
 
 static void navit_set_center_cursor_draw(struct navit *this_)
@@ -3936,10 +4174,14 @@ void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value)
 				if ((!strcmp(layer->name, "polygons001"))
 					|| (!strcmp(layer->name, "polygons"))
 					|| (!strcmp(layer->name, "streets"))
+					|| (!strcmp(layer->name, "streets_STR_ONLY"))
 					|| (!strcmp(layer->name, "streets_1"))
+					|| (!strcmp(layer->name, "streets_1_STR_ONLY"))
 					|| (!strcmp(layer->name, "streets_2"))
+					|| (!strcmp(layer->name, "streets_2_STR_ONLY"))
 					|| (!strcmp(layer->name, "route_001"))
 					|| (!strcmp(layer->name, "route_002"))
+					|| (!strcmp(layer->name, "route_003"))
 					)
 				{
 					//dbg(0,"layer found\n");
@@ -4051,6 +4293,122 @@ void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value)
 	dbg(0,"+#+:leave\n");
 #endif
 }
+
+void displaylist_shift_for_dpi_value_in_layers(struct navit *this_, double factor)
+{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+
+	GList *l;
+	struct layout *lay;
+	GList *l2;
+	struct layer *layer;
+	GList *ig;
+	struct itemgra *itemgr;
+	GList *elements;
+	struct element *e;
+
+	// loop through all the layouts
+	l = this_->layouts;
+	while (l)
+	{
+		lay = l->data;
+		//dbg(0,"layout name=%s\n", lay->name);
+		if (!strcmp(lay->name, "Android-Car"))
+		{
+			//dbg(0,"layout found\n");
+			l2 = lay->layers;
+			while (l2)
+			{
+				layer = l2->data;
+				//dbg(0,"layer name=%s\n", layer->name);
+				// only change the zoom of these layers
+/*
+				if ((!strcmp(layer->name, "polygons001"))
+					|| (!strcmp(layer->name, "polygons"))
+					|| (!strcmp(layer->name, "streets"))
+					|| (!strcmp(layer->name, "streets_1"))
+					|| (!strcmp(layer->name, "streets_2"))
+					|| (!strcmp(layer->name, "route_001"))
+					|| (!strcmp(layer->name, "route_002"))
+					|| (!strcmp(layer->name, "route_003"))
+					)
+*/
+				//{
+					//dbg(0,"layer found\n");
+					ig = layer->itemgras;
+					while (ig)
+					{
+						//dbg(0,"*itgr*\n");
+						itemgr = ig->data;
+
+							// loop thru all the elements in this "itemgra"
+							elements = itemgr->elements;
+							while (elements)
+							{
+								e = elements->data;
+
+								if (e->type == element_polyline)
+								{
+									// polyline width
+									e->u.polyline.width = (int)((float)e->u.polyline.width * factor) + 0;
+									if (e->u.polyline.width < 1)
+									{
+										e->u.polyline.width = 1;
+									}
+								}
+
+								if (e->type == element_circle)
+								{
+									// circle witdh
+									e->u.circle.width = (int)((float)e->u.circle.width * factor) + 0;
+									if (e->u.circle.width < 1)
+									{
+										e->u.circle.width = 1;
+									}
+
+									e->u.circle.radius = (int)((float)e->u.circle.radius * factor) + 0;
+									if (e->u.circle.radius < 1)
+									{
+										e->u.circle.radius = 1;
+									}
+
+									// text size
+									e->text_size = (int)((float)(e->text_size * factor));
+									if (e->text_size < 1)
+									{
+										e->text_size = 1;
+									}
+
+								}
+
+								if (e->type == element_text)
+								{
+									// text size
+									e->text_size = (int)((float)(e->text_size * factor));
+									if (e->text_size < 1)
+									{
+										e->text_size = 1;
+									}
+								}
+								elements = g_list_next(elements);
+							}
+							// loop thru all the elements in this "itemgra"
+						ig = g_list_next(ig);
+					}
+				//}
+				l2 = g_list_next(l2);
+			}
+		}
+		l = g_list_next(l);
+	}
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+}
+
 
 static int navit_add_log(struct navit *this_, struct log *log)
 {
@@ -4273,6 +4631,8 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 #endif
 }
 
+
+
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
@@ -4292,13 +4652,17 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	struct point old_cursor_pnt;
 	struct tracking *tracking = NULL;
 	struct pcoord pc[16];
+
 	enum projection pro = transform_get_projection(this_->trans_cursor);
+
 	int count;
 	int old_dir;
 	int old_pos_invalid;
 	int (*get_attr)(void *, enum attr_type, struct attr *, struct attr_iter *);
 	void *attr_object;
 	char *destination_file;
+	long new_scale_value;
+	long old_scale_value;
 
 	if (this_->ready != 3)
 	{
@@ -4342,6 +4706,8 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 
 	// save old value
 	old_dir = nv->dir;
+	global_old_vehicle_speed = nv->speed;
+	old_scale_value = transform_get_scale(this_->trans);
 
 	nv->dir = *attr_dir.u.numd;
 	nv->speed = *attr_speed.u.numd;
@@ -4360,7 +4726,6 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 		old_pos_invalid = 1;
 	}
 	// old values ---------
-
 
 	transform_from_geo(pro, attr_pos.u.coord_geo, &nv->coord);
 
@@ -4383,6 +4748,7 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	cursor_pc.x = nv->coord.x;
 	cursor_pc.y = nv->coord.y;
 	cursor_pc.pro = pro;
+
 	if (this_->route)
 	{
 		if (tracking)
@@ -4410,16 +4776,25 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	transform(this_->trans_cursor, pro, &nv->coord, &cursor_pnt, 1, 0, 0, NULL);
 	// XXX // dbg(0,"v2 px:%d py:%d x:%d y:%d\n", cursor_pnt.x, cursor_pnt.y, nv->coord.x, nv->coord.y);
 
+	// ------- AUTOZOOM ---------
+	new_scale_value = navit_autozoom(this_, &nv->coord, nv->speed, 0);
+	// ------- AUTOZOOM ---------
 
 	if (old_pos_invalid == 0)
 	{
 		int delta_x = cursor_pnt.x - old_cursor_pnt.x;
 		int delta_y = cursor_pnt.y - old_cursor_pnt.y;
 		int delta_angle = nv->dir - old_dir;
+		int delta_zoom = 0;
+
+		if (new_scale_value != -1)
+		{
+			delta_zoom = (int)(new_scale_value - old_scale_value);
+		}
 
 #ifdef HAVE_API_ANDROID
 		//dbg(0,"delta x=%d, y=%d, angle=%d\n", delta_x, delta_y, delta_angle);
-		set_vehicle_values_to_java_delta(delta_x, delta_y, delta_angle);
+		set_vehicle_values_to_java_delta(delta_x, delta_y, delta_angle, delta_zoom);
 #endif
 	}
 
@@ -4501,8 +4876,6 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 		// draw???????
 	}
 
-	//dbg(0,"navit_vehicle_update_999\n");
-
 #ifdef NAVIT_MEASURE_TIME_DEBUG
 	debug_mrp("navit_vehicle_update:", debug_measure_end(s_));
 #endif
@@ -4514,6 +4887,8 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
+
+
 
 
 /**
@@ -5808,10 +6183,12 @@ void navit_destroy(struct navit *this_)
 	dbg(0, "ex 011\n");
 	ms = navit_get_mapset(this_);
 	dbg(0, "ex 012\n");
+
 	if (ms)
 	{
 		mapset_destroy(ms);
 	}
+
 	dbg(0, "ex 013\n");
 	graphics_free(this_->gra);
 	dbg(0, "ex 014\n");

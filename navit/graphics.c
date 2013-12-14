@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -90,12 +90,22 @@ static pthread_mutex_t uiConditionMutex = PTHREAD_MUTEX_INITIALIZER;
 //# Authors: Martin Schaller (04/2008)
 //##############################################################################################################
 
-// above what "order" level to show only prerendered map
-#define ORDER_USE_PRERENDERED_MAP 0
+// above what "order" level to show only prerendered-map or vector-map
+#define ORDER_USE_PRERENDERED_MAP 5
+#define ORDER_USE_NORMAL_MAP 6
+#define ORDER_USE_BORDERS_MAP 14
+
 // minimum (line legth * 32) squared (in pixel) to show text label
 #define MIN_LINE_LENGTH_FOR_TEXT_2 409600
 // minimum (line legth * 32) squared (in pixel) to show text label -> for middle segments of streets
 #define MIN_LINE_LENGTH_FOR_TEXT_MIDDLE_2 1638400
+
+#define MAX_POI_ICONS_ON_MAP 30
+#define MAX_POI_ICON_TEXTS_ON_MAP 12
+
+#define MAX_PLACE_LABELS_ON_MAP 13
+#define MAX_DISTRICT_LABELS_ON_MAP 13
+#define MAX_MAJOR_PLACE_LABELS_ON_MAP 9
 
 #define ORDER_LEVEL_FOR_STREET_SIMPLIFY 9
 #define STREET_SIMPLIFY	24
@@ -181,6 +191,8 @@ struct displayitem
 	struct displayitem *next;
 	struct item item;
 	char *label;
+	// struct color color;
+	unsigned int col_int_value;
 	int count;
 	struct coord c[0];
 };
@@ -986,53 +998,82 @@ static void xdisplay_free(struct displaylist *dl)
  * @returns <>
  * @author Martin Schaller (04/2008)
  */
-static void display_add(struct hash_entry *entry, struct item *item, int count, struct coord *c, char **label, int label_count)
+static void display_add(struct hash_entry *entry, struct item *item, int count, struct coord *c, char **label, int label_count, int color_yes_no, unsigned int color_int)
 {
 	struct displayitem *di;
 	int len, i;
+	// int len2;
 	char *p;
 
 	len = sizeof(*di) + count * sizeof(*c);
-	if (label && label_count)
+	if (label && label_count > 0)
 	{
 		for (i = 0; i < label_count; i++)
 		{
 			if (label[i])
 			{
-				len += strlen(label[i]) + 1;
-			}
-			else
-			{
-				len++;
+				//dbg(0, "label=X%sX\n", label[i]);
+				len += strlen(label[i]);
+				if (i < (label_count - 1))
+				{
+					len = len + 2; // put ', '(==2 chars) between labels!
+				}
 			}
 		}
+		len++; // NULL at the end
 	}
+
 	p = g_malloc(len);
-	// // dbg(0,"malloc len:%d\n", len);
+	//len2 = len - (sizeof(*di) + count * sizeof(*c));
+	//dbg(0,"malloc len:%d len2:%d\n", len, len2);
 
 	di = (struct displayitem *) p;
 	p += sizeof(*di) + count * sizeof(*c);
 	di->item = *item;
-	if (label && label_count)
+
+	if (color_yes_no)
+	{
+		//di->color.r = r;
+		//di->color.g = g;
+		//di->color.b = b;
+		//di->color.a = a;
+		di->col_int_value = color_int;
+	}
+	else
+	{
+		// 0 --> no custom color is set
+		//di->color.a = 0;
+		di->col_int_value = (unsigned int)0;
+	}
+
+	if (label && label_count > 0)
 	{
 		di->label = p;
 		for (i = 0; i < label_count; i++)
 		{
 			if (label[i])
 			{
-				strcpy(p, label[i]);
-				p += strlen(label[i]) + 1;
-			}
-			else
-			{
-				*p++ = '\0';
+				strncpy(p, label[i], strlen(label[i])); // copy string without!! NULL byte at the end
+				p += strlen(label[i]);
+				if (i < (label_count - 1))
+				{
+					// put ', ' between labels!
+					*p++ = ',';
+					*p++ = ' ';
+				}
 			}
 		}
+		*p++ = '\0'; // add NULL at the end
+		//p = di->label;
+		//p = p + len2;
+		//*p = '\0'; // for safety NULL at the real end!
+		//dbg(0, "add:strlen=%d p=%s\n", strlen(di->label), di->label);
 	}
 	else
 	{
 		di->label = NULL;
 	}
+
 	di->count = count;
 	memcpy(di->c, c, count * sizeof(*c));
 	di->next = entry->di;
@@ -1775,8 +1816,13 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 	int wmax;
 	int out = 0;
 	// const int max_segs = 2000;
-	const int max_segs = 60; // send max this many segments to java with one single call
+	int max_segs = 20; // send max this many segments to java with one single call
 	struct point_rect r = gra->r;
+
+	if (order < global_order_level_for_fast_draw)
+	{
+		max_segs = 100;
+	}
 
 	//if (count > 30)
 	//{
@@ -2203,6 +2249,8 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 	struct graphics_image *img = dc->img;
 	struct point p;
 	char *path;
+	struct color custom_color;
+	int dont_draw = 0;
 
 	//if (run_type > 100) // dbg(0,"enter\n");
 
@@ -2219,13 +2267,13 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		{
 			if (run_type == 1)
 			{
-				if (di->item.flags & AF_UNDERGROUND)
+				if (di->item.flags & NAVIT_AF_UNDERGROUND)
 				{
 					// next item
 					di = di->next;
 					continue;
 				}
-				else if (di->item.flags & AF_BRIDGE)
+				else if (di->item.flags & NAVIT_AF_BRIDGE)
 				{
 					// next item
 					di = di->next;
@@ -2235,7 +2283,7 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			else if (run_type == 2)
 			{
 				// tunnel
-				if (di->item.flags & AF_UNDERGROUND)
+				if (di->item.flags & NAVIT_AF_UNDERGROUND)
 				{
 				}
 				else
@@ -2248,7 +2296,7 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			else if (run_type == 3)
 			{
 				// bridge
-				if (di->item.flags & AF_BRIDGE)
+				if (di->item.flags & NAVIT_AF_BRIDGE)
 				{
 				}
 				else
@@ -2277,34 +2325,45 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		if (dc->type == type_poly_water_tiled)
 		{
 			mindist = 0;
-			if (order < 10)
+			if (order < 12)
 			{
-				mindist = 3;
+				mindist = 4;
 			}
 		}
 		else if (dc->type == type_border_country)
 		{
 			if (order < 10)
 			{
-				mindist = 3;
+				mindist = 4;
 			}
 		}
 		else if (dc->type == type_poly_wood_from_triang)
 		{
-			if (order > 4)
+			if (order > 11)
 			{
-				// always show triangulates triangles normally
 				mindist = 0;
 			}
 		}
 		else if (dc->type == type_poly_water_from_triang)
 		{
-			if (order > 4)
+			if (order > 10)
 			{
-				// always show triangulates triangles normally
 				mindist = 0;
 			}
 		}
+#if 0
+		else
+		{
+			if (order < global_order_level_for_fast_draw)
+			{
+				dbg(0, "else: mindist_old=%d\n", mindist);
+				mindist = 5;
+				dbg(0, "else: mindist_new=%d\n", mindist);
+			}
+		}
+#endif
+		//dbg(0, "mindist now=%d\n", mindist);
+
 
 		if (dc->e->type == element_polyline)
 		{
@@ -2327,23 +2386,23 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 				int poly = e->u.polyline.width > 1;
 
 				// detect underground streets/lines/etc ...
-				//if ((allow_dashed) && (di->item.flags & AF_UNDERGROUND))
-				if (di->item.flags & AF_UNDERGROUND)
+				//if ((allow_dashed) && (di->item.flags & NAVIT_AF_UNDERGROUND))
+				if (di->item.flags & NAVIT_AF_UNDERGROUND)
 				{
 					poly = 2;
 				}
-				else if (di->item.flags & AF_BRIDGE)
+				else if (di->item.flags & NAVIT_AF_BRIDGE)
 				{
 					poly = 3;
 				}
 
 				int oneway = 0;
 
-				if (di->item.flags & AF_ONEWAYREV)
+				if (di->item.flags & NAVIT_AF_ONEWAYREV)
 				{
 					oneway = 2;
 				}
-				else if (di->item.flags & AF_ONEWAY)
+				else if (di->item.flags & NAVIT_AF_ONEWAY)
 				{
 					oneway = 1;
 				}
@@ -2369,8 +2428,38 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 				}
 				else
 				{
-					graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color);
-					// graphics_draw_polyline_clipped(gra, gc, pa, count, width, 99, poly, order, oneway);
+					// use custom color for underground trains
+					if (dc->type == type_rail_subway)
+					{
+						//dbg(0, "colour1=r:%d g:%d b:%d a:%d\n", e->color.r, e->color.g, e->color.b, e->color.a);
+						if (di->col_int_value != 0)
+						{
+							//dbg(0, "colour2=r:%d g:%d b:%d a:%d\n", di->color.r, di->color.g, di->color.b, di->color.a);
+							//e->color.r = di->color.r;
+							//e->color.g = di->color.g;
+							//e->color.b = di->color.b;
+							//e->color.a = di->color.a;
+							custom_color.r = (di->col_int_value >> 16) & 0xff;
+							custom_color.g = (di->col_int_value >> 8) & 0xff;
+							custom_color.b = di->col_int_value & 0xff;
+
+							custom_color.r = custom_color.r << 8;
+							custom_color.g = custom_color.g << 8;
+							custom_color.b = custom_color.b << 8;
+
+							custom_color.a = 0xffff;
+
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &custom_color);
+						}
+						else
+						{
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color);
+						}
+					}
+					else
+					{
+						graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color);
+					}
 				}
 
 				// -------- cancel dashes -------
@@ -2387,34 +2476,96 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			case element_circle:
 				if (count)
 				{
-					if (e->u.circle.width > 1)
-					{
-						gc->meth.gc_set_linewidth(gc->priv, e->u.polyline.width);
-					}
-
 					//// dbg(0, "graphics_draw_circle\n");
-					graphics_draw_circle(gra, gc, pa, e->u.circle.radius);
 
-					if (di->label && e->text_size)
+					if (di->label)
 					{
-						struct graphics_font *font = get_font(gra, e->text_size);
-						struct graphics_gc *gc_background = dc->gc_background;
-						if (!gc_background && e->u.circle.background_color.a)
+						dont_draw = 0;
+						// dbg(0,"poi-texton_map:m#%d:t#%d:p#%d:%s\n", label_major_on_map_count, label_on_map_count, poi_on_map_count, item_to_name(dc->type));
+						// count labels and poi-texts and stop after drawing more than n of those
+						if (item_is_poi(dc->type))
 						{
-							gc_background = graphics_gc_new(gra);
-							graphics_gc_set_foreground(gc_background, &e->u.circle.background_color);
-							dc->gc_background = gc_background;
+							if (poi_on_map_count > MAX_POI_ICON_TEXTS_ON_MAP)
+							{
+								dont_draw = 1;
+							}
+							else
+							{
+								poi_on_map_count++;
+							}
 						}
-						p.x = pa[0].x + 3;
-						p.y = pa[0].y + 10;
+						else if (item_is_town_label_no_major(dc->type))
+						{
+							if (label_on_map_count > MAX_PLACE_LABELS_ON_MAP)
+							{
+								dont_draw = 1;
+							}
+							else
+							{
+								label_on_map_count++;
+							}
+						}
+						else if (item_is_town_label_major(dc->type))
+						{
+							if (label_major_on_map_count > MAX_MAJOR_PLACE_LABELS_ON_MAP)
+							{
+								dont_draw = 1;
+							}
+							else
+							{
+								label_major_on_map_count++;
+							}
+						}
+						else if (item_is_district_label(dc->type))
+						{
+							// dbg(0, "district:%s\n", di->label);
 
-						if (font)
-						{
-							gra->meth.draw_text(gra->priv, gc->priv, gc_background ? gc_background->priv : NULL, font->priv, di->label, &p, 0x10000, 0);
+							if (label_district_on_map_count > MAX_DISTRICT_LABELS_ON_MAP)
+							{
+								dont_draw = 1;
+							}
+							else
+							{
+								//dbg(0, "district *DRAW*\n");
+								label_district_on_map_count++;
+							}
 						}
-						else
+
+
+						if (dont_draw == 0)
 						{
-							//DBG // dbg(0, "Failed to get font with size %d\n", e->text_size);
+							if (e->u.circle.width > 1)
+							{
+								gc->meth.gc_set_linewidth(gc->priv, e->u.polyline.width);
+							}
+							graphics_draw_circle(gra, gc, pa, e->u.circle.radius);
+
+							// -----------------------------
+
+							if (e->text_size)
+							{
+
+								struct graphics_font *font = get_font(gra, e->text_size);
+								struct graphics_gc *gc_background = dc->gc_background;
+								if (!gc_background && e->u.circle.background_color.a)
+								{
+									gc_background = graphics_gc_new(gra);
+									graphics_gc_set_foreground(gc_background, &e->u.circle.background_color);
+									dc->gc_background = gc_background;
+								}
+								p.x = pa[0].x + 4 + e->u.circle.radius;  // move text label a bit to the right, so it does not overlap the circle
+								p.y = pa[0].y + (int)(e->text_size / 2); // move label a bit down, so that it is in the middle of the circle (on y-axis)
+
+								if (font)
+								{
+									gra->meth.draw_text(gra->priv, gc->priv, gc_background ? gc_background->priv : NULL, font->priv, di->label, &p, 0x10000, 0);
+								}
+								else
+								{
+									//DBG // dbg(0, "Failed to get font with size %d\n", e->text_size);
+								}
+
+							}
 						}
 					}
 				}
@@ -2436,7 +2587,10 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 
 					if (font)
 					{
-						label_line(gra, gc, gc_background, font, pa, count, di->label);
+						if (order > 8)
+						{
+							label_line(gra, gc, gc_background, font, pa, count, di->label);
+						}
 					}
 					else
 					{
@@ -2447,59 +2601,103 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			case element_icon:
 				if (count)
 				{
-					if (!img || item_is_custom_poi(di->item))
+					dont_draw = 0;
+					//dbg(0,"poi-on_map:#%d:%s\n", poi_icon_on_map_count, item_to_name(dc->type));
+					if (item_is_poi(dc->type))
 					{
-						if (item_is_custom_poi(di->item))
+						if (poi_icon_on_map_count > MAX_POI_ICONS_ON_MAP)
 						{
-							char *icon;
-							char *src;
-							if (img)
-							{
-								graphics_image_free(dc->gra, img);
-							}
-							src = e->u.icon.src;
-							if (!src || !src[0])
-							{
-								src = "%s";
-							}
-							icon = g_strdup_printf(src, di->label + strlen(di->label) + 1);
-							path = graphics_icon_path(icon);
-							g_free(icon);
+							dont_draw = 1;
 						}
 						else
 						{
-							path = graphics_icon_path(e->u.icon.src);
+							poi_icon_on_map_count++;
 						}
-						img = graphics_image_new_scaled_rotated(gra, path, e->u.icon.width, e->u.icon.height, e->u.icon.rotation);
-						if (img)
-						{
-							dc->img = img;
-						}
-						else
-						{
-							// missing icon // // dbg(0, "-- ICON MISSING -- failed to load icon '%s'\n", path);
-						}
-						g_free(path);
 					}
 
-					if (img)
+					if (dont_draw == 0)
 					{
-						p.x = pa[0].x - img->hot.x;
-						p.y = pa[0].y - img->hot.y;
-						//// dbg(0, "icon: '%s'\n", path);
-						//// dbg(0,"hot: %d %d\n", img->hot.x, img->hot.y);
-						gra->meth.draw_image(gra->priv, gra->gc[0]->priv, &p, img->priv);
+						if (!img || item_is_custom_poi(di->item))
+						{
+							if (item_is_custom_poi(di->item))
+							{
+								char *icon;
+								char *src;
+								if (img)
+								{
+									graphics_image_free(dc->gra, img);
+								}
+								src = e->u.icon.src;
+								if (!src || !src[0])
+								{
+									src = "%s";
+								}
+								icon = g_strdup_printf(src, di->label + strlen(di->label) + 1);
+								path = graphics_icon_path(icon);
+								g_free(icon);
+							}
+							else
+							{
+								path = graphics_icon_path(e->u.icon.src);
+							}
+
+							img = graphics_image_new_scaled_rotated(gra, path, e->u.icon.width, e->u.icon.height, e->u.icon.rotation);
+							if (img)
+							{
+								dc->img = img;
+
+								// compensate for streched images on high dpi devices
+								img->hot.x = (int)((float)img->width / 2.0f / (float)global_dpi_factor);
+								img->hot.y = (int)((float)img->height / 2.0f / (float)global_dpi_factor);
+
+								//dbg(0, "img2_factor=%f\n", (float)global_dpi_factor);
+								//dbg(0, "img2_h=%d\n", img->height);
+								//dbg(0, "img2_w=%d\n", img->width);
+								//dbg(0, "img2_hotx=%d\n", img->hot.x);
+								//dbg(0, "img2_hoty=%d\n", img->hot.y);
+								//dbg(0, "img2_icon: '%s'\n", path);
+
+							}
+							else
+							{
+								// missing icon // // dbg(0, "-- ICON MISSING -- failed to load icon '%s'\n", path);
+							}
+
+							g_free(path);
+						}
+
+						if (img)
+						{
+							p.x = pa[0].x - img->hot.x;
+							p.y = pa[0].y - img->hot.y;
+
+							//// dbg(0,"hot: %d %d\n", img->hot.x, img->hot.y);
+							gra->meth.draw_image(gra->priv, gra->gc[0]->priv, &p, img->priv);
+						}
 					}
 				}
 				break;
 			case element_image:
-				//// dbg(0, "image: '%s'\n", di->label);
+				//dbg(0, "***image***: '%s'\n", di->label);
 				if (gra->meth.draw_image_warp)
-					gra->meth.draw_image_warp(gra->priv, gra->gc[0]->priv, pa, count, di->label);
-				else
 				{
-					// // dbg(0,"draw_image_warp not supported by graphics driver drawing '%s'\n",di->label);
+					gra->meth.draw_image_warp(gra->priv, gra->gc[0]->priv, pa, count, di->label);
 				}
+				//else
+				//{
+				//	dbg(0,"draw_image_warp not supported by graphics driver drawing: image='%s' count=%d\n",di->label, count);
+				//}
+				break;
+			case element_maptile: // same as image, just has a diferent name in the mapfile, so we can do cool things with it!
+				//dbg(0, "***maptile***: '%s'\n", di->label);
+				if (gra->meth.draw_image_warp)
+				{
+					gra->meth.draw_image_warp(gra->priv, gra->gc[0]->priv, pa, count, di->label);
+				}
+				//else
+				//{
+				//	dbg(0,"draw_image_warp not supported by graphics driver drawing: image='%s' count=%d\n",di->label, count);
+				//}
 				break;
 			case element_arrows:
 				display_draw_arrows(gra, gc, pa, count);
@@ -2696,7 +2894,26 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 		order_corrected_2 = 0;
 	}
 
+	int fast_draw_mode = 0;
+	//dbg(0,"orderlevel=%d\n", order);
+	if (order < global_order_level_for_fast_draw)
+	{
+		//dbg(0,"fast_draw_mode=1\n");
+		fast_draw_mode = 1;
+		run_type = 99; // draw only 1 pass, bridges and tunnels will be drawn in any order
+	}
+
 	//// dbg(0,"layer name=%s\n", lay->name);
+
+
+	// reset max drawing counters ----------------------
+	poi_on_map_count = 0;
+	label_on_map_count = 0;
+	label_district_on_map_count = 0;
+	label_major_on_map_count = 0;
+	poi_icon_on_map_count = 0;
+	// reset max drawing counters ----------------------
+
 
 	if ((strncmp("streets_1", lay->name, 9) == 0))
 	{
@@ -2706,6 +2923,15 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 		//draw_lines_count_4 = 0;
 
 		send_refresh = 1;
+
+		//dbg(0,"a1 fast_draw_mode=%d run_type=%d\n", fast_draw_mode, run_type);
+
+
+	  if (fast_draw_mode == 0)
+	  {
+
+		//dbg(0,"fast_draw_mode===0 ?\n");
+
 
 		run_type = 2;
 		itms = lay->itemgras;
@@ -2765,7 +2991,22 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 		 // dbg(0,"MT:7.3.3 - bridges start\n");
 		 */
 
-		run_type = 3;
+	  }
+
+		//dbg(0,"a2 fast_draw_mode=%d run_type=%d\n", fast_draw_mode, run_type);
+
+
+	    if (fast_draw_mode == 0)
+		{
+			run_type = 3;
+		}
+		else
+		{
+			run_type = 99;
+		}
+
+		//dbg(0,"a3 fast_draw_mode=%d run_type=%d\n", fast_draw_mode, run_type);
+
 		itms = lay->itemgras;
 		while (itms)
 		{
@@ -2843,6 +3084,17 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 						char *path2;
 						path2 = graphics_icon_path("nav_waypoint_bk_center.png");
 						global_img_waypoint = graphics_image_new_scaled_rotated(gra, path2, 59, 59, 0);
+
+						// compensate for streched images on high dpi devices
+						global_img_waypoint->hot.x = (int)((float)global_img_waypoint->width / 2.0f / (float)global_dpi_factor);
+						global_img_waypoint->hot.y = (int)((float)global_img_waypoint->height / 2.0f / (float)global_dpi_factor);
+
+						//dbg(0, "img_factor=%f\n", (float)global_dpi_factor);
+						//dbg(0, "img_h=%d\n", global_img_waypoint->height);
+						//dbg(0, "img_w=%d\n", global_img_waypoint->width);
+						//dbg(0, "img_hotx=%d\n", global_img_waypoint->hot.x);
+						//dbg(0, "img_hoty=%d\n", global_img_waypoint->hot.y);
+
 						g_free(path2);
 					}
 
@@ -2898,14 +3150,15 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 	GList *lays;
 	struct layer *lay;
 
-	int draw_vector_map = 1;
+	// int draw_vector_map = 1;
 
 	// if zoomed out too much then use prerendered map tiles
-	if (display_list->order < ORDER_USE_PRERENDERED_MAP)
-	{
-		draw_vector_map = 0;
-	}
+	//if (display_list->order < ORDER_USE_PRERENDERED_MAP)
+	//{
+	//	draw_vector_map = 0;
+	//}
 
+#if 0
 	if (!draw_vector_map)
 	{
 		// draw prerendered big mapimage --- HERE ---
@@ -2975,6 +3228,7 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 		// graphics_draw_bigmap(gra22, gc22, -t->yaw, display_list->order, g22.lat, g22.lng, cursor_pnt.x, cursor_pnt.y, mcenter_pnt.x, mcenter_pnt.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
 		graphics_draw_bigmap(gra22, gc22, -t->yaw, (int) (my_scale / 100), g22.lat, g22.lng, cursor_pnt.x, cursor_pnt.y, mcenter_pnt.x, mcenter_pnt.y, global_vehicle_pos_onscreen.x, global_vehicle_pos_onscreen.y, valid);
 	}
+#endif
 
 	// reset value; --> not sure here, maybe it should NOT be reset here!!!???
 	// cancel_drawing_global = 0;
@@ -3130,8 +3384,14 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	struct attr attr, attr2;
 	enum projection pro;
 	int draw_vector_map = 1; // do we draw the vecotor map, or not? 0=false, 1=true
+	int draw_tile_map = 1;   // do we draw the prerendered tile map? 0=false, 1=true
 	int mapset_counter = 0;
 	int mapset_need_draw = 0;
+	int only_labels = 0;
+
+	// int r_, g_, b_, a_;
+	unsigned int col_int_value;
+	struct attr attr_cc;
 
 	// // dbg(0,"ooo enter ooo %d\n",displaylist->order);
 
@@ -3152,9 +3412,14 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	pro = transform_get_projection(displaylist->dc.trans);
 
 	// if zoomed out too much then use prerendered map tiles
-	if (displaylist->order_hashed < ORDER_USE_PRERENDERED_MAP)
+	if (displaylist->order_hashed < ORDER_USE_PRERENDERED_MAP) // ==5 , (4,3,2,1,0)--> no vector map
 	{
 		draw_vector_map = 0;
+	}
+
+	if (displaylist->order_hashed > ORDER_USE_NORMAL_MAP) // ==6 , (7,8,9, ...)--> no tile map
+	{
+		draw_tile_map = 0;
 	}
 
 	displaylist->order = order_corrected;
@@ -3183,22 +3448,115 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 			mapset_counter++;
 			mapset_need_draw = 1;
+			only_labels = 0;
+
 			struct attr map_name_attr;
 
 			if (map_get_attr(displaylist->m, attr_name, &map_name_attr, NULL))
 			{
-				//// dbg(0,"#+* start reading map file #+*=%s\n",map_name_attr.u.str);
+				//dbg(0,"#+* start reading map file #+*=%s\n",map_name_attr.u.str);
 				if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
 				{
 					if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/borders.bin", map_name_attr.u.str, 41) == 0)
 					{
-						// if its the countryborder map, always draw it
-						mapset_need_draw = 0; // now dont even draw border map!!
+						if (draw_tile_map == 1)
+						{
+							// if its the countryborder map
+							mapset_need_draw = 0;
+						}
+						else if (displaylist->order_hashed >= ORDER_USE_BORDERS_MAP)
+						{
+							// on high detail -> dont draw bordermap anymore. it sometimes causes heavy slowdowns!!
+							mapset_need_draw = 0;
+						}
+					}
+					else if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/coastline.bin", map_name_attr.u.str, 48) == 0)
+					{
+						if (draw_tile_map == 1)
+						{
+							// if its the countryborder map
+							mapset_need_draw = 0;
+						}
+					}
+#if 0
+					else if (strncmp("_ms_sdcard_map:-special-:worldmap6.txt", map_name_attr.u.str, 38) == 0)
+					{
+						// if its a worldmapX.txt
+						if (draw_vector_map == 1)
+						{
+							//dbg(0, "wm5: v=1");
+							mapset_need_draw = 0;
+						}
+						else
+						{
+							//dbg(0, "wm5: v=0");
+
+							if (displaylist->order_hashed < 4)
+							{
+								//dbg(0, "wm5: nd=0");
+								mapset_need_draw = 0;
+							}
+							else
+							{
+								//dbg(0, "wm5: nd=1");
+								mapset_need_draw = 1;
+							}
+						}
+					}
+#endif
+					else if (strncmp("_ms_sdcard_map:-special-:worldmap5.txt", map_name_attr.u.str, 38) == 0)
+					{
+						// if its a worldmapX.txt
+						if (draw_tile_map == 0)
+						{
+							mapset_need_draw = 0;
+						}
+						else
+						{
+							if (displaylist->order_hashed < 3)
+							{
+								mapset_need_draw = 0;
+							}
+							else
+							{
+								mapset_need_draw = 1;
+							}
+						}
+					}
+					else if (strncmp("_ms_sdcard_map:-special-:worldmap2.txt", map_name_attr.u.str, 38) == 0)
+					{
+						// if its a worldmapX.txt
+						if (draw_tile_map == 0)
+						{
+							mapset_need_draw = 0;
+						}
+						else
+						{
+							if (displaylist->order_hashed < 3)
+							{
+								mapset_need_draw = 1;
+							}
+							else
+							{
+								mapset_need_draw = 0;
+							}
+						}
 					}
 					else
 					{
-						// if its an sdcard street map, don't draw it
-						mapset_need_draw = 0;
+						// if its an sdcard street map
+						if (draw_vector_map == 1)
+						{
+							mapset_need_draw = 1;
+							if (draw_tile_map == 1)
+							{
+								only_labels = 1;
+							}
+						}
+						else
+						{
+							mapset_need_draw = 0;
+						}
 					}
 				}
 			}
@@ -3221,8 +3579,9 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 		if (displaylist->mr)
 		{
 			// draw vector map, or not?
-			//// dbg(0,"draw_vector_map=%d mapset_need_draw=%d\n", draw_vector_map, mapset_need_draw);
-			if ((draw_vector_map) || (mapset_need_draw == 1))
+			// dbg(0,"draw_vector_map=%d mapset_need_draw=%d\n", draw_vector_map, mapset_need_draw);
+			// ****** if ((draw_vector_map) || (mapset_need_draw == 1))
+			if (mapset_need_draw == 1)
 			{
 
 				//// dbg(0, "XXXXXYYYYYYY Draw: A.01\n");
@@ -3240,7 +3599,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					_item_counter_++;
 
 					int label_count = 0;
-					char *labels[2];
+					char *labels[3];
 					struct hash_entry *entry;
 
 					if (cancel_drawing_global == 1)
@@ -3274,6 +3633,15 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 						}
 					}
 
+					if (only_labels == 1)
+					{
+						if ((!item_is_town(*item)) && (!item_is_district(*item)))
+						{
+							// if its not a label, dont draw it
+							continue;
+						}
+					}
+
 					entry = get_hash_entry(displaylist, item->type);
 
 					//// dbg(0, "XXXXXYYYYYYY Draw: A.item1 %p %i\n", entry, item->type);
@@ -3302,7 +3670,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 					if (displaylist->dc.pro != pro)
 					{
-						dbg(0,"from to\n");
+						//dbg(0,"from to\n");
 						transform_from_to_count(ca, displaylist->dc.pro, ca, pro, count);
 					}
 
@@ -3312,23 +3680,25 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 						displaylist->dc.maxlen = max * 2;
 					}
 
-					if (item_is_custom_poi(*item))
-					{
-						if (item_attr_get(item, attr_icon_src, &attr2))
-						{
-							labels[1] = map_convert_string(displaylist->m, attr2.u.str);
-						}
-						else
-						{
-							labels[1] = NULL;
-						}
-						label_count = 2;
-					}
-					else
-					{
+					//if (item_is_custom_poi(*item))
+					//{
+					//	if (item_attr_get(item, attr_icon_src, &attr2))
+					//	{
+					//		labels[1] = map_convert_string(displaylist->m, attr2.u.str);
+					//	}
+					//	else
+					//	{
+					//		labels[1] = NULL;
+					//	}
+					//	label_count = 2;
+					//}
+					//else
+					//{
+						labels[0] = NULL;
 						labels[1] = NULL;
+						labels[2] = NULL;
 						label_count = 0;
-					}
+					//}
 
 					// DEBUG -------- zoffzoff
 					// DEBUG -------- zoffzoff
@@ -3338,18 +3708,66 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					// DEBUG -------- zoffzoff
 					// DEBUG -------- zoffzoff
 
+
+
+
+
+
+					// --------======== LABELS ========--------
+					// --------======== LABELS ========--------
 					if (item_attr_get(item, attr_label, &attr))
 					{
-						labels[0] = attr.u.str;
-						if (!label_count)
+						if (global_show_english_labels < 2)
 						{
-							label_count = 2;
+							// NORMAL
+							//dbg(0, "c:%d name=%s\n", label_count, attr.u.str);
+							labels[label_count] = attr.u.str;
+							label_count++;
+						}
+					}
+
+					if (item_attr_get(item, attr_street_name_match, &attr))
+					{
+						if ((global_show_english_labels == 1)||(global_show_english_labels == 2))
+						{
+							// ENGLISH or alternate
+							//dbg(0, "c:%d street_en_name=%s\n", label_count, attr.u.str);
+							labels[label_count] = attr.u.str;
+							label_count++;
+						}
+					}
+					else if (item_attr_get(item, attr_town_name_match, &attr))
+					{
+						if ((global_show_english_labels == 1)||(global_show_english_labels == 2))
+						{
+							// ENGLISH or alternate
+							//dbg(0, "c:%d town_en_name=%s\n", label_count, attr.u.str);
+							labels[label_count] = attr.u.str;
+							label_count++;
 						}
 					}
 					else
 					{
-						labels[0] = NULL;
+						if (global_show_english_labels == 2)
+						{
+							// we want ENGLISH labels, but the item does not have it
+							// --> so show normal label instead (item should not be nameless on map)
+							if (item_attr_get(item, attr_label, &attr))
+							{
+								// NORMAL
+								//dbg(0, "c:%d name=%s\n", label_count, attr.u.str);
+								labels[label_count] = attr.u.str;
+								label_count++;
+							}
+						}
 					}
+					// --------======== LABELS ========--------
+					// --------======== LABELS ========--------
+
+
+
+
+
 
 					// DEBUG -------- zoffzoff
 					// DEBUG -------- zoffzoff
@@ -3379,31 +3797,79 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 
 					/*
-					 if (item->flags & AF_UNDERGROUND)
+					 if (item->flags & NAVIT_AF_UNDERGROUND)
 					 {
 					 // dbg(0,"is UNDERGROUND\n");
 					 }
-					 else if (item->flags & AF_BRIDGE)
+					 else if (item->flags & NAVIT_AF_BRIDGE)
 					 {
 					 // dbg(0,"is BRIDGE\n");
 					 }
 					 */
 
-					if (displaylist->conv && label_count)
+					// a_=0;
+					if (item_attr_get(item, attr_colour2, &attr_cc))
 					{
-						labels[0] = map_convert_string(displaylist->m, labels[0]);
-						display_add(entry, item, count, ca, labels, label_count);
-						map_convert_free(labels[0]);
+
+						col_int_value = (unsigned int)attr_cc.u.num;
+						//dbg(0, "ccooll:1 c=%d\n", col_int_value);
+
+						//r_= (col_int_value >> 16) & 0xff;
+						//g_= (col_int_value >> 8) & 0xff;
+						//b_= col_int_value & 0xff;
+
+						//dbg(0, "ccooll:2 r=%d g=%d b=%d\n", r_,g_,b_);
+
+						//r_ = r_ << 8;
+						//g_ = g_ << 8;
+						//b_ = b_ << 8;
+
+						//dbg(0, "ccooll:3 r=%d g=%d b=%d\n", r_,g_,b_);
+
+						//a_ = 0xffff;
 					}
 					else
 					{
-						display_add(entry, item, count, ca, labels, label_count);
+						col_int_value = 0;
 					}
 
-					if (labels[1])
+					// --------======== LABELS ========--------
+					// --------======== LABELS ========--------
+					if (label_count > 0)
+					{
+						labels[0] = map_convert_string(displaylist->m, labels[0]);
+					}
+					if (label_count > 1)
+					{
+						labels[1] = map_convert_string(displaylist->m, labels[1]);
+					}
+					display_add(entry, item, count, ca, labels, label_count, 1, col_int_value);
+					if (label_count > 0)
+					{
+						map_convert_free(labels[0]);
+					}
+					if (label_count > 1)
 					{
 						map_convert_free(labels[1]);
 					}
+
+					//if (displaylist->conv && label_count)
+					//{
+					//	labels[0] = map_convert_string(displaylist->m, labels[0]);
+					//	display_add(entry, item, count, ca, labels, label_count, 1, col_int_value);
+					//	map_convert_free(labels[0]);
+					//}
+					//else
+					//{
+					//	display_add(entry, item, count, ca, labels, label_count, 1, col_int_value);
+					//}
+					//if (labels[1])
+					//{
+					//	map_convert_free(labels[1]);
+					//}
+					// --------======== LABELS ========--------
+					// --------======== LABELS ========--------
+
 
 					//workload++;
 					/*
@@ -3432,9 +3898,12 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 				////DBG // dbg(0, "XXXXXYYYYYYY Draw: A.02\n");
 
-				map_rect_destroy(displaylist->mr);
+				// ************** map_rect_destroy(displaylist->mr);
 			}
+
+			map_rect_destroy(displaylist->mr);
 		}
+
 
 		if (!route_selection)
 		{
@@ -3496,11 +3965,12 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 		int flags2 = flags;
 		if (!(flags2 & 2))
 		{
-			if (!draw_vector_map)
-			{
-				// dont clean bg of screen when drawing prerendered tiles
-				flags2 = flags2 + 2;
-			}
+			// -- now always clean bg of screen!! 2013-07-08 Zoff
+			//if (!draw_vector_map)
+			//{
+			//	// dont clean bg of screen when drawing prerendered tiles
+			//	flags2 = flags2 + 2;
+			//}
 		}
 		//DBG // dbg(0,"call graphics_displaylist_draw 3")
 		//// dbg(0,"# MT:002 #\n");
@@ -3627,13 +4097,17 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 	// *********DISABLED******* displaylist->dc.mindist = transform_get_scale(trans) / 2;
 	//// dbg(0,"mindist would be:%d\n", (int)(transform_get_scale(trans) / 2));
 	displaylist->dc.mindist = 0;
-	if (order < 8)
+	if (order < 6)
 	{
-		displaylist->dc.mindist = transform_get_scale(trans) * 2;
+		displaylist->dc.mindist = transform_get_scale(trans) * 4;
+	}
+	else if (order < 9)
+	{
+		displaylist->dc.mindist = transform_get_scale(trans) * 3;
 	}
 	else if (order < 13)
 	{
-		displaylist->dc.mindist = transform_get_scale(trans);
+		displaylist->dc.mindist = transform_get_scale(trans) * 2;
 	}
 	// *********DISABLED*******
 	// *********DISABLED*******
@@ -3647,13 +4121,17 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 		graphics_gc_set_foreground(gra->gc[0], &l->color);
 		gra->default_font = g_strdup(l->font);
 	}
+
 	graphics_background_gc(gra, gra->gc[0]);
+
 	if (flags & 1)
 	{
 		// calls -> navit.c navit_predraw --> draw all vehicles
 		callback_list_call_attr_0(gra->cbl, attr_predraw);
 	}
+
 	gra->meth.draw_mode(gra->priv, (flags & 8) ? draw_mode_begin_clear : draw_mode_begin);
+
 	if (!(flags & 2))
 	{
 		// clear the gfx object pipeline ------------------------------
@@ -3664,16 +4142,19 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 		// dbg(0, "clear the screen: rectangle=%d,%d - %d,%d\n", gra->r.lu.x, gra->r.lu.y, gra->r.rl.x, gra->r.rl.y);
 		gra->meth.draw_rectangle(gra->priv, gra->gc[0]->priv, &gra->r.lu, gra->r.rl.x - gra->r.lu.x, gra->r.rl.y - gra->r.lu.y);
 	}
+
 	if (l)
 	{
 		// draw the mapitems
 		// // dbg(0,"o , l->d = %d , %d\n",order,l->order_delta);
 		xdisplay_draw(displaylist, gra, l, order + l->order_delta);
 	}
+
 	if (flags & 1)
 	{
 		callback_list_call_attr_0(gra->cbl, attr_postdraw);
 	}
+
 	if (!(flags & 4))
 	{
 		gra->meth.draw_mode(gra->priv, draw_mode_end);

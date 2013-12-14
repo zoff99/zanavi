@@ -109,7 +109,8 @@ vehicleprofile_new(struct attr *parent, struct attr **attrs)
 	if (!(type_attr = attr_search(attrs, NULL, attr_name)))
 	{
 		return NULL;
-	} this_=g_new0(struct vehicleprofile, 1);
+	}
+	this_=g_new0(struct vehicleprofile, 1);
 	this_->attrs = attr_list_dup(attrs);
 	this_->roadprofile_hash = g_hash_table_new(NULL, NULL);
 	this_->length = -1;

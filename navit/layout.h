@@ -46,7 +46,7 @@ struct element
 {
 	enum
 	{
-		element_point, element_polyline, element_polygon, element_circle, element_text, element_icon, element_image, element_arrows
+		element_point, element_polyline, element_polygon, element_circle, element_text, element_icon, element_image, element_arrows, element_maptile
 	} type;
 	struct color color;
 	int text_size;
@@ -138,6 +138,7 @@ struct cursor;
 struct element;
 struct icon;
 struct image;
+struct maptile;
 struct itemgra;
 struct layer;
 struct layout;
@@ -165,6 +166,7 @@ struct circle *circle_new(struct attr *parent, struct attr **attrs);
 struct text *text_new(struct attr *parent, struct attr **attrs);
 struct icon *icon_new(struct attr *parent, struct attr **attrs);
 struct image *image_new(struct attr *parent, struct attr **attrs);
+struct maptile *maptile_new(struct attr *parent, struct attr **attrs);
 struct arrows *arrows_new(struct attr *parent, struct attr **attrs);
 int element_add_attr(struct element *e, struct attr *attr);
 /* end of prototypes */

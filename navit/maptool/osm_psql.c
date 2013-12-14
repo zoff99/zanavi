@@ -28,7 +28,7 @@
 #include <libpq-fe.h>
 
 int
-map_collect_data_osm_db(char *dbstr, struct maptool_osm *osm)
+map_collect_data_osm_db(char *dbstr, FILE *out_ways, FILE *out_nodes, FILE *out_turn_restrictions, FILE *out_boundaries)
 {
 	PGconn *conn;
 	PGresult *res,*node,*way,*tag;
@@ -108,7 +108,7 @@ map_collect_data_osm_db(char *dbstr, struct maptool_osm *osm)
 				if (tag_id > id)
 					break;
 			}
-			osm_end_node(osm);
+			osm_end_node(out_nodes);
 		}
 		PQclear(tag);
 		PQclear(node);
@@ -169,7 +169,7 @@ map_collect_data_osm_db(char *dbstr, struct maptool_osm *osm)
 					break;
 			}
 			if (tagged)
-				osm_end_way(osm);
+				osm_end_way(out_ways);
 		}
 		PQclear(tag);
 		PQclear(node);

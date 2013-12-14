@@ -1236,10 +1236,10 @@ osd_button_init(struct osd_button *this, struct navit *nav)
 	// dbg(0,,"EEnter\n");
 
 	struct graphics *gra = navit_get_graphics(nav);
-	dbg(1, "enter\n");
+	//dbg(1, "enter\n");
 	this->img = graphics_image_new(gra, this->src);
 	if (!this->img) {
-		dbg(1, "failed to load '%s'\n", this->src);
+		//dbg(1, "failed to load '%s'\n", this->src);
 		return;
 	}
 	if (!this->item.w)
@@ -1287,8 +1287,9 @@ osd_button_set_attr(struct osd_button *this_, struct attr* attr)
 		nav = this_->item.navit;
 		gra = navit_get_graphics(nav);
 		this_->img = graphics_image_new(gra, this_->src);
-		if (!this_->img) {
-			dbg(1, "failed to load '%s'\n", this_->src);
+		if (!this_->img)
+		{
+			//dbg(1, "failed to load '%s'\n", this_->src);
 			return 0;
 		}
 		if (!this_->item.w)
@@ -1383,10 +1384,11 @@ osd_image_init(struct osd_image *this, struct navit *nav)
 	// dbg(0,,"EEnter\n");
 
 	struct graphics *gra = navit_get_graphics(nav);
-	dbg(1, "enter\n");
+	//dbg(1, "enter\n");
 	this->img = graphics_image_new(gra, this->src);
-	if (!this->img) {
-		dbg(1, "failed to load '%s'\n", this->src);
+	if (!this->img)
+	{
+		//dbg(1, "failed to load '%s'\n", this->src);
 		return;
 	}
 	if (!this->item.w)
@@ -1483,7 +1485,7 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 		       && (item->type == type_nav_position || item->type == type_nav_none || level-- > 0));
 	if (item) {
 		name = item_to_name(item->type);
-		dbg(1, "name=%s\n", name);
+		//dbg(1, "name=%s\n", name);
 		if (this->active != 1 || this->last_name != name) {
 			this->active = 1;
 			this->last_name = name;
@@ -2095,7 +2097,7 @@ osd_speed_warner_draw(struct osd_speed_warner *this, struct navit *navit, struct
 	}
 
         flags=tracking_get_current_flags(tracking);
-        if (flags && (*flags & AF_SPEED_LIMIT) && tracking_get_attr(tracking, attr_maxspeed, &maxspeed_attr, NULL)) {
+        if (flags && (*flags & NAVIT_AF_SPEED_LIMIT) && tracking_get_attr(tracking, attr_maxspeed, &maxspeed_attr, NULL)) {
             routespeed = maxspeed_attr.u.num;
 	    osm_data = 1;
         }
@@ -2492,7 +2494,7 @@ osd_text_split(char *in, char **index)
 static void
 osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 {
-	// dbg(0,,"EEnter\n");
+	// dbg(0,"EEnter\n");
 
 	struct point p, p2[4];
 	char *str,*last,*next,*value,*absbegin;
@@ -2539,7 +2541,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 				nav = navit_get_navigation(navit);
 			if (nav && !nav_map)
 				nav_map = navigation_get_map(nav);
-			if (nav_map )
+			if (nav_map)
 				nav_mr = map_rect_new(nav_map, NULL);
 			if (nav_mr)
 				item = map_rect_get_item(nav_mr);
@@ -2556,7 +2558,8 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 				}
 			}
 
-			if (item) {
+			if (item)
+			{
 				//// dbg(0,,"name %s\n", item_to_name(item->type));
 				//// dbg(0,,"type %s\n", attr_to_name(oti->attr_typ));
 				if (item_attr_get(item, oti->attr_typ, &attr))
@@ -2565,14 +2568,23 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 				}
 				id_string=g_strdup_printf("navigation:%s:%s",item_to_name(item->type),attr_to_name(oti->attr_typ));
 			}
+
 			if (nav_mr)
+			{
 				map_rect_destroy(nav_mr);
-		} else if (oti->section == attr_vehicle) {
-			if (navit && !vehicle_attr.u.vehicle) {
+			}
+		}
+		else if (oti->section == attr_vehicle)
+		{
+			if (navit && !vehicle_attr.u.vehicle)
+			{
 				navit_get_attr(navit, attr_vehicle, &vehicle_attr, NULL);
 			}
-			if (vehicle_attr.u.vehicle) {
-				if (vehicle_get_attr(vehicle_attr.u.vehicle, oti->attr_typ, &attr, NULL)) {
+
+			if (vehicle_attr.u.vehicle)
+			{
+				if (vehicle_get_attr(vehicle_attr.u.vehicle, oti->attr_typ, &attr, NULL))
+				{
 					value=osd_text_format_attr(&attr, oti->format, imperial);
 					id_string=g_strdup_printf("vehicle:%s:", attr_to_name(oti->attr_typ));
 				}
@@ -2589,11 +2601,12 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 			if (tracking)
 			{
 				item=tracking_get_current_item(tracking);
+
 				if (item && (oti->attr_typ == attr_speed))
 				{
 					double routespeed = -1;
 					int *flags=tracking_get_current_flags(tracking);
-					if (flags && (*flags & AF_SPEED_LIMIT) && tracking_get_attr(tracking, attr_maxspeed, &maxspeed_attr, NULL))
+					if (flags && (*flags & NAVIT_AF_SPEED_LIMIT) && tracking_get_attr(tracking, attr_maxspeed, &maxspeed_attr, NULL))
 					{
 						routespeed = maxspeed_attr.u.num;
 					}
@@ -2611,7 +2624,6 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 							routespeed=rprof->speed;
 						}
 					}
-
 					value = format_speed(routespeed,"", oti->format, imperial);
 					id_string=g_strdup_printf("tracking:speed:");
 				}
@@ -2662,8 +2674,6 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 				value[len] = '\0';
 			}
 		}
-
-
 
 		// id_string=g_strdup_printf("%s#+#%s:%s",id_string, str ? str:"",value ? value:" ");
 
@@ -2796,7 +2806,6 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 		// **DISABLE** graphics_draw_mode(this->osd_item.gr, draw_mode_end);
 	}
 	g_free(absbegin);
-
 }
 
 /**

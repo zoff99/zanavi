@@ -40,7 +40,7 @@ struct vehicle_methods
 	void (*destroy)(struct vehicle_priv *priv);
 	int (*position_attr_get)(struct vehicle_priv *priv, enum attr_type type, struct attr *attr);
 	int (*set_attr)(struct vehicle_priv *priv, struct attr *attr);
-	void (*update_location_direct)(jobject location);
+	void (*update_location_direct)(double lat, double lon, float speed, float direction, double height, float radius, long gpstime);
 };
 
 /* prototypes */
@@ -64,7 +64,7 @@ void vehicle_draw(struct vehicle *this_, struct graphics *gra, struct point *pnt
 int vehicle_get_cursor_data(struct vehicle *this_, struct point *pnt, int *angle, int *speed);
 void vehicle_log_gpx_add_tag(char *tag, char **logstr);
 
-void vehicle_update_(struct vehicle *this_, jobject location);
+void vehicle_update_(struct vehicle *this_, double lat, double lon, float speed, float direction, double height, float radius, long gpstime);
 
 /* end of prototypes */
 

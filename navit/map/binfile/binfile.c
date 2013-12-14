@@ -645,7 +645,7 @@ static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct at
 
 				if (type == attr_flags && mr->m->map_version < 1)
 				{
-					attr->u.num |= AF_CAR;
+					attr->u.num |= NAVIT_AF_CAR;
 				}
 			}
 			t->pos_attr += size;
@@ -1569,7 +1569,9 @@ map_rect_new_binfile_int(struct map_priv *map, struct map_selection *sel)
 	binfile_check_version(map);
 	// dbg(1, "map_rect_new_binfile\n");
 	if (!map->fi && !map->url)
+	{
 		return NULL;
+	}
 	map_binfile_http_close(map);
 	mr=g_new0(struct map_rect_priv, 1);
 	mr->m = map;
@@ -2870,15 +2872,53 @@ map_binfile_download_initial(struct map_priv *m)
 }
 #endif
 
+
+static int string_endswith(const char* ending, const char* instring)
+{
+	int l1;
+	int l2;
+
+	if (!ending)
+	{
+		return 0;
+	}
+
+	if (!instring)
+	{
+		return 0;
+	}
+
+    l1 = strlen(ending);
+    l2 = strlen(instring);
+
+	if (l1 < 1)
+	{
+		return 0;
+	}
+
+    if (l1 > l2)
+	{
+		return 0;
+	}
+
+    int ret = strcmp(ending, instring + (l2 - l1));
+	//dbg(0, "ending=%s in=%s ret=%d\n", ending, instring + (l2 - l1), (ret == 0));
+	return (ret == 0);
+}
+
+
 static int map_binfile_open(struct map_priv *m)
 {
 	int *magic;
+	int version_exception = 0;
 	struct map_rect_priv *mr;
 	struct item *item;
 	struct attr attr;
+
 	struct attr readwrite =
 	{ attr_readwrite,
 	{ (void *) 1 } };
+
 	struct attr *attrs[] =
 	{ &readwrite, NULL };
 
@@ -2888,11 +2928,13 @@ static int map_binfile_open(struct map_priv *m)
 	{
 		return 0;
 	}
+
 	if (!m->fi)
 	{
 		// dbg(0, "Failed to load '%s'\n", m->filename);
 		return 0;
 	}
+
 	if (m->check_version)
 	{
 		m->version = file_version(m->fi, m->check_version);
@@ -2952,31 +2994,48 @@ static int map_binfile_open(struct map_priv *m)
 			if (binfile_attr_get(item->priv_data, attr_version, &attr))
 			{
 				m->map_version = attr.u.num;
-				dbg(0, "map_version=%d\n", m->map_version);
+				dbg(0, "map version=%d\n", m->map_version);
 			}
+
 			if (binfile_attr_get(item->priv_data, attr_map_release, &attr))
 			{
 				m->map_release = g_strdup(attr.u.str);
-				dbg(0, "map_release=%s\n", m->map_release);
+				dbg(0, "maptool version used=%s\n", m->map_release);
 			}
-			if (m->url && binfile_attr_get(item->priv_data, attr_url, &attr))
+
+			if (string_endswith("borders.bin", m->filename) == 1)
 			{
-				//dbg(0, "url config %s map %s\n", m->url, attr.u.str);
-				if (strcmp(m->url, attr.u.str))
-				{
-					m->update_available = 1;
-				}
-				g_free(m->url);
-				m->url = g_strdup(attr.u.str);
+				dbg(0, "map exception added!\n");
+				version_exception = 1;
 			}
+
+			if (string_endswith("coastline.bin", m->filename) == 1)
+			{
+				dbg(0, "map exception added!\n");
+				version_exception = 1;
+			}
+
+			//if (m->url && binfile_attr_get(item->priv_data, attr_url, &attr))
+			//{
+			//	dbg(0, "url config %s map %s\n", m->url, attr.u.str);
+			//	if (strcmp(m->url, attr.u.str))
+			//	{
+			//		m->update_available = 1;
+			//	}
+			//	g_free(m->url);
+			//	m->url = g_strdup(attr.u.str);
+			//}
 		}
 
 		map_rect_destroy_binfile(mr);
 
-		if (m->map_version >= 16)
+		if (version_exception == 0)
 		{
-			dbg(0, "Warning: This map is incompatible with your versionof ZANavi. Please update ZANavi.\n");
-			return 0;
+			if (m->map_version < (int)NEED_MIN_BINFILE_MAPVERSION)
+			{
+				dbg(0, "!!**Warning**!!: This map is too old for your version of ZANavi. You need at least a version %d map\n", (int)NEED_MIN_BINFILE_MAPVERSION);
+				return 0;
+			}
 		}
 	}
 	return 1;
@@ -2990,6 +3049,7 @@ static void map_binfile_close(struct map_priv *m)
 	file_data_free(m->fi, (unsigned char *) m->eoc64);
 	g_free(m->cachedir);
 	g_free(m->map_release);
+
 	if (m->fis)
 	{
 		for (i = 0; i < m->eoc->zipedsk; i++)
@@ -2998,7 +3058,9 @@ static void map_binfile_close(struct map_priv *m)
 		}
 	}
 	else
+	{
 		file_destroy(m->fi);
+	}
 }
 
 static void map_binfile_destroy(struct map_priv *m)
@@ -3046,18 +3108,27 @@ map_new_binfile(struct map_methods *meth, struct attr **attrs, struct callback_l
 	m->filename = g_strdup(data->u.str);
 	// file_wordexp_destroy(wexp);
 	check_version = attr_search(attrs, NULL, attr_check_version);
+
 	if (check_version)
 		m->check_version = check_version->u.num;
+
 	map_pass = attr_search(attrs, NULL, attr_map_pass);
+
 	if (map_pass)
 		m->passwd = g_strdup(map_pass->u.str);
+
 	flags = attr_search(attrs, NULL, attr_flags);
+
 	if (flags)
 		m->flags = flags->u.num;
+
 	url = attr_search(attrs, NULL, attr_url);
+
 	if (url)
 		m->url = g_strdup(url->u.str);
+
 	download_enabled = attr_search(attrs, NULL, attr_update);
+
 	if (download_enabled)
 		m->download_enabled = download_enabled->u.num;
 

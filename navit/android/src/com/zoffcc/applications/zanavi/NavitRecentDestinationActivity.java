@@ -33,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.retain.dialog.RenameDialog;
@@ -91,7 +90,14 @@ public class NavitRecentDestinationActivity extends ListActivity
 			t[0] = "* Error *";
 			listview_items.add(t[0]);
 		}
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listview_items);
+		NavitArrayAdapter adapter = new NavitArrayAdapter(this, listview_items);
+
+		//if (convertView == null)
+		//{
+		//	LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		//	convertView = inflater.inflate(R.layout.search_result_list_header, null);
+		//}
+
 		this.setListAdapter(adapter);
 		this.getListView().setFastScrollEnabled(true);
 		registerForContextMenu(this.getListView());
@@ -121,7 +127,7 @@ public class NavitRecentDestinationActivity extends ListActivity
 	public static void refresh_items_real()
 	{
 		String[] t = new String[Navit.map_points.size()];
-		ArrayAdapter<String> adapter = (ArrayAdapter<String>) my.getListAdapter();
+		NavitArrayAdapter adapter = (NavitArrayAdapter) my.getListAdapter();
 		listview_items.clear();
 		adapter.notifyDataSetChanged();
 		try

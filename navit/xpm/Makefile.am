@@ -105,6 +105,7 @@ svgs += gui_log.svg
 svgs += airport.svg
 svgs += attraction.svg
 svgs += bank.svg
+svgs += atm.svg
 svgs += bar.svg
 svgs += beer.svg
 svgs += bench.svg

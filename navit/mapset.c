@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -251,6 +251,7 @@ void mapset_destroy(struct mapset *ms)
 #endif
 	GList *map;
 	map = ms->maps;
+
 	while (map)
 	{
 		map_destroy(map->data);
@@ -316,11 +317,18 @@ struct map * mapset_next(struct mapset_handle *msh, int active)
 	for (;;)
 	{
 		if (!msh || !msh->l)
+		{
 			return NULL;
+		}
+
 		ret = msh->l->data;
 		msh->l = g_list_next(msh->l);
+
 		if (!active)
+		{
 			return ret;
+		}
+
 		if (active == 2 && map_get_attr(ret, attr_route_active, &active_attr, NULL))
 		{
 			if (active_attr.u.num)
@@ -328,6 +336,7 @@ struct map * mapset_next(struct mapset_handle *msh, int active)
 			else
 				continue;
 		}
+
 		if (active == 3 && map_get_attr(ret, attr_search_active, &active_attr, NULL))
 		{
 			if (active_attr.u.num)
@@ -335,8 +344,10 @@ struct map * mapset_next(struct mapset_handle *msh, int active)
 			else
 				continue;
 		}
+
 		if (!map_get_attr(ret, attr_active, &active_attr, NULL))
 			return ret;
+
 		if (active_attr.u.num)
 			return ret;
 	}

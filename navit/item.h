@@ -145,6 +145,10 @@ int item_range_contains_item(struct item_range *range, enum item_type type);
 void item_dump_attr(struct item *item, struct map *map, FILE *out);
 void item_dump_filedesc(struct item *item, struct map *map, FILE *out);
 void item_cleanup(void);
+int item_is_poi(enum item_type i_type);
+int item_is_district_label(enum item_type i_type);
+int item_is_town_label_no_major(enum item_type i_type);
+int item_is_town_label_major(enum item_type i_type);
 
 void item_dump_attr_stdout(struct item *item, struct map *map);
 

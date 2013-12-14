@@ -11,7 +11,7 @@ int android_find_method(jclass class, char *name, char *args, jmethodID *ret);
 int android_find_static_method(jclass class, char *name, char *args, jmethodID *ret);
 void send_osd_values(char *id, char *text1, char *text2, char *text3, int i1, int i2, int i3, int i4, float f1, float f2, float f3);
 void set_vehicle_values_to_java(int x, int y, int angle, int speed);
-void set_vehicle_values_to_java_delta(int dx, int dy, int dangle);
+void set_vehicle_values_to_java_delta(int dx, int dy, int dangle, int dzoom);
 
 JNIEnv* jni_getenv();
 

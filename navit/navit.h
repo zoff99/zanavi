@@ -50,6 +50,38 @@ struct _GList;
 typedef struct _GList GList;
 #endif
 
+
+// color codes for colour attribute in OS;
+#define __c_black	"000000"
+#define __c_gray	"808080"
+#define __c_maroon	"800000"
+#define __c_olive	"808000"
+#define __c_green	"008000"
+#define __c_teal	"008080"
+#define __c_navy	"000080"
+#define __c_purple	"800080"
+
+#define __c_white	"FFFFFF"
+#define __c_silver	"C0C0C0"
+#define __c_red		"FF0000"
+#define __c_yellow	"FFFF00"
+#define __c_lime	"00FF00"
+#define __c_aqua	"00FFFF"
+#define __c_blue	"0000FF"
+#define __c_fuchsia	"FF00FF"
+
+#define __c_brown	"A52A2A"
+
+
+// --------------------------------------------
+// --
+// minimum binfile map version needed for this version of ZANavi to work
+#define NEED_MIN_BINFILE_MAPVERSION 2
+// --
+// --------------------------------------------
+
+
+
 extern int allow_gui_internal;
 extern int draw_display_at_speed;
 extern int routing_mode; // 0-> normal highway routing
@@ -58,6 +90,8 @@ extern int routing_mode; // 0-> normal highway routing
 extern int offline_search_filter_duplicates;
 extern int offline_search_break_searching;
 extern char *navit_maps_dir;
+extern char *navit_share_dir;
+extern char* navit_data_dir;
 extern int cancel_drawing_global;
 extern int disable_map_drawing;
 extern int global_speak_streetnames;
@@ -74,16 +108,28 @@ extern int global_stop_demo_vehicle;
 extern int global_show_route_rectangles;
 extern int global_traffic_light_delay;
 extern int global_draw_multipolygons;
+extern int global_have_dpi_value;
+extern float global_dpi_factor;
+extern int global_order_level_for_fast_draw;
+extern int global_show_english_labels;
 
 extern long long draw_lines_count_2;
 extern long long draw_lines_count_3;
 extern long long draw_lines_count_4;
+extern int poi_on_map_count;
+extern int label_on_map_count;
+extern int label_district_on_map_count;
+extern int label_major_on_map_count;
+extern int poi_icon_on_map_count;
+
 
 extern int mapdraw_time[11 + 5];
 extern int cur_mapdraw_time_index;
 
 extern int route_status_previous;
 extern long long global_route_memory_size;
+extern int global_old_vehicle_speed;
+extern int global_old_vehicle_speed_for_autozoom;
 
 extern GHashTable *global_transform_hash;
 extern GHashTable *global_transform_hash2;
@@ -170,6 +216,7 @@ int navit_set_vehicle_by_name(struct navit *n, const char *name);
 void navit_layer_set_active(struct navit *this, char *name, int active, int draw);
 void navit_motion(void *data, struct point *p);
 void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value);
+void displaylist_shift_for_dpi_value_in_layers(struct navit *this_, double factor);
 
 void navit_set_cursors(struct navit *this_);
 

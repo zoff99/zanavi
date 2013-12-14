@@ -64,6 +64,7 @@ public class NavitVehicle
 	private static GpsStatus.Listener gps_status_listener_s = null;
 	private static float compass_heading;
 	private static float current_accuracy = 99999999F;
+	private static long last_real_gps_update = -1;
 
 	int sats1_old = -1;
 	int satsInFix1_old = -1;
@@ -84,13 +85,17 @@ public class NavitVehicle
 
 	public static Location last_location = null;
 
-	public static native void VehicleCallback(Location location);
+	public static native void VehicleCallback(double lat, double lon, float speed, float direction, double height, float radius, long gpstime);
 
 	public static void VehicleCallback2(Location location)
 	{
 		if (Navit.Global_Init_Finished != 0)
 		{
-			Navit.cwthr.VehicleCallback3(location);
+			if (Navit.Global_Location_update_not_allowed == 0)
+			{
+				if (NavitGraphics.DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:Gps");
+				Navit.cwthr.VehicleCallback3(location);
+			}
 		}
 		else
 		{
@@ -251,6 +256,14 @@ public class NavitVehicle
 					//Log.e("NavitVehicle", "LocationChanged provider=precise Latitude " + location.getLatitude() + " Longitude " + location.getLongitude());
 					last_location = location;
 					//Log.e("NavitVehicle", "call VehicleCallback 002");
+					if (NavitGraphics.DEBUG_SMOOTH_DRIVING)
+					{
+						if (last_real_gps_update > -1)
+						{
+							Log.e("NavitVehicle", "gps-gap:" + (System.currentTimeMillis() - last_real_gps_update));
+						}
+						last_real_gps_update = System.currentTimeMillis();
+					}
 					VehicleCallback2(location);
 				}
 			}
@@ -317,8 +330,8 @@ public class NavitVehicle
 			lowCriteria.setAccuracy(Criteria.ACCURACY_COARSE);
 			lowCriteria.setAltitudeRequired(false);
 			lowCriteria.setBearingRequired(false);
-			//lowCriteria.setCostAllowed(true);
-			//lowCriteria.setPowerRequirement(Criteria.POWER_HIGH);
+			lowCriteria.setCostAllowed(true);
+			lowCriteria.setPowerRequirement(Criteria.POWER_LOW);
 		}
 		catch (Exception e)
 		{
@@ -327,14 +340,14 @@ public class NavitVehicle
 
 		try
 		{
-			//Log.e("NavitVehicle", "Providers " + locationManager.getAllProviders());
-
+			Log.e("NavitVehicle", "Providers " + locationManager.getAllProviders());
+			//
 			preciseProvider = locationManager.getBestProvider(highCriteria, false);
 			preciseProvider_s = preciseProvider;
-			//Log.e("NavitVehicle", "Precise Provider " + preciseProvider);
+			Log.e("NavitVehicle", "Precise Provider " + preciseProvider);
 			fastProvider = locationManager.getBestProvider(lowCriteria, false);
 			fastProvider_s = fastProvider;
-			//Log.e("NavitVehicle", "Fast Provider " + fastProvider);
+			Log.e("NavitVehicle", "Fast Provider " + fastProvider);
 		}
 		catch (Exception e)
 		{
@@ -497,6 +510,7 @@ public class NavitVehicle
 					if (!Navit.DemoVehicle)
 					{
 						Location l = locationManager_s.getLastKnownLocation(fastProvider_s);
+						//System.out.println("ZANAVI:getLastKnownLocation=" + l);
 						if (l != null)
 						{
 							if (l.getAccuracy() > 0)
@@ -508,6 +522,7 @@ public class NavitVehicle
 										Log.e("NavitVehicle", "getLastKnownLocation fast (3) l=" + l.toString());
 										last_location = l;
 										//Log.e("NavitVehicle", "call VehicleCallback 006");
+										//System.out.println("ZANAVI:set_last_known_pos_fast_provider");
 										VehicleCallback2(l);
 									}
 								}
@@ -536,6 +551,7 @@ public class NavitVehicle
 					if (!Navit.DemoVehicle)
 					{
 						locationManager_s.requestLocationUpdates(fastProvider_s, 0, 0, fastLocationListener_s);
+						//System.out.println("ZANAVI:turn on fast provider");
 					}
 				}
 			}

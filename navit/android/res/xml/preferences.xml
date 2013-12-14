@@ -88,7 +88,13 @@
             android:key="speak_street_names"
             android:summary="Say Streetnames when navigating. on foreign languages streetnames may sound strange!"
             android:title="speak Streetnames" />
-        <ListPreference
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="speak_filter_special_chars"
+            android:summary="filter special chars when speaking streetnames"
+            android:title="filter special chars" />
+
+        <ListPreference
             android:defaultValue="2"
             android:entries="@array/route_styleArray"
             android:entryValues="@array/route_styleValues"
@@ -104,9 +110,19 @@
             android:title="3D" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="show_2d3d_toggle"
+            android:summary="show 2D/3D toggle instead of Map off/on toggle"
+            android:title="2D/3D toggle" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="save_zoomlevel"
             android:summary="save last Zoomlevel"
             android:title="Zoomlevel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autozoom_flag"
+            android:summary="set map zoom automatically according to driving speed"
+            android:title="Autozoom" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_anti_aliasing"
@@ -128,10 +144,23 @@
             android:summary="Smooth drawing when moving or when using compass [BETA]"
             android:title="Smooth Drawing" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="use_smooth_drawing"
+            android:key="use_more_smooth_drawing"
+            android:layout="?android:attr/preferenceLayoutChild"
+            android:summary="Much smoother drawing, WARNING: WILL EAT ALL your CPU!!"
+            android:title="Even Smoother Drawing" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_multipolygons"
             android:summary="draw lines and areas from multipolygons"
             android:title="Multipolygons" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_vehicle_3d"
+            android:summary="show vehicle correctly in 3D mode"
+            android:title="Vehicle 3D" />
 
         <ListPreference
             android:defaultValue="2"
@@ -140,13 +169,15 @@
             android:key="map_font_size"
             android:summary="Select font size for map text"
             android:title="map font size" />
+        <!--
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/drawatorderArray"
             android:entryValues="@array/drawatorderValues"
             android:key="drawatorder"
             android:summary="Draw more Detail on map. change only on fast devices!"
-            android:title="Draw more Detail" />
+            android:title="Draw more Detail" />
+        -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/drawatorder2Array"
@@ -174,8 +205,17 @@
             android:key="gui_oneway_arrows"
             android:summary="show oneway street arrows [BETA]"
             android:title="OneWay Arrows" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="shrink_on_high_dpi"
+            android:summary="use 240dpi on high DPI displays (>320dpi). needs RESTART!"
+            android:title="High DPI" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="streets_only"
+            android:summary="show only streets on map. map display is faster with this setting"
+            android:title="Streets only" />
     </PreferenceCategory>
-
     <PreferenceCategory android:title="Debug" >
         <CheckBoxPreference
             android:defaultValue="false"
@@ -198,7 +238,6 @@
             android:summary="show route rectangles [DEBUG]"
             android:title="show route rectangles" />
     </PreferenceCategory>
-
     <PreferenceCategory android:title="Language" >
         <ListPreference
             android:defaultValue="*DEFAULT*"

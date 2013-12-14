@@ -275,10 +275,10 @@ public class NavitMapDownloader
 	//
 	//
 	//
-	static final zanavi_osm_map_values[] z_OSM_MAPS = new zanavi_osm_map_values[] { z_Country_borders, z_Coastline, z_Rest_of_World, z_Planet, z_Europe, z_North_America, z_USA, z_Central_America, z_South_America, z_Africa, z_Asia, z_Australia_and_Oceania, z_Caribbean, z_Albania, z_Alps, z_Andorra, z_Austria, z_Azores, z_Belarus, z_Belgium, z_Bosnia_Herzegovina, z_British_Isles, z_Bulgaria, z_Croatia, z_Cyprus, z_Czech_Republic, z_Denmark, z_Estonia, z_Faroe_Islands, z_Finland, z_France, z_Germany,
-			z_Great_Britain, z_Greece, z_Hungary, z_Iceland, z_Ireland, z_Isle_of_man, z_Italy, z_Kosovo, z_Latvia, z_Liechtenstein, z_Lithuania, z_Luxembourg, z_Macedonia, z_Malta, z_Moldova, z_Monaco, z_Montenegro, z_Netherlands, z_Norway, z_Poland, z_Portugal, z_Romania, z_Russia_European_part, z_Serbia, z_Slovakia, z_Slovenia, z_Spain, z_Sweden, z_Switzerland, z_Turkey, z_Ukraine, z_Canari_Islands, z_India, z_Israel_and_Palestine, z_China, z_Japan, z_Taiwan, z_Canada, z_Greenland, z_Mexico,
-			z_US_Midwest, z_US_Northeast, z_US_Pacific, z_US_South, z_US_West, z_Alabama, z_Alaska, z_Arizona, z_Arkansas, z_California, z_North_Carolina, z_South_Carolina, z_Colorado, z_North_Dakota, z_South_Dakota, z_District_of_Columbia, z_Connecticut, z_Delaware, z_Florida, z_Georgia, z_New_Hampshire, z_Hawaii, z_Idaho, z_Illinois, z_Indiana, z_Iowa, z_New_Jersey, z_Kansas, z_Kentucky, z_Louisiana, z_Maine, z_Maryland, z_Massachusetts, z_New_Mexico, z_Michigan, z_Minnesota, z_Mississippi,
-			z_Missouri, z_Montana, z_Nebraska, z_Nevada, z_Ohio, z_Oklahoma, z_Oregon, z_Pennsylvania, z_Rhode_Island, z_Tennessee, z_Texas, z_Utah, z_Vermont, z_Virginia, z_West_Virginia, z_Washington, z_Wisconsin, z_Wyoming, z_New_York, z_USA_minor_Islands, z_Panama, z_Haiti_and_Dom_Rep_, z_Cuba };
+	static final zanavi_osm_map_values[] z_OSM_MAPS = new zanavi_osm_map_values[] { z_Country_borders, z_Coastline, z_Rest_of_World, z_Planet, z_Europe, z_North_America, z_USA, z_Central_America, z_South_America, z_Africa, z_Asia, z_Australia_and_Oceania, z_Caribbean, z_Albania, z_Alps, z_Andorra, z_Austria, z_Azores, z_Belarus, z_Belgium, z_Bosnia_Herzegovina, z_British_Isles, z_Bulgaria, z_Croatia, z_Cyprus, z_Czech_Republic, z_Denmark, z_Estonia, z_Faroe_Islands, z_Finland, z_France,
+			z_Germany, z_Great_Britain, z_Greece, z_Hungary, z_Iceland, z_Ireland, z_Isle_of_man, z_Italy, z_Kosovo, z_Latvia, z_Liechtenstein, z_Lithuania, z_Luxembourg, z_Macedonia, z_Malta, z_Moldova, z_Monaco, z_Montenegro, z_Netherlands, z_Norway, z_Poland, z_Portugal, z_Romania, z_Russia_European_part, z_Serbia, z_Slovakia, z_Slovenia, z_Spain, z_Sweden, z_Switzerland, z_Turkey, z_Ukraine, z_Canari_Islands, z_India, z_Israel_and_Palestine, z_China, z_Japan, z_Taiwan, z_Canada,
+			z_Greenland, z_Mexico, z_US_Midwest, z_US_Northeast, z_US_Pacific, z_US_South, z_US_West, z_Alabama, z_Alaska, z_Arizona, z_Arkansas, z_California, z_North_Carolina, z_South_Carolina, z_Colorado, z_North_Dakota, z_South_Dakota, z_District_of_Columbia, z_Connecticut, z_Delaware, z_Florida, z_Georgia, z_New_Hampshire, z_Hawaii, z_Idaho, z_Illinois, z_Indiana, z_Iowa, z_New_Jersey, z_Kansas, z_Kentucky, z_Louisiana, z_Maine, z_Maryland, z_Massachusetts, z_New_Mexico, z_Michigan,
+			z_Minnesota, z_Mississippi, z_Missouri, z_Montana, z_Nebraska, z_Nevada, z_Ohio, z_Oklahoma, z_Oregon, z_Pennsylvania, z_Rhode_Island, z_Tennessee, z_Texas, z_Utah, z_Vermont, z_Virginia, z_West_Virginia, z_Washington, z_Wisconsin, z_Wyoming, z_New_York, z_USA_minor_Islands, z_Panama, z_Haiti_and_Dom_Rep_, z_Cuba };
 
 	//
 	//
@@ -299,8 +299,8 @@ public class NavitMapDownloader
 	static final int MAP_WRITE_FILE_BUFFER = 1024 * 64;
 	static final int MAP_WRITE_MEM_BUFFER = 1024 * 64;
 	static final int MAP_READ_FILE_BUFFER = 1024 * 64;
-	static final int UPDATE_PROGRESS_EVERY_CYCLE = 12; // 8 -> is nicer, but maybe to fast for some devices
-	static final int RETRIES = 70; // this many retries on map download
+	static final int UPDATE_PROGRESS_EVERY_CYCLE = 30; // 12; // 8 -> is nicer, but maybe to fast for some devices
+	static final int RETRIES = 75; // this many retries on map download
 
 	static final long MAX_SINGLE_BINFILE_SIZE = 3 * 512 * 1024 * 1024; // split map at this size into pieces [1.5GB] [1.610.612.736 Bytes]	
 
@@ -353,7 +353,11 @@ public class NavitMapDownloader
 			stop_me = false;
 			mapdownload_stop_all_threads = false;
 			System.out.println("map_num=" + this.map_num + " v=" + map_values.map_name + " " + map_values.url);
+			//
+			Navit.dim_screen_wrapper(); // brightness ---------
 			int exit_code = download_osm_map(mHandler, map_values, this.map_num);
+			Navit.default_brightness_screen_wrapper(); // brightness ---------
+			//
 			// clean up always
 			File tmp_downloadfile = new File(Navit.CFG_FILENAME_PATH, DOWNLOAD_FILENAME);
 			tmp_downloadfile.delete();
@@ -384,6 +388,9 @@ public class NavitMapDownloader
 			stop_me = true;
 			mapdownload_stop_all_threads = true;
 			Log.d("NavitMapDownloader", "stop_me -> true");
+			//
+			Navit.default_brightness_screen(); // brightness ---------
+			//
 			// remove the tmp download file (if there is one)
 			File tmp_downloadfile = new File(Navit.CFG_FILENAME_PATH, DOWNLOAD_FILENAME);
 			tmp_downloadfile.delete();

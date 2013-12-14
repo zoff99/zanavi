@@ -28,7 +28,7 @@ struct callback_list *
 callback_list_new(void)
 {
 	struct callback_list *ret=g_new0(struct callback_list, 1);
-	
+
 	return ret;
 }
 
@@ -334,8 +334,12 @@ callback_call_args_real(const char *module, const int mlen,const char *function,
 	void **p=g_alloca(sizeof(void*)*count);
 	va_list ap;
 	va_start(ap, count);
+
 	for (i = 0 ; i < count ; i++)
+	{
 		p[i]=va_arg(ap, void *);
+	}
+
 	va_end(ap);
 	callback_call(cb, count, p);
 }
@@ -421,9 +425,14 @@ callback_list_call_args(const char *module, const int mlen,const char *function,
 	void **p=g_alloca(sizeof(void*)*count);
 	va_list ap;
 	va_start(ap, count);
+
 	for (i = 0 ; i < count ; i++)
+	{
 		p[i]=va_arg(ap, void *);
+	}
+
 	va_end(ap);
+
 	callback_list_call(cbl, count, p);
 }
 
@@ -431,11 +440,37 @@ void
 callback_list_destroy(struct callback_list *l)
 {
 	GList *cbi;
+
+	if (!l)
+	{
+		return;
+	}
+
 	cbi=l->list;
-	while (cbi) {
-		g_free(cbi->data);
+
+	if (!cbi)
+	{
+		g_free(l);
+		return;
+	}
+
+	while (cbi)
+	{
+		if (cbi == NULL)
+		{
+			break;
+		}
+
+		if (cbi->data)
+		{
+			g_free(cbi->data);
+		}
 		cbi=g_list_next(cbi);
 	}
+
 	g_list_free(l->list);
 	g_free(l);
+
 }
+
+

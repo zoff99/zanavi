@@ -66,7 +66,8 @@ struct vehicle_priv
 	struct callback *timer_callback;
 	struct event_timeout *timer;
 	char *timep;
-
+	double speed_diff;
+	int speed_dir;
 };
 
 static void vehicle_demo_destroy(struct vehicle_priv *priv)
@@ -127,6 +128,28 @@ static void vehicle_demo_timer(struct vehicle_priv *priv)
 		// demo vehicle should stand still!
 		return;
 	}
+
+	// vary the speed of demo vehicle from (x - 20) to (x + 20)
+	if (priv->speed_dir == 1)
+	{
+		priv->speed_diff = priv->speed_diff + 2;
+		if (priv->speed_diff > 20)
+		{
+			priv->speed_diff = 20;
+			priv->speed_dir = -1;
+		}
+	}
+	else
+	{
+		priv->speed_diff = priv->speed_diff - 2;
+		if (priv->speed_diff < -20)
+		{
+			priv->speed_diff = -20;
+			priv->speed_dir = 1;
+		}
+	}
+	priv->config_speed = priv->config_speed + priv->speed_dir + priv->speed_dir;
+	//dbg(0,"demo:speed=%d,speed_diff=%d speed_dir=%d\n", (int)priv->config_speed, (int)priv->speed_diff, (int)priv->speed_dir);
 
 	len = (priv->config_speed * priv->interval / 1000) / 3.6;
 	//dbg(0, "###### Entering simulation loop\n");
@@ -232,6 +255,8 @@ vehicle_demo_new(struct vehicle_methods *meth, struct callback_list *cbl, struct
 	ret->cbl = cbl;
 	ret->interval = 1200;
 	ret->config_speed = 41;
+	ret->speed_diff = 0;
+	ret->speed_dir = 1;
 
 	//dbg(0, "vd 3.1 %d %d\n", ret->interval, ret->config_speed);
 

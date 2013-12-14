@@ -31,8 +31,10 @@ extern "C"
 // from maptool.h !!!!! keep in sync
 // ------ STREET INDEX FILE ------
 
-#define STREET_INDEX_STREET_NAME_SIZE 48 // this value + 16 must be a 2^n number!!!
+#define REF_X 1073741834 // lat
+#define REF_Y 240000000  // lon
 
+#define STREET_INDEX_STREET_NAME_SIZE 48 // (this value + 16) must be a 2^n number!!!
 struct streets_index_index_block_start
 {
 	long long count_of_index_blocks;
@@ -50,7 +52,8 @@ struct streets_index_data_block
 	long long town_id;
 	int lat;
 	int lon;
-	char street_name[STREET_INDEX_STREET_NAME_SIZE];
+	char street_type;
+	char street_name[STREET_INDEX_STREET_NAME_SIZE - 1];
 }__attribute__ ((packed));
 // ------ STREET INDEX FILE ------
 
@@ -245,6 +248,7 @@ GList * search_by_address(GList *result_list, struct mapset *ms, char *addr,
 void search_full_world(char *addr, int partial, int search_order,
 		struct jni_object *jni, struct coord_geo *search_center,
 		int search_radius);
+void spill_index();
 
 /* end of prototypes */
 #ifdef __cplusplus

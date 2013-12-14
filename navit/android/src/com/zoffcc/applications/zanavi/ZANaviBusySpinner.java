@@ -37,7 +37,7 @@ public class ZANaviBusySpinner extends ImageView
 	Paint paint;
 	RectF r;
 	int spinner_width;
-	public static final int spinner_size = 35;
+	public static int spinner_size = 35;
 	public static Boolean active;
 	static RotateAnimation rotateAnim = null;
 
@@ -45,6 +45,15 @@ public class ZANaviBusySpinner extends ImageView
 	{
 		super(context);
 		spinner_width = 12;
+
+		if (Navit.metrics.densityDpi >= 320)//&&(Navit.PREF_shrink_on_high_dpi))
+		{
+			float dpi_factor = ((float) NavitGraphics.Global_want_dpi_other / (float) Navit.metrics.densityDpi);
+			//System.out.println("FFFFFF==y:" + Navit.metrics.densityDpi);
+			//System.out.println("FFFFFF==y:" + dpi_factor);
+			spinner_size = (int) (35f / dpi_factor);
+			spinner_width = (int) (12f / dpi_factor);
+		}
 
 		this.paint = new Paint();
 		this.paint.setColor(Color.BLUE);

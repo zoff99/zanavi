@@ -25,6 +25,13 @@ struct color
 	int r,g,b,a;
 };
 
+
+// for 0x000000[00] to 0xffffff[ff] (RRGGBB[AA])
+struct shortcolor
+{
+	unsigned int colorshort;
+};
+
 #define COLOR_WHITE_ 0xffff,0xffff,0xffff,0xffff
 #define COLOR_BLACK_ 0x0000,0x0000,0x0000,0xffff
 #define COLOR_BACKGROUND_ 0xffff, 0xefef, 0xb7b7, 0xffff

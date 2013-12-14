@@ -38,7 +38,6 @@
 
 package com.zoffcc.applications.zanavi;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 import android.content.Intent;
@@ -52,7 +51,6 @@ import android.view.View;
 // new TTS, this is used now!
 public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityResult
 {
-	private static TextToSpeech mTts;
 	private Navit navit;
 	int MY_DATA_CHECK_CODE = 1; // this needs to be "1" for the C-code !!
 	private Locale want_locale = null;
@@ -69,13 +67,20 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 			Configuration config2 = new Configuration();
 			config2.locale = locale2;
 			// set the new locale here -----------------------------------
-			result = mTts.setLanguage(locale2);
+			try
+			{
+				result = navit.mTts.setLanguage(locale2);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 
 			try
 			{
 				Log.e("NavitSpeech2", "3.1 want locale=" + locale2.getLanguage());
-				//Log.e("NavitSpeech2", "3 E=" + mTts.getDefaultEngine());
-				//Log.e("NavitSpeech2", "3 def.enf.=" + mTts.areDefaultsEnforced());
+				//Log.e("NavitSpeech2", "3 E=" + navit.mTts.getDefaultEngine());
+				//Log.e("NavitSpeech2", "3 def.enf.=" + navit.mTts.areDefaultsEnforced());
 			}
 			catch (NoSuchMethodError e2)
 			{
@@ -85,12 +90,13 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 			{
 				e.printStackTrace();
 			}
+
 			try
 			{
-				Log.e("NavitSpeech2", "3 lang. Country=" + mTts.getLanguage().getDisplayCountry());
-				Log.e("NavitSpeech2", "3 lang. Country=" + mTts.getLanguage().getDisplayLanguage());
-				Log.e("NavitSpeech2", "3 lang. Country=" + mTts.getLanguage().getDisplayName());
-				Log.e("NavitSpeech2", "3 lang. Country=" + mTts.getLanguage().getDisplayVariant());
+				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayCountry());
+				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayLanguage());
+				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayName());
+				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayVariant());
 			}
 			catch (NoSuchMethodError e2)
 			{
@@ -103,7 +109,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 
 			String want_lang_code = locale2.getISO3Language();
 			Log.e("NavitSpeech2", "want:" + want_lang_code);
-			String will_use_lang_code = mTts.getLanguage().getISO3Language();
+			String will_use_lang_code = navit.mTts.getLanguage().getISO3Language();
 			Log.e("NavitSpeech2", "will use:" + will_use_lang_code);
 			if (want_lang_code.compareToIgnoreCase(will_use_lang_code) != 0)
 			{
@@ -146,7 +152,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 				Message msg = Navit.Navit_progress_h.obtainMessage();
 				Bundle b = new Bundle();
 				msg.what = 3;
-				b.putString("text", Navit.get_text("Using Voice for:") + "\n" + mTts.getLanguage().getDisplayName()); //TRANS
+				b.putString("text", Navit.get_text("Using Voice for:") + "\n" + navit.mTts.getLanguage().getDisplayName()); //TRANS
 				msg.setData(b);
 				Navit.Navit_progress_h.sendMessage(msg);
 			}
@@ -160,39 +166,52 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		Log.e("NavitSpeech2", "onActivityResult " + requestCode + " " + resultCode);
-		try
-		{
-			if (requestCode == MY_DATA_CHECK_CODE)
-			{
-				if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS)
-				{
-					// success, create the TTS instance
-					mTts = new TextToSpeech(navit, this);
 
-					try
-					{
-						// just for info -------
-						Log.e("NavitSpeech2", Arrays.toString(Locale.getAvailableLocales()));
-						// just for info -------
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-				else
-				{
-					// missing data, install it
-					Intent installIntent = new Intent();
-					installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-					navit.startActivity(installIntent);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		// disable for now ------------
+		// disable for now ------------
+
+		//		try
+		//		{
+		//			if (requestCode == MY_DATA_CHECK_CODE)
+		//			{
+		//				if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS)
+		//				{
+		//					// success, create the TTS instance
+		//					if (navit.mTts != null)
+		//					{
+		//						stop_me();
+		//					}
+		//					Log.e("NavitSpeech2", "init_me");
+		//					mTts = new TextToSpeech(navit, this);
+		//
+		//					try
+		//					{
+		//						// just for info -------
+		//						Log.e("NavitSpeech2", Arrays.toString(Locale.getAvailableLocales()));
+		//						// just for info -------
+		//					}
+		//					catch (Exception e)
+		//					{
+		//						e.printStackTrace();
+		//					}
+		//				}
+		//				else
+		//				{
+		//					// missing data, install it
+		//					Intent installIntent = new Intent();
+		//					installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+		//					navit.startActivity(installIntent);
+		//				}
+		//			}
+		//		}
+		//		catch (Exception e)
+		//		{
+		//			e.printStackTrace();
+		//		}
+
+		// disable for now ------------
+		// disable for now ------------
+
 	}
 
 	NavitSpeech2(Navit navit)
@@ -203,36 +222,42 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 		try
 		{
 			this.navit = navit;
-			navit.setActivityResult(MY_DATA_CHECK_CODE, this);
+			//navit.setActivityResult(MY_DATA_CHECK_CODE, this);
 		}
 		catch (Exception e1)
 		{
 			e1.printStackTrace();
 		}
 
-		try
-		{
-			Intent checkIntent = new Intent();
-			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-			navit.startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
-		}
-		catch (Exception e2)
-		{
-			e2.printStackTrace();
-		}
+		//		try
+		//		{
+		//			Intent checkIntent = new Intent();
+		//			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		//			navit.startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+		//		}
+		//		catch (Exception e2)
+		//		{
+		//			e2.printStackTrace();
+		//		}
 	}
 
 	public void say(String what)
 	{
 		try
 		{
-			if (mTts != null)
+			if (navit.mTts != null)
 			{
-				mTts.speak(what, TextToSpeech.QUEUE_FLUSH, null);
+				if (Navit.PREF_speak_filter_special_chars)
+				{
+					what = filter_out_special_chars(what);
+				}
+				navit.mTts.speak(what, TextToSpeech.QUEUE_FLUSH, null);
+
 				if (NavitGraphics.NavitMsgTv2_.getVisibility() == View.VISIBLE)
 				{
-					Navit.N_NavitGraphics.NavitMsgTv2_.append("SAY:" + what + "\n");
+					NavitGraphics.NavitMsgTv2_.append("SAY:" + what + "\n");
 				}
+
 				if (Navit.PREF_show_debug_messages)
 				{
 					Navit.set_debug_messages3_wrapper(what);
@@ -245,16 +270,92 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 		}
 	}
 
-	public static void stop_me()
+	public static String filter_out_special_chars(String in)
 	{
-		// Log.e("NavitSpeech2", "shutdown");
+		String out = in;
+		out = out.replace("-", " ");
+		out = out.replace("\"", "");
+		out = out.replace("'", "");
+		out = out.replace("\\n", "");
+		out = out.replace("\\r", "");
+		out = out.replace("\\\\", "");
+		return out;
+	}
+
+	public void resume_me()
+	{
+		Log.e("NavitSpeech2", "resume_me");
 		try
 		{
-			mTts.shutdown();
+			navit.mTts.shutdown();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+
+		try
+		{
+			navit.mTts.shutdown();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			navit.mTts.shutdown();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		// mTts = null;
+		try
+		{
+			//if (navit.mTts == null)
+			//{
+				navit.mTts = new TextToSpeech(navit, this);
+			//}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void stop_me()
+	{
+		Log.e("NavitSpeech2", "stop_me");
+		try
+		{
+			navit.mTts.shutdown();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			navit.mTts.shutdown();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			navit.mTts.shutdown();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		// mTts = null;
 	}
 }

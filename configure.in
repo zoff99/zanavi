@@ -153,7 +153,7 @@ AC_SUBST(NAVIT_MODULE_LDFLAGS)
 AC_SUBST(NAVIT_SOCKET_LDFLAGS)
 
 LIBS="$LIBS -lm"
-if test "$win32" == "no" -a test "$host_os" != "cygwin"; then
+if test "$win32" == "no" -a "$host_os" != "cygwin"; then
 	LIBS="$LIBS -rdynamic"
 fi
 

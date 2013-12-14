@@ -388,9 +388,9 @@ point_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 					attr->u.num = 0;
 					rc = gar_object_flags(g);
 					if (rc & F_ONEWAY)
-						attr->u.num |= AF_ONEWAY;
+						attr->u.num |= NAVIT_AF_ONEWAY;
 					if (rc & F_SEGMENTED)
-						attr->u.num |= AF_SEGMENTED;
+						attr->u.num |= NAVIT_AF_SEGMENTED;
 					return 1;
 				default:
 					return 0;
@@ -413,9 +413,9 @@ point_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 		attr->u.num = 0;
 		rc = gar_object_flags(g);
 		if (rc & F_ONEWAY)
-			attr->u.num |= AF_ONEWAY;
+			attr->u.num |= NAVIT_AF_ONEWAY;
 		if (rc & F_SEGMENTED)
-			attr->u.num |= AF_SEGMENTED;
+			attr->u.num |= NAVIT_AF_SEGMENTED;
 		return 1;
 	default:
 		dlog(1, "Don't know about attribute %d[%04X]=%s yet\n", attr_type,attr_type, attr_to_name(attr_type));
@@ -478,9 +478,9 @@ search_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 					attr->u.num = 0;
 					rc = gar_object_flags(g);
 					if (rc & F_ONEWAY)
-						attr->u.num |= AF_ONEWAY;
+						attr->u.num |= NAVIT_AF_ONEWAY;
 					if (rc & F_SEGMENTED)
-						attr->u.num |= AF_SEGMENTED;
+						attr->u.num |= NAVIT_AF_SEGMENTED;
 					return 1;
 				default:
 					return 0;
@@ -532,9 +532,9 @@ search_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 		attr->u.num = 0;
 		rc = gar_object_flags(g);
 		if (rc & F_ONEWAY)
-			attr->u.num |= AF_ONEWAY;
+			attr->u.num |= NAVIT_AF_ONEWAY;
 		if (rc & F_SEGMENTED)
-			attr->u.num |= AF_SEGMENTED;
+			attr->u.num |= NAVIT_AF_SEGMENTED;
 		return 1;
 	case attr_country_id:
 		rc = gar_srch_get_countryid(g);

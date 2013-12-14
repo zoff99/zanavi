@@ -268,7 +268,39 @@ static int xmlconfig_announce(struct xmlstate *state)
 
 static struct object_func
 		object_funcs[] =
-				{ { attr_announcement, NEW(announcement_new), GET(announcement_get_attr), NULL, NULL, SET(announcement_set_attr), ADD(announcement_add_attr) }, { attr_arrows, NEW(arrows_new) }, { attr_circle, NEW(circle_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) }, { attr_config, NEW(config_new), GET(config_get_attr), ITERN(config_attr_iter_new), ITERD(config_attr_iter_destroy), SET(config_set_attr), ADD(config_add_attr), REMOVE(config_remove_attr), NULL, DESTROY(config_destroy) }, { attr_coord, NEW(coord_new_from_attrs) }, { attr_cursor, NEW(cursor_new), NULL, NULL, NULL, NULL, ADD(cursor_add_attr) }, { attr_debug, NEW(debug_new) }, { attr_graphics, NEW(graphics_new) }, { attr_gui, NEW(gui_new), GET(gui_get_attr), NULL, NULL, SET(gui_set_attr), ADD(gui_add_attr) }, { attr_icon, NEW(icon_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) }, { attr_image, NEW(image_new) }, { attr_itemgra, NEW(itemgra_new), NULL, NULL, NULL, NULL, ADD(itemgra_add_attr) }, { attr_layer, NEW(layer_new), NULL, NULL, NULL, NULL, ADD(layer_add_attr) }, { attr_layout, NEW(layout_new), NULL, NULL, NULL, NULL, ADD(layout_add_attr) }, { attr_log, NEW(log_new) }, { attr_map, NEW(map_new) }, { attr_mapset, NEW(mapset_new), NULL, NULL, NULL, NULL, ADD(mapset_add_attr_name) }, { attr_navigation, NEW(navigation_new), GET(navigation_get_attr) }, { attr_navit, NEW(navit_new), GET(navit_get_attr), ITERN(navit_attr_iter_new), ITERD(navit_attr_iter_destroy), SET(navit_set_attr), ADD(navit_add_attr), REMOVE(navit_remove_attr), INIT(navit_init), DESTROY(navit_destroy) }, { attr_osd, NEW(osd_new) }, { attr_plugins, NEW(plugins_new), NULL, NULL, NULL, NULL, NULL, NULL, INIT(plugins_init) }, { attr_plugin, NEW(plugin_new) }, { attr_polygon, NEW(polygon_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) }, { attr_polyline, NEW(polyline_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) }, { attr_roadprofile, NEW(roadprofile_new), GET(roadprofile_get_attr), NULL, NULL, SET(roadprofile_set_attr), ADD(roadprofile_add_attr) }, { attr_route, NEW(route_new), GET(route_get_attr), NULL, NULL, SET(route_set_attr), ADD(route_add_attr), REMOVE(route_remove_attr) }, { attr_speech, NEW(speech_new), GET(speech_get_attr), NULL, NULL, SET(speech_set_attr) }, { attr_text, NEW(text_new) }, { attr_tracking, NEW(tracking_new) }, { attr_vehicle, NEW(vehicle_new), GET(vehicle_get_attr), NULL, NULL, SET(vehicle_set_attr), ADD(vehicle_add_attr), REMOVE(vehicle_remove_attr) }, { attr_vehicleprofile, NEW(vehicleprofile_new), GET(vehicleprofile_get_attr), NULL, NULL, SET(vehicleprofile_set_attr), ADD(vehicleprofile_add_attr) }, };
+			{   { attr_announcement, NEW(announcement_new), GET(announcement_get_attr), NULL, NULL, SET(announcement_set_attr), ADD(announcement_add_attr) },
+				{ attr_arrows, NEW(arrows_new) },
+				{ attr_circle, NEW(circle_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) },
+				{ attr_config, NEW(config_new), GET(config_get_attr), ITERN(config_attr_iter_new), ITERD(config_attr_iter_destroy), SET(config_set_attr), ADD(config_add_attr), REMOVE(config_remove_attr), NULL, DESTROY(config_destroy) },
+				{ attr_coord, NEW(coord_new_from_attrs) },
+				{ attr_cursor, NEW(cursor_new), NULL, NULL, NULL, NULL, ADD(cursor_add_attr) },
+				{ attr_debug, NEW(debug_new) },
+				{ attr_graphics, NEW(graphics_new) },
+				{ attr_gui, NEW(gui_new), GET(gui_get_attr), NULL, NULL, SET(gui_set_attr), ADD(gui_add_attr) },
+				{ attr_icon, NEW(icon_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) },
+				{ attr_image, NEW(image_new) },
+				{ attr_itemgra, NEW(itemgra_new), NULL, NULL, NULL, NULL, ADD(itemgra_add_attr) },
+				{ attr_layer, NEW(layer_new), NULL, NULL, NULL, NULL, ADD(layer_add_attr) },
+				{ attr_layout, NEW(layout_new), NULL, NULL, NULL, NULL, ADD(layout_add_attr) },
+				{ attr_log, NEW(log_new) },
+				{ attr_map, NEW(map_new) },
+				{ attr_mapset, NEW(mapset_new), NULL, NULL, NULL, NULL, ADD(mapset_add_attr_name) },
+				{ attr_navigation, NEW(navigation_new), GET(navigation_get_attr) },
+				{ attr_navit, NEW(navit_new), GET(navit_get_attr), ITERN(navit_attr_iter_new), ITERD(navit_attr_iter_destroy), SET(navit_set_attr), ADD(navit_add_attr), REMOVE(navit_remove_attr), INIT(navit_init), DESTROY(navit_destroy) },
+				{ attr_osd, NEW(osd_new) },
+				{ attr_plugins, NEW(plugins_new), NULL, NULL, NULL, NULL, NULL, NULL, INIT(plugins_init) },
+				{ attr_plugin, NEW(plugin_new) },
+				{ attr_polygon, NEW(polygon_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) },
+				{ attr_polyline, NEW(polyline_new), NULL, NULL, NULL, NULL, ADD(element_add_attr) },
+				{ attr_roadprofile, NEW(roadprofile_new), GET(roadprofile_get_attr), NULL, NULL, SET(roadprofile_set_attr), ADD(roadprofile_add_attr) },
+				{ attr_route, NEW(route_new), GET(route_get_attr), NULL, NULL, SET(route_set_attr), ADD(route_add_attr), REMOVE(route_remove_attr) },
+				{ attr_speech, NEW(speech_new), GET(speech_get_attr), NULL, NULL, SET(speech_set_attr) },
+				{ attr_text, NEW(text_new) },
+				{ attr_tracking, NEW(tracking_new) },
+				{ attr_vehicle, NEW(vehicle_new), GET(vehicle_get_attr), NULL, NULL, SET(vehicle_set_attr), ADD(vehicle_add_attr), REMOVE(vehicle_remove_attr) },
+				{ attr_vehicleprofile, NEW(vehicleprofile_new), GET(vehicleprofile_get_attr), NULL, NULL, SET(vehicleprofile_set_attr), ADD(vehicleprofile_add_attr) },
+				{ attr_maptile, NEW(maptile_new) },
+				};
 
 struct object_func *
 object_func_lookup(enum attr_type type)
@@ -303,7 +335,7 @@ static char *element_fixmes[] = { "item", "itemgra", "label", "text", NULL, NULL
 
 static void initStatic(void)
 {
-	elements=g_new0(struct element_func,40); //39 is a number of elements + ending NULL element
+	elements=g_new0(struct element_func,41); //40 is a number of elements + ending NULL element
 
 	elements[0].name = "config";
 	elements[0].parent = NULL;
@@ -493,6 +525,12 @@ static void initStatic(void)
 	elements[37].parent = "plugins";
 	elements[37].func = NULL;
 	elements[37].type = attr_plugin;
+
+	elements[38].name = "maptile";
+	elements[38].parent = "itemgra";
+	elements[38].func = NULL;
+	elements[38].type = attr_maptile;
+
 }
 
 /**

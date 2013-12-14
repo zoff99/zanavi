@@ -605,14 +605,14 @@ void main_init(const char *program)
 
 void main_init_nls(void)
 {
-#ifdef ENABLE_NLS
-#ifdef FORCE_LOCALE
-#define STRINGIFY2(x) #x
-#define STRINGIFY(x) STRINGIFY2(x)
-	setlocale(LC_MESSAGES,STRINGIFY(FORCE_LOCALE));
-#endif
-	bindtextdomain(PACKAGE, getenv("NAVIT_LOCALEDIR"));
-	bind_textdomain_codeset (PACKAGE, "UTF-8");
+	char *locale_dir;
+
+	locale_dir = g_strdup_printf("%s/%s", navit_data_dir, "locale");
+	dbg(0, "NLS:locale_dir=%s\n", locale_dir);
+
+	bindtextdomain(PACKAGE, locale_dir);
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
 	textdomain(PACKAGE);
-#endif
+
+	g_free(locale_dir);
 }

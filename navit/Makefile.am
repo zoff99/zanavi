@@ -136,20 +136,24 @@ apkg-all: all android/build.xml navit.xml
 	mkdir -p android/res/drawable-ldpi
 	mkdir -p android/res/drawable-mdpi
 	mkdir -p android/res/drawable-hdpi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 75% -filter Lanczos $(srcdir)/xpm/$$i android/res/drawable-ldpi/$${i%.xpm}.png; done  ; fi
 	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert $(srcdir)/xpm/$$i android/res/drawable-mdpi/$${i%.xpm}.png; done  ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 75% $(srcdir)/xpm/$$i android/res/drawable-ldpi/$${i%.xpm}.png; done  ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 150% $(srcdir)/xpm/$$i android/res/drawable-hdpi/$${i%.xpm}.png; done  ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.xpm); do convert -resize 150% -filter Lanczos $(srcdir)/xpm/$$i android/res/drawable-hdpi/$${i%.xpm}.png; done  ; fi
 
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 75% -filter Lanczos $(srcdir)/xpm/$$i android/res/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
 	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert $(srcdir)/xpm/$$i android/res/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 75% $(srcdir)/xpm/$$i android/res/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 150% $(srcdir)/xpm/$$i android/res/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(srcdir)/xpm && echo *.png); do convert -resize 150% -filter Lanczos $(srcdir)/xpm/$$i android/res/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi
 
 	mkdir -p android/res2/drawable-hdpi
 	mkdir -p android/res2/drawable-mdpi
 	mkdir -p android/res2/drawable-ldpi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert $(builddir)/xpm/$$i android/res2/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 75% $(builddir)/xpm/$$i android/res2/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 150% $(builddir)/xpm/$$i android/res2/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
+#	convert tweaked for higher res svg2png outputfiles
+#	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert $(builddir)/xpm/$$i android/res2/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
+#	100% size -> so copy only
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do cp -av $(builddir)/xpm/$$i android/res2/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
+#
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 67% -filter Lanczos $(builddir)/xpm/$$i android/res2/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
+	if [ "$(DO_PNG_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd $(builddir)/xpm && echo *.png); do convert -resize 50% -filter Lanczos $(builddir)/xpm/$$i android/res2/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done ; fi ; fi
 
 #	only use needed pngs to make size of apk smaller
 	if [ "$(builddir)" != "$(srcdir)" ]; then for i in flag_bk_tr.png flag_bk_wh.png mini_roundabout.png gui_active_32_32.png gui_arrow_right_32_32.png gui_arrow_left_32_32.png icon_32_32.png unknown_32_32.png gui_zoom_out_64_64.png gui_zoom_in_64_64.png gui_map_32_32.png gui_home_32_32.png gui_actions_64_64.png gui_settings_64_64.png gui_tools_64_64.png gui_about_64_64.png gui_inactive_32_32.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
@@ -164,19 +168,28 @@ apkg-all: all android/build.xml navit.xml
 	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-mdpi && echo nav_*png); do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-ldpi && echo nav_*png); do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
 #	POIs
-	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
-	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
-	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png atm.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png atm.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png atm.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
+#	more POIs
+	if [ "$(builddir)" != "$(srcdir)" ]; then for i in airport.png attraction.png bar.png beer.png bench.png boat_ramp.png boundary_stone.png bus.png cafe.png camping.png church.png cinema.png danger.png exit.png fastfood.png firebrigade.png fountain.png golf.png heliport.png hospital.png hotel.png information.png justice.png mark.png military.png mini_roundabout.png museum.png parking.png peak.png pharmacy.png police.png post.png repair_service.png resort.png restaurant.png ruins.png school.png shop_grocery.png shopping.png skiing.png stadium.png swimming.png tec_common.png telephone.png toilets.png viewpoint.png wifi.png zoom_in.png zoom_out.png zoo.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then for i in airport.png attraction.png bar.png beer.png bench.png boat_ramp.png boundary_stone.png bus.png cafe.png camping.png church.png cinema.png danger.png exit.png fastfood.png firebrigade.png fountain.png golf.png heliport.png hospital.png hotel.png information.png justice.png mark.png military.png mini_roundabout.png museum.png parking.png peak.png pharmacy.png police.png post.png repair_service.png resort.png restaurant.png ruins.png school.png shop_grocery.png shopping.png skiing.png stadium.png swimming.png tec_common.png telephone.png toilets.png viewpoint.png wifi.png zoom_in.png zoom_out.png zoo.png ; do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then for i in airport.png attraction.png bar.png beer.png bench.png boat_ramp.png boundary_stone.png bus.png cafe.png camping.png church.png cinema.png danger.png exit.png fastfood.png firebrigade.png fountain.png golf.png heliport.png hospital.png hotel.png information.png justice.png mark.png military.png mini_roundabout.png museum.png parking.png peak.png pharmacy.png police.png post.png repair_service.png resort.png restaurant.png ruins.png school.png shop_grocery.png shopping.png skiing.png stadium.png swimming.png tec_common.png telephone.png toilets.png viewpoint.png wifi.png zoom_in.png zoom_out.png zoo.png ; do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
 # rest of nav_ icons
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(builddir)/android/res2/drawable-hdpi/nav_destination_bk_59_59.png android/res/drawable-hdpi/nav_destination_bk.png ; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(builddir)/android/res2/drawable-mdpi/nav_destination_bk_59_59.png android/res/drawable-mdpi/nav_destination_bk.png ; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(builddir)/android/res2/drawable-ldpi/nav_destination_bk_59_59.png android/res/drawable-ldpi/nav_destination_bk.png ; fi
 
+# if release build -> then compress png images (this takes a long time!!!)
+#
+	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-hdpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
+	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-mdpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
+	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-ldpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
+
 #	clean up
 #	rm android/res2/drawable-hdpi/*
 #	rm android/res2/drawable-mdpi/*
 #	rm android/res2/drawable-ldpi/*
-
 
 	mkdir -p android/res/raw
 	for i in $(shell cd ../po && echo *.mo); do cp ../po/$$i android/res/raw/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done
@@ -189,7 +202,7 @@ apkg-all: all android/build.xml navit.xml
 	if [ "$(builddir)" != "$(srcdir)" ]; then find $(builddir) -type d -name '\.svn' -exec rm -Rf {} \; ; fi; echo "ignore the find errors!!"
 
 	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/toolchains/arm-linux-androideabi-4.4.3/prebuilt/gdbserver android/libs/$(b_arch)/gdbserver ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/prebuilt/android-arm/gdbserver/gdbserver android/libs/$(b_arch)/gdbserver ; fi
 	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
 	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/obj/local/$(b_arch) ; fi
 	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/libs/$(b_arch)/*.so android/obj/local/$(b_arch)/ ; fi

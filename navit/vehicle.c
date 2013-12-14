@@ -890,13 +890,13 @@ static int vehicle_add_log(struct vehicle *this_, struct log *log)
 	return 0;
 }
 
-void vehicle_update_(struct vehicle *this_, jobject location)
+void vehicle_update_(struct vehicle *this_, double lat, double lon, float speed, float direction, double height, float radius, long gpstime)
 {
 #ifdef HAVE_API_ANDROID
 	if (this_->meth.update_location_direct)
 	{
 		// dbg(0,"location=%p\n", location);
-		this_->meth.update_location_direct(location);
+		this_->meth.update_location_direct(lat, lon, speed, direction, height, radius, gpstime);
 	}
 #endif
 }

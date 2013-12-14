@@ -39,13 +39,19 @@
 package com.zoffcc.applications.zanavi;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -58,7 +64,8 @@ import android.widget.TextView;
 
 public class NavitAddressSearchActivity extends Activity
 {
-	private EditText address_string;
+	//private EditText address_string;
+	private AutoCompleteTextView address_string;
 	private EditText hn_string;
 	private CheckBox pm_checkbox;
 	private CheckBox hdup_checkbox;
@@ -85,14 +92,14 @@ public class NavitAddressSearchActivity extends Activity
 		panel.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		panel.setOrientation(LinearLayout.VERTICAL);
 
-		// address: label and text field
+		// address: label
 		TextView addr_view = new TextView(this);
 		addr_view.setText(Navit.get_text("Enter Destination")); //TRANS
 		addr_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
 		addr_view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 		addr_view.setPadding(4, 4, 4, 4);
 
-		// address: label and text field
+		// housenumber: label
 		TextView addrhn_view = new TextView(this);
 		addrhn_view.setText(Navit.get_text("Housenumber")); //TRANS
 		addrhn_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
@@ -102,11 +109,11 @@ public class NavitAddressSearchActivity extends Activity
 		// partial match checkbox
 		pm_checkbox = new CheckBox(this);
 		pm_checkbox.setText(Navit.get_text("partial match")); //TRANS
-		pm_checkbox.setChecked(false);
+		pm_checkbox.setChecked(true);
 		pm_checkbox.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		pm_checkbox.setGravity(Gravity.CENTER);
 
-		// partial match checkbox
+		// hide duplicates checkbox
 		hdup_checkbox = new CheckBox(this);
 		hdup_checkbox.setText(Navit.get_text("hide duplicates")); //TRANS
 		hdup_checkbox.setChecked(true);
@@ -229,7 +236,25 @@ public class NavitAddressSearchActivity extends Activity
 			try
 			{
 				hn_string = new EditText(this);
+				hn_string.setSingleLine();
+				hn_string.setHint(Navit.get_text("Housenumber")); // TRANS
+				// hn_string.setInputType(InputType.TYPE_CLASS_NUMBER);
+				hn_string.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 				hn_string.setText(getIntent().getExtras().getString("hn_string"));
+
+				hn_string.setOnEditorActionListener(new TextView.OnEditorActionListener()
+				{
+					@Override
+					public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+					{
+						if (actionId == EditorInfo.IME_ACTION_SEARCH)
+						{
+							executeDone();
+							return true;
+						}
+						return false;
+					}
+				});
 			}
 			catch (Exception e)
 			{
@@ -239,7 +264,48 @@ public class NavitAddressSearchActivity extends Activity
 		// address string
 		try
 		{
-			address_string = new EditText(this);
+			// old -> only normal edittext without autocomplete
+			//address_string = new EditText(this);
+			//address_string.setText(getIntent().getExtras().getString("address_string"));
+
+			// address: text field -> with autocomplete dropdown
+			address_string = new AutoCompleteTextView(this);
+			ArrayAdapter addr_view_autocomplete_adapter = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, Navit.PREF_StreetSearchStrings);
+			address_string.setCompletionHint(Navit.get_text("last searches")); // TRANS
+			if (this.search_type.equals("offline"))
+			{
+				if (Navit.use_index_search)
+				{
+					address_string.setHint(Navit.get_text("Streetname") + " " + Navit.get_text("Town")); // TRANS
+				}
+				else
+				{
+					address_string.setHint(Navit.get_text("Town") + " " + Navit.get_text("Streetname")); // TRANS
+				}
+			}
+			else
+			{
+				address_string.setHint(Navit.get_text("Address or POI-Name")); // TRANS				
+			}
+
+			address_string.setOnEditorActionListener(new TextView.OnEditorActionListener()
+			{
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+				{
+					if (actionId == EditorInfo.IME_ACTION_SEARCH)
+					{
+						executeDone();
+						return true;
+					}
+					return false;
+				}
+			});
+
+			address_string.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+			address_string.setSingleLine();
+			address_string.setThreshold(1);
+			address_string.setAdapter(addr_view_autocomplete_adapter);
 			address_string.setText(getIntent().getExtras().getString("address_string"));
 		}
 		catch (Exception e)
@@ -373,6 +439,17 @@ public class NavitAddressSearchActivity extends Activity
 				resultIntent.putExtra("search_country_id", 0);
 				resultIntent.putExtra("address_country_flags", 2);
 			}
+		}
+
+		try
+		{
+			// now hide the keyboard before we switch back to the mapscreen (bitmaps wont be recreated because now the size stays the same!)
+			InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+			inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+		catch (Exception e)
+		{
+
 		}
 
 		setResult(Activity.RESULT_OK, resultIntent);

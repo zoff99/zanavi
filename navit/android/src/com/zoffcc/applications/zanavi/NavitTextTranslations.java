@@ -48,7 +48,7 @@ public class NavitTextTranslations
 	// NLS Table compiled by Nick "Number6" Geoghegan
 	// Not an exhaustive list, but supports 99% of all languages in Windows
 	//{"LANGNAME", "CTRYNAME", "Language Code"},
-	public static String[][] Navit_know_locales = { { "AFK", "ZAF", "af_ZA" }, // Afrikaans (South Africa)
+	public final static String[][] Navit_know_locales = { { "AFK", "ZAF", "af_ZA" }, // Afrikaans (South Africa)
 			{ "SQI", "ALB", "sq_AL" }, // Albanian (Albania)
 			{ "AMH", "ETH", "am_ET" }, // Amharic (Ethiopia)
 			{ "ARG", "DZA", "ar_DZ" }, // Arabic (Algeria)
@@ -219,8 +219,8 @@ public class NavitTextTranslations
 
 	static String main_language = "en";
 	static String sub_language = "EN";
-	static String fallback_language = "en";
-	static String fallback_sub_language = "EN";
+	static final String fallback_language = "en";
+	static final String fallback_sub_language = "EN";
 	private static HashMap<String, HashMap<String, String>> Navit_text_lookup = new HashMap<String, HashMap<String, String>>();
 
 	public static void init()
@@ -269,16 +269,25 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Map already up to date", "ar", "الخريطة علي آخر تحديث", "pt", "O mapa já está atualizado", "pt_BR", "O mapa já está atualizado", "zh", "地图已经是最新版本", "zh_HK", "已是最新地圖", "cs", "Mapa je aktuální", "nl", "Kaart is al actueel", "fr", "Carte déjà à jour", "de", "Karte ist auf aktuellem Stand", "el", "Ο χάρτης είναι ενημερωμένος", "hu", "Térkép aktuális!", "it", "Mappa già aggiornata", "pl", "Mapa jest już w najnowszej wersji", "ru", "Установлена последняя карта",
 				"sk", "Mapa je aktuálna", "es", "El mapa ya está actualizado" };
 		p(k, v);
-		k = "Creating outputfile, long time";
-		v = new String[] { "en", "Creating outputfile\nthis can take a long time", "ar", "إنشاء مخرجات لملف، تأخذ وقت طويل", "pt", "Criando arquivo, pode levar alguns minutos", "pt_BR", "Criando arquivo, pode levar alguns minutos", "zh", "正在创建输出文件，可能耗时较长", "zh_HK", "建立輸出檔，要很長時間", "cs", "Vytvářím výstupní soubor, bude to trvat déle", "nl", "Bestand wordt gemaakt, kan even duren", "fr", "Création du fichier de sortie, très long", "de", "Kartendatei anlegen\nDas kann etwas dauern", "el",
-				"Δημιουργία εξαγόμενου αρχείου, αρκετός χρόνος", "hu", "Kimeneti adatállomány előállítása,\nsokáig eltarthat, kérem, várjon!", "it", "Creando outputfile, molto tempo", "pl", "Tworzę plik wyjściowy, długi czas oczekiwania", "ru", "Создание выходного файла, долго", "sk", "Vytvára sa výstupný súbor" };
-		p(k, v);
 		k = "MD5 mismatch";
 		v = new String[] { "en", "MD5 mismatch", "pt", "Falha na integridade do arquivo (MD5 não confere)", "pt_BR", "Falha na integridade do arquivo (MD5 não confere)", "zh", "MD5校验出错", "zh_HK", "MD5 不符", "cs", "Chyba MD5 kontroly", "nl", "MD5 fout", "fr", "MD5 incohérent", "de", "MD5 Prüfsumme stimmt nicht", "el", "αναντιστοιχία MD5", "hu", "MD5 checksum hiba", "it", "MD5 non corrispondente", "pl", "skrót MD5 niepoprawny", "ru", "несоответствие MD5", "sk", "Nesúhlasí MD5", "es",
 				"MD5 inválido" };
 		p(k, v);
+		k = "Error downloading index!";
+		v = new String[] { "en", "Error downloading index!", "de", "Fehler beim index download!", "pl", "Błąd ładowania indeksu!", "ru", "Ошибка при загрузке индекса!" };
+		p(k, v);
+		k = "Index download";
+		v = new String[] { "en", "Index download" };
+		p(k, v);
+		k = "downloading indexfile";
+		v = new String[] { "en", "downloading indexfile", "de", "lade indexfile", "pl", "ładowanie pliku indeksu" };
+		p(k, v);
 		k = "ready";
 		v = new String[] { "en", "ready", "ca", "preparat", "ar", "جاهز", "pt", "pronto", "pt_BR", "pronto", "zh", "就绪", "zh_HK", "就緒", "cs", "připraveno", "nl", "gereed", "fr", "prêt", "de", "fertig", "el", "έτοιμο", "hu", "kész", "it", "pronto", "pl", "gotowe", "sk", "Pripravený", "es", "listo" };
+		p(k, v);
+		k = "Creating outputfile, long time";
+		v = new String[] { "en", "Creating outputfile\nthis can take a long time", "ar", "إنشاء مخرجات لملف، تأخذ وقت طويل", "pt", "Criando arquivo, pode levar alguns minutos", "pt_BR", "Criando arquivo, pode levar alguns minutos", "zh", "正在创建输出文件，可能耗时较长", "zh_HK", "建立輸出檔，要很長時間", "cs", "Vytvářím výstupní soubor, bude to trvat déle", "nl", "Bestand wordt gemaakt, kan even duren", "fr", "Création du fichier de sortie, très long", "de", "Kartendatei anlegen\nDas kann etwas dauern", "el",
+				"Δημιουργία εξαγόμενου αρχείου, αρκετός χρόνος", "hu", "Kimeneti adatállomány előállítása,\nsokáig eltarthat, kérem, várjon!", "it", "Creando outputfile, molto tempo", "pl", "Tworzę plik wyjściowy, długi czas oczekiwania", "ru", "Создание выходного файла, долго", "sk", "Vytvára sa výstupný súbor" };
 		p(k, v);
 		k = "Creating outputfile, wait";
 		v = new String[] { "en", "Creating outputfile\nplease wait", "ar", "إنشاء مخرجات لملف، أنتظر", "pt", "Criando arquivo, aguarde", "pt_BR", "Criando arquivo, aguarde", "zh", "正在创建输出文件，请稍等", "zh_HK", "建立輸出檔，請稍候", "cs", "Vytvářím výstupní soubor, čekejte prosím", "nl", "Bestand wordt gemaakt, even geduld", "fr", "Création du fichier de sortie, patientez", "de", "Kartendatei anlegen\nBitte warten", "el", "Δημιουργία εξαγόμενου αρχείου, περιμένετε", "hu",
@@ -298,14 +307,14 @@ public class NavitTextTranslations
 		v = new String[] { "en", "More info", "ca", "Més informació", "ar", "معلومات إضافية", "pt", "Mais informações", "pt_BR", "Mais informações", "zh", "更多信息", "zh_HK", "更多資訊", "cs", "Více informací", "nl", "Meer info", "fr", "plus d'infos", "de", "Mehr Info", "el", "Περισσότερες πληροφορίες", "hu", "Több információ", "it", "Maggiori informazioni", "pl", "Więcej informacji", "sk", "Viac info", "es", "Más información" };
 		p(k, v);
 		k = "__INFO_BOX_TEXT__";
-		v = new String[] { "en", "You are running ZANavi for the first time!\n\nTo start select \"download maps\"\nfrom the menu, and download a map\nfor your current Area.\nThis will download a large file, so please\nmake sure you have a flatrate or similar!\n\nMapdata:\nCC-BY-SA OpenStreetMap Project\n\nFor more information\nvisit our Website\nhttp://zanavi.cc\n\n       Have fun using ZANavi.", "pt",
+		v = new String[] { "en", "You are running ZANavi for the first time!\n\nTo start select \"download maps\"\nfrom the menu, and download a map\nfor your current Area.\nThis will download a large file, so please\nmake sure you have a flatrate or similar!\n\nMap data (c) OpenStreetMap contributors\n\nFor more information\nvisit our Website\nhttp://zanavi.cc\n\n       Have fun using ZANavi.", "pt",
 				"Você está executando o ZANavi pela primeira vez!\n\nPara começar, selecione \"baixar mapas\"\nno menu e baixe um mapa\nda sua localidade.\nIsso fará o download de um arquivo grande,\nlogo, recomenda-se taxa de transferência estável!\n\nMapdata:\nCC-BY-SA OpenStreetMap Project\n\nPara mais informações\nvisite nosso website\nhttp://zanavi.cc\n\n Divirta-se com o ZANavi.", "pt_BR",
 				"Você está executando o ZANavi pela primeira vez!\n\nPara começar, selecione \"baixar mapas\"\nno menu e baixe um mapa\nda sua localidade.\nIsso fará o download de um arquivo grande,\nlogo, recomenda-se taxa de transferência estável!\n\nMapdata:\nCC-BY-SA OpenStreetMap Project\n\nPara mais informações\nvisite nosso website\nhttp://zanavi.cc\n\n Divirta-se com o ZANavi.", "zh",
 				"这是您第一次使用ZANavi！ \n\n首先从菜单中选择“下载地图”，将下载地图文件。\n地图文件可能很大，请确保你的服务商是按时长计费（而不是按流量）或相近方式！\n\n地图数据：CC-BY-SA OpenStreetMap Project\n\n更多信息，请访问我们的网站\nhttp://zanavi.cc\n\n祝您使用愉快。", "zh_HK", "這是你首次使用 ZANavi！\n\n一開始先在選單選「下載地圖」\n並為當前地區下載地圖。\n此舉會下載一個大檔案，故請\n確保你的手機收費不會太高！\n\n地圖資料：\nCC-BY-SA OpenStreetMap Project\n\n詳情\n請瀏覽我們的網站\nhttp://zanavi.cc\n\n Have fun using ZANavi.", "cs",
 				"ZANavi jste právě spustili poprvé!\n\nPrvně zvolte \"stáhnout mapy\"\nz menu a stáhněte mapu\noblastí, kde se právě nacházíte.\n\nMapové soubory jsou velké,\nproto se ujistěte, že máte datový paušál!\n\nMapové podklady:\nCC-BY-SA OpenStreetMap Project\n\nVíce informací získáte\nna našich stránkách\nhttp://zanavi.cc\n\nPřejme hodně zábavy se ZANavi.", "nl",
 				"U voert ZANavi voor de eerste keer uit.\n\nOm te beginnen, selecteer\n\"download kaarten\"\nuit het menu en download een kaart\nvan je regio.\nDe kaarten zijn groot,\nhet is dus aangeraden om een\nongelimiteerde internetverbinding te hebben!\n\nKaartdata:\nCC-BY-SA OpenStreetMap Project\n\nVoor meer info\nbezoek onze site\nhttp://zanavi.cc\n\n       Nog veel plezier met ZANavi.", "fr",
 				"Vous exécutez ZANavi pour la première fois\n\nPour commencer, sélectionnez \n\"télécharchez carte\"\ndu menu et télechargez une carte\nde votre région.\nLes cartes sont volumineux, donc\nil est préférable d'avoir une connection\ninternet illimitée!\n\nCartes:\n CC-BY-SA OpenStreetMap Project\n\nPour plus d'infos\nvisitez notre site internet\nhttp://zanavi.cc\n\n       Amusez vous avec ZANavi.", "de",
-				"Sie starten ZANavi zum ersten Mal!\n\nZum loslegen im Menu \"Karten laden\"\nauswählen und Karte für die\ngewünschte Region runterladen.\nDie Kartendatei ist sehr gross,\nbitte flatrate oder ähnliches aktivieren!\n\nKartendaten:\nCC-BY-SA OpenStreetMap Project\n\nFür mehr Infos\nbitte die Website besuchen\nhttp://zanavi.cc\n\n       Viel Spaß mit ZANavi.", "el",
+				"Sie starten ZANavi zum ersten Mal!\n\nZum loslegen im Menu \"Karten laden\"\nauswählen und Karte für die\ngewünschte Region runterladen.\nDie Kartendatei ist sehr gross,\nbitte flatrate oder ähnliches aktivieren!\n\nKartendaten (c) OpenStreetMap contributors\n\nFür mehr Infos\nbitte die Website besuchen\nhttp://zanavi.cc\n\n       Viel Spaß mit ZANavi.", "el",
 				"Τρέχετε το ZANavi για πρώτη φορά!\n\nΓια να ξεκινήσετε επιλέξτε \"λήψη χαρτών\"\nαπό το μενού, και κατεβάστε ένα χάρτη για \nτην περιοχή σας.\nΑυτό θα κατεβάσει ένα πολύ μεγάλο αρχείο, \nγιαυτό παρακαλώ υπολογίστε τις χρεώσεις \nτου παροχέα σας internet!\n\nΔεδομένα Χάρτη:\nCC-BY-SA OpenStreetMap Project\n\nΓια περισσότερες πληροφορίες \nεπισκεφτείτε την Ιστοσελίδα μας\nhttp://zanavi.cc\n\nΕυχαριστηθείτε την χρήση του ZANavi.", "hu",
 				"Először használja a ZANavi-t!\n\nKezdetnek válassza a \"Térképek letöltése\"\nmenüpontot, és töltsön le egy térképet\na kívánt területről.\nEz egy nagy adatállományt fog letölteni, tehat kérjük\nbizonyosodjon meg, hogy átalánydíjas letöltéses (flatrate) vagy hasonló előfizetése van (különben sokba kerülhet)!\n\nTérképadatok:\n CC-BY-SA OpenStreetMap Project\n\nTovábbi információkért\nlátogassa meg weblapunkat:\nhttp://zanavi.cc\n\nSok örömet kívánunk a ZANavi használatával!",
 				"pl", "Używasz ZANavi po raz pierwszy!\n\nNa początku wybierz opcję \"Pobieranie map\"\nz menu i pobierz mapę\ndla twojego obszaru.\nTo spowoduje pobranie dużego pliku, dlatego proszę\nupewnij się czy masz pakiet internetowy lub połączenie WiFi!\n\nMapy:\nCC-BY-SA OpenStreetMap \n\nWięcej informacji\nna naszej stronie\nhttp://zanavi.cc\n\nMiłej zabawy przy ZANavi!", "sk",
@@ -327,6 +336,9 @@ public class NavitTextTranslations
 		p(k, v);
 		k = "Target in gmaps";
 		v = new String[] { "en", "Target in gmaps", "ca", "Destinació a gmaps", "ar", "الهدف في الخريطة", "pt", "Mostrar no gmaps", "pt_BR", "Mostrar no gmaps", "zh", "在谷歌地图中显示", "zh_HK", "用 Google 地圖顯示目標", "nl", "Plaats in gmaps", "de", "zeige in gmaps", "el", "Στόχος στο gmaps", "hu", "Mutasd a célt a GMaps-ben", "pl", "Pokaż w GMaps", "ru", "Текущ. цель в gmaps", "sk", "Cieľ na Google mapách", "es", "Destino en gmaps" };
+		p(k, v);
+		k = "Share Destination";
+		v = new String[] { "en", "Share Destination", "de", "Teile Ziel" };
 		p(k, v);
 		k = "exit navit";
 		v = new String[] { "en", "Exit ZANavi", "ar", "خروج من زنافي", "pt", "sair", "pt_BR", "sair", "zh", "退出ZANvi", "zh_HK", "結束 ZANavi", "cs", "Ukončit ZANavi", "nl", "ZANavi afsluiten", "fr", "Quittez ZANavi", "de", "ZANavi beenden", "el", "Έξοδος από το ZANavi", "hu", "KIlépés a ZANavi-ból", "it", "esci da ZANavi", "pl", "wyjdź z ZANavi", "ru", "выйти", "sk", "Ukončiť ZANavi", "es", "Salir de ZANavi" };
@@ -350,10 +362,10 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Recent destinations", "ca", "Destinacions recents", "ar", "آخر الوجهات", "pt", "Destinos recentes", "pt_BR", "Destinos recentes", "zh", "最近的目的地", "zh_HK", "最近的目的地", "cs", "Poslední cíle", "nl", "Recente locaties", "fr", "Destinations récentes", "de", "Letzte Ziele", "el", "Πρόσφατοι προορισμοί", "hu", "Legutóbbi úticélok", "it", "Destinazioni recenti", "pl", "Ostatnie cele", "ru", "Последние места назначения", "sk", "Nedávne ciele", "es", "Destinos recientes" };
 		p(k, v);
 		k = "add Traffic block";
-		v = new String[] { "en", "add Traffic block", "de", "Baustelle markieren" };
+		v = new String[] { "en", "add Traffic block", "de", "Baustelle markieren", "el", "προσθήκη μποτιλιαρίσματος", "pl", "Zaznacz blokadę ruchu", "sk", "Pridať prekážku v premávke" };
 		p(k, v);
 		k = "clear Traffic blocks";
-		v = new String[] { "en", "clear Traffic blocks", "de", "alle Baustellen entfernen" };
+		v = new String[] { "en", "clear Traffic blocks", "de", "alle Baustellen entfernen", "el", "καθαρισμός μποτιλιαρισμάτων", "pl", "Skasuj wszystkie blokady ruchu", "sk", "Zmazať prekážky v premávke" };
 		p(k, v);
 		k = "download maps";
 		v = new String[] { "en", "download maps", "ca", "descarregar mapes", "ar", "تحميل خرائط", "pt", "baixar mapas", "pt_BR", "baixar mapas", "zh", "下载地图", "zh_HK", "下載地圖", "cs", "stahování map", "nl", "download kaarten", "fr", "télécharchez carte", "de", "Karten laden", "el", "λήψη χαρτών", "hu", "térképek letöltése", "it", "scarica mappe", "pl", "Pobierz mapy", "ru", "скачать карты", "sk", "Stiahnuť mapy", "es", "descargar mapas" };
@@ -365,10 +377,10 @@ public class NavitTextTranslations
 		v = new String[] { "en", "show Maps age", "pt_BR", "mostrar idade do mapa", "zh_HK", "顯示地圖建立日期表", "de", "Karten Erstelldatum", "el", "Εμφάνιση παλαιότητας χάρτη", "pl", "Pokaż wiek map", "sk", "Zobraziť vek máp" };
 		p(k, v);
 		k = "convert GPX file";
-		v = new String[] { "en", "convert GPX file", "pt_BR", "converter arquivo GPX", "zh_HK", "轉換成GPX檔案", "de", "GPX file konvertieren", "pl", "Konwertuj plik GPX", "sk", "Skonvertovať GPX súbor", "es", "Convertir fichero GPX" };
+		v = new String[] { "en", "convert GPX file", "pt_BR", "converter arquivo GPX", "zh_HK", "轉換成GPX檔案", "de", "GPX file konvertieren", "el", "μετατροπή αρχείου GPX", "pl", "Konwertuj plik GPX", "sk", "Skonvertovať GPX súbor", "es", "Convertir fichero GPX" };
 		p(k, v);
 		k = "clear GPX map";
-		v = new String[] { "en", "clear GPX map", "de", "GPX routen entfernen" };
+		v = new String[] { "en", "clear GPX map", "de", "GPX routen entfernen", "el", "καθαρισμός χάρτη GPX", "sk", "Zmazať GPX mapu" };
 		p(k, v);
 		k = "Demo Vehicle";
 		v = new String[] { "en", "Demo Vehicle", "ca", "Vehicle Demo", "pt", "Demonstração", "pt_BR", "Demonstração", "zh", "演示汽车", "zh_HK", "Demo 車輛", "nl", "Demo voertuig", "de", "Demo Fahrzeug", "el", "Όχημα Επίδειξης", "hu", "Demo jármű", "pl", "Pojazd demo", "ru", "Демо-автомобиль", "sk", "Predvádzacie vozidlo", "es", "Vehículo Demo" };
@@ -382,8 +394,14 @@ public class NavitTextTranslations
 		k = "toggle Routegraph";
 		v = new String[] { "en", "toggle Routegraph", "de", "Routegraph anzeigen" };
 		p(k, v);
+		k = "spill index files";
+		v = new String[] { "en", "spill index files", "de", "index files ausgeben" };
+		p(k, v);
+		k = "send feedback";
+		v = new String[] { "en", "send feedback", "de", "feedback senden" };
+		p(k, v);
 		k = "online Help";
-		v = new String[] { "en", "online Help", "ar", "المساعدة (أونلاين)", "pt", "ajuda online", "pt_BR", "ajuda online", "zh", "在线帮助", "zh_HK", "網上求助", "nl", "online help", "fr", "aide en ligne", "de", "online Hilfe", "el", "online Βοήθεια", "hu", "Online súgó", "pl", "Pomoc online", "ru", "Справка (онлайн)", "sk", "Online pomoc", "es", "Ayuda en línea" };
+		v = new String[] { "en", "online Help", "ar", "المساعدة (أونلاين)", "pt", "ajuda online", "pt_BR", "ajuda online", "zh", "在线帮助", "zh_HK", "網上求助", "nl", "online help", "fr", "aide en ligne", "de", "online Hilfe", "el", "online Βοήθεια", "hu", "Online súgó", "it", "Aiuto online", "pl", "Pomoc online", "ru", "Справка (онлайн)", "sk", "Online pomoc", "es", "Ayuda en línea" };
 		p(k, v);
 		k = "No address found";
 		v = new String[] { "en", "No address found", "ar", "لم يتم إيجاد عنوان", "pt", "Endereço não encontrado", "pt_BR", "Endereço não encontrado", "zh", "没有找到任何地点", "zh_HK", "沒有地址", "cs", "Adresa nenalezena", "nl", "Adres niet gevonden", "fr", "Pas d'adresse trouvée", "de", "Keine Adresse gefunden", "el", "Δεν βρέθηκε διεύθυνση", "hu", "Cím nem található", "it", "Nessun indirizzo trovato", "pl", "Nie znaleziono adresu", "sk", "Nenájdená žiadna adresa", "es",
@@ -392,6 +410,9 @@ public class NavitTextTranslations
 		k = "Enter: City and Street";
 		v = new String[] { "en", "Enter: City and Street", "ar", "أدخل: المدينة و الشارع", "pt", "Informe: Cidade e Rua", "pt_BR", "Informe: Cidade e Rua", "zh", "输入：城市和街道", "zh_HK", "輸入：城市及街道", "cs", "Vložte: město a ulici", "nl", "Invoer: plaatsnaam en straat", "fr", "Ville et Rue", "de", "Stadt und Straße:", "el", "Εισαγωγή: Πόλη και Οδός", "hu", "Város, utca:", "it", "Città e Via", "pl", "Wprowadź: Miasto oraz Ulica", "ru", "Ввести: Город и Улицу", "sk", "Zadjate: Mesto a ulicu", "es",
 				"Introduzca: ciudad y calle" };
+		p(k, v);
+		k = "No search string";
+		v = new String[] { "en", "No search string", "de", "Kein Suchtext" };
 		p(k, v);
 		k = "No search string entered";
 		v = new String[] { "en", "No search string entered", "ar", "لا يوجد قيمة للبحث", "pt", "Não há texto a ser procurado", "pt_BR", "Não há texto a ser procurado", "zh", "没有输入任何搜索", "zh_HK", "未輸入搜尋文字", "cs", "Vyhledávací řetězec je prázdný", "nl", "geen waarde opgegeven", "fr", "aucun élément entré", "de", "Keine Eingabe", "el", "Δεν εισήχθηκε αλφαριθμητικό αναζήτησης", "hu", "Keresőmező üres", "it", "Nessuna stringa di ricerca inserita", "pl", "Nie wprowadzono żadnych znaków", "ru",
@@ -402,6 +423,9 @@ public class NavitTextTranslations
 		p(k, v);
 		k = "new Waypoint";
 		v = new String[] { "en", "new Waypoint", "ar", "نقطة طريق جديدة", "pt", "novo ponto de partida", "pt_BR", "novo ponto de partida", "zh", "新建路径点", "zh_HK", "新 Waypoint", "cs", "nový waypoint", "nl", "nieuw routepunt", "fr", "nouvelle destination", "de", "neues Zwischenziel", "el", "νέο σημείο", "hu", "Új útpont", "pl", "Nowy punkt", "ru", "Новая Точка", "sk", "nový cestovný bod" };
+		p(k, v);
+		k = "there was a problem with sending feedback";
+		v = new String[] { "en", "there was a problem with sending feedback", "de", "Problem beim senden von feedback" };
 		p(k, v);
 		k = "getting search results";
 		v = new String[] { "en", "getting search results", "ar", "عرض نتيجة البحث", "pt", "obtendo resultados da busca", "pt_BR", "obtendo resultados da busca", "zh", "正在获取搜索结果", "zh_HK", "取得搜尋結果", "cs", "Získávám výsledky hledání", "nl", "haalt zoekresultaten op", "fr", "recherche en cours", "de", "lade Suchergebnisse", "el", "λήψη αποτελεσμάτων αναζήτησης", "hu", "Eredmények keresése", "it", "ricevendo risultati ricerca", "pl", "pobieranie wyników wyszukiwania", "ru",
@@ -420,31 +444,46 @@ public class NavitTextTranslations
 		k = "Streets";
 		v = new String[] { "en", "Streets", "ca", "Carrers", "ar", "الشوارع", "pt", "Ruas", "pt_BR", "Ruas", "zh", "街道", "zh_HK", "街道", "cs", "Ulice", "nl", "Straten", "fr", "Rues", "de", "Straßen", "el", "Οδοί", "hu", "Utcák", "it", "Strade", "pl", "Ulice", "sk", "Ulice", "es", "Calles" };
 		p(k, v);
+		k = "POI";
+		v = new String[] { "en", "POI" };
+		p(k, v);
 		k = "No Results found!";
 		v = new String[] { "en", "No Results found!", "ar", "لم يتمكن من إيجاد نتيجة!", "pt", "Nada foi encontrado!", "pt_BR", "Nada foi encontrado!", "zh", "没有找到结果！", "zh_HK", "無結果！", "cs", "Nic nenalzeno", "nl", "Geen resultaat gevonden!", "fr", "Pas de résultat trouvé!", "de", "Suche liefert kein Ergebnis!", "el", "Δεν βρέθηκαν Αποτελέσματα!", "hu", "Nincs találat!", "it", "Nessun risultato trovato!", "pl", "Nic nie znaleziono!", "ru", "Ничего не найдено!", "sk",
 				"Žiadny výsledok nenájdený!", "es", "No se encontraron resultados!" };
 		p(k, v);
 		k = "Possibly not enough space on your device!";
-		v = new String[] { "en", "Possibly not enough space on your device!", "de", "Möglicherweise ist nicht genung Platz vorhanden!" };
+		v = new String[] { "en", "Possibly not enough space on your device!", "de", "Möglicherweise ist nicht genung Platz vorhanden!", "el", "Πιθανόν όχι αρκετός χώρος στη συσκευή", "pl", "Prawdopodobnie brak miejsca na Twoim urządzeniu!", "sk", "Pravdepodobne nedostatok voľného miesta vo Vašom zariadení!" };
 		p(k, v);
 		k = "device space";
-		v = new String[] { "en", "device space", "de", "Speicherplatz" };
+		v = new String[] { "en", "device space", "de", "Speicherplatz", "el", "χώρος στη συσκευή", "sk", "Voľné miesto v zariadení" };
+		p(k, v);
+		k = "Cancel";
+		v = new String[] { "en", "Cancel", "de", "Abbrechen" };
 		p(k, v);
 		k = "Map data (c) OpenStreetMap contributors, CC-BY-SA";
-		v = new String[] { "en", "Map data (c) OpenStreetMap contributors, CC-BY-SA", "ar", "بيانات الخريطة محفوظة لـ OpenStreetMap، تحت رخصة CC-BY-SA", "zh", "地图数据 (c) OpenStreetMap contributors, CC-BY-SA", "zh_HK", "地圖 資料(c) OpenStreetMap contributors, CC-BY-SA", "cs", "Mapové podklady (c) OpenStreetMap contributors, CC-BY-SA", "nl", "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA", "de", "Kartendaten: (c) OpenStreetMap contributors, CC-BY-SA", "el",
+		v = new String[] { "en", "Map data (c) OpenStreetMap contributors", "ar", "بيانات الخريطة محفوظة لـ OpenStreetMap، تحت رخصة CC-BY-SA", "zh", "地图数据 (c) OpenStreetMap contributors, CC-BY-SA", "zh_HK", "地圖 資料(c) OpenStreetMap contributors, CC-BY-SA", "cs", "Mapové podklady (c) OpenStreetMap contributors, CC-BY-SA", "nl", "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA", "de", "Kartendaten (c) OpenStreetMap contributors", "el",
 				"Δεδομένα χάρτη (c) OpenStreetMap contributors, CC-BY-SA", "hu", "Térképadatok: (c) OpenStreetMap contributors, CC-BY-SA", "it", "Dati mappa (c) OpenStreetMap contributors, CC-BY-SA", "pl", "Dane map (c) OpenStreetMap contributors, CC-BY-SA", "sk", "Mapové údaje (c) OpenStreetMap contributors, CC-BY-SA", "es", "Datos de mapas (c) OpenStreetMap contributors, CC-BY-SA" };
 		p(k, v);
+		k = "Meeting Point";
+		v = new String[] { "en", "Meeting Point", "de", "Treffpunkt" };
+		p(k, v);
+		k = "Share";
+		v = new String[] { "en", "Share", "de", "Teilen" };
+		p(k, v);
+		k = "google search API is not working at this moment, try offline search";
+		v = new String[] { "en", "google search API is not working at this moment, try offline search", "de", "Google Suche funktioniert im Moment nicht, bitte offline Suche verwenden" };
+		p(k, v);
 		k = "Destination set";
-		v = new String[] { "en", "Destination set", "de", "Ziel gesetzt" };
+		v = new String[] { "en", "Destination set", "de", "Ziel gesetzt", "el", "Ορισμός προορισμού", "sk", "Cieľ bol určený" };
 		p(k, v);
 		k = "No route found / Route blocked";
-		v = new String[] { "en", "No route found / Route blocked", "de", "keine Route gefunden / blockiert" };
+		v = new String[] { "en", "No route found / Route blocked", "de", "keine Route gefunden / blockiert", "el", "Δεν βέθηκε διαδρομή / μπλοκαρισμένη διαδρομή", "pl", "Nie znaleziono drogi / Droga zablokowana", "sk", "Nenašla sa žiadna trasa / Trasa zablokovaná", "es", "No se encontró una ruta / Ruta bloqueada" };
 		p(k, v);
 		k = "Building route path";
-		v = new String[] { "en", "Building route path", "de", "generiere Route Path" };
+		v = new String[] { "en", "Building route path", "de", "generiere Route Path", "it", "Calcolando l'itinerario", "pl", "Generowanie trasy" };
 		p(k, v);
 		k = "Building route graph";
-		v = new String[] { "en", "Building route graph", "de", "generiere Route Graph" };
+		v = new String[] { "en", "Building route graph", "de", "generiere Route Graph", "pl", "Generowanie wykresu trasy", "sk", "Zostavuje sa graf trasy" };
 		p(k, v);
 		k = "__PREF__title__use_fast_provider";
 		v = new String[] { "en", "GSM/3g/Wireless", "pt", "GSM/3G/Sem fio", "pt_BR", "GSM/3G/Sem fio", "zh", "GSM/3g/无线", "cs", "GSM/3g/WiFi", "nl", "GSM/3G/WiFi", "fr", "GSM/3G/Sans-fil", "de", "GSM/3g/Wireless", "el", "GSM/3g/Ασύρματο", "hu", "GSM/3g/Wireless", "pl", "GSM/3g/WiFi", "sk", "GSM/3g/Bezdrôtové" };
@@ -453,6 +492,13 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Use GSM/3g/Wireless networks for getting position (uses Internet)", "pt", "Utilizar redes GSM/3G/Sem fio para obter posição (usa a Internet)", "pt_BR", "Utilizar redes GSM/3G/Sem fio para obter posição (usa a Internet)", "zh", "使用GSM/3g/无线网路定位（需要联网）", "cs", "K získání pozice použij síť GSM/3g/WiFi (používá Internet)", "nl", "Gebruik GSM/3G/WiFi om de positie te bepalen (Internet)", "fr", "GSM/3G/Sans-fil pour déterminer la position (utilise internet)", "de",
 				"Position auch mit GSM/3g/Wireless finden (braucht Internet)", "el", "Χρήση GSM/3g/Ασύρματων δυκτων για λήψη τοποθεσίας (χρήση Internet)", "hu", "GSM/3g/Wireless (Internet!) használata a pozíciómeghatározáshoz", "pl", "Użyj sieci GSM/3g/WiFi aby ustalić pozycję (wykorzystuje Internet)", "sk", "Použiť GSM/3g/Bezdrôtové siete na získanie pozície (použije Internet)" };
 		p(k, v);
+		k = "__PREF__title__use_agps";
+		v = new String[] { "en", "aGPS", "zh", "辅助GPS", "cs", "aGPS", "nl", "aGPS", "fr", "aGPS", "de", "aGPS", "el", "aGPS", "hu", "aGPS használata", "pl", "aGPS", "sk", "aGPS" };
+		p(k, v);
+		k = "__PREF__summ__use_agps";
+		v = new String[] { "en", "use assisted GPS (uses Internet !!)", "zh", "使用辅助GPS（需要联网！）", "cs", "Používej asistované GPS (potřebuje Internet)", "nl", "gebruik assisted GPS (gebruikt Internet !!)", "fr", "Utilise le GPS assisté (utilise internet)", "de", "aGPS verwenden für schnellere Positionsfindung (braucht Internet !!)", "el", "χρήση aGPS (με χρήση Internet !!)", "hu", "Assisted GPS használata (internet kapcsolat!)", "pl", "Użyj assisted GPS (wykorzystuje Internet!!)", "sk",
+				"Použiť asistované GPS (použije Internet !!)" };
+		p(k, v);
 		k = "__PREF__title__follow_gps";
 		v = new String[] { "en", "Follow", "pt", "Seguir", "pt_BR", "Seguir", "zh", "跟随GPS", "cs", "Následuj", "nl", "Volg GPS", "fr", "Suivi GPS", "de", "folgen", "el", "Ακολούθησε", "hu", "Követés", "pl", "Podążaj za GPS", "sk", "Nasledovať" };
 		p(k, v);
@@ -460,12 +506,26 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Center on GPS. activate this for Compass heading to work", "pt", "Sincronizar com GPS. Ative isso para que a bússola funcione", "pt_BR", "Sincronizar com GPS. Ative isso para que a bússola funcione", "zh", "居中显示GPS。使用罗盘导航需要激活此功能。", "cs", "Centruj mapu podle GPS. Aktivujte tuto volbu, pokud chcete používat směrování kompasem.", "nl", "Volg GPS. Benodigd voor de kompas richting", "fr", "Centré sur la position GPS, Activez cette option pour le suivi du cap", "de",
 				"Karte folgt Fahrzeug", "el", "Κεντράρισμα στο GPS. ενεργοποιήστε για τη λειτουργία κατεύθυνσης πυξίδας", "hu", "A térkép követi a helyzetet (sticky)", "pl", "Podążaj za pozycją GPS. Włącz aby działał kompas.", "sk", "Centrovať na GPS. Aktivujte toto pre smerovanie podľa kompasu." };
 		p(k, v);
+		k = "__PREF__title__use_lock_on_roads";
+		v = new String[] { "en", "lock on Roads", "zh", "锁定道路", "cs", "Jen po silnicích", "nl", "plaats op de weg", "fr", "Bloqué sur les routes", "de", "Fahrzeug auf Strasse", "el", "κλείδωμα στο Δρόμο", "hu", "Maradj az úton", "pl", "Przyciągaj do drogi", "sk", "Prichytiť k ceste" };
+		p(k, v);
+		k = "__PREF__summ__use_lock_on_roads";
+		v = new String[] { "en", "lock Vehicle on nearest Road. turn off if you are walking or driving offroad", "zh", "将汽车锁定到最近的道路。如果您是步行或越野，请关闭此选项。", "cs", "Umístnit pozici vždy na nejbližší komunikaci. Vypněte, pokud se pohybujete mimo značené trasy.", "nl", "Plaatst het voertuig op de dichtsbijzijnde weg. Zet deze uit voor wandelen of offroad rijden", "fr", "Localise exclusivement le véhicule sur les routes les plus proches à désactiver si vous marchez ou roulez hors route", "de",
+				"Fahrzeug auf nächstgelegene Strasse fixieren. Zu Fuß oder Offroad bitte ausschalten", "el", "κλείδωμα του οχήματος στον κοντινότερο Δρόμο. απενεργοποιήστε αν περπατάτε ή οδηγείτε εκτός δρόμου", "hu", "A pointert az úton tartja akkor is, ha esetleg a koordináta eltér (autós beállítás, gyalog vagy terepen kikapcsolandó)", "pl", "Przyciągaj pojazd do najbliższej drogi. Wyłącz jeśli idziesz pieszo lub jedziesz w terenie", "sk",
+				"Prichytiť vozidlo k najbližšej ceste. Vypnite ak kráčate alebo jazdíte v teréne." };
+		p(k, v);
 		k = "__PREF__title__show_vehicle_in_center";
 		v = new String[] { "en", "Vehicle in center", "pt", "Veículo no centro", "pt_BR", "Veículo no centro", "zh", "居中显示汽车", "cs", "Centruj dle pozice", "nl", "Centreer op voertuig", "fr", "Véhicule au centre", "de", "Fahrzeug", "el", "Όχημα στο κέντρο", "hu", "Pozíció a középpontban", "pl", "Pojazd na środku", "sk", "Vozidlo v strede" };
 		p(k, v);
 		k = "__PREF__summ__show_vehicle_in_center";
 		v = new String[] { "en", "show vehicle in screen center, instead of the lower half", "pt", "mostra o veículo no centro da tela ao invés de exibir na parte inferior", "pt_BR", "mostra o veículo no centro da tela ao invés de exibir na parte inferior", "zh", "在屏幕居中显示汽车，而不是屏幕下半部分显示", "cs", "Zobrazuje pozici uprostřed obrazovky místo ve spodní části", "nl", "Toont het voertuig in het midden van het scherm in plaats van onderin.", "fr",
 				"Affiche le véhicule au centre de l'écran, au lieu d'en bas", "de", "Fahrzeug in Displaymitte, statt weiter unten", "el", "εμφάνιση του οχήματος στο κέντρο της οθόνης, αντί για το κάτω μισό", "hu", "A pozíció a térkép közepére rögzül", "pl", "Pokaż pojazd na środku ekranu zamiast w dolnej części", "sk", "Zobraziť vozidlo v strede obrazovky, namiesto spodnej polovice" };
+		p(k, v);
+		k = "__PREF__title__show_sat_status";
+		v = new String[] { "en", "Sat Status", "zh", "卫星状态", "cs", "Stav statelitů", "nl", "satteliet status", "fr", "Etat du GPS", "de", "Sat Status", "el", "Κατάσταση δορυφόρων", "hu", "Műholdak", "pl", "Status satelitów", "sk", "Stav satelitov" };
+		p(k, v);
+		k = "__PREF__summ__show_sat_status";
+		v = new String[] { "en", "show Statellite Status", "zh", "显示卫星状态", "cs", "Ukazuj stav GPS satelitů", "nl", "weergeven satteliet status", "fr", "Affiche l'état de la réception satellite", "de", "Satelliten Status anzeigen", "el", "εμφάνιση κατάστασης δορυφόρων", "hu", "Mutasd a műholdak állapotát", "pl", "Pokaż status satelitów", "sk", "Zobraziť stav satelitov" };
 		p(k, v);
 		k = "__PREF__title__use_compass_heading_base";
 		v = new String[] { "en", "Compass", "pt", "Bússola", "pt_BR", "Bússola", "zh", "罗盘", "cs", "Kompas", "nl", "Kompas richting", "fr", "Cap", "de", "Kompass", "el", "Πυξίδα", "hu", "Iránytű", "pl", "Kompas", "sk", "Kompas" };
@@ -495,40 +555,6 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Use Imperial units instead of metric units", "pt", "Usa sistema imperial ao invés do sistema métrico", "pt_BR", "Usa sistema imperial ao invés do sistema métrico", "zh", "使用英制单位，而不是公制单位", "cs", "Používej imperiální jednotky (míle, ...) místo metrických.", "nl", "Gebruik Engelse eenheden in plaats van metrische", "fr", "Utilise les unités impériales au lieu des unités métriques", "de", "Englische Maßeinheiten wie Meilen benutzen", "el",
 				"Χρήση Αγγλικών μονάδων αντί για μετρικές", "hu", "Mérföld, láb stb. km, méter helyett", "pl", "Użyj jednostek imperialnych (brytyjskich) zamiast metrycznych", "sk", "Použiť imperiálne jednotky namiesto metrických" };
 		p(k, v);
-		k = "__PREF__title__use_anti_aliasing";
-		v = new String[] { "en", "AntiAlias", "zh", "反走样", "cs", "Vyhlazování", "nl", "Anti Aliasing", "fr", "AntiAlias", "de", "Antialiasing", "el", "Εξομάλυνση", "hu", "Kontúrsimítás", "pl", "Antyaliasing", "sk", "Vyhladzovanie" };
-		p(k, v);
-		k = "__PREF__summ__use_anti_aliasing";
-		v = new String[] { "en", "draw with AntiAlias, map is faster when this is OFF", "zh", "反走样绘制地图。关闭此选项，地图将绘制更快。", "cs", "Při vykreslování mapy použij vyhlazování čar. Je rychlejší, pokud je vypnuto.", "nl", "schakel anti aliasing in", "fr", "Afficher la carte avec de l'AntiAlias. L'affichage est plus rapide que cette option est désactivée", "de", "Antialiasing einschalten. Karte zeichnet schneller ohne Antialiasing", "el",
-				"σχεδίαση με εξομάλυνση, ο χάρτης είναι πιο γρήγορος όταν αυτό δεν είναι ενεργοποιημένο", "hu", "Kontúrsimítás bekapcsolása; enélkül a térkép gyorsabb.", "pl", "Rysuj z antyaliasingiem, mapa jest szybsza, gdy to jest wyłączone", "sk", "Vykresľovať mapu s vyhladzovaním. Mapa je rýchlejšia, ak je toto vypnuté." };
-		p(k, v);
-		k = "__PREF__title__gui_oneway_arrows";
-		v = new String[] { "en", "OneWay Arrows", "zh", "单向箭头", "cs", "Jednosměrky", "nl", "eenrichtingspijlen", "fr", "Flèches de sens unique", "de", "Einbahn", "el", "Βέλη Μονόδρομων", "hu", "Egyirányú utcák", "pl", "Strzałki jednokierunkowe", "sk", "Šípky jednosmeriek" };
-		p(k, v);
-		k = "__PREF__summ__gui_oneway_arrows";
-		v = new String[] { "en", "show oneway street arrows [BETA]", "zh", "在街道使用单向箭头[BETA]", "cs", "Ukazuj šipky u jednosměrných cest [BETA]", "nl", "Toon pijlen bij eenrichtings-straten [BETA]", "fr", "Affiche les voies en sens unique [BETA]", "de", "Einbahnpfeile [BETA]", "el", "εμφάνιση βελών κατεύθυνσης μονόδρομων [BETA]", "hu", "Egyirányú utcák jelzése [BETA]", "pl", "Pokaż strzałki na ulicach jednokierunkowych [BETA]", "sk", "Zobraziť šípky jednosmerných ulíc [BETA]" };
-		p(k, v);
-		k = "__PREF__title__show_debug_messages";
-		v = new String[] { "en", "Debug Mgs", "zh", "调试信息", "cs", "Ladící hlášky", "nl", "Toon debug berichten", "fr", "Msg. de debug", "de", "Debug", "el", "Μην. Αποσφαλμάτωσης", "hu", "Debug", "pl", "Komunikaty debuggera", "sk", "Ladiace správy" };
-		p(k, v);
-		k = "__PREF__summ__show_debug_messages";
-		v = new String[] { "en", "show Debug Messages [DEBUG]", "zh", "显示调试信息[DEBUG]", "cs", "Zobrazuj ladící hlášky [DEBUG]", "nl", "Toont debug berichten [DEBUG]", "fr", "Affiche les messages des debug [DEBUG]", "de", "Debugmeldungen [DEBUG]", "el", "Εμφάνιση μηνυμάτων αποσφαλμάτωσης", "hu", "Hibakövetési jelentések (debug) megjelenítése", "pl", "Pokaż komunikaty debuggera", "sk", "Zobraziť ladiace správy [DEBUG]" };
-		p(k, v);
-		k = "__PREF__title__navit_lang";
-		v = new String[] { "en", "Language", "zh", "语言", "cs", "Jazyk", "nl", "Language", "fr", "Langue", "de", "Sprache", "el", "Γλώσσα", "hu", "Nyelv", "pl", "Język", "sk", "Jazyk" };
-		p(k, v);
-		k = "__PREF__summ__navit_lang";
-		v = new String[] { "en", "Select Language for messages. needs a RESTART!!", "zh", "选择界面语言。需要重启！", "cs", "Vyber komunikační jazky (pro aplikaci je nutný restart aplikace)", "nl", "Stel de taal in. Herstart is dan nodig!", "fr", "Sélection de la langue pour les messages, redémarrez l'application pour la prise en compte !!", "de", "Sprache der Applikation (Sprache und Meldungen) braucht RESTART!!", "el", "Επιλογή Γλώσσας μηνυμάτων. απαιτείται ΕΠΑΝΕΚΚΙΝΗΣΗ!!", "hu",
-				"Írott és hangos nyelv kiválasztása; újraindítás szükséges", "pl", "Wybierz język komunikatów. Wymaga RESTARTU!", "sk", "Vybrať jazyk hlášok. Vyžaduje REŠTART!!" };
-		p(k, v);
-		k = "__PREF__title__use_lock_on_roads";
-		v = new String[] { "en", "lock on Roads", "zh", "锁定道路", "cs", "Jen po silnicích", "nl", "plaats op de weg", "fr", "Bloqué sur les routes", "de", "Fahrzeug auf Strasse", "el", "κλείδωμα στους Δρόμους", "hu", "Maradj az úton", "pl", "Przyciągaj do drogi", "sk", "Prichytiť k ceste" };
-		p(k, v);
-		k = "__PREF__summ__use_lock_on_roads";
-		v = new String[] { "en", "lock Vehicle on nearest Road. turn off if you are walking or driving offroad", "zh", "将汽车锁定到最近的道路。如果您是步行或越野，请关闭此选项。", "cs", "Umístnit pozici vždy na nejbližší komunikaci. Vypněte, pokud se pohybujete mimo značené trasy.", "nl", "Plaatst het voertuig op de dichtsbijzijnde weg. Zet deze uit voor wandelen of offroad rijden", "fr", "Localise exclusivement le véhicule sur les routes les plus proches à désactiver si vous marchez ou roulez hors route", "de",
-				"Fahrzeug auf nächstgelegene Strasse fixieren. Zu Fuß oder Offroad bitte ausschalten", "el", "κλείδωμα του οχήματος στον κοντινότερο Δρόμο. απενεργοποιήστε αν περπατάτε ή οδηγείτε εκτός δρόμου", "hu", "A pointert az úton tartja akkor is, ha esetleg a koordináta eltér (autós beállítás, gyalog vagy terepen kikapcsolandó)", "pl", "Przyciągaj pojazd do najbliższej drogi. Wyłącz jeśli idziesz pieszo lub jedziesz w terenie", "sk",
-				"Prichytiť vozidlo k najbližšej ceste. Vypnite ak kráčate alebo jazdíte v teréne." };
-		p(k, v);
 		k = "__PREF__title__use_route_highways";
 		v = new String[] { "en", "prefer Highways", "zh", "高速公路优先", "cs", "Preferuj dálnice", "nl", "voorkeur voor snelwegen", "fr", "Préférer les routes", "de", "Autobahn bevorzugen", "el", "προτίμηση Αυτοκινητοδρόμων", "hu", "Autópályák", "pl", "Preferuj autostrady", "sk", "Uprednostňovať diaľnice" };
 		p(k, v);
@@ -536,30 +562,17 @@ public class NavitTextTranslations
 		v = new String[] { "en", "prefer Highways for routing (switching this off uses more Memory!!)", "zh", "优先选择高速公路（关闭此选项会耗用更多内存）。", "cs", "Preferování dálnic. Při vypnuté volbě je potřeba více paměti.", "nl", "geef voorkeur aan snelwegen voor de route (uitschakelen gebruikt meer geheugen!!)", "fr", "Préfère les routes pour le calcul des trajets (Désactiver cette option utilise plus de mémoire !!)", "de", "Autobahnen werden bevorzugt (abschalten braucht viel mehr Speicher!!)", "el",
 				"προτίμηση Αυτοκινητοδρόμων για δρομολόγηση (απενεργοποιώντας αυτό, χρησιμοποιεί περισσότερη μνήμη!!)", "hu", "Részesítsd előnyben az autópályák használatát", "pl", "Preferuj autostrady przy nawigacji (wyłączenie zwiększa zużycie pamięci!!)", "sk", "Uprednostniť diaľnice pri navigovaní (vypnutie spôsobí väčšiu spotrebu pamäti!!)" };
 		p(k, v);
-		k = "__PREF__title__save_zoomlevel";
-		v = new String[] { "en", "Zoomlevel", "zh", "缩放级别", "cs", "Úroveň přiblížení", "nl", "zoomniveau", "fr", "Niveau de zoom", "de", "Zoomstufe", "el", "Κλίμακα εστίασης", "hu", "Kivágás (zoom) tárolása", "pl", "Powiększenie", "sk", "Úroveň priblíženia" };
+		k = "__PREF__title__use_index_search";
+		v = new String[] { "en", "index search", "de", "index suche" };
 		p(k, v);
-		k = "__PREF__summ__save_zoomlevel";
-		v = new String[] { "en", "save last Zoomlevel", "zh", "保存上次缩放级别", "cs", "Ukládat posledně použitou úroveň přiblížení.", "nl", "bewaar laatste zoomniveau", "fr", "Sauvegarder le niveau de zoom précédent", "de", "Zoomstufe speichern", "el", "αποθήκευση τελευταίας Κλίμακας εστίασης", "hu", "Tárold el az utolsó kivágás (zoom) méretet", "pl", "Zapamiętaj powiększenie", "sk", "Zapamätať poslednú úroveň priblíženia" };
+		k = "__PREF__summ__use_index_search";
+		v = new String[] { "en", "use faster and better index search [donate version]", "de", "schnellere index suche verwenden [donate version]" };
 		p(k, v);
-		k = "__PREF__title__show_sat_status";
-		v = new String[] { "en", "Sat Status", "zh", "卫星状态", "cs", "Stav statelitů", "nl", "satteliet status", "fr", "Etat du GPS", "de", "Sat Status", "el", "Κατάσταση Δορυφόρων", "hu", "Műholdak", "pl", "Status satelitów", "sk", "Stav satelitov" };
+		k = "__PREF__title__trafficlights_delay";
+		v = new String[] { "en", "traffic lights", "de", "Ampeln", "el", "φανάρια" };
 		p(k, v);
-		k = "__PREF__summ__show_sat_status";
-		v = new String[] { "en", "show Statellite Status", "zh", "显示卫星状态", "cs", "Ukazuj stav GPS satelitů", "nl", "weergeven satteliet status", "fr", "Affiche l'état de la réception satellite", "de", "Satelliten Status anzeigen", "el", "εμφάνιση Κατάστασης Δορυφόρων", "hu", "Mutasd a műholdak állapotát", "pl", "Pokaż status satelitów", "sk", "Zobraziť stav satelitov" };
-		p(k, v);
-		k = "__PREF__title__use_agps";
-		v = new String[] { "en", "aGPS", "zh", "辅助GPS", "cs", "aGPS", "nl", "aGPS", "fr", "aGPS", "de", "aGPS", "el", "aGPS", "hu", "aGPS használata", "pl", "aGPS", "sk", "aGPS" };
-		p(k, v);
-		k = "__PREF__summ__use_agps";
-		v = new String[] { "en", "use assisted GPS (uses Internet !!)", "zh", "使用辅助GPS（需要联网！）", "cs", "Používej asistované GPS (potřebuje Internet)", "nl", "gebruik assisted GPS (gebruikt Internet !!)", "fr", "Utilise le GPS assisté (utilise internet)", "de", "aGPS verwenden für schnellere Positionsfindung (braucht Internet !!)", "el", "χρήση aGPS (με χρήση Internet !!)", "hu", "Assisted GPS használata (internet kapcsolat!)", "pl", "Użyj assisted GPS (wykorzystuje Internet!!)", "sk",
-				"Použiť asistované GPS (použije Internet !!)" };
-		p(k, v);
-		k = "__PREF__title__enable_debug_functions";
-		v = new String[] { "en", "Enable Debug Functions", "zh", "启用调试功能", "nl", "Debug functies aan", "fr", "Activer les fonctions de debug", "de", "Debug Funktionen", "el", "Ενεργοποίηση Λειτουργιών Αποσφαλμάτωσης", "hu", "Debug funkciók engedélyezése", "pl", "Włącz funkcje debugujące", "sk", "Zapnúť ladiace funkcie" };
-		p(k, v);
-		k = "__PREF__summ__enable_debug_functions";
-		v = new String[] { "en", "Enable Debug Functions in Android Menu", "zh", "在菜单中显示调试功能", "de", "Debug Funktionen im Menü anzeigen", "el", "Ενεργοποίηση των λειτουργιών αποσφαλμάτωσης στο μενού του Android", "hu", "Engedélyezi a hibanyomkövetési funkciókat", "pl", "Włącz funkcje debugujące w menu", "sk", "Zapnúť ladiace funkcie v Android ponuke" };
+		k = "__PREF__summ__trafficlights_delay";
+		v = new String[] { "en", "set delay of traffic lights for routing", "de", "Verzögerung durch Amplen auf der Route", "el", "ορίστε την  καθυστέρηση των φαναριών για την δρομολόγηση" };
 		p(k, v);
 		k = "__PREF__title__speak_street_names";
 		v = new String[] { "en", "speak Streetnames", "zh", "播报街道名字", "nl", "Uitspreken straatnamen", "fr", "Annonce des rues", "de", "Strassennamen", "el", "εκφώνηση ονομάτων δρόμων", "hu", "Utcanevek bemondása", "pl", "Czytaj nazwy ulic", "sk", "Hovoriť názvy ulíc" };
@@ -567,37 +580,11 @@ public class NavitTextTranslations
 		k = "__PREF__summ__speak_street_names";
 		v = new String[] { "en", "speak Streetnames when navigating", "zh", "导航时播报街道名字", "fr", "Annonce des rues durant la navigation", "de", "Strassennamen beim Navigieren sprechen", "el", "εκφώνηση ονομάτων δρόμων κατά την πλοήγηση", "hu", "Bemondja az utcaneveket", "pl", "Czytaj nazwy ulic podczas nawigacji", "sk", "Hovoriť názvy ulíc počas navigácie" };
 		p(k, v);
-		k = "__PREF__title__map_font_size";
-		v = new String[] { "en", "Map Font size", "zh", "地图字体大小", "de", "Karten Font Größe", "el", "Μέγεθος γραμματοσειράς χάρτη", "hu", "Térkép font méret", "pl", "Rozmiar czcionki", "sk", "Veľkosť písma na mape" };
+		k = "__PREF__title__speak_filter_special_chars";
+		v = new String[] { "en", "filter special chars", "de", "sonderzeichen filtern" };
 		p(k, v);
-		k = "__PREF__summ__map_font_size";
-		v = new String[] { "en", "set Font size for Map Texts (streetnames, etc.)", "zh", "设置地图的字体大小（例如街道名等）", "de", "Größe der Karten Texte (Straßennamen, usw.)", "el", "μέγεθος γραμματοσειράς χάρτη (ονόματα δρόμων, κλπ.)", "hu", "A térkép betűméret beállítása", "pl", "Rozmiar czcionki na mapie (nazwy ulic itp.)", "sk", "Nastaviť veľkosť písma pre text na mape (názvy ulíc, atď.)" };
-		p(k, v);
-		k = "__PREF__title__use_custom_font";
-		v = new String[] { "en", "custom Font", "zh", "自定义字体", "fr", "Polices dédiées", "de", "custom Font", "hu", "Saját font használata", "pl", "Czcionka własna", "sk", "Vlastné písmo" };
-		p(k, v);
-		k = "__PREF__summ__use_custom_font";
-		v = new String[] { "en", "use Font included in ZANavi (otherwise use System Font)", "zh", "使用ZANavi内置的字体（否则使用系统字体）", "fr", "Utilise les polices incluses dans ZANavi (sinon les polices du système sont utilisées)", "de", "Font von ZANavi verwenden (sonst Systemschriftart verwenden)", "el", "χρήση γραμματοσειράς που περιέχεται στο ZANavi (αλλιώς, χρήση γραμματοσειράς συστήματος)", "hu", "Saját font használatának engedélyezése", "pl", "Użyj własnej czcionki ZANavi zamiast systemowej", "sk",
-				"Použiť písmo zahrnuté v ZANavi (inak použiť systémové písmo)" };
-		p(k, v);
-		k = "__PREF__title__mapcache";
-		v = new String[] { "en", "Mapcache", "zh", "地图缓存", "de", "Mapcache", "hu", "Térkép gyorsítótár", "pl", "Bufor mapy", "sk", "Vyrovnávacia pamäť mapy" };
-		p(k, v);
-		k = "__PREF__summ__mapcache";
-		v = new String[] { "en", "Size of Mapcache [needs RESTART]", "zh", "地图缓存大小[需要重启]", "de", "Größe des Caches für Karten [braucht RESTART]", "hu", "Gyorsítótár méretének megadása (újraindítás kell!)", "pl", "Rozmiar bufora mapy (zmiana wymaga RESTARTU!)", "sk", "Veľkosť vyr. pamäte pre mapu [vyžaduje REŠTART]" };
-		p(k, v);
-		k = "__PREF__title__drawatorder";
-		v = new String[] { "en", "Draw more Detail", "zh", "绘制更多细节", "de", "Mehr Detail", "el", "Σχεδίαση περισσότερων λεπτομερειών", "hu", "Több részlet", "pl", "Więcej szczegółów", "sk", "Detailnejšie vykresľovanie" };
-		p(k, v);
-		k = "__PREF__summ__drawatorder";
-		v = new String[] { "en", "Draw more Detail on map. change only on fast devices!", "zh", "在地图上绘制更多细节。请只在高端设备上启用。", "de", "Zeichnet mehr Details auf der Karte. Nur für schnelle Geräte!", "el", "Σχεδιάζει περισσότερες λεπτομέρειες στο χάρτη. Αλλάξτε το μόνο σε γρήγορες συσκευές.", "hu", "Részletesebb térképet rajzol. Csak gyors készülékekre!", "pl", "Więcej szczegółów na mapie. Tylko szybkie urządzenia!", "sk", "Vykresliť viac podrobností na mape. Zmenťe len na rýchlych zariadeniach!" };
-		p(k, v);
-		k = "__PREF__title__streetsearch_r";
-		v = new String[] { "en", "Searchradius", "zh", "搜索半径", "de", "Suchradius", "el", "Ακτίνα αναζήτησης", "hu", "Keresésí sugár", "pl", "Promień szukania", "sk", "Rádius hľadania" };
-		p(k, v);
-		k = "__PREF__summ__streetsearch_r";
-		v = new String[] { "en", "Searchradius for streets inside a town. Bigger radius will find streets further away from town center", "zh", "街道的搜索半径。更大的搜索半径将会搜索远离城镇中心的街道。", "de", "Suchradius für Strassen in Städten. Grösserer Radius findet Strassen die weiter vom Stadtzentrum entfernt sind", "el", "Ακτίνα αναζήτησης δρόμων μέσα σε πόλη, μεγαλύτερη ακτίνα βρίσκει δρόμους που είναι πιό μακρυά απο το κέντρο της πόλης.", "hu",
-				"Nagyobb keresési sugár a városközponttól távolabbi utcákat is megtalál", "pl", "Promień szukania ulic w miastach. Większy promień pozwala znaleźć ulice położone dalej od centrum.", "sk", "Hľadací rádius pre ulice v rámci mesta. Väčší rádius nájde ulice ďalej od stredu mesta." };
+		k = "__PREF__summ__speak_filter_special_chars";
+		v = new String[] { "en", "filter special chars when speaking streetnames", "de", "sonderzeichen beim sprechen von Straßennamen herausfiltern" };
 		p(k, v);
 		k = "__PREF__title__route_style";
 		v = new String[] { "en", "route style", "de", "Routenstil", "pl", "Styl trasy", "sk", "Štýl trasy" };
@@ -611,17 +598,30 @@ public class NavitTextTranslations
 		k = "__PREF__summ__show_3d_map";
 		v = new String[] { "en", "show map in 3D [BETA]", "pt", "mostra mapa em 3D [BETA]", "pt_BR", "mostra mapa em 3D [BETA]", "zh", "显示3D地图[BETA]", "cs", "Zobrazení mapy v 3D [BETA]", "nl", "3D weergave van de kaart [BETA]", "fr", "Afficher la carte en 3D [BETA]", "de", "Karte in 3D [BETA]", "el", "εμφάνιση χάρτη σε 3D [BETA]", "hu", "3D térkép bekapcsolása 2D helyett [BETA]", "pl", "Pokaż mapę w 3D [BETA]", "sk", "Zobraziť mapu v 3D [BETA]" };
 		p(k, v);
-		k = "__PREF__title__more_map_detail";
-		v = new String[] { "en", "more Map Detail", "de", "mehr Details anzeigen" };
+		k = "__PREF__title__show_2d3d_toggle";
+		v = new String[] { "en", "2D/3D toggle", "de", "2D/3D Knopf" };
 		p(k, v);
-		k = "__PREF__summ__more_map_detail";
-		v = new String[] { "en", "show more Map Detail [needs RESTART]", "de", "Zeigt noch mehr Details auf der Karte an, braucht aber mehr Leistung! [braucht RESTART]" };
+		k = "__PREF__summ__show_2d3d_toggle";
+		v = new String[] { "en", "show 2D/3D toggle instead of Map off/on toggle", "de", "2D/3D Knopf statt Karte-aus-knopf anzeigen" };
 		p(k, v);
-		k = "__PREF__title__trafficlights_delay";
-		v = new String[] { "en", "traffic lights", "de", "Ampeln" };
+		k = "__PREF__title__save_zoomlevel";
+		v = new String[] { "en", "Zoomlevel", "zh", "缩放级别", "cs", "Úroveň přiblížení", "nl", "zoomniveau", "fr", "Niveau de zoom", "de", "Zoomstufe", "el", "Κλίμακα εστίασης", "hu", "Kivágás (zoom) tárolása", "pl", "Powiększenie", "sk", "Úroveň priblíženia" };
 		p(k, v);
-		k = "__PREF__summ__trafficlights_delay";
-		v = new String[] { "en", "set delay of traffic lights for routing", "de", "Verzögerung durch Amplen auf der Route" };
+		k = "__PREF__summ__save_zoomlevel";
+		v = new String[] { "en", "save last Zoomlevel", "zh", "保存上次缩放级别", "cs", "Ukládat posledně použitou úroveň přiblížení.", "nl", "bewaar laatste zoomniveau", "fr", "Sauvegarder le niveau de zoom précédent", "de", "Zoomstufe speichern", "el", "αποθήκευση τελευταίας κλίμακας εστίασης", "hu", "Tárold el az utolsó kivágás (zoom) méretet", "pl", "Zapamiętaj powiększenie", "sk", "Zapamätať poslednú úroveň priblíženia" };
+		p(k, v);
+		k = "__PREF__title__autozoom_flag";
+		v = new String[] { "en", "Autozoom", "de", "Autozoom" };
+		p(k, v);
+		k = "__PREF__summ__autozoom_flag";
+		v = new String[] { "en", "set map zoom automatically according to driving speed", "de", "Kartenzoom nach Fahrtgeschwindigkeit automatisch einstellen" };
+		p(k, v);
+		k = "__PREF__title__use_anti_aliasing";
+		v = new String[] { "en", "AntiAlias", "zh", "反走样", "cs", "Vyhlazování", "nl", "Anti Aliasing", "fr", "AntiAlias", "de", "Antialiasing", "el", "Εξομάλυνση", "hu", "Kontúrsimítás", "pl", "Antyaliasing", "sk", "Vyhladzovanie" };
+		p(k, v);
+		k = "__PREF__summ__use_anti_aliasing";
+		v = new String[] { "en", "draw with AntiAlias, map is faster when this is OFF", "zh", "反走样绘制地图。关闭此选项，地图将绘制更快。", "cs", "Při vykreslování mapy použij vyhlazování čar. Je rychlejší, pokud je vypnuto.", "nl", "schakel anti aliasing in", "fr", "Afficher la carte avec de l'AntiAlias. L'affichage est plus rapide que cette option est désactivée", "de", "Antialiasing einschalten. Karte zeichnet schneller ohne Antialiasing", "el",
+				"σχεδίαση με εξομάλυνση, ο χάρτης είναι πιο γρήγορος όταν δεν είναι ενεργοποιημένο", "hu", "Kontúrsimítás bekapcsolása; enélkül a térkép gyorsabb.", "pl", "Rysuj z antyaliasingiem, mapa jest szybsza, gdy to jest wyłączone", "sk", "Vykresľovať mapu s vyhladzovaním. Mapa je rýchlejšia, ak je toto vypnuté." };
 		p(k, v);
 		k = "__PREF__title__use_map_filtering";
 		v = new String[] { "en", "filtering", "de", "filtering" };
@@ -629,11 +629,92 @@ public class NavitTextTranslations
 		k = "__PREF__summ__use_map_filtering";
 		v = new String[] { "en", "filtering draws map more smoothly, but needs more CPU", "de", "filtering einschalten, zeichnet die Karte schöner. braucht aber mehr Leistung" };
 		p(k, v);
+		k = "__PREF__title__use_custom_font";
+		v = new String[] { "en", "custom Font", "zh", "自定义字体", "fr", "Polices dédiées", "de", "custom Font", "el", "χρήση προσαρμοσμένης γραμματοσειράς", "hu", "Saját font használata", "pl", "Czcionka własna", "sk", "Vlastné písmo" };
+		p(k, v);
+		k = "__PREF__summ__use_custom_font";
+		v = new String[] { "en", "use Font included in ZANavi (otherwise use System Font)", "zh", "使用ZANavi内置的字体（否则使用系统字体）", "fr", "Utilise les polices incluses dans ZANavi (sinon les polices du système sont utilisées)", "de", "Font von ZANavi verwenden (sonst Systemschriftart verwenden)", "el", "χρήση γραμματοσειράς που περιέχεται στο ZANavi (αλλιώς, χρήση γραμματοσειράς συστήματος)", "hu", "Saját font használatának engedélyezése", "pl", "Użyj własnej czcionki ZANavi zamiast systemowej", "sk",
+				"Použiť písmo zahrnuté v ZANavi (inak použiť systémové písmo)" };
+		p(k, v);
 		k = "__PREF__title__use_smooth_drawing";
-		v = new String[] { "en", "smooth driving", "de", "flüssiger fahren" };
+		v = new String[] { "en", "smooth driving", "de", "flüssiger fahren", "pl", "Płynne przewijanie" };
 		p(k, v);
 		k = "__PREF__summ__use_smooth_drawing";
-		v = new String[] { "en", "scroll map more smoothly when driving", "de", "verschiebt die Karte beim Fahren schöner und flüssiger, braucht jedoch mehr Leistung!" };
+		v = new String[] { "en", "scroll map more smoothly when driving", "de", "verschiebt die Karte beim Fahren schöner und flüssiger, braucht jedoch mehr Leistung!", "pl", "płynne przewijanie mapy podczas jazdy" };
+		p(k, v);
+		k = "__PREF__title__use_more_smooth_drawing";
+		v = new String[] { "en", "Even Smoother Driving", "de", "noch flüssiger fahren", "pl", "Jeszcze płynniejsze przewijanie" };
+		p(k, v);
+		k = "__PREF__summ__use_more_smooth_drawing";
+		v = new String[] { "en", "Much smoother driving, WARNING: WILL EAT ALL your CPU!!", "de", "Verschiebt die Karte noch flüssiger. WARNUNG: braucht sehr viel Leistung!!", "pl", "Bardzo płynne przewijanie, UWAGA: ZJADA CAŁĄ MOC CPU!!" };
+		p(k, v);
+		k = "__PREF__title__show_multipolygons";
+		v = new String[] { "en", "Multipolygons", "de", "Multipolygone", "pl", "Wielokąty" };
+		p(k, v);
+		k = "__PREF__summ__show_multipolygons";
+		v = new String[] { "en", "draw lines and areas from multipolygons", "de", "Multipolygone (wie Flüsse und grosse Häuser) anzeigen", "pl", "rysuj linie i obszary za pomocą wielokątów" };
+		p(k, v);
+		k = "__PREF__title__show_vehicle_3d";
+		v = new String[] { "en", "Vehicle 3D", "de", "3D Fahrzeug", "pl", "Pojazd 3D" };
+		p(k, v);
+		k = "__PREF__summ__show_vehicle_3d";
+		v = new String[] { "en", "show vehicle correctly in 3D mode", "de", "zeigt das Fahrzeug im 3D Modus perspektivisch korrekt an", "pl", "pokazuj poprawnie pojazd w 3D" };
+		p(k, v);
+		k = "__PREF__title__map_font_size";
+		v = new String[] { "en", "Map Font size", "zh", "地图字体大小", "de", "Karten Font Größe", "el", "Μέγεθος γραμματοσειράς χάρτη", "hu", "Térkép font méret", "pl", "Rozmiar czcionki", "sk", "Veľkosť písma na mape" };
+		p(k, v);
+		k = "__PREF__summ__map_font_size";
+		v = new String[] { "en", "set Font size for Map Texts (streetnames, etc.)", "zh", "设置地图的字体大小（例如街道名等）", "de", "Größe der Karten Texte (Straßennamen, usw.)", "el", "μέγεθος γραμματοσειράς χάρτη (ονόματα δρόμων, κλπ.)", "hu", "A térkép betűméret beállítása", "pl", "Rozmiar czcionki na mapie (nazwy ulic itp.)", "sk", "Nastaviť veľkosť písma pre text na mape (názvy ulíc, atď.)" };
+		p(k, v);
+		k = "__PREF__title__drawatorder";
+		v = new String[] { "en", "Draw more Detail", "zh", "绘制更多细节", "de", "Mehr Detail", "el", "Σχεδίαση περισσότερων λεπτομερειών", "hu", "Több részlet", "pl", "Więcej szczegółów", "sk", "Detailnejšie vykresľovanie" };
+		p(k, v);
+		k = "__PREF__summ__drawatorder";
+		v = new String[] { "en", "Draw more Detail on map. change only on fast devices!", "zh", "在地图上绘制更多细节。请只在高端设备上启用。", "de", "Zeichnet mehr Details auf der Karte. Nur für schnelle Geräte!", "el", "Σχεδιάζει περισσότερες λεπτομέρειες στο χάρτη. Αλλάξτε το μόνο σε γρήγορες συσκευές.", "hu", "Részletesebb térképet rajzol. Csak gyors készülékekre!", "pl", "Więcej szczegółów na mapie. Tylko szybkie urządzenia!", "sk", "Vykresliť viac podrobností na mape. Zmenťe len na rýchlych zariadeniach!" };
+		p(k, v);
+		k = "__PREF__title__more_map_detail";
+		v = new String[] { "en", "more Map Detail", "de", "mehr Details anzeigen", "pl", "Więcej szczegółów" };
+		p(k, v);
+		k = "__PREF__summ__more_map_detail";
+		v = new String[] { "en", "show more Map Detail [needs RESTART]", "de", "Zeigt noch mehr Details auf der Karte an, braucht aber mehr Leistung! [braucht RESTART]", "pl", "pokazuj więcej szczegółów na mapie [wymaga RESTARTU]" };
+		p(k, v);
+		k = "__PREF__title__mapcache";
+		v = new String[] { "en", "Mapcache", "zh", "地图缓存", "de", "Mapcache", "hu", "Térkép gyorsítótár", "pl", "Bufor mapy", "sk", "Vyrovnávacia pamäť mapy" };
+		p(k, v);
+		k = "__PREF__summ__mapcache";
+		v = new String[] { "en", "Size of Mapcache [needs RESTART]", "zh", "地图缓存大小[需要重启]", "de", "Größe des Caches für Karten [braucht RESTART]", "hu", "Gyorsítótár méretének megadása (újraindítás kell!)", "pl", "Rozmiar bufora mapy (zmiana wymaga RESTARTU!)", "sk", "Veľkosť vyr. pamäte pre mapu [vyžaduje REŠTART]" };
+		p(k, v);
+		k = "__PREF__title__streetsearch_r";
+		v = new String[] { "en", "Searchradius", "zh", "搜索半径", "de", "Suchradius", "el", "Ακτίνα αναζήτησης", "hu", "Keresésí sugár", "pl", "Promień szukania", "sk", "Rádius hľadania" };
+		p(k, v);
+		k = "__PREF__summ__streetsearch_r";
+		v = new String[] { "en", "Searchradius for streets inside a town. Bigger radius will find streets further away from town center", "zh", "街道的搜索半径。更大的搜索半径将会搜索远离城镇中心的街道。", "de", "Suchradius für Strassen in Städten. Grösserer Radius findet Strassen die weiter vom Stadtzentrum entfernt sind", "el", "Ακτίνα αναζήτησης δρόμων μέσα σε πόλη, μεγαλύτερη ακτίνα βρίσκει δρόμους που είναι πιό μακρυά απο το κέντρο της πόλης.", "hu",
+				"Nagyobb keresési sugár a városközponttól távolabbi utcákat is megtalál", "pl", "Promień szukania ulic w miastach. Większy promień pozwala znaleźć ulice położone dalej od centrum.", "sk", "Hľadací rádius pre ulice v rámci mesta. Väčší rádius nájde ulice ďalej od stredu mesta." };
+		p(k, v);
+		k = "__PREF__title__gui_oneway_arrows";
+		v = new String[] { "en", "OneWay Arrows", "zh", "单向箭头", "cs", "Jednosměrky", "nl", "eenrichtingspijlen", "fr", "Flèches de sens unique", "de", "Einbahn", "el", "Βέλη μονόδρομων", "hu", "Egyirányú utcák", "pl", "Strzałki jednokierunkowe", "sk", "Šípky jednosmeriek" };
+		p(k, v);
+		k = "__PREF__summ__gui_oneway_arrows";
+		v = new String[] { "en", "show oneway street arrows [BETA]", "zh", "在街道使用单向箭头[BETA]", "cs", "Ukazuj šipky u jednosměrných cest [BETA]", "nl", "Toon pijlen bij eenrichtings-straten [BETA]", "fr", "Affiche les voies en sens unique [BETA]", "de", "Einbahnpfeile [BETA]", "el", "εμφάνιση βελών κατεύθυνσης μονόδρομων [BETA]", "hu", "Egyirányú utcák jelzése [BETA]", "pl", "Pokaż strzałki na ulicach jednokierunkowych [BETA]", "sk", "Zobraziť šípky jednosmerných ulíc [BETA]" };
+		p(k, v);
+		k = "__PREF__title__show_debug_messages";
+		v = new String[] { "en", "Debug Mgs", "zh", "调试信息", "cs", "Ladící hlášky", "nl", "Toon debug berichten", "fr", "Msg. de debug", "de", "Debug", "el", "Μην. Αποσφαλμάτωσης", "hu", "Debug", "pl", "Komunikaty debuggera", "sk", "Ladiace správy" };
+		p(k, v);
+		k = "__PREF__summ__show_debug_messages";
+		v = new String[] { "en", "show Debug Messages [DEBUG]", "zh", "显示调试信息[DEBUG]", "cs", "Zobrazuj ladící hlášky [DEBUG]", "nl", "Toont debug berichten [DEBUG]", "fr", "Affiche les messages des debug [DEBUG]", "de", "Debugmeldungen [DEBUG]", "el", "Εμφάνιση μηνυμάτων αποσφαλμάτωσης", "hu", "Hibakövetési jelentések (debug) megjelenítése", "pl", "Pokaż komunikaty debuggera", "sk", "Zobraziť ladiace správy [DEBUG]" };
+		p(k, v);
+		k = "__PREF__title__enable_debug_functions";
+		v = new String[] { "en", "Enable Debug Functions", "zh", "启用调试功能", "nl", "Debug functies aan", "fr", "Activer les fonctions de debug", "de", "Debug Funktionen", "el", "Ενεργοποίηση Λειτουργιών Αποσφαλμάτωσης", "hu", "Debug funkciók engedélyezése", "pl", "Włącz funkcje debugujące", "sk", "Zapnúť ladiace funkcie" };
+		p(k, v);
+		k = "__PREF__summ__enable_debug_functions";
+		v = new String[] { "en", "Enable Debug Functions in Android Menu", "zh", "在菜单中显示调试功能", "de", "Debug Funktionen im Menü anzeigen", "el", "Ενεργοποίηση των λειτουργιών αποσφαλμάτωσης στο μενού του Android", "hu", "Engedélyezi a hibanyomkövetési funkciókat", "pl", "Włącz funkcje debugujące w menu", "sk", "Zapnúť ladiace funkcie v Android ponuke" };
+		p(k, v);
+		k = "__PREF__title__navit_lang";
+		v = new String[] { "en", "Language", "zh", "语言", "cs", "Jazyk", "nl", "Language", "fr", "Langue", "de", "Sprache", "el", "Γλώσσα", "hu", "Nyelv", "pl", "Język", "sk", "Jazyk" };
+		p(k, v);
+		k = "__PREF__summ__navit_lang";
+		v = new String[] { "en", "Select Language for messages. needs a RESTART!!", "zh", "选择界面语言。需要重启！", "cs", "Vyber komunikační jazky (pro aplikaci je nutný restart aplikace)", "nl", "Stel de taal in. Herstart is dan nodig!", "fr", "Sélection de la langue pour les messages, redémarrez l'application pour la prise en compte !!", "de", "Sprache der Applikation (Sprache und Meldungen) braucht RESTART!!", "el", "Επιλογή Γλώσσας μηνυμάτων. απαιτείται ΕΠΑΝΕΚΚΙΝΗΣΗ!!", "hu",
+				"Írott és hangos nyelv kiválasztása; újraindítás szükséges", "pl", "Wybierz język komunikatów. Wymaga RESTARTU!", "sk", "Vybrať jazyk hlášok. Vyžaduje REŠTART!!" };
 		p(k, v);
 		k = "__PREF__title__map_directory";
 		v = new String[] { "en", "Map directory", "zh", "地图目录", "fr", "Répertoire des cartes", "de", "Karten Verzeichnis", "el", "Κατάλογος χάρτη", "hu", "Térkép könyvtár", "pl", "Katalog map", "sk", "Adresár pre mapy" };
@@ -665,6 +746,9 @@ public class NavitTextTranslations
 		k = "Enter Destination";
 		v = new String[] { "en", "Enter Destination", "ar", "أدخل الوجهة", "pt", "Informar Destino", "pt_BR", "Informar Destino", "zh", "输入目的地", "zh_HK", "輸入目的地", "cs", "Zadejte cíl", "nl", "voer bestemming in", "fr", "Entrez une destination", "de", "Zielort eingeben", "el", "Εισαγωγή Προορισμού", "hu", "Úticél megadása", "it", "Inserire Destinazione", "pl", "Wprowadź cel", "sk", "Zadajťe cieľ", "es", "Introducir destino" };
 		p(k, v);
+		k = "Housenumber";
+		v = new String[] { "en", "Housenumber", "de", "Hausnummer", "pl", "Numer domu" };
+		p(k, v);
 		k = "partial match";
 		v = new String[] { "en", "partial match", "ar", "إنسجام جزئي", "pt", "resultado aproximado", "pt_BR", "resultado aproximado", "zh", "部分匹配", "zh_HK", "部份符合", "cs", "částečná shoda", "nl", "zoek op gedeelte", "fr", "recherche partielle", "de", "ungefähr", "el", "μερική αντιστοίχηση", "hu", "Részleges egyezés", "it", "corrispondemza parziale", "pl", "częściowe dopasowanie", "sk", "Čiastočný výskyt", "es", "coincidencia parcial" };
 		p(k, v);
@@ -678,6 +762,24 @@ public class NavitTextTranslations
 		k = "Search";
 		v = new String[] { "en", "Search", "ca", "Cerca", "ar", "بحث", "pt", "Procurar", "pt_BR", "Procurar", "zh", "搜索", "zh_HK", "搜尋", "cs", "Hledání", "nl", "Zoek", "fr", "Chercher", "de", "suchen", "el", "Αναζήτηση", "hu", "Keresés", "it", "Cerca", "pl", "Wyszukaj", "sk", "Hľadať", "es", "Buscar" };
 		p(k, v);
+		k = "last searches";
+		v = new String[] { "en", "last searches", "de", "letzte Eingaben" };
+		p(k, v);
+		k = "Streetname";
+		v = new String[] { "en", "Streetname", "de", "Straße" };
+		p(k, v);
+		k = "Town";
+		v = new String[] { "en", "Town", "de", "Ort" };
+		p(k, v);
+		k = "Address or POI-Name";
+		v = new String[] { "en", "Address or POI-Name", "de", "Adresse oder POI-Name" };
+		p(k, v);
+		k = "Enter your Feedback text";
+		v = new String[] { "en", "Enter your Feedback text", "de", "Feedbacktext eingeben" };
+		p(k, v);
+		k = "send";
+		v = new String[] { "en", "send", "de", "senden" };
+		p(k, v);
 		k = "Language is not available for TTS! Using your phone's default settings";
 		v = new String[] { "en", "Language is not available for TTS!\nUsing your phone's default settings", "pt", "Idioma indisponível para TTS! Usando as configurações padrão de seu telefone", "pt_BR", "Idioma indisponível para TTS! Usando as configurações padrão de seu telefone", "zh", "TTS语言不可用！请使用您电话上的默认设置", "zh_HK", "非TTS支持的語言！請用電話的原本設定", "cs", "Není dostupný jazyk pro TTS. Použivám implicitní nastavení telefonu.", "nl",
 				"Taal niet beschikbaar voor TTS!\nStandaard instellingen worden gebruikt", "fr", "Langue non disponible pour le TTS ! Utilisez les paramètres par défaut de votre téléphone", "de", "Diese Sprache nicht für Sprachansage verfügbar!\nVerwende Standardeinstellung.", "el", "Η γλώσσα δεν είναι διαθέσιμη για εκφώνηση! Χρήση των προκαθορισμένων ρυθμίσεων του τηλεφώνου", "hu", "A hangbemondás e nyelven nem létezik, a telefon alapértelmezését fogjuk használni.", "it",
@@ -686,20 +788,29 @@ public class NavitTextTranslations
 		k = "Using Voice for:";
 		v = new String[] { "en", "Using Voice for:", "pt", "Usando Voz para:", "pt_BR", "Usando Voz para:", "zh", "启用语音：", "zh_HK", "用語音", "cs", "Používám hlas pro:", "nl", "Gebruik taal voor:", "fr", "Utiliser la voix pour:", "de", "Sprache für Ansagen:", "el", "Χρήση Γλώσσας για:", "hu", "A hangbemondás nyelve:", "it", "Utilizzare Voce per:", "pl", "Używam głosu dla:", "sk", "Použitý hlas:", "es", "Usando voz para:" };
 		p(k, v);
+		k = "Click to talk";
+		v = new String[] { "en", "Click to talk", "de", "zum sprechen drücken" };
+		p(k, v);
+		k = "Voice Search, speak your Destination";
+		v = new String[] { "en", "Voice Search, speak your Destination", "de", "Sprachsuche" };
+		p(k, v);
+		k = "Google Speechrecognition not found";
+		v = new String[] { "en", "Google Speechrecognition not found", "de", "Google Text-in-Sprache nicht installiert" };
+		p(k, v);
+		k = "you said:";
+		v = new String[] { "en", "you said:", "de", "Sie sagten:" };
+		p(k, v);
+		k = "searching for the location";
+		v = new String[] { "en", "searching for the location", "de", "Ort wird gesucht" };
+		p(k, v);
+		k = "Find Destination";
+		v = new String[] { "en", "Find Destination", "de", "Ort finden" };
+		p(k, v);
+		k = "Google did not find this location. Please search again";
+		v = new String[] { "en", "Google did not find this location. Please search again", "de", "Dieser Ort wurde von Google nicht gefunden. Bitte versuchen Sie es nochmals" };
+		p(k, v);
 		k = "What's here";
-		v = new String[] { "en", "What's here", "de", "Was ist hier" };
-		p(k, v);
-		k = "drive here";
-		v = new String[] { "en", "drive here", "ca", "anar aquí", "ar", "قيادة إلي هنا", "pt", "dirija para cá", "pt_BR", "dirija para cá", "zh", "驱车前往此处", "zh_HK", "駕車到這裡", "cs", "navigovat sem", "nl", "hierheen rijden", "fr", "conduisez", "de", "Ziel setzen", "el", "οδήγησε εδώ", "hu", "Ide menj!", "it", "guida qui", "pl", "Jedź tutaj", "sk", "Cestovať sem", "es", "ir aquí" };
-		p(k, v);
-		k = "wait ...";
-		v = new String[] { "en", "wait ...", "ca", "espereu ...", "ar", "أنتظر", "pt", "aguarde...", "pt_BR", "aguarde...", "zh", "请稍等.....", "zh_HK", "稍候 ...", "cs", "čekejte...", "nl", "wachten ...", "fr", "patientez ...", "de", "warten ...", "el", "περιμένετε ...", "hu", "Várj...", "it", "attendere ...", "pl", "czekaj ...", "sk", "Čakajte ...", "es", "espere ..." };
-		p(k, v);
-		k = "__PREF__summ__cancel_map_drawing_timeout";
-		v = new String[] { "en", "Map drawing Timeout. Set to \"long\" only on fast devices!", "zh", "地图绘制的超时时间。请只在高端设备上启用“长”。", "de", "nur bei schnellen Geräten auf \"long\" setzen", "hu", "Leállítja a térképrajzolás időtúllépését", "pl", "Ograniczenie czasu rysowania mapy (ustaw na \"długi\" tylko na szybkich urządzeniach)", "sk", "Časový limit vykresľovania mapy. Nastavte ho na \"dlhý\" iba na rýchlych zariadeniach!" };
-		p(k, v);
-		k = "__PREF__title__cancel_map_drawing_timeout";
-		v = new String[] { "en", "Map drawing Timeout", "zh", "地图绘制超时时间", "de", "Kartenaufbau Timeout", "hu", "Térképrajzolás időkorlát lejárata", "pl", "Ogr. czasu rysowania mapy", "sk", "Časový limit vykresľovania mapy" };
+		v = new String[] { "en", "What's here", "de", "Was ist hier", "el", "Τι είναι εδώ", "pl", "Co tu jest", "sk", "Čo je tu" };
 		p(k, v);
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

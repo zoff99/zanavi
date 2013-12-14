@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# set -x
+
 svgtopng()
 {
 	case $svgtopng in
@@ -18,9 +20,9 @@ svgtopng()
 	esac
 }
 
-if [ "$OSTYPE" != "cygwin" -a "$OSTYPE" != "msys" ]; then
-	ulimit -t 10
-fi
+#if [ "$OSTYPE" != "cygwin" -a "$OSTYPE" != "msys" ]; then
+#	ulimit -t 10
+#fi
 
 svgtopng=$1
 png=$2
@@ -36,10 +38,12 @@ case "$png" in
 		svg=${png%.png}
 		;;
 esac
+
 if [ ! -f $svg.svg -a ! -f $svg.svgz ]
 then
 	svg="$SRCDIR/$svg"
 fi
+
 if [ -f $png -a ! -f $svg.svg ]; then
 	# width and height seems to be defined as part of the file name
 	touch $png
@@ -50,10 +54,14 @@ else
 		if [ -z "$w" ]
 		then
 			w=$(grep 'width="[0-9pxt.]*"' $svg.svg | head -n 1 | sed -e 's/.*width="//' -e 's/[pxt]*".*//')
+			# scale by 1.5
+			w=`printf "scale=0 \n $w * 1.5 /1\n"|bc|tr -d ' '`
 		fi
 		if [ -z "$h" ]
 		then
 			h=$(grep 'height="[0-9pxt.]*"' $svg.svg | head -n 1 | sed -e 's/.*height="//' -e 's/[pxt]*".*//')
+			# scale by 1.5
+			h=`printf "scale=0 \n $h * 1.5 /1\n"|bc|tr -d ' '`
 		fi
 		svgtopng $w $h $svg.svg $png
 	elif [ -f $svg.svgz ]
@@ -62,10 +70,14 @@ else
 		if [ -z "$w" ]
 		then
 			w=$(grep 'width="[0-9pxt.]*"' $svg.svg | head -n 1 | sed -e 's/.*width="//' -e 's/[pxt]*".*//')
+			# scale by 1.5
+			w=`printf "scale=0 \n $w * 1.5 /1\n"|bc|tr -d ' '`
 		fi
 		if [ -z "$h" ]
 		then
 			h=$(grep 'height="[0-9pxt.]*"' $svg.svg | head -n 1 | sed -e 's/.*height="//' -e 's/[pxt]*".*//')
+			# scale by 1.5
+			h=`printf "scale=0 \n $h * 1.5 /1\n"|bc|tr -d ' '`
 		fi
 		svgtopng $w $h $svg.svg $png
 		rm -f $svg.svg

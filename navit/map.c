@@ -101,6 +101,7 @@ map_new(struct attr *parent, struct attr **attrs)
 	}
 	//dbg(0,"type='%s'\n", type->u.str);
 	maptype_new = plugin_get_map_type(type->u.str);
+
 	if (!maptype_new)
 	{
 		dbg(0, "invalid type '%s'\n", type->u.str);
@@ -111,6 +112,9 @@ map_new(struct attr *parent, struct attr **attrs)
 	m=g_new0(struct map, 1);
 	m->attrs = attr_list_dup(attrs);
 	m->attr_cbl = callback_list_new();
+
+	// dbg(0, "map_new:map cbl=%p\n", m->attr_cbl);
+
 	//dbg(0,"MM 2");
 	m->priv = maptype_new(&m->meth, attrs, m->attr_cbl);
 	//dbg(0,"MM 3");
@@ -135,6 +139,7 @@ void map_ref(struct map* m)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
 	m->refcount++;
 }
 
@@ -153,10 +158,13 @@ int map_get_attr(struct map *this_, enum attr_type type, struct attr *attr, stru
 	dbg(0,"+#+:enter\n");
 #endif
 	int ret = 0;
+
 	if (this_->meth.map_get_attr)
 		ret = this_->meth.map_get_attr(this_->priv, type, attr);
+
 	if (!ret)
 		ret = attr_generic_get_attr(this_->attrs, NULL, type, attr, iter);
+
 	return ret;
 }
 
@@ -177,8 +185,12 @@ int map_set_attr(struct map *this_, struct attr *attr)
 	dbg(0,"+#+:enter\n");
 #endif
 	this_->attrs = attr_generic_set_attr(this_->attrs, attr);
+
 	if (this_->meth.map_set_attr)
+	{
 		this_->meth.map_set_attr(this_->priv, attr);
+	}
+
 	callback_list_call_attr_2(this_->attr_cbl, attr->type, this_, attr);
 	return 1;
 }
@@ -197,6 +209,18 @@ void map_add_callback(struct map *this_, struct callback *cb)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
+	struct attr map_name_attr;
+	if (map_get_attr(this_, attr_name, &map_name_attr, NULL))
+	{
+		dbg(0, "map_add_callback:for %s\n", map_name_attr.u.str);
+	}
+	else
+	{
+		dbg(0, "map_add_callback:for *unknown*\n");
+	}
+	dbg(0, "map_add_callback:cb=%p\n", cb);
+
 	callback_list_add(this_->attr_cbl, cb);
 }
 
@@ -293,8 +317,12 @@ void map_destroy_do(struct map *m)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
 	if (m->priv)
+	{
 		m->meth.map_destroy(m->priv);
+	}
+
 	attr_list_free(m->attrs);
 	callback_list_destroy(m->attr_cbl);
 	g_free(m);
@@ -310,13 +338,17 @@ void map_destroy(struct map *m)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
 	if (!m)
+	{
 		return;
+	}
 
 	if (0 < m->refcount)
 	{
 		m->refcount--;
 	}
+
 	if (0 == m->refcount)
 	{
 		map_destroy_do(m);

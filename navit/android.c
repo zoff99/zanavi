@@ -38,6 +38,7 @@
 #include "start_real.h"
 #include "route.h"
 #include "file.h"
+#include "navit_nls.h"
 
 // #include "layout.h"
 
@@ -404,7 +405,7 @@ int android_find_static_method(jclass class, char *name, char *args, jmethodID *
 }
 
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, jobject activity, jobject lang, int version, jobject display_density_string)
+Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, jobject activity, jobject lang, int version, jobject display_density_string, jobject n_datadir, jobject n_sharedir)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	// dbg(0,"+#+:enter\n");
@@ -414,30 +415,34 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	// GLIB debugging
 	// GLIB debugging
 	// GLIB debugging
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging 1 --------------------");
-	g_mem_set_vtable(glib_mem_profiler_table);
+	/*
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging 1 --------------------");
+	 */
+	//*******???******** g_mem_set_vtable(glib_mem_profiler_table);
 	//char *dummy_997;
 	//dummy_997 = g_malloc(1024*1024*10); // 10 MByte
 	//g_free(dummy_997);
 	//dummy_997 = NULL;
 	//g_mem_profile();
-	dbg(0,"GLIB debugging 2 --------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
-	dbg(0,"GLIB debugging ----------------------");
+	/*
+	 dbg(0,"GLIB debugging 2 --------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 dbg(0,"GLIB debugging ----------------------");
+	 */
 	// GLIB debugging
 	// GLIB debugging
 	// GLIB debugging
@@ -449,6 +454,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	char *strings[] = { "/data/data/com.zoffcc.applications.zanavi/bin/navit", NULL };
 	const char *langstr;
 	const char *displaydensitystr;
+	const char *s;
 	android_version = version;
 	//__android_log_print(ANDROID_LOG_ERROR,"test","called");
 	android_activity_cbl = callback_list_new();
@@ -475,9 +481,32 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	setenv("LANG", langstr, 1);
 	(*env)->ReleaseStringUTFChars(env, lang, langstr);
 
+	s =  (*env)->GetStringUTFChars(env, n_datadir, NULL);
+	navit_data_dir = g_strdup(s);
+	(*env)->ReleaseStringUTFChars(env, n_datadir, s);
+
+	s =  (*env)->GetStringUTFChars(env, n_sharedir, NULL);
+	navit_share_dir = g_strdup(s);
+	(*env)->ReleaseStringUTFChars(env, n_sharedir, s);
+
+
 	displaydensitystr = (*env)->GetStringUTFChars(env, display_density_string, NULL);
-	//DBG // dbg(0, "*****displaydensity=%s\n", displaydensitystr);
+	dbg(0, "*****displaydensity=%s\n", displaydensitystr);
 	setenv("ANDROID_DENSITY", displaydensitystr, 1);
+
+	// calc DPI value
+	global_have_dpi_value = atoi(displaydensitystr);
+	dbg(0, "*****displaydensity int=%d\n", (int) global_have_dpi_value);
+
+	if (global_have_dpi_value >= 320)
+	{
+		global_dpi_factor = (float) global_have_dpi_value / 240.0f; // multiply with this factor where needed!
+	}
+	else
+	{
+		global_dpi_factor = 1.0f;
+	}
+
 	(*env)->ReleaseStringUTFChars(env, display_density_string, displaydensitystr);
 
 	//// dbg(0,"before main_real call\n");
@@ -602,7 +631,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_SizeChangedCallbackReal(JNIEnv
 }
 
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallbackReal(JNIEnv* env, jobject thiz, int x1, int y1, int x2, int y2)
+Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallbackReal(JNIEnv* env, jobject thiz, int x1, int y1, int x2, int y2, int draw)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	// dbg(0,"+#+:enter\n");
@@ -636,7 +665,15 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallbackReal(JNIEnv* env
 	 */
 
 	// dbg(0,"call async java draw -start-\n");
-	navit_draw(global_navit);
+	if (draw == 1)
+	{
+		navit_draw(global_navit);
+	}
+	else
+	{
+		// if we dont want to draw, then also cancel any drawing that is already in progress!
+		cancel_drawing_global = 1;
+	}
 	// navit_draw_async(global_navit, 1);
 	// dbg(0,"call async java draw --end--\n");
 
@@ -755,7 +792,7 @@ Java_com_zoffcc_applications_zanavi_NavitSensors_SensorCallback(JNIEnv* env, job
 }
 
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv *env, jobject thiz, jobject location)
+Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv *env, jobject thiz, double lat, double lon, float speed, float direction, double height, float radius, long gpstime)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	// dbg(0,"+#+:enter\n");
@@ -767,13 +804,13 @@ Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv *env, jo
 	//dbg(0, "THREAD ID=%d\n", thread_id);
 
 	//dbg(0,"VehicleCallback location=%p\n", location);
-	jobject location2 = (*env)->NewGlobalRef(env, location);
-	(*env)->DeleteLocalRef(env, location);
+	//+++jobject location2 = (*env)->NewGlobalRef(env, location);
+	//+++(*env)->DeleteLocalRef(env, location);
 	//// dbg(0,"location=%p\n", location2);
 
 	if ((global_navit) && (global_navit->vehicle) && (global_navit->vehicle->vehicle))
 	{
-		vehicle_update_(global_navit->vehicle->vehicle, location2);
+		vehicle_update_(global_navit->vehicle->vehicle, lat, lon, speed, direction, height, radius, gpstime);
 	}
 	else
 	{
@@ -1732,6 +1769,40 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 			// zoom out
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
+
+		}
+		else if (i == 84)
+		{
+			// report data dir
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			navit_data_dir = g_strdup(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 83)
+		{
+			// spill all the index files to log output
+			spill_index();
+		}
+		else if (i == 82)
+		{
+			// report share dir
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			navit_share_dir = g_strdup(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 81)
+		{
+			// resize layout items by factor
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			displaylist_shift_for_dpi_value_in_layers(global_navit, (double)(atof(s)));
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 80)
+		{
+			// autozoom flag to 0 or 1
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_navit->autozoom_active = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 79)
 		{
@@ -2535,7 +2606,7 @@ void set_vehicle_values_to_java(int x, int y, int angle, int speed)
 	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values2, x, y, angle, speed);
 }
 
-void set_vehicle_values_to_java_delta(int dx, int dy, int dangle)
+void set_vehicle_values_to_java_delta(int dx, int dy, int dangle, int dzoom)
 {
 	JNIEnv *jnienv2;
 	jnienv2 = jni_getenv();
@@ -2554,13 +2625,13 @@ void set_vehicle_values_to_java_delta(int dx, int dy, int dangle)
 
 	if (NavitGraphics_set_vehicle_values3 == NULL)
 	{
-		if (!android_find_static_method(NavitGraphicsClass2, "set_vehicle_values_delta", "(III)V", &NavitGraphics_set_vehicle_values3))
+		if (!android_find_static_method(NavitGraphicsClass2, "set_vehicle_values_delta", "(IIII)V", &NavitGraphics_set_vehicle_values3))
 		{
 			return;
 		}
 	}
 
-	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values3, dx, dy, dangle);
+	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values3, dx, dy, dangle, dzoom);
 }
 
 void send_route_rect_to_java(int x1, int y1, int x2, int y2, int order)

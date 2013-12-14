@@ -1,0 +1,166 @@
+<com.zoffcc.applications.zanavi.ZANaviLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/line_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <View
+            android:id="@+id/fill_1"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent" >
+        </View>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDStreetname
+            android:id="@+id/osd_streetname"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@android:color/transparent" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDStreetname>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <View
+            android:id="@+id/fill_2"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent" >
+        </View>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <View
+            android:id="@+id/fill_3"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDNextturn
+            android:id="@+id/osd_nextturn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDNextturn>
+
+        <View
+            android:id="@+id/fill_4"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDTimeToDest
+            android:id="@+id/osd_timetodest"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:background="@android:color/transparent" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDTimeToDest>
+
+        <View
+            android:id="@+id/fill_5"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDCompass
+            android:id="@+id/osd_compass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDCompass>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <View
+            android:id="@+id/fill_7"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <View
+            android:id="@+id/fill_8"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDDistToNextturn
+            android:id="@+id/osd_timetoturn"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDDistToNextturn>
+
+        <View
+            android:id="@+id/fill_9"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDRoadDist
+            android:id="@+id/osd_roaddistance"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDRoadDist>
+
+        <View
+            android:id="@+id/fill_10"
+            android:layout_width="20dp"
+            android:layout_height="10dp"
+            android:background="@android:color/transparent" >
+        </View>
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDAirDist
+            android:id="@+id/osd_airdistance"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent" >
+        </com.zoffcc.applications.zanavi.ZANaviOSDAirDist>
+    </LinearLayout>
+
+</com.zoffcc.applications.zanavi.ZANaviLinearLayout>

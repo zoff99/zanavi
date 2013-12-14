@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -40,15 +59,24 @@ static int map_id;
 static void
 get_line(struct map_rect_priv *mr)
 {
-	if(mr->f) {
-		if (!mr->m->is_pipe) 
+	if(mr->f)
+	{
+		if (!mr->m->is_pipe)
+		{
 			mr->pos=ftell(mr->f);
+		}
 		else
+		{
 			mr->pos+=mr->lastlen;
+		}
+
 		fgets(mr->line, SIZE, mr->f);
 		mr->lastlen=strlen(mr->line)+1;
-		if (strlen(mr->line) >= SIZE-1) 
+
+		if (strlen(mr->line) >= SIZE-1)
+		{
 			printf("line too long\n");
+		}
 	}
 }
 
@@ -57,7 +85,8 @@ map_destroy_textfile(struct map_priv *m)
 {
 	// dbg(1,"map_destroy_textfile\n");
 	g_free(m->filename);
-	if(m->charset) {
+	if(m->charset)
+	{
 		g_free(m->charset);
 	}
 	g_free(m);
@@ -74,7 +103,8 @@ parse_line(struct map_rect_priv *mr, int attr)
 	int pos;
 
 	pos=coord_parse(mr->line, projection_mg, &mr->c);
-	if (pos < strlen(mr->line) && attr) {
+	if (pos < strlen(mr->line) && attr)
+	{
 		strcpy(mr->attrs, mr->line+pos);
 	}
 	return pos;
@@ -86,7 +116,8 @@ textfile_coord_get(void *priv_data, struct coord *c, int count)
 	struct map_rect_priv *mr=priv_data;
 	int ret=0;
 	// dbg(1,"textfile_coord_get %d\n",count);
-	while (count--) {
+	while (count--)
+	{
 		if (mr->f && !feof(mr->f) && (!mr->item.id_hi || !mr->eoc) && parse_line(mr, mr->item.id_hi))
 		{
 			*c=mr->c;
@@ -95,7 +126,9 @@ textfile_coord_get(void *priv_data, struct coord *c, int count)
 			ret++;		
 			get_line(mr);
 			if (mr->item.id_hi)
+			{
 				mr->eoc=1;
+			}
 		}
 		else
 		{
@@ -117,10 +150,14 @@ textfile_attr_rewind(void *priv_data)
 static void
 textfile_encode_attr(char *attr_val, enum attr_type attr_type, struct attr *attr)
 {
-	if (attr_type >= attr_type_int_begin && attr_type <= attr_type_int_end) 
+	if (attr_type >= attr_type_int_begin && attr_type <= attr_type_int_end)
+	{
 		attr->u.num=atoi(attr_val);
+	}
 	else
+	{
 		attr->u.str=attr_val;
+	}
 }
 
 static int
@@ -129,29 +166,37 @@ textfile_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 	struct map_rect_priv *mr=priv_data;
 	char *str=NULL;
 	//dbg(1,"textfile_attr_get mr=%p attrs='%s' ", mr, mr->attrs);
-	if (attr_type != mr->attr_last) {
+	if (attr_type != mr->attr_last)
+	{
 		//dbg(1,"reset attr_pos\n");
 		mr->attr_pos=0;
 		mr->attr_last=attr_type;
 	}
-	if (attr_type == attr_any) {
+
+	if (attr_type == attr_any)
+	{
 		//dbg(1,"attr_any");
-		if (attr_from_line(mr->attrs,NULL,&mr->attr_pos,mr->attr, mr->attr_name)) {
+		if (attr_from_line(mr->attrs,NULL,&mr->attr_pos,mr->attr, mr->attr_name))
+		{
 			attr_type=attr_from_name(mr->attr_name);
 			//dbg(1,"found attr '%s' 0x%x\n", mr->attr_name, attr_type);
 			attr->type=attr_type;
 			textfile_encode_attr(mr->attr, attr_type, attr);
 			return 1;
 		}
-	} else {
+	}
+	else
+	{
 		str=attr_to_name(attr_type);
 		//dbg(1,"attr='%s' ",str);
-		if (attr_from_line(mr->attrs,str,&mr->attr_pos,mr->attr, NULL)) {
+		if (attr_from_line(mr->attrs,str,&mr->attr_pos,mr->attr, NULL))
+		{
 			textfile_encode_attr(mr->attr, attr_type, attr);
 			//dbg(1,"found\n");
 			return 1;
 		}
 	}
+
 	//dbg(1,"not found\n");
 	return 0;
 }
@@ -173,13 +218,20 @@ map_rect_new_textfile(struct map_priv *map, struct map_selection *sel)
 	mr->m=map;
 	mr->sel=sel;
 	if (map->flags & 1)
+	{
 		mr->item.id_hi=1;
+	}
 	else
+	{
 		mr->item.id_hi=0;
+	}
+
 	mr->item.id_lo=0;
 	mr->item.meth=&methods_textfile;
 	mr->item.priv_data=mr;
-	if (map->is_pipe) {
+
+	if (map->is_pipe)
+	{
 #ifdef HAVE_POPEN
 		char *oargs,*args=g_strdup(map->filename),*sep=" ";
 		enum layer_type lay;
@@ -204,13 +256,18 @@ map_rect_new_textfile(struct map_priv *map, struct map_selection *sel)
 #else
 		dbg(0,"map_rect_new_textfile is unable to work with pipes %s\n",map->filename);
 #endif 
-	} else {
+	}
+	else
+	{
 		mr->f=fopen(map->filename, "r");
 	}
+
 	if(!mr->f)
 	{
 		printf("map_rect_new_textfile unable to open textfile %s\n",map->filename);
 	}
+
+
 	get_line(mr);
 	return mr;
 }
@@ -240,74 +297,110 @@ map_rect_get_item_textfile(struct map_rect_priv *mr)
 {
 	char *p,type[SIZE];
 	//dbg(1,"map_rect_get_item_textfile id_hi=%d line=%s", mr->item.id_hi, mr->line);
-	if (!mr->f) {
+	if (!mr->f)
+	{
 		return NULL;
 	}
-	while (mr->more) {
+
+	while (mr->more)
+	{
 		struct coord c;
 		textfile_coord_get(mr, &c, 1);
 	}
-	for(;;) {
-		if (feof(mr->f)) {
+
+	for(;;)
+	{
+		if (feof(mr->f))
+		{
 			//dbg(1,"map_rect_get_item_textfile: eof %d\n",mr->item.id_hi);
-			if (mr->m->flags & 1) {
+			if (mr->m->flags & 1)
+			{
 				if (!mr->item.id_hi) 
 					return NULL;
 				mr->item.id_hi=0;
-			} else {
+			}
+			else
+			{
 				if (mr->item.id_hi) 
 					return NULL;
 				mr->item.id_hi=1;
 			}
-			if (mr->m->is_pipe) {
+
+			if (mr->m->is_pipe)
+			{
 #ifdef HAVE_POPEN
 				pclose(mr->f);
 				mr->f=popen(mr->args, "r");
 				mr->pos=0;
 				mr->lastlen=0;
 #endif
-			} else {
+			}
+			else
+			{
 				fseek(mr->f, 0, SEEK_SET);
 				clearerr(mr->f);
 			}
+
 			get_line(mr);
 		}
-		if ((p=strchr(mr->line,'\n'))) 
+
+		if ((p=strchr(mr->line,'\n')))
+		{
 			*p='\0';
-		if (mr->item.id_hi) {
+		}
+
+		if (mr->item.id_hi)
+		{
 			mr->attrs[0]='\0';
-			if (!parse_line(mr, 1)) {
+
+			if (!parse_line(mr, 1))
+			{
 				get_line(mr);
 				continue;
 			}
 			//dbg(1,"map_rect_get_item_textfile: point found\n");
 			mr->eoc=0;
 			mr->item.id_lo=mr->pos;
-		} else {
-			if (parse_line(mr, 1)) {
+		}
+		else
+		{
+			if (parse_line(mr, 1))
+			{
 				get_line(mr);
 				continue;
 			}
+
 			//dbg(1,"map_rect_get_item_textfile: line found\n");
-			if (! mr->line[0]) {
+
+			if (! mr->line[0])
+			{
 				get_line(mr);
 				continue;
 			}
+
 			mr->item.id_lo=mr->pos;
 			strcpy(mr->attrs, mr->line);
 			get_line(mr);
 			//dbg(1,"mr=%p attrs=%s\n", mr, mr->attrs);
 		}
+
 		//dbg(1,"get_attrs %s\n", mr->attrs);
-		if (attr_from_line(mr->attrs,"type",NULL,type,NULL)) {
+
+		if (attr_from_line(mr->attrs,"type",NULL,type,NULL))
+		{
 			//dbg(1,"type='%s'\n", type);
 			mr->item.type=item_from_name(type);
+
 			if (mr->item.type == type_none) 
 				printf("Warning: type '%s' unknown\n", type);
-		} else {
+
+		}
+		else
+		{
 			get_line(mr);
 			continue;
 		}
+
 		mr->attr_last=attr_none;
 		mr->more=1;
 		//dbg(1,"return attr='%s'\n", mr->attrs);
@@ -318,17 +411,23 @@ map_rect_get_item_textfile(struct map_rect_priv *mr)
 static struct item *
 map_rect_get_item_byid_textfile(struct map_rect_priv *mr, int id_hi, int id_lo)
 {
-	if (mr->m->is_pipe) {
+	if (mr->m->is_pipe)
+	{
 #ifndef _MSC_VER
 		pclose(mr->f);
 		mr->f=popen(mr->args, "r");
 		mr->pos=0;
 		mr->lastlen=0;
 #endif /* _MSC_VER */
-	} else
+	}
+	else
+	{
 		fseek(mr->f, id_lo, SEEK_SET);
+	}
+
 	get_line(mr);
 	mr->item.id_hi=id_hi;
+
 	return map_rect_get_item_textfile(mr);
 }
 
@@ -353,6 +452,7 @@ map_new_textfile(struct map_methods *meth, struct attr **attrs, struct callback_
 	int len,is_pipe=0;
 	char *wdata;
 	char **wexp_data;
+
 	if (! data)
 	{
 		return NULL;
@@ -374,18 +474,22 @@ map_new_textfile(struct map_methods *meth, struct attr **attrs, struct callback_
 	m->id=++map_id;
 	m->filename=g_strdup(data->u.str);
 	m->is_pipe=is_pipe;
+
 	if (flags)
 	{
 		m->flags=flags->u.num;
 	}
 	// dbg(1,"map_new_textfile %s %s\n", m->filename, wdata);
+
 	if (charset)
 	{
 		m->charset=g_strdup(charset->u.str);
 		meth->charset=m->charset;
 	}
+
 	//file_wordexp_destroy(wexp);
 	//g_free(wdata);
+
 	return m;
 }
 

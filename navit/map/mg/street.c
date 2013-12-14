@@ -738,11 +738,11 @@ street_get(struct map_rect_priv *mr, struct street_priv *street, struct item *it
 		else
 			street->flags=0;
 		if (street_str_get_type(street->str) & 0x40) {
-			street->flags|=(street_str_get_limit(street->str) & 0x30) ? AF_ONEWAYREV:0;
-			street->flags|=(street_str_get_limit(street->str) & 0x03) ? AF_ONEWAY:0;
+			street->flags|=(street_str_get_limit(street->str) & 0x30) ? NAVIT_AF_ONEWAYREV:0;
+			street->flags|=(street_str_get_limit(street->str) & 0x03) ? NAVIT_AF_ONEWAY:0;
 		} else {
-			street->flags|=(street_str_get_limit(street->str) & 0x30) ? AF_ONEWAY:0;
-			street->flags|=(street_str_get_limit(street->str) & 0x03) ? AF_ONEWAYREV:0;
+			street->flags|=(street_str_get_limit(street->str) & 0x30) ? NAVIT_AF_ONEWAY:0;
+			street->flags|=(street_str_get_limit(street->str) & 0x03) ? NAVIT_AF_ONEWAYREV:0;
 		}
 #if 0
 		coord_debug=(street->str->unknown2 != 0x40 || street->str->unknown3 != 0x40);

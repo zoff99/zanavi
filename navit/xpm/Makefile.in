@@ -390,14 +390,14 @@ svgs = gui_about.svg gui_actions.svg gui_active.svg gui_bookmark.svg \
 	gui_menu.svg gui_strength_0.svg gui_strength_1.svg \
 	gui_strength_2.svg gui_strength_3.svg gui_strength_4.svg \
 	gui_strength_5.svg gui_minus.svg gui_plus.svg gui_log.svg \
-	airport.svg attraction.svg bank.svg bar.svg beer.svg bench.svg \
-	boat_ramp.svg boundary_stone.svg bus.svg cafe.svg camping.svg \
-	cinema.svg cursor.svg danger.svg exit.svg fastfood.svg \
-	firebrigade.svg fountain.svg fuel.svg golf.svg hospital.svg \
-	hotel.svg information.svg justice.svg mark.svg military.svg \
-	mini_roundabout.svg museum.svg parking.svg peak.svg \
-	pharmacy.svg police.svg post.svg repair_service.svg resort.svg \
-	restaurant.svg ruins.svg school.svg shopping.svg \
+	airport.svg attraction.svg bank.svg atm.svg bar.svg beer.svg \
+	bench.svg boat_ramp.svg boundary_stone.svg bus.svg cafe.svg \
+	camping.svg cinema.svg cursor.svg danger.svg exit.svg \
+	fastfood.svg firebrigade.svg fountain.svg fuel.svg golf.svg \
+	hospital.svg hotel.svg information.svg justice.svg mark.svg \
+	military.svg mini_roundabout.svg museum.svg parking.svg \
+	peak.svg pharmacy.svg police.svg post.svg repair_service.svg \
+	resort.svg restaurant.svg ruins.svg school.svg shopping.svg \
 	shop_grocery.svg skiing.svg stadium.svg swimming.svg \
 	tec_common.svg telephone.svg toilets.svg traffic_signals.svg \
 	church.svg zoo.svg heliport.svg wifi.svg viewpoint.svg

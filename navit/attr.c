@@ -238,39 +238,39 @@ char *
 flags_to_text(int flags)
 {
 	char *ret=g_strdup_printf("0x%x:",flags);
-	if (flags & AF_ONEWAY) ret=g_strconcat_printf(ret,"%sAF_ONEWAY",ret?"|":"");
-	if (flags & AF_ONEWAYREV) ret=g_strconcat_printf(ret,"%sAF_ONEWAYREV",ret?"|":"");
-	if (flags & AF_SEGMENTED) ret=g_strconcat_printf(ret,"%sAF_SEGMENTED",ret?"|":"");
-	if (flags & AF_ROUNDABOUT) ret=g_strconcat_printf(ret,"%sAF_ROUNDABOUT",ret?"|":"");
-	if (flags & AF_ROUNDABOUT_VALID) ret=g_strconcat_printf(ret,"%sAF_ROUNDABOUT_VALID",ret?"|":"");
-	if (flags & AF_ONEWAY_EXCEPTION) ret=g_strconcat_printf(ret,"%sAF_ONEWAY_EXCEPTION",ret?"|":"");
-	if (flags & AF_SPEED_LIMIT) ret=g_strconcat_printf(ret,"%sAF_SPEED_LIMIT",ret?"|":"");
-	if (flags & AF_RESERVED1) ret=g_strconcat_printf(ret,"%sAF_RESERVED1",ret?"|":"");
-	if (flags & AF_SIZE_OR_WEIGHT_LIMIT) ret=g_strconcat_printf(ret,"%sAF_SIZE_OR_WEIGHT_LIMIT",ret?"|":"");
-	if (flags & AF_THROUGH_TRAFFIC_LIMIT) ret=g_strconcat_printf(ret,"%sAF_THROUGH_TRAFFIC_LIMIT",ret?"|":"");
-	if (flags & AF_TOLL) ret=g_strconcat_printf(ret,"%sAF_TOLL",ret?"|":"");
-	if (flags & AF_SEASONAL) ret=g_strconcat_printf(ret,"%sAF_SEASONAL",ret?"|":"");
-	if (flags & AF_UNPAVED) ret=g_strconcat_printf(ret,"%sAF_UNPAVED",ret?"|":"");
-	if (flags & AF_FORD) ret=g_strconcat_printf(ret,"%sAF_FORD",ret?"|":"");
-	if (flags & AF_UNDERGROUND) ret=g_strconcat_printf(ret,"%sAF_UNDERGROUND",ret?"|":"");
-	if (flags & AF_BRIDGE) ret=g_strconcat_printf(ret,"%sAF_BRIDGE",ret?"|":"");
-	if (flags & AF_DANGEROUS_GOODS) ret=g_strconcat_printf(ret,"%sAF_DANGEROUS_GOODS",ret?"|":"");
-	if ((flags & AF_ALL) == AF_ALL) 
-		return g_strconcat_printf(ret,"%sAF_ALL",ret?"|":"");
-	if ((flags & AF_ALL) == AF_MOTORIZED_FAST) 
-		return g_strconcat_printf(ret,"%sAF_MOTORIZED_FAST",ret?"|":"");
-	if (flags & AF_EMERGENCY_VEHICLES) ret=g_strconcat_printf(ret,"%sAF_EMERGENCY_VEHICLES",ret?"|":"");
-	if (flags & AF_TRANSPORT_TRUCK) ret=g_strconcat_printf(ret,"%sAF_TRANSPORT_TRUCK",ret?"|":"");
-	if (flags & AF_DELIVERY_TRUCK) ret=g_strconcat_printf(ret,"%sAF_DELIVERY_TRUCK",ret?"|":"");
-	if (flags & AF_PUBLIC_BUS) ret=g_strconcat_printf(ret,"%sAF_PUBLIC_BUS",ret?"|":"");
-	if (flags & AF_TAXI) ret=g_strconcat_printf(ret,"%sAF_TAXI",ret?"|":"");
-	if (flags & AF_HIGH_OCCUPANCY_CAR) ret=g_strconcat_printf(ret,"%sAF_HIGH_OCCUPANCY_CAR",ret?"|":"");
-	if (flags & AF_CAR) ret=g_strconcat_printf(ret,"%sAF_CAR",ret?"|":"");
-	if (flags & AF_MOTORCYCLE) ret=g_strconcat_printf(ret,"%sAF_MOTORCYCLE",ret?"|":"");
-	if (flags & AF_MOPED) ret=g_strconcat_printf(ret,"%sAF_MOPED",ret?"|":"");
-	if (flags & AF_HORSE) ret=g_strconcat_printf(ret,"%sAF_HORSE",ret?"|":"");
-	if (flags & AF_BIKE) ret=g_strconcat_printf(ret,"%sAF_BIKE",ret?"|":"");
-	if (flags & AF_PEDESTRIAN) ret=g_strconcat_printf(ret,"%sAF_PEDESTRIAN",ret?"|":"");
+	if (flags & NAVIT_AF_ONEWAY) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAY",ret?"|":"");
+	if (flags & NAVIT_AF_ONEWAYREV) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAYREV",ret?"|":"");
+	if (flags & NAVIT_AF_SEGMENTED) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SEGMENTED",ret?"|":"");
+	if (flags & NAVIT_AF_ROUNDABOUT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ROUNDABOUT",ret?"|":"");
+	if (flags & NAVIT_AF_ROUNDABOUT_VALID) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ROUNDABOUT_VALID",ret?"|":"");
+	if (flags & NAVIT_AF_ONEWAY_EXCEPTION) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAY_EXCEPTION",ret?"|":"");
+	if (flags & NAVIT_AF_SPEED_LIMIT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SPEED_LIMIT",ret?"|":"");
+	if (flags & NAVIT_AF_RESERVED1) ret=g_strconcat_printf(ret,"%sNAVIT_AF_RESERVED1",ret?"|":"");
+	if (flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SIZE_OR_WEIGHT_LIMIT",ret?"|":"");
+	if (flags & NAVIT_AF_THROUGH_TRAFFIC_LIMIT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_THROUGH_TRAFFIC_LIMIT",ret?"|":"");
+	if (flags & NAVIT_AF_TOLL) ret=g_strconcat_printf(ret,"%sNAVIT_AF_TOLL",ret?"|":"");
+	if (flags & NAVIT_AF_SEASONAL) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SEASONAL",ret?"|":"");
+	if (flags & NAVIT_AF_UNPAVED) ret=g_strconcat_printf(ret,"%sNAVIT_AF_UNPAVED",ret?"|":"");
+	if (flags & NAVIT_AF_FORD) ret=g_strconcat_printf(ret,"%sNAVIT_AF_FORD",ret?"|":"");
+	if (flags & NAVIT_AF_UNDERGROUND) ret=g_strconcat_printf(ret,"%sNAVIT_AF_UNDERGROUND",ret?"|":"");
+	if (flags & NAVIT_AF_BRIDGE) ret=g_strconcat_printf(ret,"%sNAVIT_AF_BRIDGE",ret?"|":"");
+	if (flags & NAVIT_AF_DANGEROUS_GOODS) ret=g_strconcat_printf(ret,"%sNAVIT_AF_DANGEROUS_GOODS",ret?"|":"");
+	if ((flags & NAVIT_AF_ALL) == NAVIT_AF_ALL) 
+		return g_strconcat_printf(ret,"%sNAVIT_AF_ALL",ret?"|":"");
+	if ((flags & NAVIT_AF_ALL) == NAVIT_AF_MOTORIZED_FAST) 
+		return g_strconcat_printf(ret,"%sNAVIT_AF_MOTORIZED_FAST",ret?"|":"");
+	if (flags & NAVIT_AF_EMERGENCY_VEHICLES) ret=g_strconcat_printf(ret,"%sNAVIT_AF_EMERGENCY_VEHICLES",ret?"|":"");
+	if (flags & NAVIT_AF_TRANSPORT_TRUCK) ret=g_strconcat_printf(ret,"%sNAVIT_AF_TRANSPORT_TRUCK",ret?"|":"");
+	if (flags & NAVIT_AF_DELIVERY_TRUCK) ret=g_strconcat_printf(ret,"%sNAVIT_AF_DELIVERY_TRUCK",ret?"|":"");
+	if (flags & NAVIT_AF_PUBLIC_BUS) ret=g_strconcat_printf(ret,"%sNAVIT_AF_PUBLIC_BUS",ret?"|":"");
+	if (flags & NAVIT_AF_TAXI) ret=g_strconcat_printf(ret,"%sNAVIT_AF_TAXI",ret?"|":"");
+	if (flags & NAVIT_AF_HIGH_OCCUPANCY_CAR) ret=g_strconcat_printf(ret,"%sNAVIT_AF_HIGH_OCCUPANCY_CAR",ret?"|":"");
+	if (flags & NAVIT_AF_CAR) ret=g_strconcat_printf(ret,"%sNAVIT_AF_CAR",ret?"|":"");
+	if (flags & NAVIT_AF_MOTORCYCLE) ret=g_strconcat_printf(ret,"%sNAVIT_AF_MOTORCYCLE",ret?"|":"");
+	if (flags & NAVIT_AF_MOPED) ret=g_strconcat_printf(ret,"%sNAVIT_AF_MOPED",ret?"|":"");
+	if (flags & NAVIT_AF_HORSE) ret=g_strconcat_printf(ret,"%sNAVIT_AF_HORSE",ret?"|":"");
+	if (flags & NAVIT_AF_BIKE) ret=g_strconcat_printf(ret,"%sNAVIT_AF_BIKE",ret?"|":"");
+	if (flags & NAVIT_AF_PEDESTRIAN) ret=g_strconcat_printf(ret,"%sNAVIT_AF_PEDESTRIAN",ret?"|":"");
 	return ret;
 }
 

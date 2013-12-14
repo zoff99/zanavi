@@ -58,7 +58,7 @@ struct graphics_priv
 {
 	jclass NavitGraphicsClass;
 	jmethodID NavitGraphics_draw_polyline, NavitGraphics_draw_polyline2, NavitGraphics_draw_polyline3, NavitGraphics_draw_polyline4, NavitGraphics_draw_polyline_dashed, NavitGraphics_set_dashes, NavitGraphics_draw_polygon, NavitGraphics_draw_polygon2, NavitGraphics_draw_rectangle, NavitGraphics_draw_circle, NavitGraphics_draw_text, NavitGraphics_draw_image,
-			NavitGraphics_draw_bigmap, NavitGraphics_draw_mode, NavitGraphics_draw_drag, NavitGraphics_overlay_disable, NavitGraphics_overlay_resize, NavitGraphics_SetCamera, NavitGraphicsClass_rotate_and_scale_bitmap;
+			NavitGraphics_draw_bigmap, NavitGraphics_draw_image_warp, NavitGraphics_draw_mode, NavitGraphics_draw_drag, NavitGraphics_overlay_disable, NavitGraphics_overlay_resize, NavitGraphics_SetCamera, NavitGraphicsClass_rotate_and_scale_bitmap;
 
 	jclass PaintClass;
 	jmethodID Paint_init, Paint_setStrokeWidth, Paint_setARGB;
@@ -251,7 +251,7 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 		jstring string;
 		int id;
 
-		// // dbg(1, "enter %s\n", path);
+		//dbg(0, "enter %s\n", path);
 		if (!strncmp(path, "res/drawable/", 13))
 		{
 			jstring a = (*jnienv2)->NewStringUTF(jnienv2, "drawable");
@@ -259,8 +259,10 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 			char *path_noext = g_strdup(path + 13);
 			char *pos = strrchr(path_noext, '.');
 			if (pos)
+			{
 				*pos = '\0';
-			//DBG // dbg(0, "path_noext=%s\n", path_noext);
+			}
+			// dbg(0, "path_noext=%s a=%s b=%s\n", path_noext, a, b);
 			string = (*jnienv2)->NewStringUTF(jnienv2, path_noext);
 			g_free(path_noext);
 			id = (*jnienv2)->CallIntMethod(jnienv2, gra->Resources, gra->Resources_getIdentifier, string, a, b);
@@ -308,6 +310,7 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 		//DBG // dbg(0,"JNI\n");
 		g_hash_table_insert(image_cache_hash, g_strdup(path), (gpointer) ret);
 	}
+
 	if (ret)
 	{
 		*w = ret->width;
@@ -532,6 +535,8 @@ static void draw_circle(struct graphics_priv *gra, struct graphics_gc_priv *gc, 
 	JNIEnv *jnienv2;
 	jnienv2 = jni_getenv();
 
+	// use gc->linewidth as width;
+
 	initPaint(gra, gc);
 	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_circle, gc->gra->Paint, p->x, p->y, r);
 }
@@ -575,6 +580,57 @@ static void draw_bigmap(struct graphics_priv *gra, struct graphics_gc_priv *fg, 
 
 static void draw_image_warp(struct graphics_priv *gr, struct graphics_gc_priv *fg, struct point *p, int count, char *data)
 {
+	//dbg(0,"draw_image_warp:filename=%s\n", data);
+	//dbg(0,"draw_image_warp:count=%d\n", count);
+
+/*
+        void imlib_render_image_on_drawable_skewed(int source_x, int source_y,
+                                                   int source_width,
+                                                   int source_height,
+                                                   int destination_x,
+                                                   int destination_y,
+                                                   int h_angle_x, int h_angle_y,
+                                                   int v_angle_x, int v_angle_y);
+
+	if (count == 3) {
+		imlib_render_image_on_drawable_skewed(0, 0, w, h, p[0].x, p[0].y, p[1].x-p[0].x, p[1].y-p[0].y, p[2].x-p[0].x, p[2].y-p[0].y);
+	}
+	if (count == 2) {
+		imlib_render_image_on_drawable_skewed(0, 0, w, h, p[0].x, p[0].y, p[1].x-p[0].x, 0, 0, p[1].y-p[0].y);
+	}
+	if (count == 1) {
+		imlib_render_image_on_drawable_skewed(0, 0, w, h, p[0].x-w/2, p[0].y-h/2, w, 0, 0, h);
+	}
+
+*/
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+	jstring string = (*jnienv2)->NewStringUTF(jnienv2, data);
+
+	if (count == 3)
+	{
+		/* 0 1
+        	   2   */
+		(*jnienv2)->CallVoidMethod(jnienv2, gr->NavitGraphics, gr->NavitGraphics_draw_image_warp, string, count, p[0].x, p[0].y, p[1].x, p[1].y, p[2].x, p[2].y);
+	}
+	else if (count == 2)
+	{
+		/* 0 
+        	     1 */
+		(*jnienv2)->CallVoidMethod(jnienv2, gr->NavitGraphics, gr->NavitGraphics_draw_image_warp, string, count, p[0].x, p[0].y, p[1].x, p[1].y, 0, 0);
+	}
+	else if (count == 1)
+	{
+		/* 
+                   0 
+        	     */
+		(*jnienv2)->CallVoidMethod(jnienv2, gr->NavitGraphics, gr->NavitGraphics_draw_image_warp, string, count, p[0].x, p[0].y, 0, 0, 0, 0);
+	}
+
+	(*jnienv2)->DeleteLocalRef(jnienv2, string);
+
 }
 
 static void draw_restore(struct graphics_priv *gr, struct point *p, int w, int h)
@@ -894,6 +950,8 @@ static int graphics_android_init(const char* name, struct graphics_priv *ret, st
 	if (!find_method(ret->NavitGraphicsClass, "draw_image", "(Landroid/graphics/Paint;IILandroid/graphics/Bitmap;)V", &ret->NavitGraphics_draw_image))
 		return 0;
 	if (!find_method(ret->NavitGraphicsClass, "draw_bigmap", "(IIFFIIIIIII)V", &ret->NavitGraphics_draw_bigmap))
+		return 0;
+	if (!find_method(ret->NavitGraphicsClass, "draw_warp", "(Ljava/lang/String;IIIIIII)V", &ret->NavitGraphics_draw_image_warp))
 		return 0;
 
 	if (!find_method(ret->NavitGraphicsClass, "draw_mode", "(I)V", &ret->NavitGraphics_draw_mode))
