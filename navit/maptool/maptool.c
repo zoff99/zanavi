@@ -33,6 +33,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <zlib.h>
+
+#include "version_maptool.h"
+
 #include "file.h"
 #include "item.h"
 #include "map.h"
@@ -47,9 +50,18 @@
 long long slice_size=1024*1024*1024;
 int attr_debug_level=1;
 int ignore_unkown = 0;
+int border_only_map = 0;
+int coastline_only_map = 0;
 GHashTable *dedupe_ways_hash;
 int phase;
 int slices;
+int unknown_country;
+int doway2poi=0;
+char ch_suffix[] ="r"; /* Used to make compiler happy due to Bug 35903 in gcc */
+int experimental=0;
+int use_global_fixed_country_id=0;
+int global_fixed_country_id=999;
+
 struct buffer node_buffer = {
 	64*1024*1024,
 };
@@ -67,7 +79,7 @@ sig_alrm(int sig)
 {
 #ifndef _WIN32
 	signal(SIGALRM, sig_alrm);
-	alarm(30);
+	alarm(120);
 #endif
 	fprintf(stderr,"PROGRESS%d: Processed %d nodes (%d out) %d ways %d relations %d tiles\n", phase, processed_nodes, processed_nodes_out, processed_ways, processed_relations, processed_tiles);
 }
@@ -105,7 +117,8 @@ usage(FILE *f)
 {
 	/* DEVELOPPERS : don't forget to update the manpage if you modify theses options */
 	fprintf(f,"\n");
-	fprintf(f,"maptool - parse osm textfile and converts to Navit binfile format\n\n");
+	fprintf(f,"ZANavi maptool - parse osm textfile and convert to [Navit] binfile format\n");
+	fprintf(f,"version: "SVN_VERSION"\n\n");
 	fprintf(f,"Usage :\n");
 	fprintf(f,"bzcat planet.osm.bz2 | maptool mymap.bin\n");
 	fprintf(f,"Available switches:\n");
@@ -114,13 +127,17 @@ usage(FILE *f)
 	fprintf(f,"-6 (--64bit)             : set zip 64 bit compression\n");
 	fprintf(f,"-a (--attr-debug-level)  : control which data is included in the debug attribute\n");
 	fprintf(f,"-c (--dump-coordinates)  : dump coordinates after phase 1\n");
+	fprintf(f,"-X                       : generate country-border-ONLY map\n");
+	fprintf(f,"-Y                       : generate coastline-ONLY map\n");
 #ifdef HAVE_POSTGRESQL
 	fprintf(f,"-d (--db)                : get osm data out of a postgresql database with osm simple scheme and given connect string\n");
 #endif
 	fprintf(f,"-e (--end)               : end at specified phase\n");
+	fprintf(f,"-F                       : specify a fixed country id for this input file\n");
 	fprintf(f,"-i (--input-file)        : specify the input file name (OSM), overrules default stdin\n");
 	fprintf(f,"-k (--keep-tmpfiles)     : do not delete tmp files after processing. useful to reuse them\n\n");
 	fprintf(f,"-N (--nodes-only)        : process only nodes\n");
+	fprintf(f,"-n                       : ignore unknown types\n");
 	fprintf(f,"-o (--coverage)          : map every street to item coverage\n");
 	fprintf(f,"-P (--protobuf)          : input file is protobuf\n");
 	fprintf(f,"-r (--rule-file)         : read mapping rules from specified file\n");
@@ -129,13 +146,14 @@ usage(FILE *f)
 	fprintf(f,"-w (--dedupe-ways)       : ensure no duplicate ways or nodes. useful when using several input files\n");
 	fprintf(f,"-W (--ways-only)         : process only ways\n");
 	fprintf(f,"-z (--compression-level) : set the compression level\n");
+	fprintf(f,"-U (--unknown-country)   : add objects with unknown country to index\n");
 	
 	exit(1);
 }
 
 int main(int argc, char **argv)
 {
-	FILE *ways=NULL,*ways_split=NULL,*ways_split_index=NULL,*nodes=NULL,*turn_restrictions=NULL,*graph=NULL,*coastline=NULL,*tilesdir,*coords,*relations=NULL,*boundaries=NULL;
+	FILE *ways=NULL,*ways_split=NULL,*ways_split_index=NULL,*towns=NULL,*nodes=NULL,*turn_restrictions=NULL,*graph=NULL,*coastline=NULL,*tilesdir,*coords,*relations=NULL,*boundaries=NULL;
 	FILE *files[10];
 	FILE *references[10];
 
@@ -157,6 +175,9 @@ int main(int argc, char **argv)
 	int f,pos;
 	char *result,*optarg_cp,*attr_name,*attr_value;
 	char *protobufdb=NULL,*protobufdb_operation=NULL,*md5file=NULL;
+
+	use_global_fixed_country_id=0;
+
 #ifdef HAVE_POSTGRESQL
 	char *dbstr=NULL;
 #endif
@@ -168,6 +189,7 @@ int main(int argc, char **argv)
 	struct attr *attrs[10];
 	GList *map_handles=NULL;
 	struct map *handle;
+	struct maptool_osm osm;
 #if 0
 	char *suffixes[]={"m0l0", "m0l1","m0l2","m0l3","m0l4","m0l5","m0l6"};
 	char *suffixes[]={"m","r"};
@@ -187,6 +209,17 @@ int main(int argc, char **argv)
 #ifndef HAVE_GLIB
 	_g_slice_thread_init_nomessage();
 #endif
+
+	osm.boundaries=NULL;
+    osm.turn_restrictions=NULL;
+    osm.nodes=NULL;
+   	osm.ways=NULL;
+    osm.line2poi=NULL;
+    osm.poly2poi=NULL;
+    osm.towns=NULL;
+
+	// init the ling. hashes!!
+	linguistics_init();
 
 	while (1) {
 #if 0
@@ -219,13 +252,14 @@ int main(int argc, char **argv)
 			{"url", 1, 0, 'u'},
 			{"ways-only", 0, 0, 'W'},
 			{"slice-size", 1, 0, 'S'},
+			{"unknown-country", 0, 0, 'U'},
 			{0, 0, 0, 0}
 		};
-		c = getopt_long (argc, argv, "5:6B:DNO:PWS:a:bc"
+		c = getopt_long (argc, argv, "5:6B:DF:NO:PWS:a:bc"
 #ifdef HAVE_POSTGRESQL
 					      "d:"
 #endif
-					      "e:hi:knm:p:r:s:wu:z:", long_options, &option_index);
+					      "e:hi:knm:p:r:s:wu:z:UXY", long_options, &option_index);
 		if (c == -1)
 			break;
 		switch (c) {
@@ -259,6 +293,18 @@ int main(int argc, char **argv)
 			break;
 		case 'W':
 			process_nodes=0;
+			break;
+		case 'U':
+			fprintf(stderr,"Towns in UNKNOWN Country will be added to index\n");
+			unknown_country=1;
+			break;
+		case 'X':
+			fprintf(stderr,"I will GENERATE a country-border-only map\n");
+			border_only_map=1;
+			break;
+		case 'Y':
+			fprintf(stderr,"I will GENERATE a coastline-only map\n");
+			coastline_only_map=1;
 			break;
 		case 'a':
 			attr_debug_level=atoi(optarg);
@@ -322,6 +368,11 @@ int main(int argc, char **argv)
 		case 'w':
 			dedupe_ways_hash=g_hash_table_new(NULL, NULL);
 			break;
+		case 'F':
+			use_global_fixed_country_id=1;
+			global_fixed_country_id=atoi(optarg);
+			fprintf(stderr,"ASSUME map is country id: %d\n",global_fixed_country_id);
+			break;
 		case 'i':
 			input_file = fopen( optarg, "r" );
 			if ( input_file ==  NULL )
@@ -372,19 +423,28 @@ int main(int argc, char **argv)
 		if (process_ways)
 			ways=tempfile(suffix,"ways",1);
 		if (process_nodes)
+		{
 			nodes=tempfile(suffix,"nodes",1);
+			towns=tempfile(suffix,"towns",1);
+		}
 		if (process_ways && process_nodes)
 			turn_restrictions=tempfile(suffix,"turn_restrictions",1);
 		if (process_relations)
 			boundaries=tempfile(suffix,"boundaries",1);
 		phase=1;
 		fprintf(stderr,"PROGRESS: Phase 1: collecting data\n");
+		osm.ways=ways;
+		osm.nodes=nodes;
+		osm.towns=towns;
+		osm.turn_restrictions=turn_restrictions;
+		osm.boundaries=boundaries;
 #ifdef HAVE_POSTGRESQL
 		if (dbstr)
-			map_collect_data_osm_db(dbstr,ways,nodes,turn_restrictions,boundaries);
+			map_collect_data_osm_db(dbstr,&osm);
 		else
 #endif
-		if (map_handles) {
+		if (map_handles)
+		{
 			GList *l;
 			phase1_map(map_handles,ways,nodes);
 			l=map_handles;
@@ -394,24 +454,37 @@ int main(int argc, char **argv)
 			}
 		}
 		else if (protobuf)
-			map_collect_data_osm_protobuf(input_file,ways,nodes,turn_restrictions,boundaries);
+		{
+			map_collect_data_osm_protobuf(input_file,&osm);
+		}
 		else
-			map_collect_data_osm(input_file,ways,nodes,turn_restrictions,boundaries);
+		{
+			map_collect_data_osm(input_file,&osm);
+		}
 		if (slices) {
 			fprintf(stderr,"%d slices\n",slices);
 			flush_nodes(1);
+			long long i_x_slice_size;
 			for (i = slices-2 ; i>=0 ; i--) {
 				fprintf(stderr, "slice %d of %d\n",slices-i-1,slices-1);
-				load_buffer("coords.tmp",&node_buffer, i*slice_size, slice_size);
-				resolve_ways(ways, NULL);
-				save_buffer("coords.tmp",&node_buffer, i*slice_size);
+				i_x_slice_size = i*slice_size;
+				//fprintf(stderr, "calling load_buffer 1 %d,"LONGLONG_FMT"\n",i,i_x_slice_size);
+				load_buffer("coords.tmp",&node_buffer, i_x_slice_size, slice_size);
+				// resolve_ways(ways, NULL);
+				ref_ways(ways); // *NEW*
+				save_buffer("coords.tmp",&node_buffer, i_x_slice_size);
 			}
 		} else
+		{
+			//fprintf(stderr, "calling save_buffer 2\n");
 			save_buffer("coords.tmp",&node_buffer, 0);
+		}
 		if (ways)
 			fclose(ways);
 		if (nodes)
 			fclose(nodes);
+		if (towns)
+			fclose(towns);
 		if (turn_restrictions)
 			fclose(turn_restrictions);
 		if (boundaries)
@@ -472,15 +545,39 @@ int main(int argc, char **argv)
 	}
 
 #if 1
-	coastline=tempfile(suffix,"coastline",0);
-	if (coastline) {
-		ways_split=tempfile(suffix,"ways_split",2);
-		fprintf(stderr,"coastline=%p\n",coastline);
-		process_coastlines(coastline, ways_split);
-		fclose(ways_split);
-		fclose(coastline);
+	FILE *coastline2=tempfile(suffix,"coastline",0);
+	if (coastline2) {
+		FILE *coastline_result=tempfile(suffix,"coastline_result",1);
+		process_coastlines(coastline2, coastline_result);
+		fclose(coastline_result);
+		fclose(coastline2);
 	}
+
+	//coastline=tempfile(suffix,"coastline",0);
+	//if (coastline) {
+	//	ways_split=tempfile(suffix,"ways_split",2);
+	//	fprintf(stderr,"coastline=%p\n",coastline);
+	//	process_coastlines(coastline, ways_split);
+	//	fclose(ways_split);
+	//	fclose(coastline);
+	//}
 #endif
+
+	FILE *towns2=tempfile(suffix,"towns",0);
+	FILE *boundaries2=NULL;
+	FILE *ways2=NULL;
+	if (towns2)
+	{
+		boundaries2=tempfile(suffix,"boundaries",0);
+		ways2=tempfile(suffix,"ways_split",0);
+		osm_process_towns(towns2,boundaries2,ways2);
+		fclose(ways2);
+		fclose(boundaries2);
+		fclose(towns2);
+		if(!keep_tmpfiles)
+			tempfile_unlink(suffix,"towns");
+	}
+
 	if (start <= 3) {
 		fprintf(stderr,"PROGRESS: Phase 3: sorting countries, generating turn restrictions\n");
 		sort_countries(keep_tmpfiles);
@@ -633,6 +730,7 @@ int main(int argc, char **argv)
 				tempfile_unlink(suffix,"graph");
 				tempfile_unlink(suffix,"tilesdir");
 				tempfile_unlink(suffix,"boundaries");
+				tempfile_unlink(suffix,"coastline_result");
 				unlink("coords.tmp");
 			}
 			if (i == suffix_count-1) {
@@ -661,5 +759,8 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+
+	fprintf(stderr,"PROGRESS: Phase 999: ### Map Ready ###\n");
+
 	return 0;
 }

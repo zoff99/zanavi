@@ -16,6 +16,9 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
+#define _FILE_OFFSET_BITS 64
+#define _LARGEFILE_SOURCE
+#define _LARGEFILE64_SOURCE
 #include <unistd.h>
 #include "maptool.h"
 #include "debug.h"
@@ -25,6 +28,7 @@ tempfile_name(char *suffix, char *name)
 {
 	return g_strdup_printf("%s_%s.tmp",name, suffix);
 }
+
 FILE *
 tempfile(char *suffix, char *name, int mode)
 {
@@ -41,7 +45,13 @@ tempfile(char *suffix, char *name, int mode)
 		ret=fopen(buffer, "ab");
 		break;
 	}
+
+	if (debug_itembin(6))
+	{
+		fprintf(stderr,"== tempfile == open == FILENAME: %s FILEPOINTER: %p ==\n",buffer,ret);
+	}
 	g_free(buffer);
+
 	return ret;
 }
 
@@ -60,5 +70,5 @@ tempfile_rename(char *suffix, char *from, char *to)
 	sprintf(buffer_from,"%s_%s.tmp",from,suffix);
 	sprintf(buffer_to,"%s_%s.tmp",to,suffix);
 	dbg_assert(rename(buffer_from, buffer_to) == 0);
-	
 }
+

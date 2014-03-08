@@ -68,9 +68,9 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmaptool_la_LIBADD =
 am_libmaptool_la_OBJECTS = boundaries.lo buffer.lo ch.lo coastline.lo \
 	geom.lo itembin.lo itembin_buffer.lo misc.lo osm.lo \
-	osm_psql.lo osm_protobuf.lo osm_protobufdb.lo osm_xml.lo \
-	sourcesink.lo tempfile.lo tile.lo zip.lo fileformat.pb-c.lo \
-	osmformat.pb-c.lo protobuf-c.lo
+	osm_psql.lo osm_protobuf.lo osm_protobufdb.lo osm_relations.lo \
+	osm_xml.lo sourcesink.lo tempfile.lo tile.lo zip.lo \
+	fileformat.pb-c.lo osmformat.pb-c.lo protobuf-c.lo
 libmaptool_la_OBJECTS = $(am_libmaptool_la_OBJECTS)
 @SUPPORT_ANDROID_FALSE@am_libmaptool_la_rpath =
 am__installdirs = "$(DESTDIR)$(bindir)"
@@ -363,10 +363,12 @@ fontsdir = $(pkgdatadir)/fonts
 mapsdir = $(pkgdatadir)/maps
 @SUPPORT_ANDROID_FALSE@noinst_LTLIBRARIES = libmaptool.la
 AM_CPPFLAGS = @NAVIT_CFLAGS@ -I$(top_srcdir)/navit @ZLIB_CFLAGS@ @POSTGRESQL_CFLAGS@ -DMODULE=maptool
-libmaptool_la_SOURCES = boundaries.c buffer.c ch.c coastline.c geom.c itembin.c itembin_buffer.c misc.c osm.c osm_psql.c osm_protobuf.c osm_protobufdb.c osm_xml.c sourcesink.c tempfile.c tile.c zip.c maptool.h generated-code/fileformat.pb-c.c generated-code/fileformat.pb-c.h generated-code/osmformat.pb-c.c generated-code/osmformat.pb-c.h google/protobuf-c/protobuf-c.c google/protobuf-c/protobuf-c.h google/protobuf-c/protobuf-c-private.h
+BUILT_SOURCES = version_maptool.h
+libmaptool_la_SOURCES = boundaries.c buffer.c ch.c coastline.c geom.c itembin.c itembin_buffer.c misc.c osm.c osm_psql.c osm_protobuf.c osm_protobufdb.c osm_relations.c osm_xml.c sourcesink.c tempfile.c tile.c zip.c maptool.h generated-code/fileformat.pb-c.c generated-code/fileformat.pb-c.h generated-code/osmformat.pb-c.c generated-code/osmformat.pb-c.h google/protobuf-c/protobuf-c.c google/protobuf-c/protobuf-c.h google/protobuf-c/protobuf-c-private.h
 maptool_SOURCES = maptool.c
 maptool_LDADD = libmaptool.la ../libnavit.la @NAVIT_LIBS@ @WORDEXP_LIBS@ @ZLIB_LIBS@ @POSTGRESQL_LIBS@ @CRYPTO_LIBS@ @INTLLIBS@ @LIBC_LIBS@
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -478,6 +480,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osm_protobuf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osm_protobufdb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osm_psql.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osm_relations.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osm_xml.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osmformat.pb-c.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/protobuf-c.Plo@am__quote@
@@ -617,13 +620,15 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -648,6 +653,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool \
@@ -719,7 +725,7 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: install-am install-strip
+.MAKE: all check install install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic clean-libtool clean-noinstLTLIBRARIES ctags \
@@ -735,6 +741,16 @@ uninstall-am: uninstall-binPROGRAMS
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS
 
+
+version_maptool.h.tmp:
+	echo "" >version_maptool.h.tmp
+	echo "#define SVN_VERSION \"$$(LANG=C svnversion $(top_srcdir)/navit/maptool 2>/dev/null)\"" >>version_maptool.h.tmp
+	if ! diff version_maptool.h.tmp version_maptool.h >/dev/null 2>/dev/null; \
+	then \
+		mv version_maptool.h.tmp version_maptool.h; \
+	fi
+
+version_maptool.h: version_maptool.h.tmp
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

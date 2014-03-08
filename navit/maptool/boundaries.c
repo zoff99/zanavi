@@ -18,78 +18,95 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "maptool.h"
 
-struct boundary {
-	struct item_bin *ib;
-	GList *segments,*sorted_segments;
-	GList *children;
-	struct rect r;
-};
 
-struct boundary_member {
-	long long wayid;
-	enum geom_poly_segment_type role;
-	struct boundary *boundary;
-};
-
-static guint
-boundary_member_hash(gconstpointer key)
-{
-	const struct boundary_member *memb=key;
-	return (memb->wayid >> 32)^(memb->wayid & 0xffffffff);
-}
-
-static gboolean
-boundary_member_equal(gconstpointer a, gconstpointer b)
-{
-	const struct boundary_member *memba=a;
-	const struct boundary_member *membb=b;
-	return (memba->wayid == membb->wayid);
-}
-
-GHashTable *member_hash;
-
-static char *
-osm_tag_name(struct item_bin *ib)
+char *
+osm_tag_value(struct item_bin *ib, char *key)
 {
 	char *tag=NULL;
+	int len=strlen(key);
 	while ((tag=item_bin_get_attr(ib, attr_osm_tag, tag))) {
-		if (!strncmp(tag,"name=",5))
-			return tag+5;
+		if (!strncmp(tag,key,len) && tag[len] == '=')
+			return tag+len+1;
 	}
 	return NULL;
 }
 
+static char *
+osm_tag_name(struct item_bin *ib)
+{
+	return osm_tag_value(ib, "name");
+}
+
+long long *
+boundary_relid(struct boundary *b)
+{
+	long long *id;
+	if (!b)
+		return 0;
+	if (!b->ib)
+		return 0;
+	id=item_bin_get_attr(b->ib, attr_osm_relationid, NULL);
+	if (id)
+		return *id;
+	return 0;
+}
+
+static void
+process_boundaries_member(void *func_priv, void *relation_priv, struct item_bin *member, void *member_priv)
+{
+	struct boundary *b=relation_priv;
+	enum geom_poly_segment_type role=(long)member_priv;
+	b->segments=g_list_prepend(b->segments,item_bin_to_poly_segment(member, role));
+}
+
 static GList *
-build_boundaries(FILE *boundaries)
+process_boundaries_setup(FILE *boundaries, struct relations *relations)
 {
 	struct item_bin *ib;
 	GList *boundaries_list=NULL;
+	struct relations_func *relations_func;
 
+	relations_func=relations_func_new(process_boundaries_member, NULL);
 	while ((ib=read_item(boundaries))) {
 		char *member=NULL;
 		struct boundary *boundary=g_new0(struct boundary, 1);
+		char *admin_level=osm_tag_value(ib, "admin_level");
+		char *iso=osm_tag_value(ib, "ISO3166-1");
+		/* disable spain for now since it creates a too large index */
+		if (admin_level && !strcmp(admin_level, "2") && (!iso || strcasecmp(iso,"es"))) {
+			if (iso) {
+				struct country_table *country=country_from_iso2(iso);	
+				if (!country) 
+					osm_warning("relation",item_bin_get_relationid(ib),0,"Country Boundary contains unknown ISO3166-1 value '%s'\n",iso);
+				else {
+					boundary->iso2=g_strdup(iso);
+					osm_info("relation",item_bin_get_relationid(ib),0,"Country Boundary for '%s'\n",iso);
+				}
+				boundary->country=country;
+			} else 
+				osm_warning("relation",item_bin_get_relationid(ib),0,"Country Boundary doesn't contain an ISO3166-1 tag\n");
+		}
 		while ((member=item_bin_get_attr(ib, attr_osm_member, member))) {
 			long long wayid;
 			int read=0;
 			if (sscanf(member,"2:%Ld:%n",&wayid,&read) >= 1) {
-				struct boundary_member *memb=g_new(struct boundary_member, 1);
-				char *role=member+read;
-				memb->wayid=wayid;
-				memb->boundary=boundary;
-				if (!strcmp(role,"outer"))
-					memb->role=geom_poly_segment_type_way_outer;
-				else if (!strcmp(role,"inner"))
-					memb->role=geom_poly_segment_type_way_inner;
-				else if (!strcmp(role,""))
-					memb->role=geom_poly_segment_type_way_unknown;
+				char *rolestr=member+read;
+				enum geom_poly_segment_type role;
+				if (!strcmp(rolestr,"outer") || !strcmp(rolestr,"exclave"))
+					role=geom_poly_segment_type_way_outer;
+				else if (!strcmp(rolestr,"inner") || !strcmp(rolestr,"enclave"))
+					role=geom_poly_segment_type_way_inner;
+				else if (!strcmp(rolestr,""))
+					role=geom_poly_segment_type_way_unknown;
 				else {
-					printf("Unknown role %s\n",role);
-					memb->role=geom_poly_segment_type_none;
+					osm_warning("relation",item_bin_get_relationid(ib),0,"Unknown role %s in member ",rolestr);
+					osm_warning("way",wayid,1,"\n");
+					role=geom_poly_segment_type_none;
 				}
-				g_hash_table_insert(member_hash, memb, g_list_append(g_hash_table_lookup(member_hash, memb), memb));
-
+				relations_add_func(relations, relations_func, boundary, (gpointer)role, 2, wayid);
 			}
 		}
 		boundary->ib=item_bin_dup(ib);
@@ -98,19 +115,20 @@ build_boundaries(FILE *boundaries)
 	return boundaries_list;
 }
 
-static void
-find_matches(GList *l, struct coord *c)
+GList *
+boundary_find_matches(GList *l, struct coord *c)
 {
+	GList *ret=NULL;
 	while (l) {
 		struct boundary *boundary=l->data;
 		if (bbox_contains_coord(&boundary->r, c)) {
-			struct item_bin *ib=boundary->ib;
-			if (geom_poly_segments_point_inside(boundary->sorted_segments,c)) 
-				printf("%s,",osm_tag_name(ib));
-			find_matches(boundary->children, c);
+			if (geom_poly_segments_point_inside(boundary->sorted_segments,c) > 0) 
+				ret=g_list_prepend(ret, boundary);
+			ret=g_list_concat(ret,boundary_find_matches(boundary->children, c));
 		}
 		l=g_list_next(l);
 	}
+	return ret;
 }
 
 static void
@@ -123,7 +141,7 @@ test(GList *boundaries_list)
 		struct coord *c=(struct coord *)(ib+1);
 		char *name=item_bin_get_attr(ib, attr_town_name, NULL);
 		printf("%s:",name);
-		find_matches(boundaries_list, c);
+		boundary_find_matches(boundaries_list, c);
 		printf("\n");
 	}
 	fclose(f);
@@ -138,7 +156,7 @@ dump_hierarchy(GList *l, char *prefix)
 	strcat(newprefix," ");
 	while (l) {
 		struct boundary *boundary=l->data;
-		printf("%s:%s\n",prefix,osm_tag_name(boundary->ib));
+		fprintf(stderr,"%s:%s (0x%x,0x%x)-(0x%x,0x%x)\n",prefix,osm_tag_name(boundary->ib),boundary->r.l.x,boundary->r.l.y,boundary->r.h.x,boundary->r.h.y);
 		dump_hierarchy(boundary->children, newprefix);
 		l=g_list_next(l);
 	}
@@ -158,33 +176,61 @@ boundary_bbox_compare(gconstpointer a, gconstpointer b)
 	return 0;
 }
 
-int
-process_boundaries(FILE *boundaries, FILE *ways)
+static GList *
+process_boundaries_insert(GList *list, struct boundary *boundary)
 {
-	struct item_bin *ib;
-	GList *boundaries_list,*l,*sl,*l2,*ln;
-
-	member_hash=g_hash_table_new_full(boundary_member_hash, boundary_member_equal, NULL, NULL);
-	boundaries_list=build_boundaries(boundaries);
-	while ((ib=read_item(ways))) {
-		long long *wayid=item_bin_get_attr(ib, attr_osm_wayid, NULL);
-		if (wayid) {
-			GList *l=g_hash_table_lookup(member_hash, wayid);
-			while (l) {
-				struct boundary_member *memb=l->data;
-				memb->boundary->segments=g_list_prepend(memb->boundary->segments,item_bin_to_poly_segment(ib, memb->role));
-
-				l=g_list_next(l);
-			}
-		}
-	}
-	l=boundaries_list;
+	GList *l=list;
 	while (l) {
+		struct boundary *b=l->data;
+		if (bbox_contains_bbox(&boundary->r, &b->r)) {
+			list=g_list_remove(list, b);
+			boundary->children=g_list_prepend(boundary->children, b);
+			l=list;
+		} else if (bbox_contains_bbox(&b->r, &boundary->r)) {
+			b->children=process_boundaries_insert(b->children, boundary);
+			return list;
+		} else
+			l=g_list_next(l);
+	}
+	return g_list_prepend(list, boundary);
+}
+
+
+static GList *
+process_boundaries_finish(GList *boundaries_list)
+{
+	GList *l,*sl,*l2,*ln;
+	GList *ret=NULL;
+	l=boundaries_list;
+	char *f1_name=NULL;
+	char *f2_name=NULL;
+	while (l)
+	{
 		struct boundary *boundary=l->data;
 		int first=1;
+		FILE *f=NULL,*fu=NULL;
+
+		// only lowercase country code
+		if (boundary->iso2)
+		{
+			int i99;
+			for (i99 = 0; boundary->iso2[i99]; i99++)
+			{
+				boundary->iso2[i99] = tolower(boundary->iso2[i99]);
+			}
+		}
+		// only lowercase country code
+
+		if (boundary->country) {
+			char *name=g_strdup_printf("country_%s_poly",boundary->iso2);
+			f1_name=g_strdup_printf("country_%s_poly",boundary->iso2);
+			f=tempfile("",name,1);
+			g_free(name);
+		}
 		boundary->sorted_segments=geom_poly_segments_sort(boundary->segments, geom_poly_segment_type_way_right_side);
 		sl=boundary->sorted_segments;
-		while (sl) {
+		while (sl)
+		{
 			struct geom_poly_segment *gs=sl->data;
 			struct coord *c=gs->first;
 			while (c <= gs->last) {
@@ -196,12 +242,59 @@ process_boundaries(FILE *boundaries, FILE *ways)
 					bbox_extend(c, &boundary->r);
 				c++;
 			}
+			if (f) {
+				struct item_bin *ib=item_bin;
+				item_bin_init(ib, type_selected_line);
+				item_bin_add_coord(ib, gs->first, gs->last-gs->first+1);
+				item_bin_write(ib, f);
+			}
+			if (boundary->country) {
+				if (!coord_is_equal(*gs->first,*gs->last)) {
+					if (!fu) {
+						char *name=g_strdup_printf("country_%s_broken",boundary->iso2);
+						f2_name=g_strdup_printf("country_%s_broken",boundary->iso2);
+						fu=tempfile("",name,1);
+						g_free(name);
+					}
+					struct item_bin *ib=item_bin;
+					item_bin_init(ib, type_selected_point);
+					item_bin_add_coord(ib, gs->first, 1);
+					item_bin_write(ib, fu);
+
+					item_bin_init(ib, type_selected_point);
+					item_bin_add_coord(ib, gs->last, 1);
+					item_bin_write(ib, fu);
+				}
+			}
 			sl=g_list_next(sl);
+
+			if (f2_name)
+			{
+				tempfile_unlink("",f2_name);
+				g_free(f2_name);
+				f2_name=NULL;
+			}
 		}	
+		ret=process_boundaries_insert(ret, boundary);
 		l=g_list_next(l);
-		
+		if (f) 
+			fclose(f);
+		if (fu) {
+			if (boundary->country)
+				osm_warning("relation",item_bin_get_relationid(boundary->ib),0,"Broken country polygon '%s'\n",boundary->iso2);
+			fclose(fu);
+		}
+
+		if (f1_name)
+		{
+			tempfile_unlink("",f1_name);
+			g_free(f1_name);
+			f1_name=NULL;
+		}
 	}
+#if 0
 	printf("hierarchy\n");
+#endif
 	boundaries_list=g_list_sort(boundaries_list, boundary_bbox_compare);
 	l=boundaries_list;
 	while (l) {
@@ -212,16 +305,33 @@ process_boundaries(FILE *boundaries, FILE *ways)
 			if (bbox_contains_bbox(&boundary2->r, &boundary->r)) {
 				boundaries_list=g_list_remove(boundaries_list, boundary);
 				boundary2->children=g_list_append(boundary2->children, boundary);
+#if 0
 				printf("found\n");
+#endif
 				break;
 			}
 			l2=g_list_next(l2);
 		}
 		l=ln;
 	}
+	// dump_hierarchy(boundaries_list,""); --> make much data!! be careful
+#if 0
 	printf("hierarchy done\n");
-	dump_hierarchy(boundaries_list,"");
 	printf("test\n");
 	test(boundaries_list);
-	return 1;
+#endif
+	return boundaries_list;
 }
+
+GList *
+process_boundaries(FILE *boundaries, FILE *ways)
+{
+	GList *boundaries_list;
+	struct relations *relations=relations_new();
+
+	boundaries_list=process_boundaries_setup(boundaries, relations);
+	relations_process(relations, NULL, ways, NULL);
+	return process_boundaries_finish(boundaries_list);
+}
+
+

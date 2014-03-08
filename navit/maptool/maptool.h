@@ -32,6 +32,10 @@
 #define LONGLONG_FMT "%lld"
 #endif
 
+
+#define sq(x) ((double)(x)*(x))
+
+
 #define BUFFER_SIZE 1280
 
 #define debug_tile(x) 0
@@ -98,11 +102,32 @@ struct item_bin_sink {
 	GList *sink_funcs;
 };
 
+struct node_item {
+	int id;
+	char ref_node;
+	char ref_way;
+	char ref_ref;
+	char dummy;
+	struct coord c;
+};
+
 struct zip_info;
+struct country_table;
 
 /* boundaries.c */
+struct boundary {
+	struct item_bin *ib;
+	struct country_table *country;
+	char *iso2;
+	GList *segments,*sorted_segments;
+	GList *children;
+	struct rect r;
+};
 
-int process_boundaries(FILE *boundaries, FILE *ways);
+char *osm_tag_value(struct item_bin *ib, char *key);
+long long *boundary_relid(struct boundary *b);
+GList *process_boundaries(FILE *boundaries, FILE *ways);
+GList *boundary_find_matches(GList *bl, struct coord *c);
 
 /* buffer.c */
 struct buffer {
@@ -174,6 +199,7 @@ struct attr_bin * item_bin_get_attr_bin_last(struct item_bin *ib);
 void item_bin_add_attr_longlong(struct item_bin *ib, enum attr_type type, long long val);
 void item_bin_add_attr_string(struct item_bin *ib, enum attr_type type, char *str);
 void item_bin_add_attr_range(struct item_bin *ib, enum attr_type type, short min, short max);
+void item_bin_remove_attr(struct item_bin *ib, void *ptr);
 void item_bin_write(struct item_bin *ib, FILE *out);
 struct item_bin *item_bin_dup(struct item_bin *ib);
 void item_bin_write_range(struct item_bin *ib, FILE *out, int min, int max);
@@ -182,9 +208,11 @@ void item_bin_dump(struct item_bin *ib, FILE *out);
 void dump_itembin(struct item_bin *ib);
 void item_bin_set_type_by_population(struct item_bin *ib, int population);
 void item_bin_write_match(struct item_bin *ib, enum attr_type type, enum attr_type match, FILE *out);
+void item_bin_town_write_match(struct item_bin *ib, enum attr_type type, enum attr_type match, FILE *out);
 int item_bin_sort_file(char *in_file, char *out_file, struct rect *r, int *size);
 
 /* itembin_buffer.c */
+struct node_item *read_node_item(FILE *in);
 struct item_bin *read_item(FILE *in);
 struct item_bin *read_item_range(FILE *in, int *min, int *max);
 struct item_bin *init_item(enum item_type type);
@@ -203,8 +231,14 @@ extern int processed_nodes, processed_nodes_out, processed_ways, processed_relat
 extern struct item_bin *item_bin;
 extern int bytes_read;
 extern int overlap;
+extern int experimental;
+extern int use_global_fixed_country_id;
+extern int global_fixed_country_id;
+extern int unknown_country;
 void sig_alrm(int sig);
 void sig_alrm_end(void);
+extern int border_only_map;
+extern int coastline_only_map;
 
 /* misc.c */
 extern struct rect world_bbox;
@@ -228,36 +262,65 @@ void cat(FILE *in, FILE *out);
 /* osm.c */
 typedef long int osmid;
 
+struct maptool_osm {
+        FILE *boundaries;
+        FILE *turn_restrictions;
+        FILE *nodes;
+        FILE *ways;
+        FILE *line2poi;
+        FILE *poly2poi;
+        FILE *towns;
+};
+
+
+void osm_warning(char *type, long long id, int cont, char *fmt, ...);
 void osm_add_tag(char *k, char *v);
 void osm_add_node(osmid id, double lat, double lon);
 void osm_add_way(osmid id);
 void osm_add_relation(osmid id);
-void osm_end_relation(FILE *turn_restrictions, FILE *boundaries);
+void osm_end_relation(struct maptool_osm *osm);
 void osm_add_member(int type, osmid ref, char *role);
-void osm_end_way(FILE *out);
-void osm_end_node(FILE *out);
+void osm_end_way(struct maptool_osm *osm);
+void osm_end_node(struct maptool_osm *osm);
 void osm_add_nd(osmid ref);
 long long item_bin_get_id(struct item_bin *ib);
 void flush_nodes(int final);
 void sort_countries(int keep_tmpfiles);
 void process_turn_restrictions(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, FILE *out);
-int resolve_ways(FILE *in, FILE *out);
+void clear_node_item_buffer(void);
+void ref_ways(FILE *in);
+void resolve_ways(FILE *in, FILE *out);
+long long item_bin_get_nodeid(struct item_bin *ib);
+long long item_bin_get_wayid(struct item_bin *ib);
+long long item_bin_get_relationid(struct item_bin *ib);
+FILE *resolve_ways_file(FILE *in, char *suffix, char *filename);
+void process_way2poi(FILE *in, FILE *out, int type);
 int map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph, FILE *out_coastline, int final);
 void write_countrydir(struct zip_info *zip_info);
+void osm_process_towns(FILE *in, FILE *boundaries, FILE *ways);
+void load_countries(void);
 void remove_countryfiles(void);
+struct country_table * country_from_iso2(char *iso);
 void osm_init(FILE*);
 
 /* osm_psql.c */
-int map_collect_data_osm_db(char *dbstr, FILE *out_ways, FILE *out_nodes, FILE *out_turn_restrictions, FILE *out_boundaries);
+int map_collect_data_osm_db(char *dbstr, struct maptool_osm *osm);
 
 /* osm_protobuf.c */
-int map_collect_data_osm_protobuf(FILE *in, FILE *out_ways, FILE *out_nodes, FILE *out_turn_restrictions, FILE *out_boundaries);
+int map_collect_data_osm_protobuf(FILE *in, struct maptool_osm *osm);
 int osm_protobufdb_load(FILE *in, char *dir);
+
+
+/* osm_relations.c */
+struct relations * relations_new(void);
+struct relations_func *relations_func_new(void (*func)(void *func_priv, void *relation_priv, struct item_bin *member, void *member_priv), void *func_priv);
+void relations_add_func(struct relations *rel, struct relations_func *func, void *relation_priv, void *member_priv, int type, osmid id);
+void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *relations);
 
 /* osm_xml.c */
 int osm_xml_get_attribute(char *xml, char *attribute, char *buffer, int buffer_size);
 void osm_xml_decode_entities(char *buffer);
-int map_collect_data_osm(FILE *in, FILE *out_ways, FILE *out_nodes, FILE *out_turn_restrictions, FILE *out_boundaries);
+int map_collect_data_osm(FILE *in, struct maptool_osm *osm);
 
 
 /* sourcesink.c */

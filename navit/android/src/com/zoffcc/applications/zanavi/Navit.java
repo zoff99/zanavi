@@ -69,6 +69,9 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
 import android.content.ActivityNotFoundException;
@@ -120,9 +123,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -142,12 +145,16 @@ import de.oberoner.gpx2navit_txt.MainFrame;
 
 public class Navit extends Activity implements Handler.Callback, SensorEventListener
 {
-	public static final String VERSION_TEXT_LONG_INC_REV = "1586";
+	public static final String VERSION_TEXT_LONG_INC_REV = "1670";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
 	public static String NavitAppVersion_string = "0";
 	public final Boolean NAVIT_IS_EMULATOR = false; // when running on emulator set to true!!
 	public static boolean has_hw_menu_button = false;
+
+	static long NAVIT_START_INTENT_DRIVE_HOME = 1L;
+
+	public static Intent ZANaviMapDownloaderServiceIntent = null;
 
 	TextToSpeech mTts = null;
 
@@ -306,7 +313,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		 */
 		private static final long serialVersionUID = 6899215049749155051L;
 		String point_name = "";
-		String addon = null;
+		String addon = null; // null -> normal, "1" -> home location
 		float lat = 0.0f;
 		float lon = 0.0f;
 	}
@@ -370,7 +377,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	// public static Vibrator vibrator = null;
 
 	public Handler handler;
-	private PowerManager.WakeLock wl;
+	static PowerManager.WakeLock wl;
+	static PowerManager.WakeLock wl_cpu;
 	private NavitActivityResult ActivityResults[];
 	public static InputMethodManager mgr = null;
 	public static DisplayMetrics metrics = null;
@@ -656,7 +664,20 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		//			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().detectLeakedClosableObjects().penaltyLog().penaltyDeath().build());
 		//		}
 
+		Log.e("Navit", "OnCreate");
+
 		super.onCreate(savedInstanceState);
+
+		// init cancel dialog!! ----------
+		// init cancel dialog!! ----------
+		Message msg2 = new Message();
+		Bundle b2 = new Bundle();
+		b2.putString("text", "");
+		msg2.what = 0;
+		msg2.setData(b2);
+		ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg2);
+		// init cancel dialog!! ----------
+		// init cancel dialog!! ----------
 
 		app_window = getWindow();
 
@@ -693,6 +714,12 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		asset_mgr = getAssets();
 
 		getBaseContext_ = getBaseContext();
+
+		// ----- service -----
+		// ----- service -----
+		ZANaviMapDownloaderServiceIntent = new Intent(Navit.getBaseContext_, ZANaviMapDownloaderService.class);
+		// ----- service -----
+		// ----- service -----
 
 		System.out.println("Navit:onCreate:JTHREAD ID=" + Thread.currentThread().getId());
 		System.out.println("Navit:onCreate:THREAD ID=" + NavitGraphics.GetThreadId());
@@ -742,6 +769,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Navit.startup_intent_timestamp = System.currentTimeMillis();
 		Log.e("Navit", "**1**A " + startup_intent.getAction());
 		Log.e("Navit", "**1**D " + startup_intent.getDataString());
+		Log.e("Navit", "**1**S " + startup_intent.toString());
 
 		startup_status = Navit_Status_NORMAL_STARTUP;
 
@@ -883,7 +911,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			{
 				System.out.println("##bonus 001##");
 				Navit_DonateVersion_Installed = true;
-				NavitMapDownloader.MULTI_NUM_THREADS = 3;
+				NavitMapDownloader.MULTI_NUM_THREADS = NavitMapDownloader.MULTI_NUM_THREADS_MAX;
 			}
 		}
 		catch (NameNotFoundException e)
@@ -907,7 +935,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				System.out.println("##bonus 002##");
 				Navit_DonateVersion_Installed = true;
 				Navit_Largemap_DonateVersion_Installed = true;
-				NavitMapDownloader.MULTI_NUM_THREADS = 3;
+				NavitMapDownloader.MULTI_NUM_THREADS = NavitMapDownloader.MULTI_NUM_THREADS_MAX;
 			}
 		}
 		catch (NameNotFoundException e)
@@ -1358,7 +1386,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			{
 				message.setLayoutParams(rlp);
 				// upgrade message
-				String upgrade_summary = "\n\n*************\n";
+				String upgrade_summary = "\n\n***********\n";
 				// upgrade message
 				final SpannableString s = new SpannableString("\n" + "ZANavi " + NavitAppVersion_string + "\n\n" + "upgraded" + upgrade_summary);
 				Linkify.addLinks(s, Linkify.WEB_URLS);
@@ -1457,14 +1485,24 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			e.printStackTrace();
 		}
 
+		PowerManager pm = null;
 		try
 		{
-			PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+			pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			// -- // pm.wakeUp(SystemClock.uptimeMillis()); // -- //
 			// **screen always full on** // wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
 			// **screen can go off, cpu will stay on** // wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
 
 			// this works so far, lets the screen dim, but it cpu and screen stays on
-			wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
+			wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "NavitDoNotDimScreen");
 		}
 		catch (Exception e)
 		{
@@ -1474,15 +1512,33 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 		try
 		{
-			if (wl != null)
-			{
-				wl.acquire();
-			}
+			wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ZANaviNeedCpu");
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			wl_cpu = null;
 		}
+
+		//		try
+		//		{
+		//			if (wl != null)
+		//			{
+		//				try
+		//				{
+		//					wl.release();
+		//				}
+		//				catch (Exception e2)
+		//				{
+		//				}
+		//				wl.acquire();
+		//				Log.e("Navit", "WakeLock: acquire 1");
+		//			}
+		//		}
+		//		catch (Exception e)
+		//		{
+		//			e.printStackTrace();
+		//		}
 
 		// -- extract overview maps --
 		// -- extract overview maps --
@@ -1935,6 +1991,69 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		}
 	}
 
+	protected void onNewIntent(Intent intent)
+	{
+		super.onNewIntent(intent);
+
+		Log.e("Navit", "3:**1**A " + intent.getAction());
+		Log.e("Navit", "3:**1**D " + intent.getDataString());
+		Log.e("Navit", "3:**1**S " + intent.toString());
+
+		if (Navit.startup_intent == null)
+		{
+			try
+			{
+				// make a copy of the given intent object
+				Navit.startup_intent = intent.cloneFilter();
+				Bundle extras2 = intent.getExtras();
+				Navit.startup_intent.putExtras(extras2);
+
+				// hack! remeber timstamp, and only allow 4 secs. later in onResume to set target!
+				Navit.startup_intent_timestamp = System.currentTimeMillis();
+				Log.e("Navit", "3a:**1**A " + startup_intent.getAction());
+				Log.e("Navit", "3a:**1**D " + startup_intent.getDataString());
+				Log.e("Navit", "3a:**1**S " + startup_intent.toString());
+				if (extras2 != null)
+				{
+					long l = extras2.getLong("ZANAVI_INTENT_type");
+					if (l != 0L)
+					{
+						// Log.e("Navit", "2:**1** started via drive home");
+						// we have been called from "drive home" widget
+					}
+					else
+					{
+						if (startup_intent.getDataString() != null)
+						{
+							// we have a "geo:" thingy intent, use it
+						}
+						else
+						{
+							Navit.startup_intent = null;
+						}
+					}
+				}
+				else
+				{
+					if (startup_intent.getDataString() != null)
+					{
+						// we have a "geo:" thingy intent, use it
+					}
+					else
+					{
+						Navit.startup_intent = null;
+					}
+				}
+			}
+			catch (Exception e99)
+			{
+				Navit.startup_intent = null;
+			}
+
+		}
+
+	}
+
 	@Override
 	public void onStart()
 	{
@@ -2051,7 +2170,15 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		{
 			if (wl != null)
 			{
+				//				try
+				//				{
+				//					wl.release();
+				//				}
+				//				catch (Exception e2)
+				//				{
+				//				}
 				wl.acquire();
+				Log.e("Navit", "WakeLock: acquire 2");
 			}
 		}
 		catch (Exception e)
@@ -2080,7 +2207,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 
 					// Do whatever you want here
 
-					// If tou want to close the dialog, uncomment the line below
+					// If you want to close the dialog, uncomment the line below
 					//dialog.dismiss();
 				}
 			}
@@ -2108,413 +2235,564 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		}
 
 		String intent_data = null;
-		if (startup_intent != null)
+		try
 		{
-			if (System.currentTimeMillis() <= Navit.startup_intent_timestamp + 4000L)
-			{
-				Log.e("Navit", "**2**A " + startup_intent.getAction());
-				Log.e("Navit", "**2**D " + startup_intent.getDataString());
-				intent_data = startup_intent.getDataString();
-				// we consumed the intent, so reset timestamp value to avoid double consuming of event
-				Navit.startup_intent_timestamp = 0L;
-			}
-			else
-			{
-				Log.e("Navit", "timestamp for navigate_to expired! not using data");
-			}
-		}
 
-		if ((intent_data != null) && ((intent_data.substring(0, 18).equals("google.navigation:")) || (intent_data.substring(0, 23).equals("http://maps.google.com/")) || (intent_data.substring(0, 24).equals("https://maps.google.com/"))))
-		{
-			// better use regex later, but for now to test this feature its ok :-)
-			// better use regex later, but for now to test this feature its ok :-)
-
-			// g: google.navigation:///?ll=49.4086,17.4855&entry=w&opt=
-			// d: google.navigation:q=blabla-strasse # (this happens when you are offline, or from contacts)
-			// b: google.navigation:q=48.25676,16.643
-			// a: google.navigation:ll=48.25676,16.643&q=blabla-strasse
-			// e: google.navigation:ll=48.25676,16.643&title=blabla-strasse
-			//    sample: -> google.navigation:ll=48.026096,16.023993&title=N%C3%B6stach+43%2C+2571+N%C3%B6stach&entry=w
-			//            -> google.navigation:ll=48.014413,16.005579&title=Hainfelder+Stra%C3%9Fe+44%2C+2571%2C+Austria&entry=w
-			// f: google.navigation:ll=48.25676,16.643&...
-			// c: google.navigation:ll=48.25676,16.643
-			// h: http://maps.google.com/?q=48.222210,16.387058&z=16
-			// i: https://maps.google.com/?q=48.222210,16.387058&z=16
-			// i:,h: https://maps.google.com/maps/place?ftid=0x476d07075e933fc5:0xccbeba7fe1e3dd36&q=48.222210,16.387058&ui=maps_mini
-
-			String lat;
-			String lon;
-			String q;
-
-			String temp1 = null;
-			String temp2 = null;
-			String temp3 = null;
-			boolean parsable = false;
-			boolean unparsable_info_box = true;
-			try
+			int type = 1; // default = assume it's a map coords intent
+			Bundle extras = startup_intent.getExtras();
+			if (extras != null)
 			{
-				intent_data = java.net.URLDecoder.decode(intent_data, "UTF-8");
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
+				long l = extras.getLong("ZANAVI_INTENT_type");
+				if (l != 0L)
+				{
+					if (l == Navit.NAVIT_START_INTENT_DRIVE_HOME)
+					{
+						type = 2; // call from drive-home-widget
+					}
+					// ok, now remove that key
+					extras.remove("ZANAVI_INTENT_type");
+					startup_intent.replaceExtras((Bundle) null);
+				}
 			}
 
-			// DEBUG
-			// DEBUG
-			// DEBUG
-			// intent_data = "google.navigation:q=Wien Burggasse 27";
-			// intent_data = "google.navigation:q=48.25676,16.643";
-			// intent_data = "google.navigation:ll=48.25676,16.643&q=blabla-strasse";
-			// intent_data = "google.navigation:ll=48.25676,16.643";
-			// DEBUG
-			// DEBUG
-			// DEBUG
-
-			try
+			// ------------------------  BIG LOOP  ------------------------
+			// ------------------------  BIG LOOP  ------------------------
+			if (type == 2)
 			{
-				Log.e("Navit", "found DEBUG 1: " + intent_data.substring(0, 20));
-				Log.e("Navit", "found DEBUG 2: " + intent_data.substring(20, 22));
-				Log.e("Navit", "found DEBUG 3: " + intent_data.substring(20, 21));
-				Log.e("Navit", "found DEBUG 4: " + intent_data.split("&").length);
-				Log.e("Navit", "found DEBUG 4.1: yy" + intent_data.split("&")[1].substring(0, 1).toLowerCase() + "yy");
-				Log.e("Navit", "found DEBUG 5: xx" + intent_data.split("&")[1] + "xx");
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+				// drive home
 
-			if (!Navit.NavitStartupAlreadySearching)
-			{
-				if (intent_data.length() > 19)
-				{
-					// if h: then show target
-					if (intent_data.substring(0, 23).equals("http://maps.google.com/"))
-					{
-						Uri uri = Uri.parse(intent_data);
-						Log.e("Navit", "target found (h): " + uri.getQueryParameter("q"));
-						parsable = true;
-						intent_data = "google.navigation:ll=" + uri.getQueryParameter("q") + "&q=Target";
-					}
-					// if i: then show target
-					else if (intent_data.substring(0, 24).equals("https://maps.google.com/"))
-					{
-						Uri uri = Uri.parse(intent_data);
-						Log.e("Navit", "target found (i): " + uri.getQueryParameter("q"));
-						parsable = true;
-						intent_data = "google.navigation:ll=" + uri.getQueryParameter("q") + "&q=Target";
-					}
-					// if d: then start target search
-					else if ((intent_data.substring(0, 20).equals("google.navigation:q=")) && ((!intent_data.substring(20, 21).equals('+')) && (!intent_data.substring(20, 21).equals('-')) && (!intent_data.substring(20, 22).matches("[0-9][0-9]"))))
-					{
-						Log.e("Navit", "target found (d): " + intent_data.split("q=", -1)[1]);
-						Navit.NavitStartupAlreadySearching = true;
-						start_targetsearch_from_intent(intent_data.split("q=", -1)[1]);
-						// dont use this here, already starting search, so set to "false"
-						parsable = false;
-						unparsable_info_box = false;
-					}
-					// if b: then remodel the input string to look like a:
-					else if (intent_data.substring(0, 20).equals("google.navigation:q="))
-					{
-						intent_data = "ll=" + intent_data.split("q=", -1)[1] + "&q=Target";
-						Log.e("Navit", "target found (b): " + intent_data);
-						parsable = true;
-					}
-					// if g: [google.navigation:///?ll=49.4086,17.4855&...] then remodel the input string to look like a:
-					else if (intent_data.substring(0, 25).equals("google.navigation:///?ll="))
-					{
-						intent_data = "google.navigation:ll=" + intent_data.split("ll=", -1)[1].split("&", -1)[0] + "&q=Target";
-						Log.e("Navit", "target found (g): " + intent_data);
-						parsable = true;
-					}
-					// if e: then remodel the input string to look like a:
-					else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&").length > 1) && (intent_data.split("&")[1].substring(0, 1).toLowerCase().equals("f")))
-					{
-						int idx = intent_data.indexOf("&");
-						intent_data = intent_data.substring(0, idx) + "&q=Target";
-						Log.e("Navit", "target found (e): " + intent_data);
-						parsable = true;
-					}
-					// if f: then remodel the input string to look like a:
-					else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&").length > 1))
-					{
-						int idx = intent_data.indexOf("&");
-						intent_data = intent_data.substring(0, idx) + "&q=Target";
-						Log.e("Navit", "target found (f): " + intent_data);
-						parsable = true;
-					}
-					// already looks like a: just set flag
-					else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&q=").length > 1))
-					{
-						// dummy, just set the flag
-						Log.e("Navit", "target found (a): " + intent_data);
-						Log.e("Navit", "target found (a): " + intent_data.split("&q=").length);
-						parsable = true;
-					}
-					// if c: then remodel the input string to look like a:
-					else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&q=").length < 2))
-					{
+				// check if we have a home location
+				int home_id = find_home_point();
 
-						intent_data = intent_data + "&q=Target";
-						Log.e("Navit", "target found (c): " + intent_data);
-						parsable = true;
-					}
-				}
-			}
-			else
-			{
-				Log.e("Navit", "already started search from startup intent");
-				parsable = false;
-				unparsable_info_box = false;
-			}
+				if (home_id != -1)
+				{
+					Message msg7 = progress_handler.obtainMessage();
+					Bundle b7 = new Bundle();
+					msg7.what = 3; // long Toast message
+					b7.putString("text", Navit.get_text("driving to Home Location")); //TRANS
+					msg7.setData(b7);
+					progress_handler.sendMessage(msg7);
 
-			if (parsable)
-			{
-				// now string should be in form --> a:
-				// now split the parts off
-				temp1 = intent_data.split("&q=", -1)[0];
-				try
-				{
-					temp3 = temp1.split("ll=", -1)[1];
-					temp2 = intent_data.split("&q=", -1)[1];
-				}
-				catch (Exception e)
-				{
-					// java.lang.ArrayIndexOutOfBoundsException most likely
-					// so let's assume we dont have '&q=xxxx'
-					temp3 = temp1;
-				}
+					// clear any previous destinations
+					Message msg2 = new Message();
+					Bundle b2 = new Bundle();
+					b2.putInt("Callback", 7);
+					msg2.setData(b2);
+					N_NavitGraphics.callback_handler.sendMessage(msg2);
 
-				if (temp2 == null)
-				{
-					// use some default name
-					temp2 = "Target";
-				}
+					// set position to middle of screen -----------------------
+					// set position to middle of screen -----------------------
+					// set position to middle of screen -----------------------
+					Message msg67 = new Message();
+					Bundle b67 = new Bundle();
+					b67.putInt("Callback", 51);
+					b67.putInt("x", (int) (NavitGraphics.Global_dpi_factor * Navit.NG__map_main.view.getWidth() / 2));
+					b67.putInt("y", (int) (NavitGraphics.Global_dpi_factor * Navit.NG__map_main.view.getHeight() / 2));
+					msg67.setData(b67);
+					N_NavitGraphics.callback_handler.sendMessage(msg67);
+					// set position to middle of screen -----------------------
+					// set position to middle of screen -----------------------
+					// set position to middle of screen -----------------------
 
-				lat = temp3.split(",", -1)[0];
-				lon = temp3.split(",", -1)[1];
-				q = temp2;
-				// is the "search name" url-encoded? i think so, lets url-decode it here
-				q = URLDecoder.decode(q);
-				// System.out.println();
-
-				Navit.remember_destination(q, lat, lon);
-				Navit.destination_set();
-
-				Message msg = new Message();
-				Bundle b = new Bundle();
-				b.putInt("Callback", 3);
-				b.putString("lat", lat);
-				b.putString("lon", lon);
-				b.putString("q", q);
-				msg.setData(b);
-				N_NavitGraphics.callback_handler.sendMessage(msg);
-
-				// zoom_to_route();
-				try
-				{
-					Thread.sleep(400);
-				}
-				catch (InterruptedException e)
-				{
-				}
-
-				try
-				{
-					show_geo_on_screen(Float.parseFloat(lat), Float.parseFloat(lon));
-				}
-				catch (Exception e2)
-				{
-					e2.printStackTrace();
-				}
-
-				try
-				{
-					Navit.follow_button_on();
-				}
-				catch (Exception e2)
-
-				{
-					e2.printStackTrace();
-				}
-			}
-			else
-			{
-				if (unparsable_info_box && !searchBoxShown)
-				{
 					try
 					{
-						searchBoxShown = true;
-						String searchString = intent_data.split("q=")[1];
-						searchString = searchString.split("&")[0];
-						searchString = URLDecoder.decode(searchString); // decode the URL: e.g. %20 -> space
-						Log.e("Navit", "Search String :" + searchString);
-						executeSearch(searchString);
+						Thread.sleep(600); // sleep 0.6 second
 					}
 					catch (Exception e)
 					{
-						// safety net
-						try
-						{
-							Log.e("Navit", "problem with startup search 7 str=" + intent_data);
-						}
-						catch (Exception e2)
-						{
-							e2.printStackTrace();
-						}
 					}
-				}
-			}
-		}
-		else if ((intent_data != null) && (intent_data.substring(0, 10).equals("geo:0,0?q=")))
-		{
-			// g: geo:0,0?q=wien%20burggasse
 
-			boolean parsable = false;
-			boolean unparsable_info_box = true;
-			try
-			{
-				intent_data = java.net.URLDecoder.decode(intent_data, "UTF-8");
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
+					Navit.destination_set();
 
-			}
+					// set destination to home location
+					String lat = String.valueOf(map_points.get(home_id).lat);
+					String lon = String.valueOf(map_points.get(home_id).lon);
+					String q = map_points.get(home_id).point_name;
 
-			if (!Navit.NavitStartupAlreadySearching)
-			{
-				if (intent_data.length() > 10)
-				{
-					// if g: then start target search
-					Log.e("Navit", "target found (g): " + intent_data.split("q=", -1)[1]);
-					Navit.NavitStartupAlreadySearching = true;
-					start_targetsearch_from_intent(intent_data.split("q=", -1)[1]);
-					// dont use this here, already starting search, so set to "false"
-					parsable = false;
-					unparsable_info_box = false;
-				}
-			}
-			else
-			{
-				Log.e("Navit", "already started search from startup intent");
-				parsable = false;
-				unparsable_info_box = false;
-			}
+					// System.out.println("lat=" + lat + " lon=" + lon + " name=" + q);
 
-			if (unparsable_info_box && !searchBoxShown)
-			{
-				try
-				{
-					searchBoxShown = true;
-					String searchString = intent_data.split("q=")[1];
-					searchString = searchString.split("&")[0];
-					searchString = URLDecoder.decode(searchString); // decode the URL: e.g. %20 -> space
-					Log.e("Navit", "Search String :" + searchString);
-					executeSearch(searchString);
-				}
-				catch (Exception e)
-				{
-					// safety net
+					Message msg55 = new Message();
+					Bundle b55 = new Bundle();
+					b55.putInt("Callback", 3);
+					b55.putString("lat", lat);
+					b55.putString("lon", lon);
+					b55.putString("q", q);
+					msg55.setData(b55);
+					N_NavitGraphics.callback_handler.sendMessage(msg55);
+
+					// zoom_to_route();	
+
+					//					try
+					//					{
+					//						show_geo_on_screen(Float.parseFloat(lat), Float.parseFloat(lon));
+					//					}
+					//					catch (Exception e2)
+					//					{
+					//						e2.printStackTrace();
+					//					}
+
 					try
 					{
-						Log.e("Navit", "problem with startup search 88 str=" + intent_data);
+						Navit.follow_button_on();
 					}
 					catch (Exception e2)
 					{
 						e2.printStackTrace();
 					}
 				}
-			}
-
-		}
-		else if ((intent_data != null) && (intent_data.substring(0, 4).equals("geo:")))
-		{
-			// g: geo:16.8,46.3?z=15
-
-			boolean parsable = false;
-			boolean unparsable_info_box = true;
-
-			String tmp1;
-			String tmp2;
-			String tmp3;
-			float lat1 = 0;
-			float lon1 = 0;
-			int zoom1 = 15;
-
-			try
-			{
-				intent_data = java.net.URLDecoder.decode(intent_data, "UTF-8");
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
-			}
-
-			if (!Navit.NavitStartupAlreadySearching)
-			{
-				try
+				else
 				{
-					tmp1 = intent_data.split(":", 2)[1];
-					tmp2 = tmp1.split("\\?", 2)[0];
-					tmp3 = tmp1.split("\\?", 2)[1];
-					lat1 = Float.parseFloat(tmp2.split(",", 2)[0]);
-					lon1 = Float.parseFloat(tmp2.split(",", 2)[1]);
-					zoom1 = Integer.parseInt(tmp3.split("z=", 2)[1]);
-					parsable = true;
-				}
-				catch (Exception e4)
-				{
-					e4.printStackTrace();
+					// no home location set
+					Message msg = progress_handler.obtainMessage();
+					Bundle b = new Bundle();
+					msg.what = 3; // long Toast message
+					b.putString("text", Navit.get_text("No Home Location set")); //TRANS
+					msg.setData(b);
+					progress_handler.sendMessage(msg);
 				}
 			}
-
-			if (parsable)
+			else if (type == 1)
 			{
-				// geo: intent -> only show destination on map!
-
-				// set zoomlevel before we show destination
-				int zoom_want = zoom1;
-				//
-				Message msg = new Message();
-				Bundle b = new Bundle();
-				b.putInt("Callback", 33);
-				b.putString("s", Integer.toString(zoom_want));
-				msg.setData(b);
-				try
+				if (startup_intent != null)
 				{
-					N_NavitGraphics.callback_handler.sendMessage(msg);
-					Navit.GlobalScaleLevel = Navit_SHOW_DEST_ON_MAP_ZOOMLEVEL;
-					if ((zoom_want > 8) && (zoom_want < 17))
+					if (System.currentTimeMillis() <= Navit.startup_intent_timestamp + 4000L)
 					{
-						Navit.GlobalScaleLevel = (int) (Math.pow(2, (18 - zoom_want)));
-						System.out.println("GlobalScaleLevel=" + Navit.GlobalScaleLevel);
+						Log.e("Navit", "**2**A " + startup_intent.getAction());
+						Log.e("Navit", "**2**D " + startup_intent.getDataString());
+						intent_data = startup_intent.getDataString();
+						// we consumed the intent, so reset timestamp value to avoid double consuming of event
+						Navit.startup_intent_timestamp = 0L;
+
+						if (intent_data != null)
+						{
+							// set position to middle of screen -----------------------
+							// set position to middle of screen -----------------------
+							// set position to middle of screen -----------------------
+							Message msg67 = new Message();
+							Bundle b67 = new Bundle();
+							b67.putInt("Callback", 51);
+							b67.putInt("x", (int) (NavitGraphics.Global_dpi_factor * Navit.NG__map_main.view.getWidth() / 2));
+							b67.putInt("y", (int) (NavitGraphics.Global_dpi_factor * Navit.NG__map_main.view.getHeight() / 2));
+							msg67.setData(b67);
+							N_NavitGraphics.callback_handler.sendMessage(msg67);
+							// set position to middle of screen -----------------------
+							// set position to middle of screen -----------------------
+							// set position to middle of screen -----------------------
+						}
+					}
+					else
+					{
+						Log.e("Navit", "timestamp for navigate_to expired! not using data");
 					}
 				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-				if (PREF_save_zoomlevel)
-				{
-					setPrefs_zoomlevel();
-				}
-				// set nice zoomlevel before we show destination
 
-				try
+				if ((intent_data != null) && ((intent_data.substring(0, 18).equals("google.navigation:")) || (intent_data.substring(0, 23).equals("http://maps.google.com/")) || (intent_data.substring(0, 24).equals("https://maps.google.com/"))))
 				{
-					Navit.follow_button_off();
-				}
-				catch (Exception e2)
-				{
-					e2.printStackTrace();
-				}
+					// better use regex later, but for now to test this feature its ok :-)
+					// better use regex later, but for now to test this feature its ok :-)
 
-				show_geo_on_screen(lat1, lon1);
+					// g: google.navigation:///?ll=49.4086,17.4855&entry=w&opt=
+					// d: google.navigation:q=blabla-strasse # (this happens when you are offline, or from contacts)
+					// b: google.navigation:q=48.25676,16.643
+					// a: google.navigation:ll=48.25676,16.643&q=blabla-strasse
+					// e: google.navigation:ll=48.25676,16.643&title=blabla-strasse
+					//    sample: -> google.navigation:ll=48.026096,16.023993&title=N%C3%B6stach+43%2C+2571+N%C3%B6stach&entry=w
+					//            -> google.navigation:ll=48.014413,16.005579&title=Hainfelder+Stra%C3%9Fe+44%2C+2571%2C+Austria&entry=w
+					// f: google.navigation:ll=48.25676,16.643&...
+					// c: google.navigation:ll=48.25676,16.643
+					// h: http://maps.google.com/?q=48.222210,16.387058&z=16
+					// i: https://maps.google.com/?q=48.222210,16.387058&z=16
+					// i:,h: https://maps.google.com/maps/place?ftid=0x476d07075e933fc5:0xccbeba7fe1e3dd36&q=48.222210,16.387058&ui=maps_mini
+					//
+					// ??!!new??!!: http://maps.google.com/?cid=10549738100504591748&hl=en&gl=gb
+
+					String lat;
+					String lon;
+					String q;
+
+					String temp1 = null;
+					String temp2 = null;
+					String temp3 = null;
+					boolean parsable = false;
+					boolean unparsable_info_box = true;
+					try
+					{
+						intent_data = java.net.URLDecoder.decode(intent_data, "UTF-8");
+					}
+					catch (Exception e1)
+					{
+						e1.printStackTrace();
+					}
+
+					// DEBUG
+					// DEBUG
+					// DEBUG
+					// intent_data = "google.navigation:q=Wien Burggasse 27";
+					// intent_data = "google.navigation:q=48.25676,16.643";
+					// intent_data = "google.navigation:ll=48.25676,16.643&q=blabla-strasse";
+					// intent_data = "google.navigation:ll=48.25676,16.643";
+					// DEBUG
+					// DEBUG
+					// DEBUG
+
+					try
+					{
+						Log.e("Navit", "found DEBUG 1: " + intent_data.substring(0, 20));
+						Log.e("Navit", "found DEBUG 2: " + intent_data.substring(20, 22));
+						Log.e("Navit", "found DEBUG 3: " + intent_data.substring(20, 21));
+						Log.e("Navit", "found DEBUG 4: " + intent_data.split("&").length);
+						Log.e("Navit", "found DEBUG 4.1: yy" + intent_data.split("&")[1].substring(0, 1).toLowerCase() + "yy");
+						Log.e("Navit", "found DEBUG 5: xx" + intent_data.split("&")[1] + "xx");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+
+					if (!Navit.NavitStartupAlreadySearching)
+					{
+						if (intent_data.length() > 19)
+						{
+							// if h: then show target
+							if (intent_data.substring(0, 23).equals("http://maps.google.com/"))
+							{
+								Uri uri = Uri.parse(intent_data);
+								Log.e("Navit", "target found (h): " + uri.getQueryParameter("q"));
+								parsable = true;
+								intent_data = "google.navigation:ll=" + uri.getQueryParameter("q") + "&q=Target";
+							}
+							// if i: then show target
+							else if (intent_data.substring(0, 24).equals("https://maps.google.com/"))
+							{
+								Uri uri = Uri.parse(intent_data);
+								Log.e("Navit", "target found (i): " + uri.getQueryParameter("q"));
+								parsable = true;
+								intent_data = "google.navigation:ll=" + uri.getQueryParameter("q") + "&q=Target";
+							}
+							// if d: then start target search
+							else if ((intent_data.substring(0, 20).equals("google.navigation:q=")) && ((!intent_data.substring(20, 21).equals('+')) && (!intent_data.substring(20, 21).equals('-')) && (!intent_data.substring(20, 22).matches("[0-9][0-9]"))))
+							{
+								Log.e("Navit", "target found (d): " + intent_data.split("q=", -1)[1]);
+								Navit.NavitStartupAlreadySearching = true;
+								start_targetsearch_from_intent(intent_data.split("q=", -1)[1]);
+								// dont use this here, already starting search, so set to "false"
+								parsable = false;
+								unparsable_info_box = false;
+							}
+							// if b: then remodel the input string to look like a:
+							else if (intent_data.substring(0, 20).equals("google.navigation:q="))
+							{
+								intent_data = "ll=" + intent_data.split("q=", -1)[1] + "&q=Target";
+								Log.e("Navit", "target found (b): " + intent_data);
+								parsable = true;
+							}
+							// if g: [google.navigation:///?ll=49.4086,17.4855&...] then remodel the input string to look like a:
+							else if (intent_data.substring(0, 25).equals("google.navigation:///?ll="))
+							{
+								intent_data = "google.navigation:ll=" + intent_data.split("ll=", -1)[1].split("&", -1)[0] + "&q=Target";
+								Log.e("Navit", "target found (g): " + intent_data);
+								parsable = true;
+							}
+							// if e: then remodel the input string to look like a:
+							else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&").length > 1) && (intent_data.split("&")[1].substring(0, 1).toLowerCase().equals("f")))
+							{
+								int idx = intent_data.indexOf("&");
+								intent_data = intent_data.substring(0, idx) + "&q=Target";
+								Log.e("Navit", "target found (e): " + intent_data);
+								parsable = true;
+							}
+							// if f: then remodel the input string to look like a:
+							else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&").length > 1))
+							{
+								int idx = intent_data.indexOf("&");
+								intent_data = intent_data.substring(0, idx) + "&q=Target";
+								Log.e("Navit", "target found (f): " + intent_data);
+								parsable = true;
+							}
+							// already looks like a: just set flag
+							else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&q=").length > 1))
+							{
+								// dummy, just set the flag
+								Log.e("Navit", "target found (a): " + intent_data);
+								Log.e("Navit", "target found (a): " + intent_data.split("&q=").length);
+								parsable = true;
+							}
+							// if c: then remodel the input string to look like a:
+							else if ((intent_data.substring(0, 21).equals("google.navigation:ll=")) && (intent_data.split("&q=").length < 2))
+							{
+
+								intent_data = intent_data + "&q=Target";
+								Log.e("Navit", "target found (c): " + intent_data);
+								parsable = true;
+							}
+						}
+					}
+					else
+					{
+						Log.e("Navit", "already started search from startup intent");
+						parsable = false;
+						unparsable_info_box = false;
+					}
+
+					if (parsable)
+					{
+						// now string should be in form --> a:
+						// now split the parts off
+						temp1 = intent_data.split("&q=", -1)[0];
+						try
+						{
+							temp3 = temp1.split("ll=", -1)[1];
+							temp2 = intent_data.split("&q=", -1)[1];
+						}
+						catch (Exception e)
+						{
+							// java.lang.ArrayIndexOutOfBoundsException most likely
+							// so let's assume we dont have '&q=xxxx'
+							temp3 = temp1;
+						}
+
+						if (temp2 == null)
+						{
+							// use some default name
+							temp2 = "Target";
+						}
+
+						lat = temp3.split(",", -1)[0];
+						lon = temp3.split(",", -1)[1];
+						q = temp2;
+						// is the "search name" url-encoded? i think so, lets url-decode it here
+						q = URLDecoder.decode(q);
+						// System.out.println();
+
+						Navit.remember_destination(q, lat, lon);
+						Navit.destination_set();
+
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 3);
+						b.putString("lat", lat);
+						b.putString("lon", lon);
+						b.putString("q", q);
+						msg.setData(b);
+						N_NavitGraphics.callback_handler.sendMessage(msg);
+
+						// zoom_to_route();
+						try
+						{
+							Thread.sleep(400);
+						}
+						catch (InterruptedException e)
+						{
+						}
+
+						try
+						{
+							show_geo_on_screen(Float.parseFloat(lat), Float.parseFloat(lon));
+						}
+						catch (Exception e2)
+						{
+							e2.printStackTrace();
+						}
+
+						try
+						{
+							Navit.follow_button_on();
+						}
+						catch (Exception e2)
+
+						{
+							e2.printStackTrace();
+						}
+					}
+					else
+					{
+						if (unparsable_info_box && !searchBoxShown)
+						{
+							try
+							{
+								searchBoxShown = true;
+								String searchString = intent_data.split("q=")[1];
+								searchString = searchString.split("&")[0];
+								searchString = URLDecoder.decode(searchString); // decode the URL: e.g. %20 -> space
+								Log.e("Navit", "Search String :" + searchString);
+								executeSearch(searchString);
+							}
+							catch (Exception e)
+							{
+								// safety net
+								try
+								{
+									Log.e("Navit", "problem with startup search 7 str=" + intent_data);
+								}
+								catch (Exception e2)
+								{
+									e2.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+				else if ((intent_data != null) && (intent_data.substring(0, 10).equals("geo:0,0?q=")))
+				{
+					// g: geo:0,0?q=wien%20burggasse
+
+					boolean parsable = false;
+					boolean unparsable_info_box = true;
+					try
+					{
+						intent_data = java.net.URLDecoder.decode(intent_data, "UTF-8");
+					}
+					catch (Exception e1)
+					{
+						e1.printStackTrace();
+
+					}
+
+					if (!Navit.NavitStartupAlreadySearching)
+					{
+						if (intent_data.length() > 10)
+						{
+							// if g: then start target search
+							Log.e("Navit", "target found (g): " + intent_data.split("q=", -1)[1]);
+							Navit.NavitStartupAlreadySearching = true;
+							start_targetsearch_from_intent(intent_data.split("q=", -1)[1]);
+							// dont use this here, already starting search, so set to "false"
+							parsable = false;
+							unparsable_info_box = false;
+						}
+					}
+					else
+					{
+						Log.e("Navit", "already started search from startup intent");
+						parsable = false;
+						unparsable_info_box = false;
+					}
+
+					if (unparsable_info_box && !searchBoxShown)
+					{
+						try
+						{
+							searchBoxShown = true;
+							String searchString = intent_data.split("q=")[1];
+							searchString = searchString.split("&")[0];
+							searchString = URLDecoder.decode(searchString); // decode the URL: e.g. %20 -> space
+							Log.e("Navit", "Search String :" + searchString);
+							executeSearch(searchString);
+						}
+						catch (Exception e)
+						{
+							// safety net
+							try
+							{
+								Log.e("Navit", "problem with startup search 88 str=" + intent_data);
+							}
+							catch (Exception e2)
+							{
+								e2.printStackTrace();
+							}
+						}
+					}
+
+				}
+				else if ((intent_data != null) && (intent_data.substring(0, 4).equals("geo:")))
+				{
+					// g: geo:16.8,46.3?z=15
+
+					boolean parsable = false;
+					boolean unparsable_info_box = true;
+
+					String tmp1;
+					String tmp2;
+					String tmp3;
+					float lat1 = 0;
+					float lon1 = 0;
+					int zoom1 = 15;
+
+					try
+					{
+						intent_data = java.net.URLDecoder.decode(intent_data, "UTF-8");
+					}
+					catch (Exception e1)
+					{
+						e1.printStackTrace();
+					}
+
+					if (!Navit.NavitStartupAlreadySearching)
+					{
+						try
+						{
+							tmp1 = intent_data.split(":", 2)[1];
+							tmp2 = tmp1.split("\\?", 2)[0];
+							tmp3 = tmp1.split("\\?", 2)[1];
+							lat1 = Float.parseFloat(tmp2.split(",", 2)[0]);
+							lon1 = Float.parseFloat(tmp2.split(",", 2)[1]);
+							zoom1 = Integer.parseInt(tmp3.split("z=", 2)[1]);
+							parsable = true;
+						}
+						catch (Exception e4)
+						{
+							e4.printStackTrace();
+						}
+					}
+
+					if (parsable)
+					{
+						// geo: intent -> only show destination on map!
+
+						// set zoomlevel before we show destination
+						int zoom_want = zoom1;
+						//
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 33);
+						b.putString("s", Integer.toString(zoom_want));
+						msg.setData(b);
+						try
+						{
+							N_NavitGraphics.callback_handler.sendMessage(msg);
+							Navit.GlobalScaleLevel = Navit_SHOW_DEST_ON_MAP_ZOOMLEVEL;
+							if ((zoom_want > 8) && (zoom_want < 17))
+							{
+								Navit.GlobalScaleLevel = (int) (Math.pow(2, (18 - zoom_want)));
+								System.out.println("GlobalScaleLevel=" + Navit.GlobalScaleLevel);
+							}
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+						if (PREF_save_zoomlevel)
+						{
+							setPrefs_zoomlevel();
+						}
+						// set nice zoomlevel before we show destination
+
+						try
+						{
+							Navit.follow_button_off();
+						}
+						catch (Exception e2)
+						{
+							e2.printStackTrace();
+						}
+
+						show_geo_on_screen(lat1, lon1);
+					}
+				}
 			}
+
+			// clear intent
+			startup_intent = null;
+			// ------------------------  BIG LOOP  ------------------------
+			// ------------------------  BIG LOOP  ------------------------
 		}
+		catch (Exception e)
+		{
+			// e.printStackTrace();
+		}
+
+		// clear intent
+		startup_intent = null;
 
 		// hold all map drawing -----------
 		Message msg = new Message();
@@ -2596,7 +2874,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 	@Override
 	public void onPause()
 	{
-		//System.out.println("@@ onPause @@");
+		// System.out.println("@@ onPause @@");
+		Log.e("Navit", "OnPause");
 		try
 		{
 			setPrefs_zoomlevel();
@@ -2684,7 +2963,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		NavitVehicle.turn_off_all_providers();
 		NavitVehicle.turn_off_sat_status();
 
-		Log.e("Navit", "OnPause");
+		// Log.e("Navit", "OnPause");
 		cwthr.NavitActivity2(-1);
 
 		Navit.show_mem_used();
@@ -2694,6 +2973,23 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			if (wl != null)
 			{
 				wl.release();
+				Log.e("Navit", "WakeLock: release 1");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (wl_cpu != null)
+			{
+				if (wl_cpu.isHeld())
+				{
+					wl_cpu.release();
+					Log.e("Navit", "WakeLock CPU: release 1");
+				}
 			}
 		}
 		catch (Exception e)
@@ -2760,6 +3056,20 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		{
 
 		}
+
+		// ----- service stop -----
+		// ----- service stop -----
+		System.out.println("Navit:onDestroy -> stop ZANaviMapDownloaderService ---------");
+		stopService(Navit.ZANaviMapDownloaderServiceIntent);
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e)
+		{
+		}
+		// ----- service stop -----
+		// ----- service stop -----
 
 		NavitActivity(-3);
 		Navit.show_mem_used();
@@ -3497,7 +3807,6 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			b = new Bundle();
 			b.putInt("Callback", 51);
 			b.putInt("x", (int) (NavitGraphics.Global_dpi_factor * Navit.NG__map_main.view.getWidth() / 2));
-
 			b.putInt("y", (int) (NavitGraphics.Global_dpi_factor * Navit.NG__map_main.view.getHeight() / 2));
 			msg.setData(b);
 			N_NavitGraphics.callback_handler.sendMessage(msg);
@@ -3693,7 +4002,23 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 						// show the map download progressbar, and download the map
 						if (Navit.download_map_id > -1)
 						{
-							showDialog(Navit.MAPDOWNLOAD_PRI_DIALOG);
+							// --------- start a map download (highest level) ---------
+							// --------- start a map download (highest level) ---------
+							// --------- start a map download (highest level) ---------
+							// showDialog(Navit.MAPDOWNLOAD_PRI_DIALOG); // old method in app
+
+							// new method in service
+							Message msg = progress_handler.obtainMessage();
+							Bundle b = new Bundle();
+							msg.what = 22;
+							progress_handler.sendMessage(msg);
+
+							// show license for OSM maps
+							//. TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
+							Toast.makeText(getApplicationContext(), Navit.get_text("Map data (c) OpenStreetMap contributors, CC-BY-SA"), Toast.LENGTH_LONG).show(); //TRANS
+							// --------- start a map download (highest level) ---------
+							// --------- start a map download (highest level) ---------
+							// --------- start a map download (highest level) ---------
 						}
 					}
 					catch (NumberFormatException e)
@@ -3712,37 +4037,37 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				e.printStackTrace();
 			}
 			break;
-		case Navit.NavitDownloaderSecSelectMap_id:
-			try
-			{
-				if (resultCode == Activity.RESULT_OK)
-				{
-					try
-					{
-						Log.d("Navit", "SEC id=" + Integer.parseInt(data.getStringExtra("selected_id")));
-						// set map id to download
-						Navit.download_map_id = NavitMapDownloader.OSM_MAP_NAME_ORIG_ID_LIST[Integer.parseInt(data.getStringExtra("selected_id"))];
-						// show the map download progressbar, and download the map
-						if (Navit.download_map_id > -1)
-						{
-							showDialog(Navit.MAPDOWNLOAD_SEC_DIALOG);
-						}
-					}
-					catch (NumberFormatException e)
-					{
-						Log.d("Navit", "NumberFormatException selected_id");
-					}
-				}
-				else
-				{
-					// user pressed back key
-				}
-			}
-			catch (Exception e)
-			{
-				Log.d("Navit", "error on onActivityResult");
-				e.printStackTrace();
-			}
+		case Navit.NavitDownloaderSecSelectMap_id: // unused!!! unused!!! unused!!! unused!!! unused!!!
+			//			try
+			//			{
+			//				if (resultCode == Activity.RESULT_OK)
+			//				{
+			//					try
+			//					{
+			//						Log.d("Navit", "SEC id=" + Integer.parseInt(data.getStringExtra("selected_id")));
+			//						// set map id to download
+			//						Navit.download_map_id = NavitMapDownloader.OSM_MAP_NAME_ORIG_ID_LIST[Integer.parseInt(data.getStringExtra("selected_id"))];
+			//						// show the map download progressbar, and download the map
+			//						if (Navit.download_map_id > -1)
+			//						{
+			//							showDialog(Navit.MAPDOWNLOAD_SEC_DIALOG);
+			//						}
+			//					}
+			//					catch (NumberFormatException e)
+			//					{
+			//						Log.d("Navit", "NumberFormatException selected_id");
+			//					}
+			//				}
+			//				else
+			//				{
+			//					// user pressed back key
+			//				}
+			//			}
+			//			catch (Exception e)
+			//			{
+			//				Log.d("Navit", "error on onActivityResult");
+			//				e.printStackTrace();
+			//			}
 			break;
 		case ZANaviVoiceInput_id:
 			if (resultCode == Activity.RESULT_OK)
@@ -5504,8 +5829,15 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				{
 					e.printStackTrace();
 				}
-				dismissDialog(msg.getData().getInt("dialog_num"));
-				removeDialog(msg.getData().getInt("dialog_num"));
+
+				try
+				{
+					dismissDialog(msg.getData().getInt("dialog_num"));
+					removeDialog(msg.getData().getInt("dialog_num"));
+				}
+				catch (Exception e)
+				{
+				}
 
 				// exit_code=0 -> OK, map was downloaded fine
 				if (msg.getData().getInt("exit_code") == 0)
@@ -5516,12 +5848,68 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					// **** onStop();
 					// **** onCreate(getIntent().getExtras());
 
+					String this_map_name = "map";
+					try
+					{
+						this_map_name = msg.getData().getString("map_name");
+					}
+					catch (Exception e)
+					{
+					}
+
 					// reload sdcard maps
 					Message msg2 = new Message();
 					Bundle b2 = new Bundle();
 					b2.putInt("Callback", 18);
 					msg2.setData(b2);
 					N_NavitGraphics.callback_handler.sendMessage(msg2);
+
+					// ----- service stop -----
+					// ----- service stop -----
+					Navit.getBaseContext_.stopService(Navit.ZANaviMapDownloaderServiceIntent);
+					// ----- service stop -----
+					// ----- service stop -----
+
+					try
+					{
+						// show notification that map is ready
+						String Notification_header = "ZANavi";
+						String Notification_text = this_map_name + " ready";
+
+						NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+						Notification notification = new Notification(R.drawable.icon, "ZANavi download finished", System.currentTimeMillis());
+						notification.flags = Notification.FLAG_AUTO_CANCEL;
+						Intent in = new Intent();
+						in.setClass(getBaseContext_, Navit.class);
+						in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						PendingIntent p_activity = PendingIntent.getActivity(getBaseContext_, 0, in, PendingIntent.FLAG_UPDATE_CURRENT);
+						notification.setLatestEventInfo(getBaseContext_, Notification_header, Notification_text, p_activity);
+
+						try
+						{
+							nm.notify(ZANaviMapDownloaderService.NOTIFICATION_ID__DUMMY2, notification);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+
+							try
+							{
+								p_activity = PendingIntent.getActivity(getBaseContext_, 0, in, PendingIntent.FLAG_UPDATE_CURRENT);
+
+								notification.setLatestEventInfo(getBaseContext_, Notification_header, Notification_text, p_activity);
+								nm.notify(ZANaviMapDownloaderService.NOTIFICATION_ID__DUMMY2, notification);
+							}
+							catch (Exception e2)
+							{
+								e2.printStackTrace();
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 
 					zoom_out_full();
 
@@ -5541,23 +5929,89 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 					//msg2.setData(b2);
 					//N_NavitGraphics.callback_handler.sendMessage(msg2);
 				}
+				else
+				{
+					// there was a problem downloading the map
+					// ----- service stop -----
+					// ----- service stop -----
+					Navit.getBaseContext_.stopService(Navit.ZANaviMapDownloaderServiceIntent);
+					// ----- service stop -----
+					// ----- service stop -----
+
+					String this_map_name = "map";
+					try
+					{
+						this_map_name = msg.getData().getString("map_name");
+					}
+					catch (Exception e)
+					{
+					}
+
+					try
+					{
+
+						// show notification that there was a download problem
+						String Notification_header = "ZANavi";
+						String Notification_text = "ERROR while downloading " + this_map_name;
+
+						NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+						Notification notification = new Notification(R.drawable.icon, "ZANavi download ERROR", System.currentTimeMillis());
+						notification.flags = Notification.FLAG_AUTO_CANCEL;
+						Intent in = new Intent();
+						in.setClass(getBaseContext_, Navit.class);
+						in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						PendingIntent p_activity = PendingIntent.getActivity(getBaseContext_, 0, in, PendingIntent.FLAG_UPDATE_CURRENT);
+						notification.setLatestEventInfo(getBaseContext_, Notification_header, Notification_text, p_activity);
+
+						try
+						{
+							nm.notify(ZANaviMapDownloaderService.NOTIFICATION_ID__DUMMY2, notification);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+
+							try
+							{
+								p_activity = PendingIntent.getActivity(getBaseContext_, 0, in, PendingIntent.FLAG_UPDATE_CURRENT);
+
+								notification.setLatestEventInfo(getBaseContext_, Notification_header, Notification_text, p_activity);
+								nm.notify(ZANaviMapDownloaderService.NOTIFICATION_ID__DUMMY2, notification);
+							}
+							catch (Exception e2)
+							{
+								e2.printStackTrace();
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
 				break;
 			case 1:
 				// change progressbar values
-				int what_dialog = msg.getData().getInt("dialog_num");
-				if (what_dialog == MAPDOWNLOAD_PRI_DIALOG)
+				try
 				{
-					mapdownloader_dialog_pri.setMax(msg.getData().getInt("max"));
-					mapdownloader_dialog_pri.setProgress(msg.getData().getInt("cur"));
-					mapdownloader_dialog_pri.setTitle(msg.getData().getString("title"));
-					mapdownloader_dialog_pri.setMessage(msg.getData().getString("text"));
+					int what_dialog = msg.getData().getInt("dialog_num");
+					if (what_dialog == MAPDOWNLOAD_PRI_DIALOG)
+					{
+						mapdownloader_dialog_pri.setMax(msg.getData().getInt("max"));
+						mapdownloader_dialog_pri.setProgress(msg.getData().getInt("cur"));
+						mapdownloader_dialog_pri.setTitle(msg.getData().getString("title"));
+						mapdownloader_dialog_pri.setMessage(msg.getData().getString("text"));
+					}
+					else if (what_dialog == MAPDOWNLOAD_SEC_DIALOG)
+					{
+						mapdownloader_dialog_sec.setMax(msg.getData().getInt("max"));
+						mapdownloader_dialog_sec.setProgress(msg.getData().getInt("cur"));
+						mapdownloader_dialog_sec.setTitle(msg.getData().getString("title"));
+						mapdownloader_dialog_sec.setMessage(msg.getData().getString("text"));
+					}
 				}
-				else if (what_dialog == MAPDOWNLOAD_SEC_DIALOG)
+				catch (Exception e)
 				{
-					mapdownloader_dialog_sec.setMax(msg.getData().getInt("max"));
-					mapdownloader_dialog_sec.setProgress(msg.getData().getInt("cur"));
-					mapdownloader_dialog_sec.setTitle(msg.getData().getString("title"));
-					mapdownloader_dialog_sec.setMessage(msg.getData().getString("text"));
 				}
 				break;
 			case 2:
@@ -5568,20 +6022,26 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				break;
 			case 10:
 				// change values - generic
-				int what_dialog_generic = msg.getData().getInt("dialog_num");
-				if (what_dialog_generic == SEARCHRESULTS_WAIT_DIALOG)
+				try
 				{
-					search_results_wait.setMax(msg.getData().getInt("max"));
-					search_results_wait.setProgress(msg.getData().getInt("cur"));
-					search_results_wait.setTitle(msg.getData().getString("title"));
-					search_results_wait.setMessage(msg.getData().getString("text"));
+					int what_dialog_generic = msg.getData().getInt("dialog_num");
+					if (what_dialog_generic == SEARCHRESULTS_WAIT_DIALOG)
+					{
+						search_results_wait.setMax(msg.getData().getInt("max"));
+						search_results_wait.setProgress(msg.getData().getInt("cur"));
+						search_results_wait.setTitle(msg.getData().getString("title"));
+						search_results_wait.setMessage(msg.getData().getString("text"));
+					}
+					else if (what_dialog_generic == SEARCHRESULTS_WAIT_DIALOG_OFFLINE)
+					{
+						search_results_wait_offline.setMax(msg.getData().getInt("max"));
+						search_results_wait_offline.setProgress(msg.getData().getInt("cur"));
+						search_results_wait_offline.setTitle(msg.getData().getString("title"));
+						search_results_wait_offline.setMessage(msg.getData().getString("text"));
+					}
 				}
-				else if (what_dialog_generic == SEARCHRESULTS_WAIT_DIALOG_OFFLINE)
+				catch (Exception e)
 				{
-					search_results_wait_offline.setMax(msg.getData().getInt("max"));
-					search_results_wait_offline.setProgress(msg.getData().getInt("cur"));
-					search_results_wait_offline.setTitle(msg.getData().getString("title"));
-					search_results_wait_offline.setMessage(msg.getData().getString("text"));
 				}
 				break;
 			case 11:
@@ -5665,6 +6125,54 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				break;
 			case 21:
 				default_brightness_screen();
+				break;
+			case 22:
+				try
+				{
+					// ----- service start -----
+					// ----- service start -----
+					startService(Navit.ZANaviMapDownloaderServiceIntent);
+					// ----- service start -----
+					// ----- service start -----
+
+					//					try
+					//					{
+					//						Thread.sleep(200);
+					//					}
+					//					catch (InterruptedException e)
+					//					{
+					//					}
+
+					//					if (!ZANaviMapDownloaderService.service_running)
+					//					{
+					//						System.out.println("ZANaviMapDownloaderService -> not running yet ...");
+					//						try
+					//						{
+					//							Thread.sleep(2000);
+					//						}
+					//						catch (InterruptedException e)
+					//						{
+					//						}
+					//					}
+					//
+					//					if (!ZANaviMapDownloaderService.service_running)
+					//					{
+					//						System.out.println("ZANaviMapDownloaderService -> not running yet ...");
+					//						try
+					//						{
+					//							Thread.sleep(2000);
+					//						}
+					//						catch (InterruptedException e)
+					//						{
+					//						}
+					//					}
+
+					// -------- // ZANaviMapDownloaderService.start_map_download();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 				break;
 			case 99:
 				// dismiss dialog, remove dialog - generic
@@ -5798,7 +6306,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 			mapdownloader_dialog_pri.setProgress(0);
 			mapdownloader_dialog_pri.setMax(200);
 
-			LayoutParams dialog_lparams = mapdownloader_dialog_pri.getWindow().getAttributes();
+			WindowManager.LayoutParams dialog_lparams = mapdownloader_dialog_pri.getWindow().getAttributes();
 			dialog_lparams.screenBrightness = 0.1f;
 			mapdownloader_dialog_pri.getWindow().setAttributes(dialog_lparams);
 
@@ -5807,7 +6315,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				public void onDismiss(DialogInterface dialog)
 				{
 					LayoutParams dialog_lparams = mapdownloader_dialog_pri.getWindow().getAttributes();
-					mapdownloader_dialog_pri.getWindow().setAttributes(dialog_lparams);
+					mapdownloader_dialog_pri.getWindow().setAttributes((WindowManager.LayoutParams) dialog_lparams);
 					mapdownloader_dialog_pri.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 					mapdownloader_dialog_pri.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 					Log.e("Navit", "onDismiss: mapdownloader_dialog pri");
@@ -5924,6 +6432,14 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		Log.e("Navit", "6***************** exit called ****************");
 		Log.e("Navit", "7***************** exit called ****************");
 		Log.e("Navit", "8***************** exit called ****************");
+
+		// ----- service stop -----
+		// ----- service stop -----
+		System.out.println("Navit:exit -> stop ZANaviMapDownloaderService ---------");
+		ZANaviMapDownloaderService.stop_downloading();
+		stopService(Navit.ZANaviMapDownloaderServiceIntent);
+		// ----- service stop -----
+		// ----- service stop -----
 
 		// +++++ // System.gc();
 		NavitActivity(-4);
@@ -7485,21 +8001,75 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		return ret;
 	}
 
+	static void remove_oldest_normal_point()
+	{
+		int i;
+		for (i = 0; i < map_points.size(); i++)
+		{
+			Navit_Point_on_Map element_temp = map_points.get(i);
+			if (element_temp.addon == null)
+			{
+				// its a normal (non home, non special item), so can remove it, and return.
+				break;
+			}
+		}
+	}
+
+	static int find_home_point()
+	{
+		int home_id = -1;
+		int i;
+
+		for (i = 0; i < map_points.size(); i++)
+		{
+			Navit_Point_on_Map element_temp = map_points.get(i);
+			if (element_temp.addon != null)
+			{
+				if (element_temp.addon.equals("1"))
+				{
+					// found home
+					return i;
+				}
+			}
+		}
+		return home_id;
+	}
+
+	static void readd_home_point()
+	{
+		try
+		{
+			int home_id = find_home_point();
+			if (home_id != -1)
+			{
+				Navit_Point_on_Map element_old = map_points.get(home_id);
+				map_points.remove(home_id);
+				map_points.add(element_old);
+			}
+		}
+		catch (Exception e)
+		{
+		}
+	}
+
 	static void add_map_point(Navit_Point_on_Map element)
 	{
 		if (element == null)
 		{
 			return;
 		}
+
 		if (map_points == null)
 		{
 			map_points = new ArrayList<Navit_Point_on_Map>();
 		}
+
 		if (map_points.size() > Navit_MAX_RECENT_DESTINATIONS)
 		{
 			try
 			{
-				map_points.remove(0);
+				// map_points.remove(0);
+				remove_oldest_normal_point();
 			}
 			catch (Exception e)
 			{
@@ -7511,6 +8081,8 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		{
 			// if not duplicate, then add
 			map_points.add(element);
+			readd_home_point();
+			write_map_points();
 		}
 		else
 		{
@@ -7521,6 +8093,7 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 				Navit_Point_on_Map element_old = map_points.get(el_pos);
 				map_points.remove(el_pos);
 				map_points.add(element_old);
+				readd_home_point();
 				write_map_points();
 			}
 			catch (Exception e)
@@ -7662,9 +8235,19 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		for (int i = 0; i < map_points.size(); i++)
 		{
 			t = map_points.get(i);
-			if ((t.point_name.equals(element.point_name)) && (t.lat == element.lat) && (t.lon == element.lon))
+			if (t.addon == null)
 			{
-				return true;
+				if ((t.point_name.equals(element.point_name)) && (t.lat == element.lat) && (t.lon == element.lon) && (element.addon == null))
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if ((t.point_name.equals(element.point_name)) && (t.lat == element.lat) && (t.lon == element.lon) && (t.addon.equals(element.addon)))
+				{
+					return true;
+				}
 			}
 		}
 		return ret;
@@ -7677,9 +8260,19 @@ public class Navit extends Activity implements Handler.Callback, SensorEventList
 		for (int i = 0; i < map_points.size(); i++)
 		{
 			t = map_points.get(i);
-			if ((t.point_name.equals(element.point_name)) && (t.lat == element.lat) && (t.lon == element.lon))
+			if (t.addon == null)
 			{
-				return i;
+				if ((t.point_name.equals(element.point_name)) && (t.lat == element.lat) && (t.lon == element.lon) && (element.addon == null))
+				{
+					return i;
+				}
+			}
+			else
+			{
+				if ((t.point_name.equals(element.point_name)) && (t.lat == element.lat) && (t.lon == element.lon) && (t.addon.equals(element.addon)))
+				{
+					return i;
+				}
 			}
 		}
 		return ret;

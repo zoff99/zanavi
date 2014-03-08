@@ -173,52 +173,65 @@ phase34_process_file(struct tile_info *info, FILE *in, FILE *reference)
 			processed_nodes++;
 		else
 			processed_ways++;
-		max=14;
-		switch (ib->type) {
-		case type_town_label_1e7:
-		case type_town_label_5e6:
-		case type_town_label_2e6:
-		case type_town_label_1e6:
-		case type_town_label_5e5:
-		case type_district_label_1e7:
-		case type_district_label_5e6:
-		case type_district_label_2e6:
-		case type_district_label_1e6:
-		case type_district_label_5e5:
-			max=6;
-			break;
-		case type_town_label_2e5:
-		case type_town_label_1e5:
-		case type_district_label_2e5:
-		case type_district_label_1e5:
-		case type_street_n_lanes:
-		case type_highway_city:
-		case type_highway_land:
-		case type_ramp:
-			max=8;
-			break;
-		case type_town_label_5e4:
-		case type_town_label_2e4:
-		case type_town_label_1e4:
-		case type_district_label_5e4:
-		case type_district_label_2e4:
-		case type_district_label_1e4:
-			max=9;
-			break;
-		case type_town_label_5e3:
-		case type_town_label_2e3:
-		case type_town_label_1e3:
-		case type_district_label_5e3:
-		case type_district_label_2e3:
-		case type_district_label_1e3:
-		case type_street_3_city:
-		case type_street_4_city:
-		case type_street_3_land:
-		case type_street_4_land:
-			max=12;
-			break;
-		default:
-			break;
+
+		if (border_only_map==1)
+		{
+			// fprintf(stderr,"max=1\n");
+			// max=1; --> shows all borders, all the time. but is too slow!
+			max=4;
+		}
+		else
+		{
+			max=14;
+			switch (ib->type)
+			{
+			case type_town_label_1e7:
+			case type_town_label_5e6:
+			case type_town_label_2e6:
+			case type_town_label_1e6:
+			case type_town_label_5e5:
+			case type_district_label_1e7:
+			case type_district_label_5e6:
+			case type_district_label_2e6:
+			case type_district_label_1e6:
+			case type_district_label_5e5:
+				max=6;
+				break;
+			case type_town_label_2e5:
+			case type_town_label_1e5:
+			case type_district_label_2e5:
+			case type_district_label_1e5:
+			case type_street_n_lanes:
+			case type_highway_city:
+			case type_highway_land:
+			case type_ramp:
+				max=8;
+				break;
+			case type_town_label_5e4:
+			case type_town_label_2e4:
+			case type_town_label_1e4:
+			case type_district_label_5e4:
+			case type_district_label_2e4:
+			case type_district_label_1e4:
+				max=9;
+				break;
+			case type_street_4_land:
+			case type_street_4_city:
+				max=10;
+				break;
+			case type_town_label_5e3:
+			case type_town_label_2e3:
+			case type_town_label_1e3:
+			case type_district_label_5e3:
+			case type_district_label_2e3:
+			case type_district_label_1e3:
+			case type_street_3_city:
+			case type_street_3_land:
+				max=12;
+				break;
+			default:
+				break;
+			}
 		}
 		tile_write_item_minmax(info, ib, reference, 0, max);
 	}

@@ -50,6 +50,7 @@ public class NavitRecentDestinationActivity extends ListActivity
 	static Boolean refresh_items = false;
 	static NavitRecentDestinationActivity my = null;
 	private static ArrayList<String> listview_items = new ArrayList<String>();
+	private static ArrayList<String> listview_addons = new ArrayList<String>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -57,9 +58,10 @@ public class NavitRecentDestinationActivity extends ListActivity
 		super.onCreate(savedInstanceState);
 		my = this;
 
-		context_items = new String[] { Navit.get_text("delete Destination"), Navit.get_text("rename Destination") }; // TRANS
+		context_items = new String[] { Navit.get_text("delete Destination"), Navit.get_text("rename Destination"), Navit.get_text("set as Home Location") }; // TRANS
 
 		listview_items.clear();
+		listview_addons.clear();
 
 		// crash reported on google play store
 		// gueard against nullpointer
@@ -68,19 +70,23 @@ public class NavitRecentDestinationActivity extends ListActivity
 			Navit.map_points = new ArrayList<Navit_Point_on_Map>();
 		}
 		// crash reported on google play store
-		// gueard against nullpointer
+		// guard against nullpointer
 
 		String[] t = new String[Navit.map_points.size()];
+		String[] t_addons = new String[Navit.map_points.size()];
 		try
 		{
 			int j = 0;
 			for (j = Navit.map_points.size() - 1; j >= 0; j--)
 			{
 				t[Navit.map_points.size() - j - 1] = Navit.map_points.get(j).point_name;
+				t_addons[Navit.map_points.size() - j - 1] = Navit.map_points.get(j).addon;
 			}
+
 			for (j = 0; j < t.length; j++)
 			{
 				listview_items.add(t[j]);
+				listview_addons.add(t_addons[j]);
 			}
 		}
 		catch (Exception e)
@@ -89,8 +95,9 @@ public class NavitRecentDestinationActivity extends ListActivity
 			t = new String[1];
 			t[0] = "* Error *";
 			listview_items.add(t[0]);
+			listview_addons.add(null);
 		}
-		NavitArrayAdapter adapter = new NavitArrayAdapter(this, listview_items);
+		NavitArrayAdapter adapter = new NavitArrayAdapter(this, listview_items, listview_addons);
 
 		//if (convertView == null)
 		//{
@@ -110,25 +117,29 @@ public class NavitRecentDestinationActivity extends ListActivity
 		{
 			if (msg.getData().getInt("what") == 1)
 			{
-				refresh_items_real();
+				int i = msg.getData().getInt("i");
+				refresh_items_real(i);
 			}
 		}
 	};
 
-	public static void refresh_items()
+	public static void refresh_items(int i)
 	{
 		Message msg = new Message();
 		Bundle b = new Bundle();
 		b.putInt("what", 1);
+		b.putInt("i", i);
 		msg.setData(b);
 		handler1.sendMessage(msg);
 	}
 
-	public static void refresh_items_real()
+	public static void refresh_items_real(int i)
 	{
 		String[] t = new String[Navit.map_points.size()];
+		String[] t_addons = new String[Navit.map_points.size()];
 		NavitArrayAdapter adapter = (NavitArrayAdapter) my.getListAdapter();
 		listview_items.clear();
+		listview_addons.clear();
 		adapter.notifyDataSetChanged();
 		try
 		{
@@ -136,10 +147,13 @@ public class NavitRecentDestinationActivity extends ListActivity
 			for (j = Navit.map_points.size() - 1; j >= 0; j--)
 			{
 				t[Navit.map_points.size() - j - 1] = Navit.map_points.get(j).point_name;
+				t_addons[Navit.map_points.size() - j - 1] = Navit.map_points.get(j).addon;
+				// System.out.println("name=" + Navit.map_points.get(j).point_name + " addon=" + Navit.map_points.get(j).addon);
 			}
 			for (j = 0; j < t.length; j++)
 			{
 				listview_items.add(t[j]);
+				listview_addons.add(t_addons[j]);
 			}
 		}
 		catch (Exception e)
@@ -148,6 +162,7 @@ public class NavitRecentDestinationActivity extends ListActivity
 			t = new String[1];
 			t[0] = "* Error *";
 			listview_items.add(t[0]);
+			listview_addons.add(null);
 		}
 		adapter.notifyDataSetChanged();
 		refresh_items = false;
@@ -190,7 +205,7 @@ public class NavitRecentDestinationActivity extends ListActivity
 			Navit.write_map_points();
 			// refresh
 			refresh_items = true;
-			refresh_items();
+			refresh_items(1);
 			break;
 		case 1:
 			// rename item
@@ -208,12 +223,51 @@ public class NavitRecentDestinationActivity extends ListActivity
 					Navit.write_map_points();
 					// refresh
 					refresh_items = true;
-					refresh_items();
+					refresh_items(0);
 				}
 			}
 
 			);
 			rd.show();
+			break;
+		case 2:
+			// find old HOME item
+			int old_home_id = Navit.find_home_point();
+			if (old_home_id != -1)
+			{
+				NavitRecentDestinationActivity.t = Navit.map_points.get(old_home_id);
+				NavitRecentDestinationActivity.t.addon = null;
+				Navit.map_points.set(old_home_id, NavitRecentDestinationActivity.t);
+			}
+			// in case of double home, because of some strange error
+			old_home_id = Navit.find_home_point();
+			if (old_home_id != -1)
+			{
+				NavitRecentDestinationActivity.t = Navit.map_points.get(old_home_id);
+				NavitRecentDestinationActivity.t.addon = null;
+				Navit.map_points.set(old_home_id, NavitRecentDestinationActivity.t);
+			}
+			// in case of double home, because of some strange error
+			old_home_id = Navit.find_home_point();
+			if (old_home_id != -1)
+			{
+				NavitRecentDestinationActivity.t = Navit.map_points.get(old_home_id);
+				NavitRecentDestinationActivity.t.addon = null;
+				Navit.map_points.set(old_home_id, NavitRecentDestinationActivity.t);
+			}
+
+			// set HOME item
+			NavitRecentDestinationActivity.t = Navit.map_points.get(t_size - t_position - 1);
+			NavitRecentDestinationActivity.t.addon = "1";
+			// delete item
+			Navit.map_points.remove(t_size - t_position - 1);
+			// add it to the first position
+			Navit.map_points.add(NavitRecentDestinationActivity.t);
+			// save it
+			Navit.write_map_points();
+			// refresh
+			refresh_items = true;
+			refresh_items(0);
 			break;
 		}
 		return true;

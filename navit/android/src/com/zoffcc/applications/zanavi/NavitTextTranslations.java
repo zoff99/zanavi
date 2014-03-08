@@ -269,6 +269,9 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Map already up to date", "ar", "الخريطة علي آخر تحديث", "pt", "O mapa já está atualizado", "pt_BR", "O mapa já está atualizado", "zh", "地图已经是最新版本", "zh_HK", "已是最新地圖", "cs", "Mapa je aktuální", "nl", "Kaart is al actueel", "fr", "Carte déjà à jour", "de", "Karte ist auf aktuellem Stand", "el", "Ο χάρτης είναι ενημερωμένος", "hu", "Térkép aktuális!", "it", "Mappa già aggiornata", "pl", "Mapa jest już w najnowszej wersji", "ru", "Установлена последняя карта",
 				"sk", "Mapa je aktuálna", "es", "El mapa ya está actualizado" };
 		p(k, v);
+		k = "checking map ...";
+		v = new String[] { "en", "checking map ...", "de", "prüfe Karte ..." };
+		p(k, v);
 		k = "MD5 mismatch";
 		v = new String[] { "en", "MD5 mismatch", "pt", "Falha na integridade do arquivo (MD5 não confere)", "pt_BR", "Falha na integridade do arquivo (MD5 não confere)", "zh", "MD5校验出错", "zh_HK", "MD5 不符", "cs", "Chyba MD5 kontroly", "nl", "MD5 fout", "fr", "MD5 incohérent", "de", "MD5 Prüfsumme stimmt nicht", "el", "αναντιστοιχία MD5", "hu", "MD5 checksum hiba", "it", "MD5 non corrispondente", "pl", "skrót MD5 niepoprawny", "ru", "несоответствие MD5", "sk", "Nesúhlasí MD5", "es",
 				"MD5 inválido" };
@@ -296,6 +299,9 @@ public class NavitTextTranslations
 		k = "generating MD5 checksum";
 		v = new String[] { "en", "generating MD5 checksum", "pt", "gerando código de integridade (soma MD5)", "pt_BR", "gerando código de integridade (soma MD5)", "zh", "正在生成MD5校验和", "zh_HK", "產生 MD5 checksum", "cs", "Generuji MD5 kontrolní součet", "nl", "MD5sum genereren", "fr", "Génération du checksum MD5", "de", "überprüfe MD5 Prüfsumme", "el", "δημιουργία MD5 checksum", "hu", "MD5 checksum kiszámítása", "it", "creazione checksum MD5", "pl", "generowanie skrótu MD5", "ru",
 				"создание контрольной суммы MD5", "sk", "Generuje sa kontrolný súčet MD5", "es", "Generando comprobación MD5" };
+		p(k, v);
+		k = "checking";
+		v = new String[] { "en", "checking", "de", "prüfe" };
 		p(k, v);
 		k = "__INFO_BOX_TITLE__";
 		v = new String[] { "en", "Welcome to ZANavi", "ar", "مرحباً بك في زانافي", "pt", "Bem-vindo ao ZANavi", "pt_BR", "Bem-vindo ao ZANavi", "zh", "欢迎使用ZANavi", "zh_HK", "歡迎使用 ZANavi", "cs", "Vítejte v ZANavi", "nl", "Welkom bij ZANavi", "fr", "Bienvenue chez ZANavi", "de", "Willkommen bei ZANavi", "el", "Καλώς ήλθατε στο ZANavi", "hu", "Üdvözöljük a ZANavi-ban!", "pl", "Witamy w ZaNavi", "sk", "Vitajte v ZANavi" };
@@ -411,6 +417,10 @@ public class NavitTextTranslations
 		v = new String[] { "en", "Enter: City and Street", "ar", "أدخل: المدينة و الشارع", "pt", "Informe: Cidade e Rua", "pt_BR", "Informe: Cidade e Rua", "zh", "输入：城市和街道", "zh_HK", "輸入：城市及街道", "cs", "Vložte: město a ulici", "nl", "Invoer: plaatsnaam en straat", "fr", "Ville et Rue", "de", "Stadt und Straße:", "el", "Εισαγωγή: Πόλη και Οδός", "hu", "Város, utca:", "it", "Città e Via", "pl", "Wprowadź: Miasto oraz Ulica", "ru", "Ввести: Город и Улицу", "sk", "Zadjate: Mesto a ulicu", "es",
 				"Introduzca: ciudad y calle" };
 		p(k, v);
+		k = "Map data (c) OpenStreetMap contributors, CC-BY-SA";
+		v = new String[] { "en", "Map data (c) OpenStreetMap contributors", "ar", "بيانات الخريطة محفوظة لـ OpenStreetMap، تحت رخصة CC-BY-SA", "zh", "地图数据 (c) OpenStreetMap contributors, CC-BY-SA", "zh_HK", "地圖 資料(c) OpenStreetMap contributors, CC-BY-SA", "cs", "Mapové podklady (c) OpenStreetMap contributors, CC-BY-SA", "nl", "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA", "de", "Kartendaten (c) OpenStreetMap contributors", "el",
+				"Δεδομένα χάρτη (c) OpenStreetMap contributors, CC-BY-SA", "hu", "Térképadatok: (c) OpenStreetMap contributors, CC-BY-SA", "it", "Dati mappa (c) OpenStreetMap contributors, CC-BY-SA", "pl", "Dane map (c) OpenStreetMap contributors, CC-BY-SA", "sk", "Mapové údaje (c) OpenStreetMap contributors, CC-BY-SA", "es", "Datos de mapas (c) OpenStreetMap contributors, CC-BY-SA" };
+		p(k, v);
 		k = "No search string";
 		v = new String[] { "en", "No search string", "de", "Kein Suchtext" };
 		p(k, v);
@@ -460,10 +470,6 @@ public class NavitTextTranslations
 		k = "Cancel";
 		v = new String[] { "en", "Cancel", "de", "Abbrechen" };
 		p(k, v);
-		k = "Map data (c) OpenStreetMap contributors, CC-BY-SA";
-		v = new String[] { "en", "Map data (c) OpenStreetMap contributors", "ar", "بيانات الخريطة محفوظة لـ OpenStreetMap، تحت رخصة CC-BY-SA", "zh", "地图数据 (c) OpenStreetMap contributors, CC-BY-SA", "zh_HK", "地圖 資料(c) OpenStreetMap contributors, CC-BY-SA", "cs", "Mapové podklady (c) OpenStreetMap contributors, CC-BY-SA", "nl", "Kaartgegevens (c) OpenStreetMap contributors, CC-BY-SA", "de", "Kartendaten (c) OpenStreetMap contributors", "el",
-				"Δεδομένα χάρτη (c) OpenStreetMap contributors, CC-BY-SA", "hu", "Térképadatok: (c) OpenStreetMap contributors, CC-BY-SA", "it", "Dati mappa (c) OpenStreetMap contributors, CC-BY-SA", "pl", "Dane map (c) OpenStreetMap contributors, CC-BY-SA", "sk", "Mapové údaje (c) OpenStreetMap contributors, CC-BY-SA", "es", "Datos de mapas (c) OpenStreetMap contributors, CC-BY-SA" };
-		p(k, v);
 		k = "Meeting Point";
 		v = new String[] { "en", "Meeting Point", "de", "Treffpunkt" };
 		p(k, v);
@@ -484,6 +490,9 @@ public class NavitTextTranslations
 		p(k, v);
 		k = "Building route graph";
 		v = new String[] { "en", "Building route graph", "de", "generiere Route Graph", "pl", "Generowanie wykresu trasy", "sk", "Zostavuje sa graf trasy" };
+		p(k, v);
+		k = "downloading, please wait ...";
+		v = new String[] { "en", "downloading, please wait ...", "de", "laden, bitte warten ..." };
 		p(k, v);
 		k = "__PREF__title__use_fast_provider";
 		v = new String[] { "en", "GSM/3g/Wireless", "pt", "GSM/3G/Sem fio", "pt_BR", "GSM/3G/Sem fio", "zh", "GSM/3g/无线", "cs", "GSM/3g/WiFi", "nl", "GSM/3G/WiFi", "fr", "GSM/3G/Sans-fil", "de", "GSM/3g/Wireless", "el", "GSM/3g/Ασύρματο", "hu", "GSM/3g/Wireless", "pl", "GSM/3g/WiFi", "sk", "GSM/3g/Bezdrôtové" };
@@ -694,6 +703,18 @@ public class NavitTextTranslations
 		k = "__PREF__title__gui_oneway_arrows";
 		v = new String[] { "en", "OneWay Arrows", "zh", "单向箭头", "cs", "Jednosměrky", "nl", "eenrichtingspijlen", "fr", "Flèches de sens unique", "de", "Einbahn", "el", "Βέλη μονόδρομων", "hu", "Egyirányú utcák", "pl", "Strzałki jednokierunkowe", "sk", "Šípky jednosmeriek" };
 		p(k, v);
+		k = "__PREF__title__shrink_on_high_dpi";
+		v = new String[] { "en", "High DPI", "de", "High DPI" };
+		p(k, v);
+		k = "__PREF__summ__shrink_on_high_dpi";
+		v = new String[] { "en", "use 240dpi on high density displays (> 320dpi). needs RESTART!", "de", "240 dpi auf Hochauflösenden Displays (> 320dpi) verwenden. braucht RESTART!" };
+		p(k, v);
+		k = "__PREF__title__streets_only";
+		v = new String[] { "en", "Streets only", "de", "Nur Straßen" };
+		p(k, v);
+		k = "__PREF__summ__streets_only";
+		v = new String[] { "en", "show only streets on map. map display is faster with this setting", "de", "auf der Karte nur Straßen anzeigen. keine anderen Objekte. Karte wird dadurch etwas schneller gezeichnet" };
+		p(k, v);
 		k = "__PREF__summ__gui_oneway_arrows";
 		v = new String[] { "en", "show oneway street arrows [BETA]", "zh", "在街道使用单向箭头[BETA]", "cs", "Ukazuj šipky u jednosměrných cest [BETA]", "nl", "Toon pijlen bij eenrichtings-straten [BETA]", "fr", "Affiche les voies en sens unique [BETA]", "de", "Einbahnpfeile [BETA]", "el", "εμφάνιση βελών κατεύθυνσης μονόδρομων [BETA]", "hu", "Egyirányú utcák jelzése [BETA]", "pl", "Pokaż strzałki na ulicach jednokierunkowych [BETA]", "sk", "Zobraziť šípky jednosmerných ulíc [BETA]" };
 		p(k, v);
@@ -774,6 +795,15 @@ public class NavitTextTranslations
 		k = "Address or POI-Name";
 		v = new String[] { "en", "Address or POI-Name", "de", "Adresse oder POI-Name" };
 		p(k, v);
+		k = "Stop map download?";
+		v = new String[] { "en", "Stop map download?", "de", "Kartendownload beenden?" };
+		p(k, v);
+		k = "Yes";
+		v = new String[] { "en", "Yes", "de", "Ja" };
+		p(k, v);
+		k = "No";
+		v = new String[] { "en", "No", "de", "Nein" };
+		p(k, v);
 		k = "Enter your Feedback text";
 		v = new String[] { "en", "Enter your Feedback text", "de", "Feedbacktext eingeben" };
 		p(k, v);
@@ -852,7 +882,7 @@ public class NavitTextTranslations
 		}
 		catch (Exception e)
 		{
-			// most likely there is not translation yet
+			// most likely there is no translation yet
 			//Log.e("NavitTextTranslations", "lookup: exception 1");
 			out = null;
 		}
@@ -866,7 +896,7 @@ public class NavitTextTranslations
 			}
 			catch (Exception e)
 			{
-				// most likely there is not translation yet
+				// most likely there is no translation yet
 				//Log.e("NavitTextTranslations", "lookup: exception 2");
 				out = null;
 			}

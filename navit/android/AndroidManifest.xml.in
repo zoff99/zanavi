@@ -9,11 +9,14 @@
                  android:icon="@drawable/icon"
                  android:debuggable="true"
                  android:allowBackup="true"
+                 android:restoreAnyVersion="true"
                  android:backupAgent="com.zoffcc.applications.zanavi.ZANaviBackupAgent">
         <meta-data android:name="com.google.android.backup.api_key" android:value="xxxx" />
         <activity android:name="Navit"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.NoTitleBar"
+                  android:exported="true"
+                  android:launchMode="singleTask"
                   android:configChanges="screenSize|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|fontScale"
 		  >
             <intent-filter>
@@ -32,6 +35,22 @@
 				<data android:scheme="google.navigation" /> 
             </intent-filter>
         </activity>
+
+
+		<receiver android:name=".ZANaviDriveHomeWidgetProvider" android:label="drive Home">
+			<intent-filter>
+			    <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_home_info" />
+		</receiver>
+
+
+		<service
+            android:name="ZANaviMapDownloaderService"
+            android:icon="@drawable/icon"
+            android:label="ZANaviMapDownloaderSRV" >
+        </service>
+
 		<activity android:name=".NavitAddressSearchCountrySelectActivity"></activity>
 		<activity android:name=".NavitAddressSearchActivity"></activity>
 		<activity android:name=".NavitDownloadSelectMapActivity"></activity>
@@ -43,6 +62,7 @@
 		<activity android:name=".GeoCoordEnterDialog"></activity>
 		<activity android:name="com.lamerman.FileDialog"></activity>
 		<activity android:name=".ZANaviVoiceInput"></activity>
+		<activity android:name=".ZANaviDownloadMapCancelActivity"></activity>
 		<activity android:name=".NavitPreferences" android:label="@string/set_preferences"></activity>
     </application>
 	<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="17" />

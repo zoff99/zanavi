@@ -26,6 +26,7 @@ import android.preference.PreferenceActivity;
 
 public class NavitPreferences extends PreferenceActivity
 {
+	@SuppressWarnings("unused")
 	private void dummy_xgettext()
 	{
 		// dummy for xgettext
@@ -168,6 +169,14 @@ public class NavitPreferences extends PreferenceActivity
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__title__gui_oneway_arrows");
 		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__title__shrink_on_high_dpi");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__summ__shrink_on_high_dpi");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__title__streets_only");
+		//. TRANSLATORS: see en_US for english text to translate!!
+		x = Navit.get_text("__PREF__summ__streets_only");
+		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__summ__gui_oneway_arrows");
 		//. TRANSLATORS: see en_US for english text to translate!!
 		x = Navit.get_text("__PREF__title__show_debug_messages");
@@ -190,6 +199,15 @@ public class NavitPreferences extends PreferenceActivity
 	{
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+
+		//		try
+		//		{
+		//			this.getWindow().setBackgroundDrawableResource(android.R.color.background_dark);
+		//		}
+		//		catch (Exception e)
+		//		{
+		//			e.printStackTrace();
+		//		}
 
 		try
 		{
@@ -225,7 +243,7 @@ public class NavitPreferences extends PreferenceActivity
 		}
 
 		final String[] PrefTransTexts = new String[] { "use_fast_provider", "use_agps", "follow_gps", "use_lock_on_roads", "show_vehicle_in_center", "show_sat_status", "use_compass_heading_base", "use_compass_heading_always", "use_compass_heading_fast", "use_imperial", "use_route_highways", "use_index_search", "trafficlights_delay", "speak_street_names", "speak_filter_special_chars", "route_style", "show_3d_map", "show_2d3d_toggle", "save_zoomlevel", "autozoom_flag", "use_anti_aliasing",
-				"use_map_filtering", "use_custom_font", "use_smooth_drawing", "use_more_smooth_drawing", "show_multipolygons", "show_vehicle_3d", "map_font_size", "drawatorder", "more_map_detail", "mapcache", "streetsearch_r", "gui_oneway_arrows", "show_debug_messages", "enable_debug_functions", "navit_lang", "map_directory" };
+				"use_map_filtering", "use_custom_font", "use_smooth_drawing", "use_more_smooth_drawing", "show_multipolygons", "show_vehicle_3d", "map_font_size", "drawatorder", "more_map_detail", "mapcache", "streetsearch_r", "gui_oneway_arrows", "show_debug_messages", "enable_debug_functions", "navit_lang", "map_directory", "shrink_on_high_dpi", "streets_only" };
 
 		int i = 0;
 		for (i = 0; i < PrefTransTexts.length; i++)

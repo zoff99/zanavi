@@ -62,6 +62,8 @@ static struct entity {
 	{"&#38;",'&'},
 	{"&#60;",'<'},
 	{"&#62;",'>'},
+	{"&#123;",'{'},
+	{"&#125;",'}'},
 };
 
 void
@@ -157,7 +159,7 @@ parse_member(char *p)
 	else if (!strcmp(type_buffer,"relation")) 
 		type=3;
 	else {
-		fprintf(stderr,"Unknown type %s\n",type_buffer);
+		//fprintf(stderr,"Unknown type %s\n",type_buffer);
 		type=0;
 	}
 	osm_add_member(type, atoll(ref_buffer), role_buffer);
@@ -176,7 +178,7 @@ parse_nd(char *p)
 }
 
 int
-map_collect_data_osm(FILE *in, FILE *out_ways, FILE *out_nodes, FILE *out_turn_restrictions, FILE *out_boundaries)
+map_collect_data_osm(FILE *in, struct maptool_osm *osm)
 {
 	int size=BUFFER_SIZE;
 	char buffer[size];
@@ -185,7 +187,7 @@ map_collect_data_osm(FILE *in, FILE *out_ways, FILE *out_nodes, FILE *out_turn_r
 	while (fgets(buffer, size, in)) {
 		p=strchr(buffer,'<');
 		if (! p) {
-			fprintf(stderr,"WARNING: wrong line %s\n", buffer);
+			//fprintf(stderr,"WARNING: wrong line %s\n", buffer);
 			continue;
 		}
 		if (!strncmp(p, "<?xml ",6)) {
@@ -193,34 +195,46 @@ map_collect_data_osm(FILE *in, FILE *out_ways, FILE *out_nodes, FILE *out_turn_r
 		} else if (!strncmp(p, "<bound ",7)) {
 		} else if (!strncmp(p, "<node ",6)) {
 			if (!parse_node(p))
-				fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			{
+				//fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			}
 			processed_nodes++;
 		} else if (!strncmp(p, "<tag ",5)) {
 			if (!parse_tag(p))
-				fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			{
+				//fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			}
 		} else if (!strncmp(p, "<way ",5)) {
 			if (!parse_way(p))
-				fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			{
+				//fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			}
 			processed_ways++;
 		} else if (!strncmp(p, "<nd ",4)) {
 			if (!parse_nd(p))
-				fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			{
+				//fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			}
 		} else if (!strncmp(p, "<relation ",10)) {
 			if (!parse_relation(p))
+			{
 				fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			}
 			processed_relations++;
 		} else if (!strncmp(p, "<member ",8)) {
 			if (!parse_member(p))
-				fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			{
+				//fprintf(stderr,"WARNING: failed to parse %s\n", buffer);
+			}
 		} else if (!strncmp(p, "</node>",7)) {
-			osm_end_node(out_nodes);
+			osm_end_node(osm);
 		} else if (!strncmp(p, "</way>",6)) {
-			osm_end_way(out_ways);
+			osm_end_way(osm);
 		} else if (!strncmp(p, "</relation>",11)) {
-			osm_end_relation(out_turn_restrictions, out_boundaries);
+			osm_end_relation(osm);
 		} else if (!strncmp(p, "</osm>",6)) {
 		} else {
-			fprintf(stderr,"WARNING: unknown tag in %s\n", buffer);
+			// fprintf(stderr,"WARNING: unknown tag in %s\n", buffer);
 		}
 	}
 	sig_alrm(0);

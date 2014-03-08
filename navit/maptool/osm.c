@@ -23,7 +23,14 @@
 #include "maptool.h"
 #include "debug.h"
 #include "linguistics.h"
+#include "country.h"
 #include "file.h"
+
+#define _FILE_OFFSET_BITS  64
+#define _LARGEFILE_SOURCE
+#define _LARGEFILE64_SOURCE
+
+extern int doway2poi;
 
 static int in_way, in_node, in_relation;
 static int nodeid,wayid;
@@ -62,10 +69,15 @@ struct attr_mapping {
 	int attr_present_idx[0];
 };
 
+static void nodes_ref_item_bin(struct item_bin *ib);
+
+
 static struct attr_mapping **attr_mapping_node;
 static int attr_mapping_node_count;
 static struct attr_mapping **attr_mapping_way;
 static int attr_mapping_way_count;
+static struct attr_mapping **attr_mapping_way2poi;
+static int attr_mapping_way2poi_count;
 
 static char *attr_present;
 static int attr_present_count;
@@ -98,6 +110,7 @@ char *osm_types[]={"unknown","node","way","relation"};
 struct country_table {
 	int countryid;
 	char *names;
+	char *admin_levels;
 	FILE *file;
 	int size;
 	struct rect r;
@@ -185,7 +198,7 @@ struct country_table {
 	{ 268,"Georgia"},
 	{ 270,"Gambia"},
 	{ 275,"Palestinian Territory, Occupied"},
-	{ 276,"Germany,Deutschland,Bundesrepublik Deutschland"},
+	{ 276,"Germany,Deutschland,Bundesrepublik Deutschland","345c7m"},
 	{ 288,"Ghana"},
 	{ 292,"Gibraltar"},
 	{ 296,"Kiribati"},
@@ -351,10 +364,44 @@ struct country_table {
 	{ 999,"Unknown"},
 };
 
+// first char - item type
+//   =w - ways
+//   =? - used both for nodes and ways
+//   otherwise - nodes
 
-static char *attrmap={
+
+// for coastline-only map
+static char *attrmap_cl={
 	"n	*=*			point_unkn\n"
-//	"n	Annehmlichkeit=Hochsitz	poi_hunting_stand\n"
+	"w	*=*			street_unkn\n"
+	"w	natural=coastline	water_line\n"
+};
+
+// for border-only map
+static char *attrmap_bo={
+	"n	*=*			point_unkn\n"
+	"w	*=*			street_unkn\n"
+	"w	boundary=administrative,admin_level=2	border_country\n"
+	"w	boundary=territorial,admin_level=2	border_country\n"
+	"w	boundary=maritime,admin_level=2		border_country\n"
+	"w	administrative=boundary,admin_level=2	border_country\n"
+	"w	boundary=administrative,maritime=yes,admin_level=4	border_country\n"
+	"w	boundary=administrative,border_type=state,admin_level=4	border_country\n"
+};
+
+// ==========================
+// for USA
+// ==========================
+// admin_level = 4
+// border_type = state
+// boundary = administrative
+// ==========================
+
+
+// for normal map
+static char *attrmap_normal={
+	"n	*=*			point_unkn\n"
+////	"n	Annehmlichkeit=Hochsitz	poi_hunting_stand\n"
 	"n	addr:housenumber=*	house_number\n"
 	"n	aeroway=aerodrome	poi_airport\n"
 	"n	aeroway=airport		poi_airport\n"
@@ -363,7 +410,7 @@ static char *attrmap={
 	"n	amenity=atm		poi_bank\n"
 	"n	amenity=bank		poi_bank\n"
 	"n	amenity=bar		poi_bar\n"
-	"n	amenity=bench		poi_bench\n"
+	//"n	amenity=bench		poi_bench\n"
 	"n	amenity=biergarten	poi_biergarten\n"
 	"n	amenity=bus_station	poi_bus_station\n"
 	"n	amenity=cafe		poi_cafe\n"
@@ -371,45 +418,45 @@ static char *attrmap={
 	"n	amenity=cinema		poi_cinema\n"
 	"n	amenity=college		poi_school_college\n"
 	"n	amenity=courthouse	poi_justice\n"
-	"n	amenity=drinking_water	poi_potable_water\n"
+	//"n	amenity=drinking_water	poi_potable_water\n"
 	"n	amenity=fast_food	poi_fastfood\n"
 	"n	amenity=fire_station	poi_firebrigade\n"
-	"n	amenity=fountain	poi_fountain\n"
+	//"n	amenity=fountain	poi_fountain\n"
 	"n	amenity=fuel		poi_fuel\n"
 	"n	amenity=grave_yard	poi_cemetery\n"
 	"n	amenity=hospital	poi_hospital\n"
-	"n	amenity=hunting_stand	poi_hunting_stand\n"
+	//"n	amenity=hunting_stand	poi_hunting_stand\n"
 	"n	amenity=kindergarten	poi_kindergarten\n"
 	"n	amenity=library		poi_library\n"
 	"n	amenity=nightclub	poi_nightclub\n"
-	"n	amenity=park_bench	poi_bench\n"
+	//"n	amenity=park_bench	poi_bench\n"
 	"n	amenity=parking		poi_car_parking\n"
 	"n	amenity=pharmacy	poi_pharmacy\n"
 	"n	amenity=place_of_worship,religion=christian	poi_church\n"
 	"n	amenity=place_of_worship			poi_worship\n"
 	"n	amenity=police		poi_police\n"
-	"n	amenity=post_box	poi_post_box\n"
+	//"n	amenity=post_box	poi_post_box\n"
 	"n	amenity=post_office	poi_post_office\n"
 	"n	amenity=prison		poi_prison\n"
 	"n	amenity=pub		poi_pub\n"
 	"n	amenity=public_building	poi_public_office\n"
-	"n	amenity=recycling	poi_recycling\n"
+	//"n	amenity=recycling	poi_recycling\n"
 	"n	amenity=restaurant,cuisine=fine_dining		poi_dining\n"
 	"n	amenity=restaurant				poi_restaurant\n"
 	"n	amenity=school		poi_school\n"
-	"n	amenity=shelter		poi_shelter\n"
+	//"n	amenity=shelter		poi_shelter\n"
 	"n	amenity=taxi		poi_taxi\n"
-	"n	amenity=tec_common	tec_common\n"
-	"n	amenity=telephone	poi_telephone\n"
+	//"n	amenity=tec_common	tec_common\n"
+	//"n	amenity=telephone	poi_telephone\n"
 	"n	amenity=theatre		poi_theater\n"
 	"n	amenity=toilets		poi_restroom\n"
 	"n	amenity=townhall	poi_townhall\n"
 	"n	amenity=university	poi_school_university\n"
-	"n	amenity=vending_machine	poi_vending_machine\n"
+	//"n	amenity=vending_machine	poi_vending_machine\n"
 	"n	barrier=bollard		barrier_bollard\n"
 	"n	barrier=cycle_barrier	barrier_cycle\n"
 	"n	barrier=lift_gate	barrier_lift_gate\n"
-	"n	car=car_rental		poi_car_rent\n"
+	//"n	car=car_rental		poi_car_rent\n"
 	"n	highway=bus_station	poi_bus_station\n"
 	"n	highway=bus_stop	poi_bus_stop\n"
 	"n	highway=mini_roundabout	mini_roundabout\n"
@@ -418,74 +465,74 @@ static char *attrmap={
 	"n	highway=toll_booth	poi_toll_booth\n"
 	"n	highway=traffic_signals	traffic_signals\n"
 	"n	highway=turning_circle	turning_circle\n"
-	"n	historic=boundary_stone	poi_boundary_stone\n"
+	//"n	historic=boundary_stone	poi_boundary_stone\n"
 	"n	historic=castle		poi_castle\n"
 	"n	historic=memorial	poi_memorial\n"
 	"n	historic=monument	poi_monument\n"
 	"n	historic=ruins		poi_ruins\n"
-//	"n	historic=*		poi_ruins\n"
+////	"n	historic=*		poi_ruins\n"
 	"n	landuse=cemetery	poi_cemetery\n"
-	"n	leisure=fishing		poi_fish\n"
+	//"n	leisure=fishing		poi_fish\n"
 	"n	leisure=golf_course	poi_golf\n"
 	"n	leisure=marina		poi_marine\n"
-	"n	leisure=playground	poi_playground\n"
-	"n	leisure=slipway		poi_boat_ramp\n"
-	"n	leisure=sports_centre	poi_sport\n"
+	//"n	leisure=playground	poi_playground\n"
+	//"n	leisure=slipway		poi_boat_ramp\n"
+	//"n	leisure=sports_centre	poi_sport\n"
 	"n	leisure=stadium		poi_stadium\n"
-	"n	man_made=tower		poi_tower\n"
+	//"n	man_made=tower		poi_tower\n"
 	"n	military=airfield	poi_military\n"
-	"n	military=barracks	poi_military\n"
-	"n	military=bunker		poi_military\n"
+	//"n	military=barracks	poi_military\n"
+	//"n	military=bunker		poi_military\n"
 	"n	military=danger_area	poi_danger_area\n"
 	"n	military=range		poi_military\n"
 	"n	natural=bay		poi_bay\n"
 	"n	natural=peak,ele=*		poi_peak\n"     // show only major peaks with elevation
-	"n	natural=tree		poi_tree\n"
+	//"n	natural=tree		poi_tree\n"
 	"n	place=city		town_label_2e5\n"
 	"n	place=hamlet		town_label_2e2\n"
 	"n	place=locality		town_label_2e0\n"
 	"n	place=suburb		district_label\n"
 	"n	place=town		town_label_2e4\n"
 	"n	place=village		town_label_2e3\n"
-	"n	power=tower		power_tower\n"
-	"n	power=sub_station	power_substation\n"
+	//"n	power=tower		power_tower\n"
+	//"n	power=sub_station	power_substation\n"
 	"n	railway=halt		poi_rail_halt\n"
 	"n	railway=level_crossing	poi_level_crossing\n"
 	"n	railway=station		poi_rail_station\n"
 	"n	railway=tram_stop	poi_rail_tram_stop\n"
-	"n	shop=baker		poi_shop_baker\n"
-	"n	shop=bakery		poi_shop_baker\n"
-	"n	shop=beverages		poi_shop_beverages\n"
-	"n	shop=bicycle		poi_shop_bicycle\n"
-	"n	shop=butcher		poi_shop_butcher\n"
+	//"n	shop=baker		poi_shop_baker\n"
+	//"n	shop=bakery		poi_shop_baker\n"
+	//"n	shop=beverages		poi_shop_beverages\n"
+	//"n	shop=bicycle		poi_shop_bicycle\n"
+	//"n	shop=butcher		poi_shop_butcher\n"
 	"n	shop=car		poi_car_dealer_parts\n"
 	"n	shop=car_repair		poi_repair_service\n"
-	"n	shop=clothes		poi_shop_apparel\n"
-	"n	shop=convenience	poi_shop_grocery\n"
-	"n	shop=drogist		poi_shop_drugstore\n"
-	"n	shop=florist		poi_shop_florist\n"
-	"n	shop=fruit		poi_shop_fruit\n"
-	"n	shop=furniture		poi_shop_furniture\n"
-	"n	shop=garden_centre	poi_shop_handg\n"
-	"n	shop=hardware		poi_shop_handg\n"
-	"n	shop=hairdresser	poi_hairdresser\n"
-	"n	shop=kiosk		poi_shop_kiosk\n"
-	"n	shop=optician		poi_shop_optician\n"
-	"n	shop=parfum		poi_shop_parfum\n"
-	"n	shop=photo		poi_shop_photo\n"
-	"n	shop=shoes		poi_shop_shoes\n"
+	//"n	shop=clothes		poi_shop_apparel\n"
+	//"n	shop=convenience	poi_shop_grocery\n"
+	//"n	shop=drogist		poi_shop_drugstore\n"
+	//"n	shop=florist		poi_shop_florist\n"
+	//"n	shop=fruit		poi_shop_fruit\n"
+	//"n	shop=furniture		poi_shop_furniture\n"
+	//"n	shop=garden_centre	poi_shop_handg\n"
+	//"n	shop=hardware		poi_shop_handg\n"
+	//"n	shop=hairdresser	poi_hairdresser\n"
+	//"n	shop=kiosk		poi_shop_kiosk\n"
+	//"n	shop=optician		poi_shop_optician\n"
+	//"n	shop=parfum		poi_shop_parfum\n"
+	//"n	shop=photo		poi_shop_photo\n"
+	//"n	shop=shoes		poi_shop_shoes\n"
 	"n	shop=supermarket	poi_shopping\n"
-	"n	sport=10pin		poi_bowling\n"
-	"n	sport=baseball		poi_baseball\n"
-	"n	sport=basketball	poi_basketball\n"
-	"n	sport=climbing		poi_climbing\n"
-	"n	sport=golf		poi_golf\n"
-	"n	sport=motor_sports	poi_motor_sport\n"
-	"n	sport=skiing		poi_skiing\n"
-	"n	sport=soccer		poi_soccer\n"
+	//"n	sport=10pin		poi_bowling\n"
+	//"n	sport=baseball		poi_baseball\n"
+	//"n	sport=basketball	poi_basketball\n"
+	//"n	sport=climbing		poi_climbing\n"
+	//"n	sport=golf		poi_golf\n"
+	//"n	sport=motor_sports	poi_motor_sport\n"
+	//"n	sport=skiing		poi_skiing\n"
+	//"n	sport=soccer		poi_soccer\n"
 	"n	sport=stadium		poi_stadium\n"
 	"n	sport=swimming		poi_swimming\n"
-	"n	sport=tennis		poi_tennis\n"
+	//"n	sport=tennis		poi_tennis\n"
 	"n	tourism=attraction	poi_attraction\n"
 	"n	tourism=camp_site	poi_camp_rv\n"
 	"n	tourism=caravan_site	poi_camp_rv\n"
@@ -495,9 +542,9 @@ static char *attrmap={
 	"n	tourism=information	poi_information\n"
 	"n	tourism=motel		poi_motel\n"
 	"n	tourism=museum		poi_museum_history\n"
-	"n	tourism=picnic_site	poi_picnic\n"
+	//"n	tourism=picnic_site	poi_picnic\n"
 	"n	tourism=theme_park	poi_resort\n"
-	"n	tourism=viewpoint	poi_viewpoint\n"
+	//"n	tourism=viewpoint	poi_viewpoint\n"
 	"n	tourism=zoo		poi_zoo\n"
 	"n	traffic_sign=city_limit	traffic_sign_city_limit\n"
 	"n	highway=speed_camera	tec_common\n"
@@ -506,21 +553,21 @@ static char *attrmap={
 	"w	addr:interpolation=odd	house_number_interpolation_odd\n"
 	"w	addr:interpolation=all	house_number_interpolation_all\n"
 	"w	addr:interpolation=alphabetic	house_number_interpolation_alphabetic\n"
-	"w	aerialway=cable_car	lift_cable_car\n"
-	"w	aerialway=chair_lift	lift_chair\n"
-	"w	aerialway=drag_lift	lift_drag\n"
+	//"w	aerialway=cable_car	lift_cable_car\n"
+	//"w	aerialway=chair_lift	lift_chair\n"
+	//"w	aerialway=drag_lift	lift_drag\n"
 	"w	aeroway=aerodrome	poly_airport\n"
 	"w	aeroway=apron		poly_apron\n"
 	"w	aeroway=runway		aeroway_runway\n"
 	"w	aeroway=taxiway		aeroway_taxiway\n"
 	"w	aeroway=terminal	poly_terminal\n"
 	"w	amenity=college		poly_college\n"
-	"w	amenity=grave_yard	poly_cemetery\n"
+	//"w	amenity=grave_yard	poly_cemetery\n"
 	"w	amenity=parking		poly_car_parking\n"
 	"w	amenity=place_of_worship	poly_building\n"
 	"w	amenity=university	poly_university\n"
-	"w	boundary=administrative,admin_level=2	border_country\n"
-	"w	boundary=civil		border_civil\n"
+	// "w	boundary=administrative,admin_level=2	border_country\n" --> in border map
+	//"w	boundary=civil		border_civil\n"
 	"w	boundary=national_park	border_national_park\n"
 	"w	boundary=political	border_political\n"
 	"w	building=*		poly_building\n"
@@ -544,12 +591,12 @@ static char *attrmap={
 	"w	highway=path,foot=official		footway\n"
 	"w	highway=path,horse=designated		bridleway\n"
 	"w	highway=path,horse=official		bridleway\n"
-	"w	highway=path,sac_scale=alpine_hiking			hiking_alpine\n"
-	"w	highway=path,sac_scale=demanding_alpine_hiking		hiking_alpine_demanding\n"
-	"w	highway=path,sac_scale=demanding_mountain_hiking	hiking_mountain_demanding\n"
-	"w	highway=path,sac_scale=difficult_alpine_hiking		hiking_alpine_difficult\n"
-	"w	highway=path,sac_scale=hiking				hiking\n"
-	"w	highway=path,sac_scale=mountain_hiking			hiking_mountain\n"
+	//"w	highway=path,sac_scale=alpine_hiking			hiking_alpine\n"
+	//"w	highway=path,sac_scale=demanding_alpine_hiking		hiking_alpine_demanding\n"
+	//"w	highway=path,sac_scale=demanding_mountain_hiking	hiking_mountain_demanding\n"
+	//"w	highway=path,sac_scale=difficult_alpine_hiking		hiking_alpine_difficult\n"
+	//"w	highway=path,sac_scale=hiking				hiking\n"
+	//"w	highway=path,sac_scale=mountain_hiking			hiking_mountain\n"
 	"w	highway=pedestrian			street_pedestrian\n"
 	"w	highway=pedestrian,area=1		poly_pedestrian\n"
 	"w	highway=plaza				poly_plaza\n"
@@ -608,50 +655,50 @@ static char *attrmap={
 	"w	historic=battlefield	poly_battlefield\n"
 	"w	historic=ruins		poly_ruins\n"
 	"w	historic=town gate	poly_building\n"
-	"w	landuse=allotments	poly_allotments\n"
-	"w	landuse=basin		poly_basin\n"
-	"w	landuse=brownfield	poly_brownfield\n"
+	//"w	landuse=allotments	poly_allotments\n"
+	//"w	landuse=basin		poly_basin\n"
+	//"w	landuse=brownfield	poly_brownfield\n"
 	"w	landuse=cemetery	poly_cemetery\n"
-	"w	landuse=commercial	poly_commercial\n"
-	"w	landuse=construction	poly_construction\n"
-	"w	landuse=farm		poly_farm\n"
-	"w	landuse=farmland	poly_farm\n"
-	"w	landuse=farmyard	poly_town\n"
+	//"w	landuse=commercial	poly_commercial\n"
+	//"w	landuse=construction	poly_construction\n"
+	//"w	landuse=farm		poly_farm\n"
+	//"w	landuse=farmland	poly_farm\n"
+	//"w	landuse=farmyard	poly_town\n"
 	"w	landuse=forest		poly_wood\n"
 	"w	landuse=greenfield	poly_greenfield\n"
-	"w	landuse=industrial	poly_industry\n"
-	"w	landuse=landfill	poly_landfill\n"
+	//"w	landuse=industrial	poly_industry\n"
+	//"w	landuse=landfill	poly_landfill\n"
 	"w	landuse=military	poly_military\n"
 	"w	landuse=plaza		poly_plaza\n"
-	"w	landuse=quarry		poly_quarry\n"
+	//"w	landuse=quarry		poly_quarry\n"
 	"w	landuse=railway		poly_railway\n"
-	"w	landuse=recreation_ground		poly_recreation_ground\n"
+	//"w	landuse=recreation_ground		poly_recreation_ground\n"
 	"w	landuse=reservoir	poly_reservoir\n"
-	"w	landuse=residential	poly_town\n"
-	"w	landuse=residential,area=1	poly_town\n"
-	"w	landuse=retail		poly_retail\n"
-	"w	landuse=village_green	poly_village_green\n"
-	"w	landuse=vineyard	poly_farm\n"
-	"w	leisure=common		poly_common\n"
-	"w	leisure=fishing		poly_fishing\n"
-	"w	leisure=garden		poly_garden\n"
-	"w	leisure=golf_course	poly_golf_course\n"
-	"w	leisure=marina		poly_marina\n"
-	"w	leisure=nature_reserve	poly_nature_reserve\n"
+	//"w	landuse=residential	poly_town\n"
+	//"w	landuse=residential,area=1	poly_town\n"
+	//"w	landuse=retail		poly_retail\n"
+	//"w	landuse=village_green	poly_village_green\n"
+	//"w	landuse=vineyard	poly_farm\n"
+	//"w	leisure=common		poly_common\n"
+	//"w	leisure=fishing		poly_fishing\n"
+	//"w	leisure=garden		poly_garden\n"
+	//"w	leisure=golf_course	poly_golf_course\n"
+	//"w	leisure=marina		poly_marina\n"
+	//"w	leisure=nature_reserve	poly_nature_reserve\n"
 	"w	leisure=park		poly_park\n"
-	"w	leisure=pitch		poly_sports_pitch\n"
+	//"w	leisure=pitch		poly_sports_pitch\n"
 	"w	leisure=playground	poly_playground\n"
-	"w	leisure=sports_centre	poly_sport\n"
+	//"w	leisure=sports_centre	poly_sport\n"
 	"w	leisure=stadium		poly_sports_stadium\n"
-	"w	leisure=track		poly_sports_track\n"
+	//"w	leisure=track		poly_sports_track\n"
 	"w	leisure=water_park	poly_water_park\n"
 	"w	military=airfield	poly_airfield\n"
-	"w	military=barracks	poly_barracks\n"
+	//"w	military=barracks	poly_barracks\n"
 	"w	military=danger_area	poly_danger_area\n"
 	"w	military=naval_base	poly_naval_base\n"
-	"w	military=range		poly_range\n"
+	//"w	military=range		poly_range\n"
 	"w	natural=beach		poly_beach\n"
-	"w	natural=coastline	water_line\n"
+	// "w	natural=coastline	water_line\n" --> in coastline map
 	"w	natural=fell		poly_fell\n"
 	"w	natural=glacier		poly_glacier\n"
 	"w	natural=heath		poly_heath\n"
@@ -662,32 +709,32 @@ static char *attrmap={
 	"w	natural=scrub		poly_scrub\n"
 	"w	natural=water		poly_water\n"
 	"w	natural=wood		poly_wood\n"
-	"w	piste:type=downhill,piste:difficulty=advanced		piste_downhill_advanced\n"
-	"w	piste:type=downhill,piste:difficulty=easy		piste_downhill_easy\n"
-	"w	piste:type=downhill,piste:difficulty=expert		piste_downhill_expert\n"
-	"w	piste:type=downhill,piste:difficulty=freeride		piste_downhill_freeride\n"
-	"w	piste:type=downhill,piste:difficulty=intermediate	piste_downhill_intermediate\n"
-	"w	piste:type=downhill,piste:difficulty=novice		piste_downhill_novice\n"
-	"w	piste:type=nordic	piste_nordic\n"
+	//"w	piste:type=downhill,piste:difficulty=advanced		piste_downhill_advanced\n"
+	//"w	piste:type=downhill,piste:difficulty=easy		piste_downhill_easy\n"
+	//"w	piste:type=downhill,piste:difficulty=expert		piste_downhill_expert\n"
+	//"w	piste:type=downhill,piste:difficulty=freeride		piste_downhill_freeride\n"
+	//"w	piste:type=downhill,piste:difficulty=intermediate	piste_downhill_intermediate\n"
+	//"w	piste:type=downhill,piste:difficulty=novice		piste_downhill_novice\n"
+	//"w	piste:type=nordic	piste_nordic\n"
 	"w	place=suburb		poly_place1\n"
 	"w	place=hamlet		poly_place2\n"
 	"w	place=village		poly_place3\n"
 	"w	place=municipality	poly_place4\n"
 	"w	place=town		poly_place5\n"
 	"w	place=city		poly_place6\n"
-	"w	power=line		powerline\n"
-	"w	railway=abandoned	rail_abandoned\n"
-	"w	railway=disused		rail_disused\n"
-	"w	railway=light_rail	rail_light\n"
-	"w	railway=monorail	rail_mono\n"
-	"w	railway=narrow_gauge	rail_narrow_gauge\n"
-	"w	railway=preserved	rail_preserved\n"
+	//"w	power=line		powerline\n"
+	//"w	railway=abandoned	rail_abandoned\n"
+	//"w	railway=disused		rail_disused\n"
+	//"w	railway=light_rail	rail_light\n"
+	//"w	railway=monorail	rail_mono\n"
+	//"w	railway=narrow_gauge	rail_narrow_gauge\n"
+	//"w	railway=preserved	rail_preserved\n"
 	"w	railway=rail		rail\n"
 	"w	railway=subway		rail_subway\n"
 	"w	railway=tram		rail_tram\n"
 	"w	route=ferry		ferry\n"
-	"w	route=ski		piste_nordic\n"
-	"w	sport=*			poly_sport\n"
+	//"w	route=ski		piste_nordic\n"
+	//"w	sport=*			poly_sport\n"
 	"w	tourism=artwork		poly_artwork\n"
 	"w	tourism=attraction	poly_attraction\n"
 	"w	tourism=camp_site	poly_camp_site\n"
@@ -709,12 +756,13 @@ static char *attrmap={
 };
 
 
+
 static void
 build_attrmap_line(char *line)
 {
 	char *t=NULL,*kvl=NULL,*i=NULL,*p,*kv;
-	struct attr_mapping ***attr_mapping_curr,*attr_mapping=g_malloc0(sizeof(struct attr_mapping));
-	int idx,attr_mapping_count=0,*attr_mapping_curr_count;
+	struct attr_mapping *attr_mapping=g_malloc0(sizeof(struct attr_mapping));
+	int idx,attr_mapping_count=0;
 	t=line;
 	p=strchr(t,'\t');
 	if (p) {
@@ -731,15 +779,14 @@ build_attrmap_line(char *line)
 	if (t[0] == 'w') {
 		if (! i)
 			i="street_unkn";
-		attr_mapping_curr=&attr_mapping_way;
-		attr_mapping_curr_count=&attr_mapping_way_count;
 	} else {
 		if (! i)
 			i="point_unkn";
-		attr_mapping_curr=&attr_mapping_node;
-		attr_mapping_curr_count=&attr_mapping_node_count;
 	}
 	attr_mapping->type=item_from_name(i);
+	if (!attr_mapping->type) {
+		printf("no id found for '%s'\n",i);
+	}
 	while ((kv=strtok(kvl, ","))) {
 		kvl=NULL;
 		if (!(idx=(int)(long)g_hash_table_lookup(attr_hash, kv))) {
@@ -750,8 +797,19 @@ build_attrmap_line(char *line)
 		attr_mapping->attr_present_idx[attr_mapping_count++]=idx;
 		attr_mapping->attr_present_idx_count=attr_mapping_count;
 	}
-	*attr_mapping_curr=g_realloc(*attr_mapping_curr, sizeof(**attr_mapping_curr)*(*attr_mapping_curr_count+1));
-	(*attr_mapping_curr)[(*attr_mapping_curr_count)++]=attr_mapping;
+	if (t[0]== 'w') {
+		attr_mapping_way=g_realloc(attr_mapping_way, sizeof(*attr_mapping_way)*(attr_mapping_way_count+1));
+		attr_mapping_way[attr_mapping_way_count++]=attr_mapping;
+	}
+	if (t[0]== '?' && doway2poi) {
+		attr_mapping_way2poi=g_realloc(attr_mapping_way2poi, sizeof(*attr_mapping_way2poi)*(attr_mapping_way2poi_count+1));
+		attr_mapping_way2poi[attr_mapping_way2poi_count++]=attr_mapping;
+	}
+	if (t[0]!= 'w') {
+		attr_mapping_node=g_realloc(attr_mapping_node, sizeof(*attr_mapping_node)*(attr_mapping_node_count+1));
+		attr_mapping_node[attr_mapping_node_count++]=attr_mapping;
+	}
+
 }
 
 static void
@@ -775,7 +833,20 @@ build_attrmap(FILE* rule_file)
     // use hardcoded default attributes
     else
     {
-        char *p,*map=g_strdup(attrmap);
+        char *p,*map;
+ 		if (border_only_map==1)
+ 		{
+ 			map=g_strdup(attrmap_bo);
+ 		}
+ 		else if (coastline_only_map==1)
+ 		{
+ 			map=g_strdup(attrmap_cl);
+ 		}
+ 		else
+ 		{
+ 			map=g_strdup(attrmap_normal);
+ 		}
+
         while (map) {
             p=strchr(map,'\n');
             if (p)
@@ -804,7 +875,8 @@ build_countrytable(void)
 		}
 	}
 }
-static void
+
+void
 osm_warning(char *type, long long id, int cont, char *fmt, ...)
 {
 	char str[4096];
@@ -813,6 +885,17 @@ osm_warning(char *type, long long id, int cont, char *fmt, ...)
 	vsnprintf(str, sizeof(str), fmt, ap);
 	va_end(ap);
 	fprintf(stderr,"%shttp://www.openstreetmap.org/browse/%s/"LONGLONG_FMT" %s",cont ? "":"OSM Warning:",type,id,str);
+}
+
+void
+osm_info(char *type, long long id, int cont, char *fmt, ...)
+{
+	char str[4096];
+	va_list ap;
+	va_start(ap, fmt);
+	vsnprintf(str, sizeof(str), fmt, ap);
+	va_end(ap);
+	fprintf(stderr,"%shttp://www.openstreetmap.org/browse/%s/"LONGLONG_FMT" %s",cont ? "":"OSM Info:",type,id,str);
 }
 
 static void
@@ -830,7 +913,7 @@ attr_strings_save(enum attr_strings id, char *str)
 	attr_strings_buffer_len+=strlen(str)+1;
 }
 
-static long long
+long long
 item_bin_get_nodeid(struct item_bin *ib)
 {
 	long long *ret=item_bin_get_attr(ib, attr_osm_nodeid, NULL);
@@ -839,7 +922,7 @@ item_bin_get_nodeid(struct item_bin *ib)
 	return 0;
 }
 
-static long long
+long long
 item_bin_get_wayid(struct item_bin *ib)
 {
 	long long *ret=item_bin_get_attr(ib, attr_osm_wayid, NULL);
@@ -848,7 +931,7 @@ item_bin_get_wayid(struct item_bin *ib)
 	return 0;
 }
 
-static long long
+long long
 item_bin_get_relationid(struct item_bin *ib)
 {
 	long long *ret=item_bin_get_attr(ib, attr_osm_relationid, NULL);
@@ -955,6 +1038,11 @@ osm_add_tag(char *k, char *v)
 			flags[0] |= AF_SPEED_LIMIT;
 		level=5;
 	}
+	if (! strcmp(k,"toll")) {
+		if (!strcmp(v,"1")) {
+			flags[0] |= AF_TOLL;
+		}
+	}
 	if (! strcmp(k,"access")) {
 		flags[access_value(v)] |= AF_DANGEROUS_GOODS|AF_EMERGENCY_VEHICLES|AF_TRANSPORT_TRUCK|AF_DELIVERY_TRUCK|AF_PUBLIC_BUS|AF_TAXI|AF_HIGH_OCCUPANCY_CAR|AF_CAR|AF_MOTORCYCLE|AF_MOPED|AF_HORSE|AF_BIKE|AF_PEDESTRIAN;
 		level=5;
@@ -1018,6 +1106,9 @@ osm_add_tag(char *k, char *v)
 	if (! strcmp(k,"hazmat")) {
 		flags[access_value(v)] |= AF_DANGEROUS_GOODS;
 		level=5;
+	}
+	if (! strcmp(k,"tunnel") && !strcmp(v,"1")) {
+		flags[0] |= AF_UNDERGROUND;
 	}
 	if (! strcmp(k,"note"))
 		level=5;
@@ -1138,20 +1229,11 @@ osm_add_tag(char *k, char *v)
 
 int coord_count;
 
-struct node_item {
-	int id;
-	char ref_node;
-	char ref_way;
-	char ref_ref;
-	char dummy;
-	struct coord c;
-};
-
 static void
 extend_buffer(struct buffer *b)
 {
 	b->malloced+=b->malloced_step;
-	b->base=realloc(b->base, b->malloced);
+	b->base=realloc(b->base, (size_t)b->malloced);
 	if (b->base == NULL) {
 		fprintf(stderr,"realloc of %d bytes failed\n",(int)b->malloced);
 		exit(1);
@@ -1216,7 +1298,7 @@ osm_add_node(osmid id, double lat, double lon)
 		if (ni->id > nodeid_last) {
 			nodeid_last=ni->id;
 		} else {
-			fprintf(stderr,"INFO: Nodes out of sequence (new %d vs old %d), adding hash\n", ni->id, nodeid_last);
+			//fprintf(stderr,"INFO: Nodes out of sequence (new %d vs old %d), adding hash\n", ni->id, nodeid_last);
 			node_hash=g_hash_table_new(NULL, NULL);
 			node_buffer_to_hash();
 		}
@@ -1228,6 +1310,16 @@ osm_add_node(osmid id, double lat, double lon)
 			nodeid=0;
 		}
 
+}
+
+void
+clear_node_item_buffer(void)
+{
+	int j,count=node_buffer.size/sizeof(struct node_item);
+	struct node_item *ni=(struct node_item *)(node_buffer.base);
+	for (j = 0 ; j < count ; j++) {
+		ni[j].ref_way=0;
+	}
 }
 
 static struct node_item *
@@ -1281,7 +1373,6 @@ node_item_get(int id)
 		if (interval > 1)
 			interval/=2;
 	}
-
 	return &ni[p];
 }
 
@@ -1393,7 +1484,6 @@ int boundary;
 void
 osm_add_relation(osmid id)
 {
-	struct attr idattr = { attr_type };
 	current_id=id;
 	in_relation=1;
 	debug_attr_buffer[0]='\0';
@@ -1402,12 +1492,81 @@ osm_add_relation(osmid id)
 	admin_level=-1;
 	boundary=0;
 	item_bin_init(item_bin, type_none);
-	idattr.u.num64=&current_id;
-	item_bin_add_attr(item_bin, &idattr);
+	item_bin_add_attr_longlong(item_bin, attr_osm_relationid, current_id);
 }
 
+static int
+country_id_from_iso2(char *iso)
+{
+	int ret=0;
+	if (iso)
+	{
+		// make lowercase
+		int i99;
+		for (i99 = 0; iso[i99]; i99++)
+		{
+			iso[i99] = tolower(iso[i99]);
+		}
+		struct country_search *search;
+		struct attr country_iso2,country_id;
+		struct item *item;
+		country_iso2.type=attr_country_iso2;
+		country_iso2.u.str=iso;
+		search=country_search_new(&country_iso2,0);
+		if ((item=country_search_get_item(search)) && item_attr_get(item, attr_country_id, &country_id))
+		{
+			ret=country_id.u.num;
+			if (debug_itembin(3))
+			{
+				fprintf(stderr,"country id(1)=%d\n", ret);
+			}
+		}
+		else
+		{
+			if (debug_itembin(3))
+			{
+				fprintf(stderr,"country id(2)=%d\n", ret);
+			}
+		}
+		country_search_destroy(search);
+	}
+	return ret;
+}
+
+static struct country_table *
+country_from_countryid(int id)
+{
+	int i;
+	for (i = 0 ; i < sizeof(country_table)/sizeof(struct country_table) ; i++)
+	{
+		//if (debug_itembin(3))
+		//{
+		//	fprintf(stderr,"== country_from_countryid: %d ==\n", country_table[i].countryid);
+		//}
+
+		if (country_table[i].countryid == id)
+		{
+			return &country_table[i];
+		}
+	}
+
+	//if (debug_itembin(3))
+	//{
+	//	fprintf(stderr,"== country_from_countryid: return NULL ==\n");
+	//}
+
+	return NULL;
+}
+
+struct country_table *
+country_from_iso2(char *iso)
+{
+	return country_from_countryid(country_id_from_iso2(iso));
+}
+
+
 void
-osm_end_relation(FILE *turn_restrictions, FILE *boundaries)
+osm_end_relation(struct maptool_osm *osm)
 {
 	in_relation=0;
 	if ((!strcmp(relation_type, "multipolygon") || !strcmp(relation_type, "boundary")) && boundary) {
@@ -1421,11 +1580,11 @@ osm_end_relation(FILE *turn_restrictions, FILE *boundaries)
 			fclose(f);
 		}
 #endif
-		item_bin_write(item_bin, boundaries);
+		item_bin_write(item_bin, osm->boundaries);
 	}
 
 	if (!strcmp(relation_type, "restriction") && (item_bin->type == type_street_turn_restriction_no || item_bin->type == type_street_turn_restriction_only))
-		item_bin_write(item_bin, turn_restrictions);
+		item_bin_write(item_bin, osm->turn_restrictions);
 }
 
 void
@@ -1464,19 +1623,17 @@ relation_add_tag(char *k, char *v)
 	} else if (!strcmp(k,"admin_level")) {
 		admin_level=atoi(v);
 	} else if (!strcmp(k,"boundary")) {
-		if (!strcmp(v,"administrative")) {
+		if (!strcmp(v,"administrative") || (experimental && !strcmp(v,"postal_code"))) {
 			boundary=1;
 		}
 	} else if (!strcmp(k,"ISO3166-1")) {
 		strcpy(iso_code, v);
 	}
-#if 0
 	if (add_tag) {
 		char tag[strlen(k)+strlen(v)+2];
 		sprintf(tag,"%s=%s",k,v);
 		item_bin_add_attr_string(item_bin, attr_osm_tag, tag);
 	}
-#endif
 }
 
 
@@ -1504,48 +1661,69 @@ attr_longest_match(struct attr_mapping **mapping, int mapping_count, enum item_t
 		if (sum > 0 && sum == longest && ret < types_count)
 			types[ret++]=curr->type;
 	}
-	memset(attr_present, 0, sizeof(*attr_present)*attr_present_count);
 	return ret;
 }
 
+static void
+attr_longest_match_clear(void)
+{
+	memset(attr_present, 0, sizeof(*attr_present)*attr_present_count);
+}
+
 void
-osm_end_way(FILE *out)
+osm_end_way(struct maptool_osm *osm)
 {
 	int i,count;
 	int *def_flags,add_flags;
 	enum item_type types[10];
 	struct item_bin *item_bin;
+	int count_lines=0, count_areas=0;
 
 	in_way=0;
 
-	if (! out)
+	if (! osm->ways)
+	{
 		return;
+	}
 
-	if (dedupe_ways_hash) {
+	if (dedupe_ways_hash)
+	{
 		if (g_hash_table_lookup(dedupe_ways_hash, (gpointer)(long)wayid))
 			return;
 		g_hash_table_insert(dedupe_ways_hash, (gpointer)(long)wayid, (gpointer)1);
 	}
 
 	count=attr_longest_match(attr_mapping_way, attr_mapping_way_count, types, sizeof(types)/sizeof(enum item_type));
-	if (!count) {
+	if (!count)
+	{
 		count=1;
 		types[0]=type_street_unkn;
 	}
-	if (count >= 10) {
+	if (count >= 10)
+	{
 		fprintf(stderr,"way id %ld\n",osmid_attr_value);
 		dbg_assert(count < 10);
 	}
-	for (i = 0 ; i < count ; i++) {
+	for (i = 0 ; i < count ; i++)
+	{
 		add_flags=0;
 		if (types[i] == type_none)
 			continue;
 		if (ignore_unkown && (types[i] == type_street_unkn || types[i] == type_point_unkn))
 			continue;
+		if (types[i] != type_street_unkn)
+		{
+			if(types[i]<type_area) 	
+				count_lines++;	
+			else	
+				count_areas++;
+		}
 		item_bin=init_item(types[i]);
 		item_bin_add_coord(item_bin, coord_buffer, coord_count);
+		nodes_ref_item_bin(item_bin);
 		def_flags=item_get_default_flags(types[i]);
-		if (def_flags) {
+		if (def_flags)
+		{
 			flags_attr_value=(*def_flags | flags[0] | flags[1]) & ~flags[2];
 			if (flags_attr_value != *def_flags)
 				add_flags=1;
@@ -1559,21 +1737,49 @@ osm_end_way(FILE *out)
 			item_bin_add_attr_int(item_bin, attr_flags, flags_attr_value);
 		if (maxspeed_attr_value)
 			item_bin_add_attr_int(item_bin, attr_maxspeed, maxspeed_attr_value);
-		item_bin_write(item_bin,out);
+
+		// with special match
+		// **buggy** item_bin_write_match(item_bin, attr_street_name, attr_street_name_match, osm->ways);
+		// just original string
+		item_bin_write(item_bin,osm->ways);
 	}
+
+	/*
+	if(osm->line2poi) {
+		count=attr_longest_match(attr_mapping_way2poi, attr_mapping_way2poi_count, types, sizeof(types)/sizeof(enum item_type));
+		dbg_assert(count < 10);
+		for (i = 0 ; i < count ; i++) {
+			if (types[i] == type_none || types[i] == type_point_unkn)
+				continue;
+			item_bin=init_item(types[i]);
+			item_bin_add_coord(item_bin, coord_buffer, coord_count);
+			item_bin_add_attr_string(item_bin, attr_label, attr_strings[attr_string_label]);
+			item_bin_add_attr_string(item_bin, attr_house_number, attr_strings[attr_string_house_number]);
+			item_bin_add_attr_string(item_bin, attr_street_name, attr_strings[attr_string_street_name]);
+			item_bin_add_attr_string(item_bin, attr_phone, attr_strings[attr_string_phone]);
+			item_bin_add_attr_string(item_bin, attr_fax, attr_strings[attr_string_fax]);
+			item_bin_add_attr_string(item_bin, attr_email, attr_strings[attr_string_email]);
+			item_bin_add_attr_string(item_bin, attr_county_name, attr_strings[attr_string_county_name]); 
+			item_bin_add_attr_string(item_bin, attr_url, attr_strings[attr_string_url]);
+			item_bin_add_attr_longlong(item_bin, attr_osm_wayid, osmid_attr_value);
+			item_bin_write(item_bin, count_areas<count_lines?osm->line2poi:osm->poly2poi);
+		}
+	}
+	*/
+
+	attr_longest_match_clear();
 }
 
 void
-osm_end_node(FILE *out)
+osm_end_node(struct maptool_osm *osm)
 {
-	int conflict,count,i;
+	int count,i;
 	char *postal;
 	enum item_type types[10];
-	struct country_table *result=NULL, *lookup;
 	struct item_bin *item_bin;
 	in_node=0;
 
-	if (!out || ! node_is_tagged || ! nodeid)
+	if (!osm->nodes || ! node_is_tagged || ! nodeid)
 		return;
 	count=attr_longest_match(attr_mapping_node, attr_mapping_node_count, types, sizeof(types)/sizeof(enum item_type));
 	if (!count) {
@@ -1582,12 +1788,20 @@ osm_end_node(FILE *out)
 	}
 	dbg_assert(count < 10);
 	for (i = 0 ; i < count ; i++) {
-		conflict=0;
 		if (types[i] == type_none)
 			continue;
 		if (ignore_unkown && (types[i] == type_street_unkn || types[i] == type_point_unkn))
 			continue;
 		item_bin=init_item(types[i]);
+
+		if (item_is_town(*item_bin) && attr_strings[attr_string_label])
+		{
+			if (debug_itembin(ib))
+			{
+				fprintf(stderr,"osm_end_node: have town: %s\n", attr_strings[attr_string_label]);
+			}
+		}
+
 		if (item_is_town(*item_bin) && attr_strings[attr_string_population])
 			item_bin_set_type_by_population(item_bin, atoi(attr_strings[attr_string_population]));
 		item_bin_add_coord(item_bin, &ni->c, 1);
@@ -1608,43 +1822,254 @@ osm_end_node(FILE *out)
 				*sep='\0';
 			item_bin_add_attr_string(item_bin, item_is_town(*item_bin) ? attr_town_postal : attr_postal, postal);
 		}
-		item_bin_write(item_bin,out);
-		if (item_is_town(*item_bin) && attr_strings[attr_string_label]) {
-			char *tok,*buf=is_in_buffer;
-			if (!buf[0])
-				strcpy(is_in_buffer, "Unknown");
-			while ((tok=strtok(buf, ",;"))) {
-				while (*tok==' ')
-					tok++;
-				lookup=g_hash_table_lookup(country_table_hash,tok);
-				if (lookup) {
-					if (result && result->countryid != lookup->countryid) {
-						osm_warning("node",nodeid,0,"conflict for %s %s country %d vs %d\n", attr_strings[attr_string_label], debug_attr_buffer, lookup->countryid, result->countryid);
-						conflict=1;
-					}
-					result=lookup;
-				}
-				buf=NULL;
-			}
-			if (result) {
-				if (!result->file) {
-					char *name=g_strdup_printf("country_%d.bin.unsorted", result->countryid);
-					result->file=fopen(name,"wb");
-					g_free(name);
-				}
-				if (result->file) {
-					item_bin=init_item(item_bin->type);
-					item_bin_add_coord(item_bin, &ni->c, 1);
-					item_bin_add_attr_string(item_bin, attr_town_postal, postal);
-					item_bin_add_attr_string(item_bin, attr_county_name, attr_strings[attr_string_county_name]); 
-					item_bin_add_attr_string(item_bin, attr_town_name, attr_strings[attr_string_label]);
-					item_bin_write_match(item_bin, attr_town_name, attr_town_name_match, result->file);
-				}
-
-			}
+		item_bin_write(item_bin,osm->nodes);
+		if (item_is_town(*item_bin) && attr_strings[attr_string_label] && osm->towns) {
+			item_bin=init_item(item_bin->type);
+			item_bin_add_coord(item_bin, &ni->c, 1);
+			item_bin_add_attr_string(item_bin, attr_osm_is_in, is_in_buffer);
+			item_bin_add_attr_longlong(item_bin, attr_osm_nodeid, osmid_attr_value);
+			item_bin_add_attr_string(item_bin, attr_town_postal, postal);
+			item_bin_add_attr_string(item_bin, attr_county_name, attr_strings[attr_string_county_name]); 
+			item_bin_add_attr_string(item_bin, attr_town_name, attr_strings[attr_string_label]);
+			item_bin_write(item_bin, osm->towns);
 		}
 	}
 	processed_nodes_out++;
+	attr_longest_match_clear();
+}
+
+static struct country_table *
+osm_process_town_unknown_country(void)
+{
+	static struct country_table *unknown;
+	unknown=country_from_countryid(999);
+	return unknown;
+}
+
+static struct country_table *
+osm_process_item_fixed_country(void)
+{
+	static struct country_table *fixed;
+	fixed=country_from_countryid(global_fixed_country_id);
+	return fixed;
+}
+
+static struct country_table *
+osm_process_town_by_is_in(struct item_bin *ib,char *is_in)
+{
+	struct country_table *result=NULL, *lookup;
+	char *tok,*dup=g_strdup(is_in),*buf=dup;
+	int conflict;
+
+	while ((tok=strtok(buf, ",;")))
+	{
+		while (*tok==' ')
+		{
+			tok++;
+		}
+		lookup=g_hash_table_lookup(country_table_hash,tok);
+		if (lookup)
+		{
+			if (result && result->countryid != lookup->countryid)
+			{
+				char *label=item_bin_get_attr(ib, attr_town_name, NULL);
+				osm_warning("node",item_bin_get_nodeid(ib),0,"conflict for %s is_in=%s country %d vs %d\n", label, is_in, lookup->countryid, result->countryid);
+				conflict=1;
+			}
+			result=lookup;
+		}
+		buf=NULL;
+	}
+	g_free(dup);
+	return result;
+}
+
+static struct country_table *
+osm_process_town_by_boundary(GList *bl, struct item_bin *ib, struct coord *c, struct attr *attrs)
+{
+	GList *l,*matches=boundary_find_matches(bl, c);
+	struct boundary *match=NULL;
+
+	l=matches;
+	while (l) {
+		struct boundary *b=l->data;
+		if (b->country) {
+			if (match) {
+				//osm_warning("node",item_bin_get_nodeid(ib),0,"node (0x%x,0x%x) conflict country ", c->x, c->y);
+				//osm_warning("relation",boundary_relid(match),1,"country %d vs ",match->country->countryid);
+				//osm_warning("relation",boundary_relid(b),1,"country %d\n",b->country->countryid);
+			}
+			match=b;
+		}
+		l=g_list_next(l);
+	}
+	if (match) {
+		if (match && match->country && match->country->admin_levels) {
+			l=matches;
+			while (l) {
+				struct boundary *b=l->data;
+				char *admin_level=osm_tag_value(b->ib, "admin_level");
+				char *postal=osm_tag_value(b->ib, "postal_code");
+				if (admin_level) {
+					int a=atoi(admin_level);
+					int end=strlen(match->country->admin_levels)+3;
+					char *name;
+					if (a > 2 && a < end) {
+						enum attr_type attr_type=attr_none;
+						switch(match->country->admin_levels[a-3]) {
+						case 's':
+							attr_type=attr_state_name;
+							break;
+						case 'c':
+							attr_type=attr_county_name;
+							break;
+						case 'm':
+							attr_type=attr_municipality_name;
+							break;
+						}
+						name=osm_tag_value(b->ib, "name");
+						if (name && attr_type != attr_none) {
+							attrs[a-2].type=attr_type;
+							attrs[a-2].u.str=name;
+						}
+					}
+				}
+				if (postal) {
+					attrs[0].type=attr_town_postal;
+					attrs[0].u.str=postal;
+				}
+				l=g_list_next(l);
+			}
+		}
+		return match->country; 
+	} else
+		return NULL;
+}
+
+void
+osm_process_towns(FILE *in, FILE *boundaries, FILE *ways)
+{
+	struct item_bin *ib;
+	GList *bl=NULL;
+	struct attr attrs[10];
+
+	if (debug_itembin(1))
+	{
+		fprintf(stderr,"osm_process_towns == START ==\n");
+	}
+
+	bl=process_boundaries(boundaries, ways);
+	while ((ib=read_item(in)))
+	{
+		struct coord *c=(struct coord *)(ib+1);
+		struct country_table *result=NULL;
+		char *is_in=item_bin_get_attr(ib, attr_osm_is_in, NULL);
+		int i;
+
+		if (debug_itembin(ib))
+		{
+			fprintf(stderr,"== item ==\n");
+			dump_itembin(ib);
+		}
+
+		memset(attrs, 0, sizeof(attrs));
+		if (debug_itembin(ib))
+		{
+			fprintf(stderr,"== osm_process_town_by_boundary ==\n");
+		}
+
+		if (use_global_fixed_country_id == 1)
+		{
+			result=osm_process_item_fixed_country();
+			if (debug_itembin(ib))
+			{
+				if (result==NULL)
+				{
+					fprintf(stderr,"== osm_process_item_fixed_country == #NULL# ==\n");
+				}
+				else
+				{
+					fprintf(stderr,"== osm_process_item_fixed_country == %d ==\n",result->countryid);
+				}
+			}
+		}
+
+		if (!result)
+		{
+			result=osm_process_town_by_boundary(bl, ib, c, attrs);
+		}
+
+		if (!result)
+		{
+			if (debug_itembin(ib))
+			{
+				fprintf(stderr,"== osm_process_town_by_is_in == %s ==\n",is_in);
+			}
+			result=osm_process_town_by_is_in(ib, is_in);
+		}
+
+		if (!result && unknown_country)
+		{
+			if (debug_itembin(ib))
+			{
+				fprintf(stderr,"== osm_process_town_unknown_country ==\n");
+			}
+			result=osm_process_town_unknown_country();
+		}
+
+		if (result)
+		{
+			if (!result->file)
+			{
+				char *name=g_strdup_printf("country_%d.unsorted.tmp", result->countryid);
+				result->file=fopen(name,"wb");
+
+				if (debug_itembin(ib))
+				{
+					fprintf(stderr,"== create: country_%d.unsorted.tmp == FILEP: %p ==\n", result->countryid, result->file);
+				}
+
+				g_free(name);
+			}
+
+			if (result->file)
+			{
+				long long *nodeid;
+				if (is_in)
+					item_bin_remove_attr(ib, is_in);
+				nodeid=item_bin_get_attr(ib, attr_osm_nodeid, NULL);
+				if (nodeid)
+					item_bin_remove_attr(ib, nodeid);
+				if (attrs[0].type != attr_none)
+				{
+					char *postal=item_bin_get_attr(ib, attr_town_postal, NULL);
+					if (postal)
+						item_bin_remove_attr(ib, postal);
+				}
+				for (i = 0 ; i < 10 ; i++)
+				{
+					if (attrs[i].type != attr_none)
+						item_bin_add_attr(ib, &attrs[i]);
+				}
+				// ** used until 2011-11-06 seems bad ** item_bin_write_match(ib, attr_town_name, attr_town_name_match, result->file);
+				item_bin_town_write_match(ib, attr_town_name, attr_town_name_match, result->file);
+				// ** origname ** item_bin_write(ib,result->file);
+			}
+		}
+		else
+		{
+			if (debug_itembin(ib))
+			{
+				fprintf(stderr,"== no result ==\n");
+			}
+		}
+	}
+
+	if (debug_itembin(1))
+	{
+		fprintf(stderr,"osm_process_towns == END ==\n");
+	}
+
 }
 
 void
@@ -1659,8 +2084,15 @@ sort_countries(int keep_tmpfiles)
 			fclose(co->file);
 			co->file=NULL;
 		}
-		name_in=g_strdup_printf("country_%d.bin.unsorted", co->countryid);
-		name_out=g_strdup_printf("country_%d.bin", co->countryid);
+		name_in=g_strdup_printf("country_%d.unsorted.tmp", co->countryid);
+		name_out=g_strdup_printf("country_%d.tmp", co->countryid);
+
+		if (debug_itembin(2))
+		{
+			fprintf(stderr,"in=country_%d.unsorted.tmp\n", co->countryid);
+			fprintf(stderr,"out=country_%d.tmp\n", co->countryid);
+		}
+
 		co->r=world_bbox;
 		item_bin_sort_file(name_in, name_out, &co->r, &co->size);
 		if (!keep_tmpfiles)
@@ -1812,8 +2244,192 @@ get_way(FILE *way, FILE *ways_index, struct coord *c, long long wayid, struct it
 	return NULL;
 }
 
+struct turn_restriction {
+	osmid relid;
+	enum item_type type;
+	struct coord *c[3];
+	int c_count[3];
+};
+
+static void
+process_turn_restrictions_member(void *func_priv, void *relation_priv, struct item_bin *member, void *member_priv)
+{
+	int count,type=(long)member_priv;
+	struct turn_restriction *turn_restriction=relation_priv;
+	struct coord *c=(struct coord *)(member+1);
+	int ccount=member->clen/2;
+
+	if (member->type < type_line) 
+		count=1;	
+	else
+		count=2;
+	turn_restriction->c[type]=g_renew(struct coord, turn_restriction->c[type], turn_restriction->c_count[type]+count);
+	turn_restriction->c[type][turn_restriction->c_count[type]++]=c[0];
+	if (count > 1) 
+		turn_restriction->c[type][turn_restriction->c_count[type]++]=c[ccount-1];
+}
+
+static void
+process_turn_restrictions_fromto(struct turn_restriction *t, int type, struct coord **c)
+{
+	int i,j;
+	for (i = 0 ; i < t->c_count[type] ; i+=2) {
+		for (j = 0 ; j < t->c_count[1] ; j++) {
+			if (coord_is_equal(t->c[type][i],t->c[1][j])) {
+				c[0]=&t->c[type][i+1];
+				c[1]=&t->c[type][i];
+				return;
+			}
+			if (coord_is_equal(t->c[type][i+1],t->c[1][j])) {
+				c[0]=&t->c[type][i];
+				c[1]=&t->c[type][i+1];
+				return;
+			}
+		}
+	}
+}
+
+static void
+process_turn_restrictions_dump_coord(struct coord *c, int count)
+{
+	int i;
+	for (i = 0 ; i < count ; i++) {
+		fprintf(stderr,"(0x%x,0x%x)",c[i].x,c[i].y);
+	}
+}
+
+static void
+process_turn_restrictions_finish(GList *tr, FILE *out)
+{
+	GList *l=tr;
+	while (l) {
+		struct turn_restriction *t=l->data;
+		struct coord *c[4];
+		struct item_bin *ib=item_bin;
+
+		if (!t->c_count[0]) {
+			//osm_warning("relation",t->relid,0,"turn restriction: from member not found\n");
+		} else if (!t->c_count[1]) {
+			//osm_warning("relation",t->relid,0,"turn restriction: via member not found\n");
+		} else if (!t->c_count[2]) {
+			//osm_warning("relation",t->relid,0,"turn restriction: to member not found\n");
+		} else {
+			process_turn_restrictions_fromto(t, 0, c);
+			process_turn_restrictions_fromto(t, 2, c+2);
+			if (!c[0] || !c[2]) {
+				//osm_warning("relation",t->relid,0,"turn restriction: via (");
+				//process_turn_restrictions_dump_coord(t->c[1], t->c_count[1]);
+				//fprintf(stderr,")");
+				if (!c[0]) {
+					//fprintf(stderr," failed to connect to from (");
+					//process_turn_restrictions_dump_coord(t->c[0], t->c_count[0]);
+					//fprintf(stderr,")");
+				}
+				if (!c[2]) {
+					//fprintf(stderr," failed to connect to to (");
+					//process_turn_restrictions_dump_coord(t->c[2], t->c_count[2]);
+					//fprintf(stderr,")");
+				}
+				//fprintf(stderr,"\n");
+			} else {
+				if (t->c_count[1] <= 2) {
+					item_bin_init(ib,t->type);
+					item_bin_add_coord(ib, c[0], 1);
+					item_bin_add_coord(ib, c[1], 1);
+					if (t->c_count[1] > 1) 
+						item_bin_add_coord(ib, c[3], 1);
+					item_bin_add_coord(ib, c[2], 1);
+					item_bin_write(ib, out);
+				}
+				
+			}
+		}
+		g_free(t);
+		l=g_list_next(l);
+	}
+	g_list_free(tr);
+}
+
+static GList *
+process_turn_restrictions_setup(FILE *in, struct relations *relations)
+{
+	struct relation_member fromm,tom,viam,tmpm;
+	long long relid;
+	struct item_bin *ib;
+	struct relations_func *relations_func;
+	int min_count;
+	GList *turn_restrictions=NULL;
+	
+	fseek(in, 0, SEEK_SET);
+	relations_func=relations_func_new(process_turn_restrictions_member, NULL);
+	while ((ib=read_item(in))) {
+		struct turn_restriction *turn_restriction=g_new0(struct turn_restriction, 1);
+		relid=item_bin_get_relationid(ib);
+		turn_restriction->relid=relid;
+		turn_restriction->type=ib->type;
+		min_count=0;
+		if (!search_relation_member(ib, "from",&fromm,&min_count)) {
+			//osm_warning("relation",relid,0,"turn restriction: from member missing\n");
+			continue;
+		}
+		if (search_relation_member(ib, "from",&tmpm,&min_count)) {
+			//osm_warning("relation",relid,0,"turn restriction: multiple from members\n");
+			continue;
+		}
+		min_count=0;
+		if (!search_relation_member(ib, "to",&tom,&min_count)) {
+			//osm_warning("relation",relid,0,"turn restriction: to member missing\n");
+			continue;
+		}
+		if (search_relation_member(ib, "to",&tmpm,&min_count)) {
+			//osm_warning("relation",relid,0,"turn restriction: multiple to members\n");
+			continue;
+		}
+		min_count=0;
+		if (!search_relation_member(ib, "via",&viam,&min_count)) {
+			//osm_warning("relation",relid,0,"turn restriction: via member missing\n");
+			continue;
+		}
+		if (search_relation_member(ib, "via",&tmpm,&min_count)) {
+			//osm_warning("relation",relid,0,"turn restriction: multiple via member\n");
+			continue;
+		}
+		if (fromm.type != 2) {
+			//osm_warning("relation",relid,0,"turn restriction: wrong type for from member ");
+			//osm_warning(osm_types[fromm.type],fromm.id,1,"\n");
+			continue;
+		}
+		if (tom.type != 2) {
+			//osm_warning("relation",relid,0,"turn restriction: wrong type for to member ");
+			//osm_warning(osm_types[tom.type],tom.id,1,"\n");
+			continue;
+		}
+		if (viam.type != 1 && viam.type != 2) {
+			//osm_warning("relation",relid,0,"turn restriction: wrong type for via member ");
+			//osm_warning(osm_types[viam.type],viam.id,1,"\n");
+			continue;
+		}
+		relations_add_func(relations, relations_func, turn_restriction, (gpointer) 0, fromm.type, fromm.id);
+		relations_add_func(relations, relations_func, turn_restriction, (gpointer) 1, viam.type, viam.id);
+		relations_add_func(relations, relations_func, turn_restriction, (gpointer) 2, tom.type, tom.id);
+		turn_restrictions=g_list_append(turn_restrictions, turn_restriction);
+	}
+	return turn_restrictions;
+}
+
 void
 process_turn_restrictions(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, FILE *out)
+{
+	struct relations *relations=relations_new();
+	GList *turn_restrictions;
+	fseek(in, 0, SEEK_SET);
+	turn_restrictions=process_turn_restrictions_setup(in, relations);
+	relations_process(relations, coords, ways, NULL);
+	process_turn_restrictions_finish(turn_restrictions, out);
+}
+
+void
+process_turn_restrictions_old(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, FILE *out)
 {
 	struct relation_member fromm,tom,viam,tmpm;
 	struct node_item ni;
@@ -1821,7 +2437,6 @@ process_turn_restrictions(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, 
 	char from_buffer[65536],to_buffer[65536],via_buffer[65536];
 	struct item_bin *ib,*from=(struct item_bin *)from_buffer,*to=(struct item_bin *)to_buffer,*via=(struct item_bin *)via_buffer;
 	struct coord *fromc,*toc,*viafrom,*viato,*tmp;
-	fseek(in, 0, SEEK_SET);
 	int min_count;
 	while ((ib=read_item(in))) {
 		relid=item_bin_get_relationid(ib);
@@ -1895,11 +2510,11 @@ process_turn_restrictions(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, 
 #endif
 		if (!(fromc=get_way(ways, ways_index, viafrom, fromm.id, from, 0))) {
 			if (viam.type == 1 || !(fromc=get_way(ways, ways_index, viato, fromm.id, from, 0))) {
-				osm_warning("relation",relid,0,"turn restriction: failed to connect via ");
-				osm_warning(osm_types[viam.type],viam.id,1," 0x%x,0x%x-0x%x,0x%x to from member ",viafrom->x,viafrom->y,viato->x,viato->y);
-				osm_warning(osm_types[fromm.type],fromm.id,1," (");
-				get_way(ways, ways_index, viafrom, fromm.id, from, 1);
-				fprintf(stderr,")\n");
+				//osm_warning("relation",relid,0,"turn restriction: failed to connect via ");
+				//osm_warning(osm_types[viam.type],viam.id,1," 0x%x,0x%x-0x%x,0x%x to from member ",viafrom->x,viafrom->y,viato->x,viato->y);
+				//osm_warning(osm_types[fromm.type],fromm.id,1," (");
+				//get_way(ways, ways_index, viafrom, fromm.id, from, 1);
+				//fprintf(stderr,")\n");
 				continue;
 			} else {
 				tmp=viato;
@@ -1908,11 +2523,11 @@ process_turn_restrictions(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, 
 			}
 		}
 		if (!(toc=get_way(ways, ways_index, viato, tom.id, to, 0))) {
-			osm_warning("relation",relid,0,"turn restriction: failed to connect via ");
-			osm_warning(osm_types[viam.type],viam.id,1," 0x%x,0x%x-0x%x,0x%x to to member ",viafrom->x,viafrom->y,viato->x,viato->y);
-			osm_warning(osm_types[tom.type],tom.id,1," (");
-			get_way(ways, ways_index, viato, tom.id, to, 1);
-			fprintf(stderr,")\n");
+			//osm_warning("relation",relid,0,"turn restriction: failed to connect via ");
+			//osm_warning(osm_types[viam.type],viam.id,1," 0x%x,0x%x-0x%x,0x%x to to member ",viafrom->x,viafrom->y,viato->x,viato->y);
+			//osm_warning(osm_types[tom.type],tom.id,1," (");
+			//get_way(ways, ways_index, viato, tom.id, to, 1);
+			//fprintf(stderr,")\n");
 			continue;
 		}
 #if 0
@@ -1928,6 +2543,7 @@ process_turn_restrictions(FILE *in, FILE *coords, FILE *ways, FILE *ways_index, 
 	}
 }
 
+#if 0
 static void
 process_countries(FILE *way, FILE *ways_index)
 {
@@ -1978,6 +2594,7 @@ process_countries(FILE *way, FILE *ways_index)
 	fclose(tmp);
 	fclose(in);
 }
+#endif
 
 static void
 node_ref_way(osmid node)
@@ -1988,28 +2605,20 @@ node_ref_way(osmid node)
 		ni->ref_way++;
 }
 
-int
-resolve_ways(FILE *in, FILE *out)
+static void
+nodes_ref_item_bin(struct item_bin *ib)
 {
-	struct item_bin *ib;
-	struct coord *c;
 	int i;
-
-	fseek(in, 0, SEEK_SET);
-	while ((ib=read_item(in))) {
-		c=(struct coord *)(ib+1);
-		for (i = 0 ; i < ib->clen/2 ; i++) {
-			node_ref_way(REF(c[i]));
-		}
-	}
-	return 0;
+	struct coord *c=(struct coord *)(ib+1);
+	for (i = 0 ; i < ib->clen/2 ; i++) 
+		node_ref_way(REF(c[i]));
 }
+
 
 void
 osm_add_nd(osmid ref)
 {
 	SET_REF(coord_buffer[coord_count], ref);
-	node_ref_way(ref);
 	coord_count++;
 	if (coord_count > 65536) {
 		fprintf(stderr,"ERROR: Overflow\n");
@@ -2056,6 +2665,94 @@ write_item_part(FILE *out, FILE *out_index, FILE *out_graph, struct item_bin *or
 #endif
 }
 
+void
+ref_ways(FILE *in)
+{
+	struct item_bin *ib;
+
+	fseek(in, 0, SEEK_SET);
+	while ((ib=read_item(in))) 
+		nodes_ref_item_bin(ib);
+}
+
+void
+resolve_ways(FILE *in, FILE *out)
+{
+	struct item_bin *ib;
+	struct coord *c;
+	int i;
+	struct node_item *ni;
+
+	fseek(in, 0, SEEK_SET);
+	while ((ib=read_item(in))) {
+		c=(struct coord *)(ib+1);
+		for (i = 0 ; i < ib->clen/2 ; i++) {
+			if(!IS_REF(c[i]))
+				continue;
+			ni=node_item_get(REF(c[i]));
+			if(ni) {
+				c[i].x=ni->c.x;
+				c[i].y=ni->c.y;
+			}
+		}
+		item_bin_write(ib,out);
+	}
+}
+
+FILE *
+resolve_ways_file(FILE *in, char *suffix, char *filename)
+{
+	char *newfilename=g_strdup_printf("%s_new",filename);
+	FILE *new=tempfile(suffix,newfilename,1);
+	resolve_ways(in, new);
+	fclose(in);
+	fclose(new);
+	tempfile_rename(suffix,newfilename,filename);
+	g_free(newfilename);
+	return tempfile(suffix,filename,0);
+}
+
+/**
+  * Get POI coordinates from area/line coordinates.
+  * @param in *in input file with area/line coordinates.
+  * @param in *out output file with POI coordinates
+  * @param in type input file original contents type: type_line or type_area
+  * @returns nothing
+  */
+void
+process_way2poi(FILE *in, FILE *out, int type)
+{
+	struct item_bin *ib;
+	while ((ib=read_item(in))) {
+		int count=ib->clen/2;
+		if(count>1 && ib->type<type_line) {
+			struct coord *c=(struct coord *)(ib+1), c1, c2;
+			int done=0;
+			if(type==type_area) {
+				if(count<3) {
+					osm_warning("way",item_bin_get_wayid(ib),0,"Broken polygon, less than 3 points defined\n");
+				}  else if(!geom_poly_centroid(c, count, &c1)) {
+					osm_warning("way",item_bin_get_wayid(ib),0,"Broken polygon, area is 0\n");
+				} else {
+					if(geom_poly_point_inside(c, count, &c1)) {
+						c[0]=c1;
+					} else {
+						geom_poly_closest_point(c, count, &c1, &c2);
+						c[0]=c2;
+					}
+					done=1;
+				}
+			}
+			if(!done) {
+				geom_line_middle(c,count,&c1);
+				c[0]=c1;
+			}
+			write_item_part(out, NULL, NULL, ib, 0, 0, NULL);
+		}
+	}
+}
+
+
 int
 map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph, FILE *out_coastline, int final)
 {
@@ -2088,8 +2785,8 @@ map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph, FI
 						last=i;
 					}
 				} else if (final) {
-					osm_warning("way",item_bin_get_wayid(ib),0,"Non-existing reference to ");
-					osm_warning("node",ndref,1,"\n");
+					//osm_warning("way",item_bin_get_wayid(ib),0,"Non-existing reference to ");
+					//osm_warning("node",ndref,1,"\n");
 					remaining=(ib->len+1)*4-sizeof(struct item_bin)-i*sizeof(struct coord);
 					memmove(&c[i], &c[i+1], remaining);
 					ib->clen-=2;
@@ -2138,10 +2835,54 @@ write_countrydir(struct zip_info *zip_info)
 				sprintf(suffix,"s%d", num);
 				num++;
 				tile(&co->r, suffix, tilename, max, overlap, NULL);
-				sprintf(filename,"country_%d.bin", co->countryid);
+
+				sprintf(filename,"country_%d.tmp", co->countryid);
+				if (debug_itembin(4))
+				{
+					fprintf(stderr,"write_countrydir: tilename=%s country_%d.tmp\n", tilename ,co->countryid);
+				}
 				zipnum=add_aux_tile(zip_info, tilename, filename, co->size);
 			} while (zipnum == -1);
 			index_country_add(zip_info,co->countryid,zipnum);
+		}
+	}
+}
+
+void
+load_countries(void)
+{
+	char filename[32];
+	FILE *f;
+	int i;
+	struct country_table *co;
+
+	for (i = 0 ; i < sizeof(country_table)/sizeof(struct country_table) ; i++) {
+		co=&country_table[i];
+		sprintf(filename,"country_%d.tmp", co->countryid);
+		if (debug_itembin(4))
+		{
+			fprintf(stderr,"load_countries: country_%d.tmp\n", co->countryid);
+		}
+
+		f=fopen(filename,"rb");
+		if (f) {
+			int i,first=1;
+			struct item_bin *ib;
+			while ((ib=read_item(f))) {
+				struct coord *c=(struct coord *)(ib+1);
+				co->size+=ib->len*4+4;
+				for (i = 0 ; i < ib->clen/2 ; i++) {
+					if (first) {
+						co->r.l=c[i];
+						co->r.h=c[i];
+						first=0;
+					} else
+						bbox_extend(&c[i], &co->r);
+				}
+			}
+			fseek(f, 0, SEEK_END);
+			co->size=ftell(f);
+			fclose(f);
 		}
 	}
 }
@@ -2156,7 +2897,7 @@ remove_countryfiles(void)
 	for (i = 0 ; i < sizeof(country_table)/sizeof(struct country_table) ; i++) {
 		co=&country_table[i];
 		if (co->size) {
-			sprintf(filename,"country_%d.bin", co->countryid);
+			sprintf(filename,"country_%d.tmp", co->countryid);
 			unlink(filename);
 		}
 	}

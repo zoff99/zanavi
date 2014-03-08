@@ -26,16 +26,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class NavitArrayAdapter extends BaseAdapter
 {
 	List<String> l;
+	List<String> a;
 	Context c;
 
-	public NavitArrayAdapter(Context context, List<String> objects)
+	public NavitArrayAdapter(Context context, List<String> objects, List<String> addons)
 	{
 		this.l = objects;
+		this.a = addons;
 		this.c = context;
 	}
 
@@ -74,7 +77,27 @@ public class NavitArrayAdapter extends BaseAdapter
 		TextView text = (TextView) itemView.findViewById(R.id.text);
 		text.setText(l.get(position));
 
+		try
+		{
+			ImageView imv = (ImageView) itemView.findViewById(R.id.icon_recent_dest);
+			if (a.get(position).equals("1"))
+			{
+				imv.setImageResource(R.drawable.homeicon);
+			}
+		}
+		catch (Exception e)
+		{
+			// remove icon for other location type (empty icon space!)
+			try
+			{
+				ImageView imv = (ImageView) itemView.findViewById(R.id.icon_recent_dest);
+				imv.setImageDrawable(null);
+			}
+			catch (Exception e2)
+			{
+			}
+		}
+
 		return itemView;
 	}
-
 }

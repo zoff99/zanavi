@@ -285,8 +285,14 @@ write_item(char *tile, struct item_bin *ib, FILE *reference)
 	int size;
 
 	th=g_hash_table_lookup(tile_hash2, tile);
-	if (debug_itembin(ib)) {
+	if (debug_itembin(ib))
+	{
+		fprintf(stderr,"write_item: == START == TILE: %s == File: %p\n",tile,reference);
 		fprintf(stderr,"tile head %p\n",th);
+
+		fprintf(stderr,"== TILE:item_START ==\n");
+		dump_itembin(ib);
+		fprintf(stderr,"== TILE:item_END   ==\n");
 	}
 	if (! th)
 		th=g_hash_table_lookup(tile_hash, tile);
@@ -469,7 +475,8 @@ write_tilesdir(struct tile_info *info, struct zip_info *zip_info, FILE *out)
 
 	tiles_list=get_tiles_list();
 	info->tiles_list=&tiles_list;
-	if (phase == 3)
+	// if (phase == 3)
+	if (! info->write)
 		create_tile_hash_list(tiles_list);
 	next=g_list_first(tiles_list);
 	last=&tile_head_root;
@@ -490,7 +497,9 @@ write_tilesdir(struct tile_info *info, struct zip_info *zip_info, FILE *out)
 		while (next) {
 			if (strlen(next->data) == len) {
 				th=g_hash_table_lookup(tile_hash, next->data);
-				if (phase == 3) {
+				// if (phase == 3)
+				if (!info->write)
+				{
 					*last=th;
 					last=&th->next;
 					th->next=NULL;
@@ -635,3 +644,4 @@ index_submap_add(struct tile_info *info, struct tile_head *th)
 	item_bin_add_attr_int(item_bin, attr_zipfile_ref, th->zipnum);
 	tile_write_item_to_tile(info, item_bin, NULL, index_tile);
 }
+

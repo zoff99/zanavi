@@ -17,6 +17,9 @@
  * Boston, MA  02110-1301, USA.
  */
 
+#define _FILE_OFFSET_BITS  64
+#define _LARGEFILE_SOURCE
+#define _LARGEFILE64_SOURCE
 #include <string.h>
 #include <stdlib.h>
 #include "maptool.h"
@@ -154,6 +157,23 @@ item_bin_add_attr(struct item_bin *ib, struct attr *attr)
 }
 
 void
+item_bin_remove_attr(struct item_bin *ib, void *ptr)
+{
+	unsigned char *s=(unsigned char *)ib;
+    unsigned char *e=s+(ib->len+1)*4;
+    s+=sizeof(struct item_bin)+ib->clen*4;
+    while (s < e) {
+		struct attr_bin *ab=(struct attr_bin *)s;
+        s+=(ab->len+1)*4;
+        if ((void *)(ab+1) == ptr) {
+	        ib->len-=ab->len+1;
+            memmove(ab,s,e-s);
+            return;
+        }
+	}
+}
+
+void
 item_bin_add_attr_int(struct item_bin *ib, enum attr_type type, int val)
 {
 	struct attr attr;
@@ -225,6 +245,15 @@ item_bin_add_attr_range(struct item_bin *ib, enum attr_type type, short min, sho
 void
 item_bin_write(struct item_bin *ib, FILE *out)
 {
+	if (debug_itembin(ib))
+	{
+		fprintf(stderr,"== item_bin_write == FILE: %p ==\n",out);
+		dump_itembin(ib);
+		fprintf(stderr,"== item_bin_write == END ==\n");
+	}
+
+	// long long t=(ib->len+1)*4;
+	// fprintf(stderr,"item_bin_write:fwrite "LONGLONG_FMT"\n", t);
 	fwrite(ib, (ib->len+1)*4, 1, out);
 }
 
@@ -312,11 +341,16 @@ item_bin_dump(struct item_bin *ib, FILE *out)
 	int i;
 	char *str;
 
+	//if (debug_itembin(ib))
+	//{
+	//	fprintf(stderr,"\n== item_bin_dump == START ==\n");
+	//}
+
 	c=(struct coord *)(ib+1);
-	if (ib->type < type_line) {
-		dump_coord(c,out);
-		fprintf(out, " ");
-	}
+	//if (ib->type < type_line) {
+	//	dump_coord(c,out);
+	//	fprintf(out, " ");
+	//}
 	attr_start=(int *)(ib+1)+ib->clen;
 	attr_end=(int *)ib+ib->len+1;
 	fprintf(out,"type=%s", item_to_name(ib->type));
@@ -331,18 +365,24 @@ item_bin_dump(struct item_bin *ib, FILE *out)
 	}
 	fprintf(out," debug=\"length=%d\"", ib->len);
 	fprintf(out,"\n");
-	if (ib->type >= type_line) {
-		for (i = 0 ; i < ib->clen/2 ; i++) {
-			dump_coord(c+i,out);
-			fprintf(out,"\n");
-		}
-	}
+	//if (ib->type >= type_line) {
+	//	for (i = 0 ; i < ib->clen/2 ; i++) {
+	//		dump_coord(c+i,out);
+	//		fprintf(out,"\n");
+	//	}
+	//}
+
+	//if (debug_itembin(ib))
+	//{
+	//	fprintf(stderr,"\n== item_bin_dump == END   ==\n");
+	//}
 }
 
 void
 dump_itembin(struct item_bin *ib)
 {
-	item_bin_dump(ib, stdout);
+	// item_bin_dump(ib, stdout);
+	item_bin_dump(ib, stderr);
 }
 
 struct population_table {
@@ -424,30 +464,104 @@ item_bin_set_type_by_population(struct item_bin *ib, int population)
 	item_bin_set_type(ib, table[i-1].type);
 }
 
+void
+item_bin_town_write_match(struct item_bin *ib, enum attr_type type, enum attr_type match, FILE *out)
+{
+	char *word_orig=item_bin_get_attr(ib, type, NULL);
+	int i;
+	// ?? int len=ib->len;
+
+	if (!word_orig)
+	{
+		// fprintf(stderr,"**** NULL value ****\n");
+		return;
+	}
+
+	// fprintf(stderr,"###################################\n");
+	// fprintf(stderr,"###################################\n");
+	// fprintf(stderr,"name=%s\n",word_orig);
+
+	// xx ++ item_bin_add_attr_string(ib, match, str);
+
+	//for (i = 1 ; i < 2 ; i++)
+	//{
+		i=1;
+		char *str=linguistics_expand_special(word_orig, i);
+		if (str)
+		{
+			char *str2;
+			str2=linguistics_casefold(str);
+			if (str2)
+			{
+				// ?? ib->len=len-(len-strlen(str2));
+				//fprintf(stderr,"i=%d match1=%s\n",i,str);
+				//fprintf(stderr,"i=%d match2=%s\n",i,str2);
+				item_bin_add_attr_string(ib, match, str2);
+				g_free(str2);
+			}
+			g_free(str);
+		}
+	//}
+
+	item_bin_write(ib, out);
+
+	//if (word_orig!=NULL)
+	//{
+	//	g_free(word_orig);
+	//}
+}
+
 
 void
 item_bin_write_match(struct item_bin *ib, enum attr_type type, enum attr_type match, FILE *out)
 {
 	char *word=item_bin_get_attr(ib, type, NULL);
-	int i,words=0,len=ib->len;
+	int i;
+	//int words=0;
+	int len=ib->len;
+	//int first=1;
 	if (!word)
+	{
 		return;
-	do  {
-		if (linguistics_search(word)) {
-			for (i = 0 ; i < 3 ; i++) {
-				char *str=linguistics_expand_special(word, i);
-				if (str) {
-					ib->len=len;
-					if (i || words)
-						item_bin_add_attr_string(ib, match, str);
-					item_bin_write(ib, out);
-					g_free(str);
-				}
-			}
-			words++;
+	}
+
+	if (debug_itembin(ib))
+	{
+		fprintf(stderr,"###################################\n");
+		fprintf(stderr,"###################################\n");
+		fprintf(stderr,"name=%s\n",word);
+	}
+
+	word=linguistics_next_word(word);
+
+	while (word)
+	{
+		if (debug_itembin(ib))
+		{
+			fprintf(stderr,"word=%s\n",word);
 		}
-		word=linguistics_next_word(word);
-	} while (word);
+		for (i = 0 ; i < 3 ; i++)
+		{
+			char *str=linguistics_expand_special(word, i);
+			if (str)
+			{
+				ib->len=len;
+					if (debug_itembin(ib))
+					{
+						fprintf(stderr,"i=%d match=%s\n",i,str);
+					}
+					item_bin_add_attr_string(ib, match, str);
+				item_bin_write(ib, out);
+				g_free(str);
+			}
+		}
+		word=linguistics_next_word(NULL);
+	}
+
+	if (word!=NULL)
+	{
+		g_free(word);
+	}
 }
 
 static int

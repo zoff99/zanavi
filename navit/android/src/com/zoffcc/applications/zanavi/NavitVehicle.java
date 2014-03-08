@@ -83,6 +83,8 @@ public class NavitVehicle
 	public static GpsStatus gps_status = null;
 	public static Boolean update_location_in_progress = false;
 
+	static long last_gps_status_update = 0L;
+
 	public static Location last_location = null;
 
 	public static native void VehicleCallback(double lat, double lon, float speed, float direction, double height, float radius, long gpstime);
@@ -389,49 +391,55 @@ public class NavitVehicle
 			{
 				if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS)
 				{
-					// get new gpsstatus --------
-
-					sats1_old = Navit.sats;
-					satsInFix1_old = Navit.satsInFix;
-
-					GpsStatus stat = locationManager.getGpsStatus(null);
-
-					Navit.sats = 0;
-					Navit.satsInFix = 0;
-
-					try
+					if (last_gps_status_update + 2200 < System.currentTimeMillis())
 					{
-						Iterator<GpsSatellite> localIterator = stat.getSatellites().iterator();
-						while (localIterator.hasNext())
+						last_gps_status_update = System.currentTimeMillis();
+
+						// get new gpsstatus --------
+
+						sats1_old = Navit.sats;
+						satsInFix1_old = Navit.satsInFix;
+
+						GpsStatus stat = locationManager.getGpsStatus(null);
+
+						Navit.sats = 0;
+						Navit.satsInFix = 0;
+
+						try
 						{
-							GpsSatellite localGpsSatellite = (GpsSatellite) localIterator.next();
-							Navit.sats++;
-							if (localGpsSatellite.usedInFix())
+							Iterator<GpsSatellite> localIterator = stat.getSatellites().iterator();
+							while (localIterator.hasNext())
 							{
-								Navit.satsInFix++;
+								GpsSatellite localGpsSatellite = (GpsSatellite) localIterator.next();
+								Navit.sats++;
+								if (localGpsSatellite.usedInFix())
+								{
+									Navit.satsInFix++;
+								}
+							}
+
+							// System.out.println("checking sat status update");
+
+							if ((sats1_old != Navit.sats) || (satsInFix1_old != Navit.satsInFix))
+							{
+								//System.out.println("sat status update -> changed");
+								if (Navit.PREF_show_sat_status)
+								{
+									// redraw NavitOSDJava
+									Message msg = NavitOSDJava.progress_handler_.obtainMessage();
+									Bundle b = new Bundle();
+									msg.what = 1;
+									msg.setData(b);
+									NavitOSDJava.progress_handler_.sendMessage(msg);
+								}
 							}
 						}
-
-						System.out.println("checking sat status update");
-
-						if ((sats1_old != Navit.sats) || (satsInFix1_old != Navit.satsInFix))
+						catch (Exception e)
 						{
-							System.out.println("sat status update -> changed");
-							if (Navit.PREF_show_sat_status)
-							{
-								// redraw NavitOSDJava
-								Message msg = NavitOSDJava.progress_handler_.obtainMessage();
-								Bundle b = new Bundle();
-								msg.what = 1;
-								msg.setData(b);
-								NavitOSDJava.progress_handler_.sendMessage(msg);
-							}
+							e.printStackTrace();
 						}
 					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+
 					// Navit.set_debug_messages3_wrapper("sat: " + Navit.satsInFix + "/" + Navit.sats);
 					// System.out.println("Statellites: " + Navit.satsInFix + "/" + Navit.sats);
 					// get new gpsstatus --------
@@ -462,6 +470,25 @@ public class NavitVehicle
 					//Log.e("NavitVehicle", "call VehicleCallback 004");
 					VehicleCallback2(mock_location);
 				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static void set_mock_location__fast_no_speed(Location mock_location)
+	{
+		try
+		{
+			//locationManager_s.setTestProviderLocation("ZANavi_mock", mock_location);
+			// mock_location;
+			// System.out.println("llllllll" + mock_location.getLatitude() + " " + mock_location.getLongitude());
+			if (mock_location != null)
+			{
+				//Log.e("NavitVehicle", "call VehicleCallback 004");
+				VehicleCallback2(mock_location);
 			}
 		}
 		catch (Exception e)
