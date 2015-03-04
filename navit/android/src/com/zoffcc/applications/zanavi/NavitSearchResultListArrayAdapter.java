@@ -23,10 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class NavitSearchResultListArrayAdapter extends BaseExpandableListAdapter
@@ -103,25 +107,85 @@ public class NavitSearchResultListArrayAdapter extends BaseExpandableListAdapter
 		//if (convertView != null)
 		//{
 		// --- we need a new view object every time!! otherwise it will be mixed up !! ---
+
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		if (entry.gettype() == 1)
 		{
 			convertView = inflater.inflate(R.layout.search_result_item_street, null);
+
+			ImageView icon_view = (ImageView) convertView.findViewById(R.id.icon);
+			if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+			{
+				// leave it as it is
+			}
+			else
+			{
+				// thanks to: http://stackoverflow.com/questions/17841787/invert-colors-of-drawable-android
+				Drawable drawable_homeicon = icon_view.getResources().getDrawable(R.drawable.roadicon);
+				float[] colorMatrix_Negative = { -1.0f, 0, 0, 0, 255, //red
+						0, -1.0f, 0, 0, 255, //green
+						0, 0, -1.0f, 0, 255, //blue
+						0, 0, 0, 1.0f, 0 //alpha  
+				};
+
+				ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
+				drawable_homeicon.setColorFilter(colorFilter_Negative);
+				icon_view.setImageDrawable(drawable_homeicon);
+			}
 		}
 		else if (entry.gettype() == 3)
 		{
 			convertView = inflater.inflate(R.layout.search_result_item_poi, null);
+
+			ImageView icon_view = (ImageView) convertView.findViewById(R.id.icon);
+			if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+			{
+				// leave it as it is
+			}
+			else
+			{
+				Drawable drawable_homeicon = icon_view.getResources().getDrawable(R.drawable.poiicon);
+				float[] colorMatrix_Negative = { -1.0f, 0, 0, 0, 255, //red
+						0, -1.0f, 0, 0, 255, //green
+						0, 0, -1.0f, 0, 255, //blue
+						0, 0, 0, 1.0f, 0 //alpha  
+				};
+
+				ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
+				drawable_homeicon.setColorFilter(colorFilter_Negative);
+				icon_view.setImageDrawable(drawable_homeicon);
+			}
 		}
 		else
 		{
 			convertView = inflater.inflate(R.layout.search_result_item_town, null);
+
+			ImageView icon_view = (ImageView) convertView.findViewById(R.id.icon);
+			if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+			{
+				// leave it as it is
+			}
+			else
+			{
+				Drawable drawable_homeicon = icon_view.getResources().getDrawable(R.drawable.townicon);
+				float[] colorMatrix_Negative = { -1.0f, 0, 0, 0, 255, //red
+						0, -1.0f, 0, 0, 255, //green
+						0, 0, -1.0f, 0, 255, //blue
+						0, 0, 0, 1.0f, 0 //alpha  
+				};
+
+				ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
+				drawable_homeicon.setColorFilter(colorFilter_Negative);
+				icon_view.setImageDrawable(drawable_homeicon);
+			}
 		}
+
 		// R.layout.search_result_item_poi --> for POI result
 		//}
 
 		TextView text = (TextView) convertView.findViewById(R.id.toptext);
 		text.setText(entry.getName());
-		
+
 		return convertView;
 	}
 

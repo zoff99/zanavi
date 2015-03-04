@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2015 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,12 +19,26 @@
 
 package com.zoffcc.applications.zanavi;
 
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceManager;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.LayoutParams;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
-public class NavitPreferences extends PreferenceActivity
+public class NavitPreferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
 	@SuppressWarnings("unused")
 	private void dummy_xgettext()
@@ -194,10 +208,64 @@ public class NavitPreferences extends PreferenceActivity
 		// dummy for xgettext
 	}
 
+	// thanks to: http://stackoverflow.com/questions/26509180/no-actionbar-in-preferenceactivity-after-upgrade-to-support-library-v21
+	@SuppressLint("NewApi")
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		super.onPostCreate(savedInstanceState);
+		Toolbar bar;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+		{
+			LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+			bar.setTitle(Navit.get_text("Settings"));
+			root.addView(bar, 0); // insert at top
+		}
+		else
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(android.R.id.content);
+			ListView content = (ListView) root_view.getChildAt(0);
+
+			root_view.removeAllViews();
+
+			LinearLayout ll = new LinearLayout(this);
+			ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			ll.setOrientation(LinearLayout.VERTICAL);
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("Settings"));
+			root_view.addView(ll);
+
+			ll.addView(bar);
+			ll.addView(content);
+
+		}
+
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				//System.out.println("ZZZZZZZZZZZZZ1");
+				finish();
+			}
+		});
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
+
+		// Override how this activity is animated into view
+		// The new activity is pulled in from the left and the current activity is kept still
+		// This has to be called before onCreate
+		overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
+
 		addPreferencesFromResource(R.xml.preferences);
 
 		//		try
@@ -221,6 +289,232 @@ public class NavitPreferences extends PreferenceActivity
 
 		try
 		{
+			Preference routing_prof = findPreference("routing_profile");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				routing_prof.setEnabled(false);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference road_prof_001 = findPreference("road_priority_001");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				road_prof_001.setEnabled(false);
+			}
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_001", (68 - 10)) + 10;
+			road_prof_001.setSummary(road_prof_001.getSummary() + " [" + read_value + "]");
+
+			if (!Navit.PREF_enable_debug_functions)
+			{
+				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
+				cat.removePreference(road_prof_001);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference road_prof_002 = findPreference("road_priority_002");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				road_prof_002.setEnabled(false);
+			}
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_002", (329 - 10)) + 10;
+			road_prof_002.setSummary(road_prof_002.getSummary() + " [" + read_value + "]");
+
+			if (!Navit.PREF_enable_debug_functions)
+			{
+				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
+				cat.removePreference(road_prof_002);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference road_prof_003 = findPreference("road_priority_003");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				road_prof_003.setEnabled(false);
+			}
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_003", (5000 - 10)) + 10;
+			road_prof_003.setSummary(road_prof_003.getSummary() + " [" + read_value + "]");
+
+			if (!Navit.PREF_enable_debug_functions)
+			{
+				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
+				cat.removePreference(road_prof_003);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference road_prof_004 = findPreference("road_priority_004");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				road_prof_004.setEnabled(false);
+			}
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_004", (5 - 0)) + 0;
+			road_prof_004.setSummary(road_prof_004.getSummary() + " [" + read_value + "]");
+
+			if (!Navit.PREF_enable_debug_functions)
+			{
+				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
+				cat.removePreference(road_prof_004);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference a = findPreference("tracking_connected_pref");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				a.setEnabled(false);
+			}
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("tracking_connected_pref", (250 - 0)) + 0;
+			a.setSummary(a.getSummary() + " [" + read_value + "]");
+
+			if (!Navit.PREF_enable_debug_functions)
+			{
+				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
+				cat.removePreference(a);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference a = findPreference("tracking_angle_pref");
+			if (Navit.Navit_Largemap_DonateVersion_Installed == false)
+			{
+				a.setEnabled(false);
+			}
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("tracking_angle_pref", (40 - 0)) + 0;
+			a.setSummary(a.getSummary() + " [" + read_value + "]");
+
+			if (!Navit.PREF_enable_debug_functions)
+			{
+				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
+				cat.removePreference(a);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		disable_pref("roadspeed_warning", false, false);
+		disable_pref("lane_assist", false, false);
+
+		try
+		{
+			if (Navit.NavitDataStorageDirs != null)
+			{
+				if (Navit.NavitDataStorageDirs.length > 0)
+				{
+					//Preference a = findPreference("map_directory");
+					Preference b = findPreference("storage_directory");
+
+					int new_count = 0;
+					for (int ij = 0; ij < Navit.NavitDataStorageDirs.length; ij++)
+					{
+						if (Navit.NavitDataStorageDirs[ij] != null)
+						{
+							new_count++;
+						}
+					}
+
+					CharSequence[] entries = new CharSequence[new_count + 1];
+					CharSequence[] entryValues = new CharSequence[new_count + 1];
+					entries[0] = "Custom Path";
+					entryValues[0] = "0";
+					long avail_space = 0L;
+					String avail_space_string = "";
+					new_count = 0;
+					for (int ij = 0; ij < Navit.NavitDataStorageDirs.length; ij++)
+					{
+						System.out.println("DataStorageDir prefs list=" + Navit.NavitDataStorageDirs[ij]);
+
+						if (Navit.NavitDataStorageDirs[ij] != null)
+						{
+							avail_space = NavitAvailableSpaceHandler.getExternalAvailableSpaceInMB(Navit.NavitDataStorageDirs[ij].getAbsolutePath());
+							String avail_space_str = NavitAvailableSpaceHandler.getExternalAvailableSpaceInMBformattedString(Navit.NavitDataStorageDirs[ij].getAbsolutePath());
+							if (avail_space < 0)
+							{
+								avail_space_string = "";
+							}
+							else if (avail_space > 1200)
+							{
+								avail_space_str = NavitAvailableSpaceHandler.getExternalAvailableSpaceInGBformattedString(Navit.NavitDataStorageDirs[ij].getAbsolutePath());
+								avail_space_string = " \n[" + avail_space_str + "GB free]";
+							}
+							else
+							{
+								avail_space_string = " \n[" + avail_space_str + "MB free]";
+							}
+
+							System.out.println("DataStorageDir avail space=" + avail_space);
+
+							entries[new_count + 1] = "SD Card:" + Navit.NavitDataStorageDirs[ij].getAbsolutePath() + avail_space_string;
+							entryValues[new_count + 1] = "" + (ij + 1);
+
+							new_count++;
+						}
+						else
+						{
+							// entries[ij + 1] = "--";
+							// entryValues[ij + 1] = "-1";
+						}
+					}
+					((ListPreference) b).setEntries(entries);
+					((ListPreference) b).setEntryValues(entryValues);
+					System.out.println("DataStorageDir 009");
+				}
+				else
+				{
+					//Preference a = findPreference("map_directory");
+					Preference b = findPreference("storage_directory");
+
+					CharSequence[] entries = new CharSequence[1];
+					CharSequence[] entryValues = new CharSequence[1];
+					entries[0] = "Custom Path";
+					entryValues[0] = "0";
+					((ListPreference) b).setEntries(entries);
+					((ListPreference) b).setEntryValues(entryValues);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("DataStorageDir Ex01");
+			e.printStackTrace();
+		}
+
+		try
+		{
 			EditTextPreference mapdata_pref = ((EditTextPreference) findPreference("map_directory"));
 			//. TRANSLATORS: see en_US for english text to translate!!
 			mapdata_pref.setTitle(Navit.get_text("__PREF__title__map_directory"));
@@ -235,7 +529,7 @@ public class NavitPreferences extends PreferenceActivity
 			//. TRANSLATORS: see en_US for english text to translate!!
 			mapdata_pref.setDialogMessage(Navit.get_text("__PREF__dialogmsg__map_directory"));
 			//
-			mapdata_pref.setText(Navit.NavitDataDirectory_Maps);
+			// **dont save this!! ** mapdata_pref.setText(Navit.NavitDataDirectory_Maps);
 		}
 		catch (Exception e)
 		{
@@ -281,4 +575,149 @@ public class NavitPreferences extends PreferenceActivity
 		 * });
 		 */
 	}
+
+	@Override
+	protected void onPause()
+	{
+		// Whenever this activity is paused (i.e. looses focus because another activity is started etc)
+		// Override how this activity is animated out of view
+		// The new activity is kept still and this activity is pushed out to the left
+		overridePendingTransition(R.anim.hold, R.anim.push_out_to_left);
+		super.onPause();
+
+		// Unregister the listener whenever a key changes
+		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
+		// Set up a listener whenever a key changes
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		// System.out.println("onSharedPreferenceChanged key=" + key);
+
+		try
+		{
+			if (key.equals("road_priority_001"))
+			{
+				Preference road_prof_001 = findPreference("road_priority_001");
+				int read_value = sharedPreferences.getInt("road_priority_001", (68 - 10)) + 10;
+				int pos_start = road_prof_001.getSummary().toString().lastIndexOf("[");
+				road_prof_001.setSummary(road_prof_001.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("road_priority_002"))
+			{
+				Preference road_prof_002 = findPreference("road_priority_002");
+				int read_value = sharedPreferences.getInt("road_priority_002", (329 - 10)) + 10;
+				int pos_start = road_prof_002.getSummary().toString().lastIndexOf("[");
+				road_prof_002.setSummary(road_prof_002.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("road_priority_003"))
+			{
+				Preference road_prof_003 = findPreference("road_priority_003");
+				int read_value = sharedPreferences.getInt("road_priority_003", (5000 - 10)) + 10;
+				int pos_start = road_prof_003.getSummary().toString().lastIndexOf("[");
+				road_prof_003.setSummary(road_prof_003.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("road_priority_004"))
+			{
+				Preference road_prof_004 = findPreference("road_priority_004");
+				int read_value = sharedPreferences.getInt("road_priority_004", (5 - 0)) + 0;
+				int pos_start = road_prof_004.getSummary().toString().lastIndexOf("[");
+				road_prof_004.setSummary(road_prof_004.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("tracking_connected_pref"))
+			{
+				Preference tracking_connected_pref = findPreference("tracking_connected_pref");
+				int read_value = sharedPreferences.getInt("tracking_connected_pref", (250 - 0)) + 0;
+				int pos_start = tracking_connected_pref.getSummary().toString().lastIndexOf("[");
+				tracking_connected_pref.setSummary(tracking_connected_pref.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("tracking_angle_pref"))
+			{
+				Preference a = findPreference("tracking_angle_pref");
+				int read_value = sharedPreferences.getInt("tracking_angle_pref", (40 - 0)) + 0;
+				int pos_start = a.getSummary().toString().lastIndexOf("[");
+				a.setSummary(a.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	void disable_pref(String pref_name, boolean large_donate_only, boolean debug_function)
+	{
+		try
+		{
+			Preference a = findPreference(pref_name);
+			if ((large_donate_only) && (Navit.Navit_Largemap_DonateVersion_Installed == false))
+			{
+				a.setEnabled(false);
+			}
+			else if ((Navit.Navit_DonateVersion_Installed == false) && (Navit.Navit_Largemap_DonateVersion_Installed == false))
+			{
+				a.setEnabled(false);
+			}
+
+			if ((debug_function) && (!Navit.PREF_enable_debug_functions))
+			{
+				a.setEnabled(false);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 }

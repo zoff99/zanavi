@@ -122,6 +122,105 @@ struct route_info
 	int dir; /**< Direction to take when following the route -1 = Negative direction, 1 = Positive direction */
 };
 
+
+/**
+ * @brief A segment in the route graph or path
+ *
+ * This is a segment in the route graph or path. A segment represents a driveable way.
+ */
+struct route_segment_data
+{
+	struct item item; /**< The item (e.g. street) that this segment represents. */
+	int flags;
+	int len; /**< Length of this segment */
+/*NOTE: After a segment, various fields may follow, depending on what flags are set. Order of fields:
+ 1.) maxspeed			Maximum allowed speed on this segment. Present if NAVIT_AF_SPEED_LIMIT is set.
+ 2.) offset				If the item is segmented (i.e. represented by more than one segment), this
+ indicates the position of this segment in the item. Present if NAVIT_AF_SEGMENTED is set.
+ */
+};
+
+struct size_weight_limit
+{
+	int width;
+	int length;
+	int height;
+	int weight;
+	int axle_weight;
+};
+
+
+/**
+ * @brief A point in the route graph
+ *
+ * This represents a point in the route graph. A point usually connects two or more segments,
+ * but there are also points which don't do that (e.g. at the end of a dead-end).
+ */
+struct route_graph_point
+{
+	struct route_graph_point *hash_next; /**< Pointer to a chained hashlist of all route_graph_points with this hash */
+	struct route_graph_segment *start; /**< Pointer to a list of segments of which this point is the start. The links
+	 *  of this linked-list are in route_graph_segment->start_next.*/
+	struct route_graph_segment *end; /**< Pointer to a list of segments of which this pointer is the end. The links
+	 *  of this linked-list are in route_graph_segment->end_next. */
+	struct route_graph_segment *seg; /**< Pointer to the segment one should use to reach the destination at
+	 *  least costs */
+	struct fibheap_el *el; /**< When this point is put on a Fibonacci heap, this is a pointer
+	 *  to this point's heap-element */
+	int value; /**< The cost at which one can reach the destination from this point on */
+	struct coord c; /**< Coordinates of this point */
+	int flags; /**< Flags for this point (eg traffic distortion) */
+
+	/*
+       Dijkstra values:
+       ================
+       seg   -> what segment to use
+       value -> cost to reach destination
+     */
+};
+
+
+struct route_graph_segment_data
+{
+	struct item *item;
+	int offset;
+	int flags;
+	int len;
+	int maxspeed;
+	struct size_weight_limit size_weight;
+	int dangerous_goods;
+};
+
+/**
+ * @brief A segment in the route graph
+ *
+ * This is a segment in the route graph. A segment represents a driveable way.
+ */
+struct route_graph_segment
+{
+	struct route_graph_segment *next; /**< Linked-list pointer to a list of all route_graph_segments */
+	struct route_graph_segment *start_next; /**< Pointer to the next element in the list of segments that start at the
+	 *  same point. Start of this list is in route_graph_point->start. */
+	struct route_graph_segment *end_next; /**< Pointer to the next element in the list of segments that end at the
+	 *  same point. Start of this list is in route_graph_point->end. */
+	struct route_graph_point *start; /**< Pointer to the point this segment starts at. */
+	struct route_graph_point *end; /**< Pointer to the point this segment ends at. */
+
+	// -- NEW --
+	struct coord c_start_plus_1;	// second coord
+	struct coord c_end_minus_1;		// second to last coord
+	// -- NEW --
+
+	struct route_segment_data data; /**< The segment data */
+};
+
+
+
+
+
+
+
+
 struct street_data;
 struct tracking;
 struct vehicleprofile;
@@ -163,6 +262,9 @@ void route_destroy(struct route *this_);
 void route_path_destroy(struct route_path *this, int recurse);
 void route_graph_destroy(struct route_graph *this);
 void route_path_update(struct route *this, int cancel, int async);
+int route_get_real_oneway_mask(int road_flag, int mask);
+struct route_graph_segment *route_graph_get_segment(struct route_graph *graph, struct street_data *sd, struct route_graph_segment *last);
+
 /* end of prototypes */
 #ifdef __cplusplus
 }

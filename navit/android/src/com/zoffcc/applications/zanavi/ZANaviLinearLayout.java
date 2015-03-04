@@ -71,8 +71,18 @@ public class ZANaviLinearLayout extends LinearLayout
 	@Override
 	public void onDraw(Canvas c)
 	{
+
+		// System.out.println("XYZ:ZANaviLinearLayout -> onDraw");
+
+		//		if (2 == 1 + 1)
+		//		{
+		//			return;
+		//		}
+
 		if (this.need_size_change)
 		{
+			System.out.println("XYZ:ZANaviLinearLayout -> onDraw [need_size_change]");
+
 			int w = this.getWidth();
 			int h = this.getHeight();
 
@@ -131,7 +141,7 @@ public class ZANaviLinearLayout extends LinearLayout
 			NavitOSDJava.OSD_element_bg_001_compass = Color.argb(255, 236, 229, 182); //  236, 229, 182
 			NavitOSDJava.OSD_element_text_001 = Color.argb(255, 255, 255, 255); // text color
 			NavitOSDJava.OSD_element_text_shadow_001 = Color.rgb(0, 0, 0); // text shadow
-			NavitOSDJava.OSD_element_text_shadow_width = 5; // 3 + 2;
+			NavitOSDJava.OSD_element_text_shadow_width = (int) (5.0f * real_factor); // 3 + 2;
 
 			// streetname --
 			NavitOSDJava.nextt_str_w = mCanvasWidth;
@@ -361,13 +371,16 @@ public class ZANaviLinearLayout extends LinearLayout
 
 		try
 		{
-			child1.postInvalidate();
-			child2.postInvalidate();
-			child3.postInvalidate();
-			child4.postInvalidate();
-			child5.postInvalidate();
-			child6.postInvalidate();
-			child7.postInvalidate();
+			if (!Navit.PAINT_OLD_API)
+			{
+				child1.postInvalidate();
+				child2.postInvalidate();
+				child3.postInvalidate();
+				child4.postInvalidate();
+				child5.postInvalidate();
+				child6.postInvalidate();
+				child7.postInvalidate();
+			}
 		}
 		catch (Exception e)
 		{
@@ -380,6 +393,42 @@ public class ZANaviLinearLayout extends LinearLayout
 				if (Navit.sats > sat_status_max_sats)
 				{
 					sat_status_max_sats = Navit.sats;
+				}
+
+				// old status
+				NavitVehicle.sat_status_icon_last = NavitVehicle.sat_status_icon_now;
+
+				// get new status
+				//if (Navit.satsInFix > 3)
+				if (Navit.isGPSFix)
+				{
+					// GPS found position
+					NavitVehicle.sat_status_icon_now = 1;
+				}
+				else
+				{
+					// GPS lost position
+					NavitVehicle.sat_status_icon_now = 0;
+				}
+
+				if (NavitVehicle.sat_status_icon_now != NavitVehicle.sat_status_icon_last)
+				{
+					try
+					{
+						//if (NavitVehicle.sat_status_icon_now == 1)
+						if (Navit.isGPSFix)
+						{
+							Navit.Global_Navit_Object.getSupportActionBar().setIcon(R.drawable.ic_action_location_found);
+						}
+						else
+						{
+							Navit.Global_Navit_Object.getSupportActionBar().setIcon(R.drawable.ic_action_location_searching);
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 
 				r2.set(sat_status_lt_x, sat_status_lt_y + sat_status_lt_h - (sat_status_lt_h / sat_status_max_sats * Navit.sats), sat_status_lt_x + sat_status_lt_w, sat_status_lt_y + sat_status_lt_h);
@@ -413,6 +462,27 @@ public class ZANaviLinearLayout extends LinearLayout
 				paint_sat_status.setStrokeWidth(1);
 				paint_sat_status.setAntiAlias(true);
 				c.drawRect(r4, paint_sat_status);
+			}
+			else
+			// sat status is turned off!
+			{
+				// old status
+				NavitVehicle.sat_status_icon_last = NavitVehicle.sat_status_icon_now;
+
+				// get new status
+				NavitVehicle.sat_status_icon_now = -1;
+
+				if (NavitVehicle.sat_status_icon_now != NavitVehicle.sat_status_icon_last)
+				{
+					try
+					{
+						Navit.Global_Navit_Object.getSupportActionBar().setIcon(R.drawable.icon);
+					}
+					catch (Exception e)
+					{
+					}
+				}
+
 			}
 		}
 		catch (Exception e)
@@ -454,6 +524,14 @@ public class ZANaviLinearLayout extends LinearLayout
 		this.wm = w / 2;
 		this.hm = h / 2;
 
-		this.need_size_change = true;
+		System.out.println("XYZ:ZANaviLinearLayout -> onSizeChanged w=" + w + " oldw=" + oldw + " h=" + h + " oldh=" + oldh);
+		if ((w == oldw) & (h == oldh))
+		{
+		}
+		else
+		{
+			this.need_size_change = true;
+		}
+
 	}
 }

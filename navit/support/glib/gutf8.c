@@ -1666,7 +1666,7 @@ fast_validate_len (const char *str,
   gunichar min = 0;
   const gchar *p;
 
-  g_assert (max_len >= 0);
+ // g_assert (max_len >= 0);
 
   for (p = str; ((p - str) < max_len) && *p; p++)
     {
@@ -1881,7 +1881,7 @@ _g_utf8_make_valid (const gchar *name)
 
   g_string_append (string, remainder);
 
-  g_assert (g_utf8_validate (string->str, -1, NULL));
+  //g_assert (g_utf8_validate (string->str, -1, NULL));
 
   return g_string_free (string, FALSE);
 }

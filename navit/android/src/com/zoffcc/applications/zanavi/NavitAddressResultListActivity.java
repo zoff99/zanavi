@@ -47,10 +47,17 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ExpandableListActivity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.LayoutParams;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.zoffcc.applications.zanavi.NavitSearchResultListArrayAdapter.search_result_entry;
 
@@ -69,9 +76,60 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 								// 2 .. show only towns
 
 	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		super.onPostCreate(savedInstanceState);
+		Toolbar bar;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(android.R.id.list).getParent().getParent();
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("Search results"));
+			root_view.addView(bar, 0); // insert at top
+		}
+		else
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(android.R.id.content);
+			ListView content = (ListView) root_view.getChildAt(0);
+
+			root_view.removeAllViews();
+
+			LinearLayout ll = new LinearLayout(this);
+			ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			ll.setOrientation(LinearLayout.VERTICAL);
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("Search results"));
+			root_view.addView(ll);
+
+			ll.addView(bar);
+			ll.addView(content);
+		}
+
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
+
+		// Override how this activity is animated into view
+		// The new activity is pulled in from the left and the current activity is kept still
+		// This has to be called before onCreate
+		overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
+
 		//Log.e("Navit", "all ok");
 
 		Navit.Navit_Address_Result_Struct tmp = new Navit.Navit_Address_Result_Struct();
@@ -159,6 +217,8 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		// this.getListView().setFastScrollEnabled(true);
 		is_empty = true;
 
+		// this.getExpandableListView().setBackgroundColor(Color.rgb(0, 0, 0));
+
 		// ListActivity has a ListView, which you can get with:
 		ExpandableListView lv = getExpandableListView();
 		lv.setOnChildClickListener(this);
@@ -176,6 +236,16 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		//
 		//		});
 
+	}
+
+	@Override
+	protected void onPause()
+	{
+		// Whenever this activity is paused (i.e. looses focus because another activity is started etc)
+		// Override how this activity is animated out of view
+		// The new activity is kept still and this activity is pushed out to the left
+		overridePendingTransition(R.anim.hold, R.anim.push_out_to_right);
+		super.onPause();
 	}
 
 	protected void onLongListItemClick(View v, int gpos, int pos2, long id)
@@ -249,6 +319,8 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id)
 	{
+		// v.setBackgroundResource(R.color.background_material_dark);
+
 		onLongListItemClick(v, groupPosition, childPosition, id);
 		return true;
 	}

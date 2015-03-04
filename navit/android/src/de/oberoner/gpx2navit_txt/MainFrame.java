@@ -96,6 +96,8 @@ public class MainFrame
 		// Das GPX-File in das DOM parsen
 		GpxDOM gpxDOM = new GpxDOM(InFilePath);
 
+		System.out.println("do_conversion 001 " + gpxDOM);
+
 		if (gpxDOM.gpxDoc != null)
 		{
 			// Liste der Wegpunkte aus dem gpx-File lesen
@@ -189,6 +191,7 @@ public class MainFrame
 		else
 		{
 			// parsing error (not a gpx file)
+			System.out.println("do_conversion 098");
 			error_code = 4;
 		}
 

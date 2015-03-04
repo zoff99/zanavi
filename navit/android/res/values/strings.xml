@@ -4,6 +4,12 @@
     <string name="app_name">ZANavi</string>
     <string name="set_preferences">ZANavi settings</string>
 
+    <string-array name="storageValues">
+        <item>0</item>
+    </string-array>
+    <string-array name="storageArray">
+        <item>SD Card</item>
+    </string-array>
     <string-array name="streetsearchrValues">
         <item>1</item>
         <item>2</item>
@@ -14,6 +20,20 @@
         <item>large</item>
         <item>very large</item>
     </string-array>
+    <string-array name="routing_profileValues">
+        <item>car</item>
+        <item>car-no-highways</item>
+        <item>bike-normal</item>
+        <item>bike-no-oneway</item>
+        <item>bike-avoid-roads</item>
+    </string-array>
+    <string-array name="routing_profileArray">
+        <item>Car / Auto</item>
+        <item>Car no highways / Auto ohne Autobahn</item>
+        <item>Bicycle / Fahrrad</item>
+        <item>Bicycle no oneways / Fahrrad ohne Einbahnen</item>
+        <item>Bicycle avoid roads / Fahrrad Straßen vermeiden</item>
+    </string-array>
     <string-array name="trafficlights_delayValues">
         <item>0</item>
         <item>100</item>
@@ -23,6 +43,14 @@
         <item>*no delay*</item>
         <item>small delay</item>
         <item>huge delay</item>
+    </string-array>
+    <string-array name="themesValues">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="themesArray">
+        <item>Dark</item>
+        <item>Light</item>
     </string-array>
     <string-array name="mapcacheValues">
         <item>1024</item>

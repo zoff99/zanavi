@@ -74,6 +74,25 @@ static double round(double x)
 
 struct odometer;
 
+
+
+
+int osd_core_item_id_hi = 0;
+int osd_core_item_id_lo = 0;
+struct map *osd_core_item_id_map = NULL;
+char *street_name_save = NULL;
+char *street_name_systematic_save = NULL;
+
+
+int osd_core_item_id_hi_t = 0;
+int osd_core_item_id_lo_t = 0;
+struct map *osd_core_item_id_map_t = NULL;
+char *street_name_save_t = NULL;
+char *street_name_systematic_save_t = NULL;
+
+char *osd_destination_name = NULL;
+
+
 static void osd_odometer_reset(struct odometer *this);
 static void osd_cmd_odometer_reset(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid);
 static void osd_odometer_draw(struct odometer *this, struct navit *nav, struct vehicle *v);
@@ -643,7 +662,7 @@ osd_odometer_destroy(struct navit* nav)
 	}
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_odometer_new(struct navit *nav, struct osd_methods *meth,
 		struct attr **attrs)
 {
@@ -869,7 +888,7 @@ osd_cmd_interface_set_attr(struct cmd_interface *this_, struct attr* attr)
 }
 
 
-static struct osd_priv *
+struct osd_priv *
 osd_cmd_interface_new(struct navit *nav, struct osd_methods *meth,
 		struct attr **attrs)
 {
@@ -1027,7 +1046,7 @@ osd_stopwatch_init(struct stopwatch *this, struct navit *nav)
 	osd_stopwatch_draw(this, nav, NULL);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_stopwatch_new(struct navit *nav, struct osd_methods *meth,
 		struct attr **attrs)
 {
@@ -1065,8 +1084,7 @@ osd_stopwatch_new(struct navit *nav, struct osd_methods *meth,
 
 
 static void
-osd_compass_draw(struct compass *this, struct navit *nav,
-		 struct vehicle *v)
+osd_compass_draw(struct compass *this, struct navit *nav, struct vehicle *v)
 {
 	// dbg(0,,"EEnter\n");
 
@@ -1079,7 +1097,9 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 	int imperial=0;
 
 	if (navit_get_attr(nav, attr_imperial, &imperial_attr, NULL))
-		imperial=imperial_attr.u.num;
+	{
+		imperial = imperial_attr.u.num;
+	}
 
 	//// dbg(0,,"CCC 1\n");
 	// **DISABLE** osd_std_draw(&this->osd_item);
@@ -1090,13 +1110,25 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 
 	// **DISABLE** graphics_draw_circle(this->osd_item.gr, this->osd_item.graphic_fg_white, &p, this->osd_item.w*5/6);
 	//// dbg(0,,"CCC 2\n");
-	if (v) {
+	if (v)
+	{
 	//// dbg(0,,"CCC 3\n");
-		if (vehicle_get_attr(v, attr_position_direction, &attr_dir, NULL)) {
+		if (vehicle_get_attr(v, attr_position_direction, &attr_dir, NULL))
+		{
 	//// dbg(0,,"CCC 4\n");
 			vdir = *attr_dir.u.numd;
+
+#if 1
+			if (nav->tracking)
+			{
+				// double dd;
+				// dd = tracking_get_direction(nav->tracking);
+				// dbg(0, "XYZ:vdir:%4.1f tracking:%4.1f\n", (float)vdir, (float)dd);
+				vdir = tracking_get_direction(nav->tracking);
+			}
+#endif
+
 			// **DISABLE** handle(this->osd_item.gr, this->osd_item.graphic_fg_white, &p, this->osd_item.w/3, -vdir);
-			// // dbg(0,,"vdir:%f\n",vdir);
 			//char *buf_value;
 			//g_snprintf(buf_value, 20, "%f", -vdir);
 	//// dbg(0,,"CCC 5\n");
@@ -1109,8 +1141,8 @@ osd_compass_draw(struct compass *this, struct navit *nav,
 		}
 
 	//// dbg(0,,"CCC 7\n");
-		if (navit_get_attr(nav, attr_destination, &destination_attr, NULL)
-		    && vehicle_get_attr(v, attr_position_coord_geo,&position_attr, NULL)) {
+		if (navit_get_attr(nav, attr_destination, &destination_attr, NULL) && vehicle_get_attr(v, attr_position_coord_geo,&position_attr, NULL))
+		{
 			pro = destination_attr.u.pcoord->pro;
 			transform_from_geo(pro, position_attr.u.coord_geo, &c1);
 			c2.x = destination_attr.u.pcoord->x;
@@ -1181,7 +1213,7 @@ osd_compass_init(struct compass *this, struct navit *nav)
 	//// dbg(0,,"CCC 18\n");
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_compass_new(struct navit *nav, struct osd_methods *meth,
 		struct attr **attrs)
 {
@@ -1316,7 +1348,7 @@ osd_button_set_attr(struct osd_button *this_, struct attr* attr)
 
 
  
-static struct osd_priv *
+struct osd_priv *
 osd_button_new(struct navit *nav, struct osd_methods *meth,
 	       struct attr **attrs)
 {
@@ -1415,7 +1447,7 @@ osd_image_init(struct osd_image *this, struct navit *nav)
 	osd_image_draw(this,nav);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_image_new(struct navit *nav, struct osd_methods *meth,
 	       struct attr **attrs)
 {
@@ -1455,14 +1487,12 @@ struct nav_next_turn {
 	int icon_h, icon_w, active;
 	char *last_name;
 	int level;
+	char *last_destination_name;
 };
 
 static void
-osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
-		       struct vehicle *v)
+osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit, struct vehicle *v)
 {
-	// dbg(0,,"EEnter\n");
-
 	struct point p;
 	int do_draw = 0;
 	struct navigation *nav = NULL;
@@ -1473,7 +1503,11 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 	char *image;
 	char *name = "unknown";
 	int level = this->level;
+	char *street_destin_text = NULL;
 
+
+	// -- WHO writes code in this style ??????
+	// -- WHO writes code in this style ??????
 	if (navit)
 		nav = navit_get_navigation(navit);
 	if (nav)
@@ -1483,74 +1517,122 @@ osd_nav_next_turn_draw(struct nav_next_turn *this, struct navit *navit,
 	if (mr)
 		while ((item = map_rect_get_item(mr))
 		       && (item->type == type_nav_position || item->type == type_nav_none || level-- > 0));
-	if (item) {
+	// -- WHO writes code in this style ??????
+	// -- WHO writes code in this style ??????
+
+
+
+	if (item)
+	{
 		name = item_to_name(item->type);
-		//dbg(1, "name=%s\n", name);
-		if (this->active != 1 || this->last_name != name) {
+
+		//if (street_destin_text)
+		//{
+		//	g_free(street_destin_text);
+		//}
+
+		struct attr attr_l;
+		if (item_attr_get(item, attr_street_destination, &attr_l))
+		{
+			street_destin_text = g_strdup(attr_l.u.str);
+		}
+		else
+		{
+			street_destin_text = NULL;
+		}
+
+		int dest_changed = 0;
+		if ((street_destin_text == NULL) && (this->last_destination_name))
+		{
+			dest_changed = 1;
+		}
+		else if ((street_destin_text) && (this->last_destination_name == NULL))
+		{
+			dest_changed = 1;
+		}
+		else if ((street_destin_text) && (this->last_destination_name) &&   (strcmp(street_destin_text, this->last_destination_name) != 0)    )
+		{
+			dest_changed = 1;
+		}
+
+		if (dest_changed == 1)
+		{
+			if (osd_destination_name)
+			{
+				g_free(osd_destination_name);
+				osd_destination_name = NULL;
+			}
+
+			if (street_destin_text)
+			{
+				osd_destination_name = g_strdup(street_destin_text);
+			}
+		}
+
+		// dbg(0, "DST01:00X:1 sd=%s last=%s %d\n", street_destin_text, this->last_destination_name, dest_changed);
+
+		if (this->active != 1 || this->last_name != name || dest_changed)
+		{
 			this->active = 1;
 			this->last_name = name;
+			if (this->last_destination_name)
+			{
+				g_free(this->last_destination_name);
+				this->last_destination_name = NULL;
+			}
+
+			if (street_destin_text)
+			{
+				this->last_destination_name = g_strdup(street_destin_text);
+			}
+			else
+			{
+				this->last_destination_name = NULL;
+			}
 			do_draw = 1;
 		}
-	} else {
-		if (this->active != 0) {
+	}
+	else
+	{
+		if (this->active != 0)
+		{
 			this->active = 0;
 			do_draw = 1;
 		}
 	}
-	if (mr)
-		map_rect_destroy(mr);
 
-	if (do_draw) {
-		// **DISABLE** osd_std_draw(&this->osd_item);
+	if (do_draw)
+	{
+		//dbg(0, "DST01:000a\n");
+
 		if (this->active)
 		{
+			//dbg(0, "DST01:000b\n");
+
+#ifdef HAVE_API_ANDROID
+			android_send_generic_text(3, street_destin_text);
+#endif
+
 			image = g_strdup_printf(this->icon_src, name);
-			// dbg(1, "image=%s\n", image);
 
 #ifdef HAVE_API_ANDROID
 			send_osd_values("nav_next_turn","draw_image1",image,"",this->icon_w,this->icon_h,0,0,0.0,0.0,0.0);
 #endif
 
-			// **DISABLE** gr_image = graphics_image_new_scaled(this->osd_item.gr, image, this->icon_w, this->icon_h);
-			//if (!gr_image)
-			//{
-				// **DISABLE** // dbg(0,,"failed to load %s in %dx%d\n",image,this->icon_w,this->icon_h);
-				// **DISABLE** g_free(image);
-
-				// **DISABLE** graphics_send_osd_values(this->osd_item.gr,this->osd_item.graphic_fg_white,"nav_next_turn","draw_image2","unknown.xpm","",this->icon_w,this->icon_h,0,0,0.0,0.0,0.0);
-
-				// **DISABLE** image = graphics_icon_path("unknown.xpm");
-				// **DISABLE** 
-				/*
-				gr_image =
-				    graphics_image_new_scaled(this->
-							      osd_item.gr,
-							      image,
-							      this->icon_w,
-							      this->
-							      icon_h);
-				*/
-			//}
-
-			
-			//dbg(1, "gr_image=%p\n", gr_image);
-
-			/*
-			if (gr_image)
-			{
-				p.x =
-				    (this->osd_item.w -
-				     gr_image->width) / 2;
-				p.y =
-				    (this->osd_item.h -
-				     gr_image->height) / 2;
-			}
-			*/
-
 			g_free(image);
 		}
-		// **DISABLE** graphics_draw_mode(this->osd_item.gr, draw_mode_end);
 	}
+
+	if (street_destin_text)
+	{
+		g_free(street_destin_text);
+	}
+
+	if (mr)
+	{
+		map_rect_destroy(mr);
+	}
+
 }
 
 static void
@@ -1567,7 +1649,7 @@ osd_nav_next_turn_init(struct nav_next_turn *this, struct navit *nav)
 	osd_nav_next_turn_draw(this, nav, NULL);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_nav_next_turn_new(struct navit *nav, struct osd_methods *meth,
 		      struct attr **attrs)
 {
@@ -1713,7 +1795,7 @@ osd_nav_toggle_announcer_init(struct nav_toggle_announcer *this, struct navit *n
 	osd_nav_toggle_announcer_draw(this, nav, NULL);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_nav_toggle_announcer_new(struct navit *nav, struct osd_methods *meth, struct attr **attrs)
 {
 	struct nav_toggle_announcer *this = g_new0(struct nav_toggle_announcer, 1);
@@ -1999,7 +2081,7 @@ osd_speed_cam_init(struct osd_speed_cam *this, struct navit *nav)
 
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_speed_cam_new(struct navit *nav, struct osd_methods *meth, struct attr **attrs)
 {
 
@@ -2222,7 +2304,7 @@ osd_speed_warner_init(struct osd_speed_warner *this, struct navit *nav)
 	osd_speed_warner_draw(this, nav, NULL);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_speed_warner_new(struct navit *nav, struct osd_methods *meth, struct attr **attrs)
 {
 	struct osd_speed_warner *this=g_new0(struct osd_speed_warner, 1);
@@ -2309,14 +2391,18 @@ osd_text_format_attr(struct attr *attr, char *format, int imperial)
 	int days=0;
 	char buffer[1024];
 
-	switch (attr->type) {
+	switch (attr->type)
+	{
 	case attr_position_speed:
 		return format_speed(*attr->u.numd,"",format,imperial);
+
 	case attr_position_height:
 	case attr_position_direction:
 		return format_float_0(*attr->u.numd);
+
 	case attr_position_magnetic_direction:
 		return g_strdup_printf("%d",attr->u.num);
+
 	case attr_position_coord_geo:
 		if ((!format) || (!strcmp(format,"pos_degminsec")))
 		{ 
@@ -2368,18 +2454,25 @@ osd_text_format_attr(struct attr *attr, char *format, int imperial)
 			coord_format(attr->u.coord_geo->lat,attr->u.coord_geo->lng,DEGREES_MINUTES_SECONDS,buffer,sizeof(buffer));
 			return g_strdup(buffer);
 		}
+
 	case attr_destination_time:
 		if (!format || (strcmp(format,"arrival") && strcmp(format,"remaining")))
 			break;
+
 		textt = time(NULL);
 		tm = *localtime(&textt);
-		if (!strcmp(format,"remaining")) {
+
+		if (!strcmp(format,"remaining"))
+		{
 			textt-=tm.tm_hour*3600+tm.tm_min*60+tm.tm_sec;
 			tm = *localtime(&textt);
 		}
+
 		textt += attr->u.num / 10;
 		text_tm = *localtime(&textt);
-		if (tm.tm_year != text_tm.tm_year || tm.tm_mon != text_tm.tm_mon || tm.tm_mday != text_tm.tm_mday) {
+
+		if (tm.tm_year != text_tm.tm_year || tm.tm_mon != text_tm.tm_mon || tm.tm_mday != text_tm.tm_mday)
+		{
 			text_tm0 = text_tm;
 			text_tm0.tm_sec = 0;
 			text_tm0.tm_min = 0;
@@ -2388,24 +2481,31 @@ osd_text_format_attr(struct attr *attr, char *format, int imperial)
 			tm.tm_min = 0;
 			tm.tm_hour = 0;
 			days = (mktime(&text_tm0) - mktime(&tm) + 43200) / 86400;
-			}
+		}
 		return format_time(&text_tm, days);
+
 	case attr_length:
 	case attr_destination_length:
 		if (!format)
 			break;
+
 		if (!strcmp(format,"named"))
 			return format_distance(attr->u.num,"",imperial);
-		if (!strcmp(format,"value") || !strcmp(format,"unit")) {
+
+		if (!strcmp(format,"value") || !strcmp(format,"unit"))
+		{
 			char *ret,*tmp=format_distance(attr->u.num," ",imperial);
 			char *pos=strchr(tmp,' ');
 			if (! pos)
 				return tmp;
+
 			*pos++='\0';
 			if (!strcmp(format,"value"))
 				return tmp;
+
 			ret=g_strdup(pos);
 			g_free(tmp);
+
 			return ret;
 		}
 	case attr_position_time_iso8601:
@@ -2494,7 +2594,6 @@ osd_text_split(char *in, char **index)
 static void
 osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 {
-	// dbg(0,"EEnter\n");
 
 	struct point p, p2[4];
 	char *str,*last,*next,*value,*absbegin;
@@ -2516,7 +2615,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 	if (navit_get_attr(navit, attr_imperial, &imperial_attr, NULL))
 	{
-		imperial=imperial_attr.u.num;
+		imperial = imperial_attr.u.num;
 	}
 
 	vehicle_attr.u.vehicle=NULL;
@@ -2532,42 +2631,231 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 		if (oti->static_text)
 		{
-			value=g_strdup(oti->text);
-			id_string=g_strdup_printf("none:static_text:static_text");
+			value = g_strdup(oti->text);
+			id_string = g_strdup("none:static_text:static_text");
 		}
 		else if (oti->section == attr_navigation)
 		{
 			if (navit && !nav)
 				nav = navit_get_navigation(navit);
+
 			if (nav && !nav_map)
 				nav_map = navigation_get_map(nav);
+
 			if (nav_map)
 				nav_mr = map_rect_new(nav_map, NULL);
+
 			if (nav_mr)
 				item = map_rect_get_item(nav_mr);
 
 			offset=oti->offset;
-			while (item) {
+
+			while (item)
+			{
 				if (item->type == type_nav_none)
+				{
 					item=map_rect_get_item(nav_mr);
+				}
 				else if (!offset)
+				{
 					break;
-				else {
+				}
+				else
+				{
 					offset--;
 					item=map_rect_get_item(nav_mr);
 				}
 			}
 
+
+
+
+
 			if (item)
 			{
-				//// dbg(0,,"name %s\n", item_to_name(item->type));
-				//// dbg(0,,"type %s\n", attr_to_name(oti->attr_typ));
-				if (item_attr_get(item, oti->attr_typ, &attr))
+
+
+
+
+
+
+
+
+					if ((osd_core_item_id_hi == item->id_hi) && (osd_core_item_id_lo == item->id_lo) && (osd_core_item_id_map == item->map))
+					{
+						if ((oti->attr_typ == attr_street_name) && (street_name_save))
+						{
+							value = g_strdup(street_name_save);
+						}
+						else if ((oti->attr_typ == attr_street_name_systematic) && (street_name_systematic_save))
+						{
+							value = g_strdup(street_name_systematic_save);
+						}
+						else
+						{
+							if (item_attr_get(item, oti->attr_typ, &attr))
+							{
+								value = osd_text_format_attr(&attr, oti->format, imperial);
+							}
+							else
+							{
+								// send blank value
+								value = g_strdup("");
+							}
+						}
+					}
+					else
+					{
+						if ((oti->attr_typ == attr_street_name) || (oti->attr_typ == attr_street_name_systematic))
+						{
+							if (item_attr_get(item, attr_street_name, &attr))
+							{
+								if (street_name_save)
+								{
+									g_free(street_name_save);
+								}
+								street_name_save = osd_text_format_attr(&attr, oti->format, imperial);
+							}
+							else
+							{
+								if (street_name_save)
+								{
+									g_free(street_name_save);
+								}
+								street_name_save = NULL;
+							}
+
+							if (item_attr_get(item, attr_street_name_systematic, &attr))
+							{
+								if (street_name_systematic_save)
+								{
+									g_free(street_name_systematic_save);
+								}
+								street_name_systematic_save = osd_text_format_attr(&attr, oti->format, imperial);
+							}
+							else
+							{
+								if (street_name_systematic_save)
+								{
+									g_free(street_name_systematic_save);
+								}
+								street_name_systematic_save = NULL;
+							}
+
+							osd_core_item_id_hi = item->id_hi;
+							osd_core_item_id_lo = item->id_lo;
+							osd_core_item_id_map = item->map;
+
+						}
+
+						if (item_attr_get(item, oti->attr_typ, &attr))
+						{
+							value = osd_text_format_attr(&attr, oti->format, imperial);
+						}
+						else
+						{
+							// send blank value
+							value = g_strdup("");
+						}
+					}
+
+
+					// -- for navigation use next destination if possible for OSD -----------
+					if (oti->attr_typ == attr_street_name)
+					{
+						if (osd_destination_name)
+						{
+							if (value)
+							{
+								g_free(value);
+								value = NULL;
+							}
+							value = g_strdup(osd_destination_name);
+						}
+					}
+					else if (oti->attr_typ == attr_street_name_systematic)
+					{
+#if 0
+						if (osd_destination_name)
+						{
+							if (value)
+							{
+								g_free(value);
+								value = NULL;
+							}
+							value = g_strdup("");
+						}
+#endif
+					}
+					// -- for navigation use next destination if possible for OSD -----------
+
+					id_string = g_strdup_printf("navigation:%s:%s", item_to_name(item->type), attr_to_name(oti->attr_typ));
+
+
+#if 0
+
+
+				if ((osd_core_item_id_hi == item->id_hi) && (osd_core_item_id_lo == item->id_lo) && (osd_core_item_id_map == item->map))
 				{
-					value=osd_text_format_attr(&attr, oti->format, imperial);
+					if ((oti->attr_typ == attr_street_name) && (street_name_save))
+					{
+						value = g_strdup(street_name_save);
+					}
+					else if ((oti->attr_typ == attr_street_name_systematic) && (street_name_systematic_save))
+					{
+						value = g_strdup(street_name_systematic_save);
+					}
+					else
+					{
+						if (item_attr_get(item, oti->attr_typ, &attr))
+						{
+							value = osd_text_format_attr(&attr, oti->format, imperial);
+						}
+					}
 				}
-				id_string=g_strdup_printf("navigation:%s:%s",item_to_name(item->type),attr_to_name(oti->attr_typ));
+				else
+				{
+					if (item_attr_get(item, oti->attr_typ, &attr))
+					{
+						value = osd_text_format_attr(&attr, oti->format, imperial);
+					}
+				}
+
+				id_string = g_strdup_printf("navigation:%s:%s", item_to_name(item->type), attr_to_name(oti->attr_typ));
+
+
+				if (oti->attr_typ == attr_street_name)
+				{
+					osd_core_item_id_hi = item->id_hi;
+					osd_core_item_id_lo = item->id_lo;
+					osd_core_item_id_map = item->map;
+					if (street_name_save)
+					{
+						g_free(street_name_save);
+					}
+					street_name_save = g_strdup(value);
+				}
+				else if (oti->attr_typ == attr_street_name_systematic)
+				{
+					osd_core_item_id_hi = item->id_hi;
+					osd_core_item_id_lo = item->id_lo;
+					osd_core_item_id_map = item->map;
+					if (street_name_systematic_save)
+					{
+						g_free(street_name_systematic_save);
+					}
+					street_name_systematic_save = g_strdup(value);
+				}
+
+
+#endif
+
+
+
 			}
+
+
+
 
 			if (nav_mr)
 			{
@@ -2600,7 +2888,7 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 			if (tracking)
 			{
-				item=tracking_get_current_item(tracking);
+				item = tracking_get_current_item(tracking);
 
 				if (item && (oti->attr_typ == attr_speed))
 				{
@@ -2625,21 +2913,90 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 						}
 					}
 					value = format_speed(routespeed,"", oti->format, imperial);
-					id_string=g_strdup_printf("tracking:speed:");
+					id_string=g_strdup("tracking:speed:");
 				}
 				else if (item)
 				{
-					if (tracking_get_attr(tracking, oti->attr_typ, &attr, NULL))
+
+					if ((osd_core_item_id_hi_t == item->id_hi) && (osd_core_item_id_lo_t == item->id_lo) && (osd_core_item_id_map_t == item->map))
 					{
-						value=osd_text_format_attr(&attr, oti->format, imperial);
-						id_string=g_strdup_printf("tracking:%s:", attr_to_name(oti->attr_typ));
+						if ((oti->attr_typ == attr_street_name) && (street_name_save_t))
+						{
+							value = g_strdup(street_name_save_t);
+						}
+						else if ((oti->attr_typ == attr_street_name_systematic) && (street_name_systematic_save_t))
+						{
+							value = g_strdup(street_name_systematic_save_t);
+						}
+						else
+						{
+							if (tracking_get_attr(tracking, oti->attr_typ, &attr, NULL))
+							{
+								value = osd_text_format_attr(&attr, oti->format, imperial);
+							}
+							else
+							{
+								// send blank value
+								value = g_strdup("");
+							}
+						}
 					}
 					else
 					{
-						// send blank value
-						value=g_strdup_printf("");
-						id_string=g_strdup_printf("tracking:%s:", attr_to_name(oti->attr_typ));
+						if ((oti->attr_typ == attr_street_name) || (oti->attr_typ == attr_street_name_systematic))
+						{
+							if (tracking_get_attr(tracking, attr_street_name, &attr, NULL))
+							{
+								if (street_name_save_t)
+								{
+									g_free(street_name_save_t);
+								}
+								street_name_save_t = osd_text_format_attr(&attr, oti->format, imperial);
+							}
+							else
+							{
+								if (street_name_save_t)
+								{
+									g_free(street_name_save_t);
+								}
+								street_name_save_t = NULL;
+							}
+
+							if (tracking_get_attr(tracking, attr_street_name_systematic, &attr, NULL))
+							{
+								if (street_name_systematic_save_t)
+								{
+									g_free(street_name_systematic_save_t);
+								}
+								street_name_systematic_save_t = osd_text_format_attr(&attr, oti->format, imperial);
+							}
+							else
+							{
+								if (street_name_systematic_save_t)
+								{
+									g_free(street_name_systematic_save_t);
+								}
+								street_name_systematic_save_t = NULL;
+							}
+
+							osd_core_item_id_hi_t = item->id_hi;
+							osd_core_item_id_lo_t = item->id_lo;
+							osd_core_item_id_map_t = item->map;
+
+						}
+
+						if (tracking_get_attr(tracking, oti->attr_typ, &attr, NULL))
+						{
+							value=osd_text_format_attr(&attr, oti->format, imperial);
+						}
+						else
+						{
+							// send blank value
+							value=g_strdup("");
+						}
 					}
+
+					id_string=g_strdup_printf("tracking:%s:", attr_to_name(oti->attr_typ));
 				}
 			}
 		}
@@ -2653,7 +3010,9 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 				msg = navit_get_messages(navit);
 				len = 0;
-				while (msg) {
+
+				while (msg)
+				{
 					len+= strlen(msg->text) + 2;
 
 					msg = msg->next;
@@ -2663,7 +3022,9 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 
 				msg = navit_get_messages(navit);
 				offset = 0;
-				while (msg) {
+
+				while (msg)
+				{
 					tmp = g_stpcpy((value+offset), msg->text);
 					g_stpcpy(tmp, "\\n");
 					offset += strlen(msg->text) + 2;
@@ -2687,10 +3048,13 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 		}
 
 		next=g_strdup_printf("%s%s",str ? str:"",value ? value:" ");
+
 		if (value)
 			g_free(value);
+
 		if (str)
 			g_free(str);
+
 		str=next;
 		oti=oti->next;
 	}
@@ -2702,8 +3066,10 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 	else
 	{
 		do_draw=1;
+
 		if (this->last)
 			g_free(this->last);
+
 		this->last = g_strdup(str);
 	}
 
@@ -2950,12 +3316,10 @@ osd_text_init(struct osd_text *this, struct navit *nav)
 	osd_text_draw(this, nav, NULL);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_text_new(struct navit *nav, struct osd_methods *meth,
 	    struct attr **attrs)
 {
-	// dbg(0,,"EEnter\n");
-
 	struct osd_text *this = g_new0(struct osd_text, 1);
 	struct attr *attr;
 
@@ -2976,11 +3340,14 @@ osd_text_new(struct navit *nav, struct osd_methods *meth,
 		this->text = g_strdup(attr->u.str);
 	else
 		this->text = NULL;
+
 	attr = attr_search(attrs, NULL, attr_align);
+
 	if (attr)
 		this->align=attr->u.num;
 
 	navit_add_callback(nav, callback_new_attr_1(callback_cast(osd_text_init), attr_graphics_ready, this));
+
 	return (struct osd_priv *) this;
 }
 
@@ -3058,7 +3425,7 @@ osd_gps_status_init(struct gps_status *this, struct navit *nav)
 	osd_gps_status_draw(this, nav, NULL);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_gps_status_new(struct navit *nav, struct osd_methods *meth,
 		      struct attr **attrs)
 {
@@ -3163,7 +3530,7 @@ osd_volume_init(struct volume *this, struct navit *nav)
 	osd_volume_draw(this, nav);
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_volume_new(struct navit *nav, struct osd_methods *meth,
 		      struct attr **attrs)
 {
@@ -3347,7 +3714,7 @@ osd_scale_init(struct osd_scale *this, struct navit *nav)
 	*/
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_scale_new(struct navit *nav, struct osd_methods *meth,
 	       struct attr **attrs)
 {
@@ -3450,7 +3817,7 @@ osd_auxmap_init(struct auxmap *this, struct navit *nav)
 #endif
 }
 
-static struct osd_priv *
+struct osd_priv *
 osd_auxmap_new(struct navit *nav, struct osd_methods *meth, struct attr **attrs)
 {
 	struct auxmap *this = g_new0(struct auxmap, 1);
@@ -3466,7 +3833,7 @@ osd_auxmap_new(struct navit *nav, struct osd_methods *meth, struct attr **attrs)
 	return (struct osd_priv *) this;
 }
 
-
+#ifdef PLUGSSS
 void
 plugin_init(void)
 {
@@ -3502,4 +3869,5 @@ plugin_init(void)
 	plugin_register_osd_type("cmd_interface", osd_cmd_interface_new);
 	//dbg(0,"osd ready\n");
 }
+#endif
 

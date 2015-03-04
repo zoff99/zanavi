@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gui_main_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:elevation="0dp"
+         />
+
+    <FrameLayout
+        android:id="@+id/v002"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/toolbar" >
+
+        <View
+            android:id="@+id/gui_gr_map"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:focusableInTouchMode="true" />
+
+        <View
+            android:id="@+id/gui_gr_vehicle"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <include layout="@layout/zanavi_osd" />
+
+        <com.zoffcc.applications.zanavi.NavitAndroidOverlay
+            android:id="@+id/NavitAOverlay"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </com.zoffcc.applications.zanavi.NavitAndroidOverlay>
+
+<!--         <TextView -->
+<!--             android:id="@+id/sc" -->
+<!--             android:layout_width="fill_parent" -->
+<!--             android:layout_height="fill_parent" /> -->
+
+        <TextView
+                android:id="@+id/NavitMsgTv"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" 
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="100dp"
+                />
+        
+        <ScrollView
+            android:id="@+id/NavitMsgTv2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/NavitMsgTv2cc"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                />
+        </ScrollView>
+
+        <View
+            android:id="@+id/debug_text"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+        
+
+        <com.zoffcc.applications.zanavi.ZANaviBusySpinner
+            android:id="@+id/busyspinner"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </com.zoffcc.applications.zanavi.ZANaviBusySpinner>
+
+        <com.zoffcc.applications.zanavi.ZANaviBusyText
+            android:id="@+id/busyspinnertext"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </com.zoffcc.applications.zanavi.ZANaviBusyText>
+    </FrameLayout>
+
+</RelativeLayout>

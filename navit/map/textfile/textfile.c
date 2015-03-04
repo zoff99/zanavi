@@ -441,7 +441,7 @@ static struct map_methods map_methods_textfile = {
 	map_rect_get_item_byid_textfile,
 };
 
-static struct map_priv *
+struct map_priv *
 map_new_textfile(struct map_methods *meth, struct attr **attrs, struct callback_list *cbl)
 {
 	struct map_priv *m;
@@ -493,10 +493,12 @@ map_new_textfile(struct map_methods *meth, struct attr **attrs, struct callback_
 	return m;
 }
 
+#ifdef PLUGSSS
 void
 plugin_init(void)
 {
 	//dbg(1,"textfile: plugin_init\n");
 	plugin_register_map_type("textfile", map_new_textfile);
 }
+#endif
 

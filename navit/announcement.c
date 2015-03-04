@@ -31,11 +31,17 @@ announcement_new(struct attr *parent, struct attr **attrs)
 {
 	struct announcement *this_;
 	struct attr *type_attr;
-	if (! (type_attr=attr_search(attrs, NULL, attr_name))) {
+
+	//dbg(0, "enter\n");
+
+	if (! (type_attr=attr_search(attrs, NULL, attr_name)))
+	{
 		return NULL;
 	}
+
 	this_=g_new0(struct announcement, 1);
 	this_->attrs=attr_list_dup(attrs);
+
 	return this_;
 }
 
@@ -48,6 +54,8 @@ announcement_get_attr(struct announcement *this_, enum attr_type type, struct at
 int
 announcement_set_attr(struct announcement *this_, struct attr *attr)
 {
+	//dbg(0, "enter\n");
+
 	this_->attrs=attr_generic_set_attr(this_->attrs, attr);
 	return 1;
 }
@@ -55,6 +63,8 @@ announcement_set_attr(struct announcement *this_, struct attr *attr)
 int
 announcement_add_attr(struct announcement *this_, struct attr *attr)
 {
+	//dbg(0, "enter\n");
+
 	this_->attrs=attr_generic_add_attr(this_->attrs, attr);
 	return 1;
 }

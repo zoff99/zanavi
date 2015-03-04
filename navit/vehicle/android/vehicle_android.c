@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,6 +54,18 @@
 #include "android.h"
 #include "vehicle.h"
 
+
+#define LOCATION_DAMPEN_BEARING_COUNT 5
+
+struct vehicle_last_bearings
+{
+	int *ring_buf; // ring buffer
+	float *dampen_value; // dampen values
+	int max; // max elements
+	int cur; // current element num
+	int first; // first == 1 --> buffer is not initialised yet
+};
+
 struct vehicle_priv
 {
 	struct callback_list *cbl;
@@ -74,6 +86,7 @@ struct vehicle_priv
 	jobject NavitVehicle;
 	jclass LocationClass;
 	jmethodID Location_getLatitude, Location_getLongitude, Location_getSpeed, Location_getBearing, Location_getAltitude, Location_getTime, Location_getAccuracy;
+	struct vehicle_last_bearings *lb;
 };
 
 // global vars
@@ -113,6 +126,11 @@ static void vehicle_android_destroy(struct vehicle_priv *priv)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
+	g_free(priv->lb->dampen_value);
+	g_free(priv->lb->ring_buf);
+	g_free(priv->lb);
+
 	// //DBG dbg(0,"enter\n");
 	priv_global_android = NULL;
 	g_free(priv);
@@ -191,13 +209,170 @@ static void vehicle_android_update_location_direct(double lat, double lon, float
 	clock_t s_ = debug_measure_start();
 #endif
 
+	int j;
+	int k;
 	time_t tnow;
 	struct tm *tm;
-
 	struct vehicle_priv *v = priv_global_android;
+	float direction_new = 0.0f;
 
 	// +++JNIEnv *jnienv2;
 	// +++jnienv2 = jni_getenv();
+
+	if (direction < 0)
+	{
+		direction = direction + 360.0f;
+	}
+	else if (direction >= 360)
+	{
+		direction = direction - 360.0f;
+	}
+
+#ifdef NAVIT_GPS_DIRECTION_DAMPING
+	if (v->lb->first == 1)
+	{
+		v->lb->first = 0;
+		for (j = 0; j < LOCATION_DAMPEN_BEARING_COUNT; j++)
+		{
+			v->lb->ring_buf[j] = (int)(direction * 100.0f);
+		}
+	}
+#endif
+
+
+#ifdef NAVIT_GPS_DIRECTION_DAMPING
+	if (direction == 0.0f)
+	{
+		// dbg(0, "DAMPING:dir=0.0\n");
+		int direction_prev = v->lb->ring_buf[(v->lb->cur + (LOCATION_DAMPEN_BEARING_COUNT - 2)) % LOCATION_DAMPEN_BEARING_COUNT];
+		// dbg(0, "DAMPING:dir_prev=%d\n", (int)((float)direction_prev / 100.0f));
+		// if direction suddenly jumps to 0 (north), assume some problem or 3G location
+		if (abs(direction_prev) > 140) // last direction NOT between -1.4° and 1.4°
+		{
+			// use previous direction value
+			direction = ((float)direction_prev / 100.0f);
+			dbg(0, "DAMPING:dir_corr=%f\n", direction);
+		}
+	}
+#endif
+
+
+#ifdef NAVIT_GPS_DIRECTION_DAMPING
+	float direction_new2 = 0.0f;
+
+	// save orig value into slot
+	v->lb->ring_buf[v->lb->cur] = (int)(direction * 100.0f);
+	// move to next slot
+	v->lb->cur = (v->lb->cur + 1) % LOCATION_DAMPEN_BEARING_COUNT;
+
+	for (j = 0; j < LOCATION_DAMPEN_BEARING_COUNT; j++)
+	{
+		if (j == (LOCATION_DAMPEN_BEARING_COUNT - 1))
+		{
+
+			//dbg(0, "DAMPING:info last:direction_new=%f direction=%f j=%d\n", direction_new, direction, j);
+
+#if 0
+			// if SUM >= 360
+			if (direction_new >= 36000)
+			{
+				for (k = 0; k < (LOCATION_DAMPEN_BEARING_COUNT - 1); k++)
+				{
+					v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] = v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] - 36000;
+				}
+				direction_new = direction_new - 36000;
+				dbg(0, "DAMPING:>= 360:direction_new=%f\n", (direction_new / 100.0f));
+			}
+			// if SUM <  0
+			else if (direction_new < 0)
+			{
+				for (k = 0; k < (LOCATION_DAMPEN_BEARING_COUNT - 1); k++)
+				{
+					v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] = v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] + 36000;
+				}
+				direction_new = direction_new + 36000;
+				dbg(0, "DAMPING:< 0:direction_new=%f\n", (direction_new / 100.0f));
+			}
+#endif
+
+			direction_new2 = v->lb->ring_buf[(v->lb->cur + j - 1) % LOCATION_DAMPEN_BEARING_COUNT] ;
+
+			//dbg(0, "DAMPING:info last:direction_new2=%f\n", direction_new2);
+			//dbg(0, "DAMPING:info last:dir=%d damp=%f\n", v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT], v->lb->dampen_value[j]);
+
+
+			// correct for the jump from 0 -> 360 , or 360 -> 0
+			if (direction_new2 > (v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT] + 18000) )
+			{
+				direction_new += ((float)(v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT] + 36000 ) * (v->lb->dampen_value[j]));
+				//dbg(0, "DAMPING:jump 360 -> 0:direction_new=%f\n", (direction_new / 100.0f));
+			}
+			else if ((direction_new2 + 18000) < (v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT]) )
+			{
+				direction_new += ((float)(v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT] - 36000 ) * (v->lb->dampen_value[j]));
+				//dbg(0, "DAMPING:jump 0 -> 360:direction_new=%f\n", (direction_new / 100.0f));
+			}
+			else
+			{
+				direction_new += ((float)(v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT]) * (v->lb->dampen_value[j]));
+			}
+		}
+		else
+		{
+			direction_new += ((float)(v->lb->ring_buf[(v->lb->cur + j) % LOCATION_DAMPEN_BEARING_COUNT]) * (v->lb->dampen_value[j]));
+			//dbg(0, "DAMPING:info(%d):direction_new=%f\n", j, direction_new);
+		}
+	}
+
+	// if SUM >= 360
+	if (direction_new >= 36000)
+	{
+		for (k = 0; k < (LOCATION_DAMPEN_BEARING_COUNT); k++)
+		{
+			v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] = v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] - 36000;
+		}
+		direction_new = direction_new - 36000;
+		//dbg(0, "DAMPING:2:>= 360:direction_new=%f\n", (direction_new / 100.0f));
+	}
+	// if SUM <  0
+	else if (direction_new < 0)
+	{
+		for (k = 0; k < (LOCATION_DAMPEN_BEARING_COUNT); k++)
+		{
+			v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] = v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] + 36000;
+		}
+		direction_new = direction_new + 36000;
+		//dbg(0, "DAMPING:2:< 0:direction_new=%f\n", (direction_new / 100.0f));
+	}
+
+
+	// save corrected value into slot
+	v->lb->ring_buf[(v->lb->cur + (LOCATION_DAMPEN_BEARING_COUNT - 1)) % LOCATION_DAMPEN_BEARING_COUNT] = (int)direction_new;
+
+	v->direction = direction_new / 100.0f;
+
+
+	//for (k = 0; k < (LOCATION_DAMPEN_BEARING_COUNT); k++)
+	//{
+	//	dbg(0, "DAMPING:damp[%d]=%f", k, ((float)v->lb->ring_buf[(v->lb->cur + k) % LOCATION_DAMPEN_BEARING_COUNT] / 100.0f));
+	//}
+
+	//dbg(0, "DAMPING:FIN:direction=%f corrected=%f\n", direction, (direction_new / 100.0f));
+	//dbg(0, "DAMPING:----------------------------\n");
+
+#else
+
+	// --------------------------------------------------------
+	// normal direction, without DAMPING !!
+
+	v->direction = direction;
+
+	// --------------------------------------------------------
+
+#endif
+
+
+
 
 	//dbg(0,"jnienv=%p\n", jnienv);
 	//dbg(0,"priv_global_android=%p\n", priv_global_android);
@@ -210,7 +385,8 @@ static void vehicle_android_update_location_direct(double lat, double lon, float
 	v->geo.lat = lat;
 	v->geo.lng = lon;
 	v->speed = speed;
-	v->direction = direction;
+	// ** DAMPING ** // v->direction = direction;
+	// dbg(0, "v->direction=%f\n", direction);
 	v->height = height;
 	v->radius = radius;
 	tnow = gpstime;
@@ -226,9 +402,19 @@ static void vehicle_android_update_location_direct(double lat, double lon, float
 	// remove globalref again
 	//+++(*jnienv2)->DeleteGlobalRef(jnienv2, location);
 
+
+
+	// xxx stupid callback stuff -> remove me!!  xxx ----------------------------
+	// xxx stupid callback stuff -> remove me!!  xxx ----------------------------
+	//
 	// ***** calls: navit.c -> navit_vehicle_update
-	// xxx stupid callback stuff -> remove me!!  xxx
 	callback_list_call_attr_0(v->cbl, attr_position_coord_geo);
+	//
+	// xxx stupid callback stuff -> remove me!!  xxx ----------------------------
+	// xxx stupid callback stuff -> remove me!!  xxx ----------------------------
+
+
+
 
 #ifdef NAVIT_MEASURE_TIME_DEBUG
 	debug_mrp(__PRETTY_FUNCTION__, debug_measure_end(s_));
@@ -344,23 +530,59 @@ static int vehicle_android_init(struct vehicle_priv *ret)
  * @param attrs
  * @returns vehicle_priv
  */
-static struct vehicle_priv *
+struct vehicle_priv *
 vehicle_android_new_android(struct vehicle_methods *meth, struct callback_list *cbl, struct attr **attrs)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
 	struct vehicle_priv *ret;
+	struct vehicle_last_bearings *lb;
+	int size;
 
-	//DBG dbg(0, "enter\n");
 	ret = g_new0(struct vehicle_priv, 1);
 	ret->cbl = cbl;
 	// *********** // ret->cb = callback_new_1(callback_cast(vehicle_android_callback), ret);
 	*meth = vehicle_android_methods;
 	priv_global_android = ret;
+
+
+	lb = g_new0(struct vehicle_last_bearings, 1);
+	size = sizeof(int) * LOCATION_DAMPEN_BEARING_COUNT;
+	lb->ring_buf = g_malloc(size);
+	lb->max = LOCATION_DAMPEN_BEARING_COUNT;
+	lb->first = 1;
+	lb->cur = 0;
+
+	size = sizeof(float) * LOCATION_DAMPEN_BEARING_COUNT;
+	lb->dampen_value = g_malloc(size);
+
+
+#ifdef NAVIT_GPS_DIRECTION_DAMPING
+
+//	lb->dampen_value[0] = 0.00f;
+//	lb->dampen_value[1] = 0.00f;
+//	lb->dampen_value[2] = 0.00f;
+//	lb->dampen_value[3] = 0.00f;
+//	lb->dampen_value[4] = 0.01f;
+//	lb->dampen_value[5] = 0.02f;
+//	lb->dampen_value[6] = 0.04f;
+//	lb->dampen_value[7] = 0.10f;
+//	lb->dampen_value[8] = 0.16f;
+//	lb->dampen_value[9] = 0.67f;
+
+	lb->dampen_value[0] = 0.00f;
+	lb->dampen_value[1] = 0.00f;
+	lb->dampen_value[2] = 0.00f;
+	lb->dampen_value[3] = 0.10f;
+	lb->dampen_value[4] = 0.90f;
+
+#endif
+
+	ret->lb = lb;
+
 	//dbg(0,"priv_global_android=%p\n", priv_global_android);
 	vehicle_android_init(ret);
-	//DBG dbg(0, "return\n");
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:leave\n");
@@ -374,6 +596,7 @@ vehicle_android_new_android(struct vehicle_methods *meth, struct callback_list *
  * 
  * @returns nothing
  */
+#ifdef PLUGSSS
 void plugin_init(void)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
@@ -387,4 +610,5 @@ void plugin_init(void)
 #endif
 
 }
+#endif
 

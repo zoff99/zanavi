@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -108,6 +108,7 @@ static void transform_setup_matrix(struct transformation *t)
 	{
 		if (order_dir < 0)
 			t->scale_shift++;
+
 		t->order += order_dir;
 		scale >>= 1;
 	}
@@ -1125,17 +1126,26 @@ tab_sqrt[]=
 {	14142,13379,12806,12364,12018,11741,11517,11333,11180,11051,10943,10850,10770,10701,10640,10587,10540,10499,10462,10429,10400,10373,10349,10327,10307,10289,10273,10257,10243,10231,10219,10208};
 
 static int tab_int_step = 0x20000;
+
 static int tab_int_scale[]=
 {	10000,10002,10008,10019,10033,10052,10076,10103,10135,10171,10212,10257,10306,10359,10417,10479,10546,10617,10693,10773,10858,10947,11041,11140,11243,11352,11465,11582,11705,11833,11965,12103,12246,12394,12547,12706,12870,13039,13214,13395,13581,13773,13971,14174,14384,14600,14822,15050,15285,15526,15774,16028,16289,16557,16832,17114,17404,17700,18005,18316,18636,18964,19299,19643,19995,20355,20724,21102,21489,21885,22290,22705,23129,23563,24007,24461,24926,25401,25886,26383,26891};
 
 int transform_int_scale(int y)
 {
 	int i,size = sizeof(tab_int_scale)/sizeof(int);
+
 	if (y < 0)
-	y=-y;
+	{
+		y=-y;
+	}
+
 	i=y/tab_int_step;
+
 	if (i < size-1)
-	return tab_int_scale[i]+((tab_int_scale[i+1]-tab_int_scale[i])*(y-i*tab_int_step))/tab_int_step;
+	{
+		return tab_int_scale[i]+((tab_int_scale[i+1]-tab_int_scale[i])*(y-i*tab_int_step))/tab_int_step;
+	}
+
 	return tab_int_scale[size-1];
 }
 #endif
@@ -1153,25 +1163,33 @@ double transform_distance(enum projection pro, struct coord *c1, struct coord *c
 		int dx,dy,f,scale=transform_int_scale((c1->y+c2->y)/2);
 		dx=c1->x-c2->x;
 		dy=c1->y-c2->y;
+
 		if (dx < 0)
 		dx=-dx;
+
 		if (dy < 0)
 		dy=-dy;
+
 		while (dx > 20000 || dy > 20000)
 		{
 			dx/=10;
 			dy/=10;
 			scale/=10;
 		}
+
 		if (! dy)
 		return dx*10000/scale;
+
 		if (! dx)
 		return dy*10000/scale;
+
 		if (dx > dy)
 		{
 			f=dx*8/dy-8;
+
 			if (f >= 32)
 			return dx*10000/scale;
+
 			return dx*tab_sqrt[f]/scale;
 		}
 		else
@@ -1179,6 +1197,7 @@ double transform_distance(enum projection pro, struct coord *c1, struct coord *c
 			f=dy*8/dx-8;
 			if (f >= 32)
 			return dy*10000/scale;
+
 			return dy*tab_sqrt[f]/scale;
 		}
 #endif
@@ -1217,7 +1236,10 @@ double transform_polyline_length(enum projection pro, struct coord *c, int count
 	int i;
 
 	for (i = 0; i < count - 1; i++)
+	{
 		ret += transform_distance(pro, &c[i], &c[i + 1]);
+	}
+
 	return ret;
 }
 
@@ -1270,9 +1292,13 @@ int transform_distance_sq(struct coord *c1, struct coord *c2)
 	int dy = c1->y - c2->y;
 
 	if (dx > 32767 || dy > 32767 || dx < -32767 || dy < -32767)
+	{
 		return INT_MAX;
+	}
 	else
+	{
 		return dx * dx + dy * dy;
+	}
 }
 
 navit_float transform_distance_sq_float(struct coord *c1, struct coord *c2)
@@ -1305,28 +1331,37 @@ int transform_distance_line_sq(struct coord *l0, struct coord *l1, struct coord 
 	wy = ref->y - l0->y;
 
 	c1 = vx * wx + vy * wy;
+
 	if (c1 <= 0)
 	{
 		if (lpnt)
 			*lpnt = *l0;
+
 		return transform_distance_sq(l0, ref);
 	}
+
 	c2 = vx * vx + vy * vy;
+
 	if (c2 <= c1)
 	{
 		if (lpnt)
 			*lpnt = *l1;
+
 		return transform_distance_sq(l1, ref);
 	}
+
 	while (c1 > climit || c2 > climit)
 	{
 		c1 /= 256;
 		c2 /= 256;
 	}
+
 	l.x = l0->x + vx * c1 / c2;
 	l.y = l0->y + vy * c1 / c2;
+
 	if (lpnt)
 		*lpnt = l;
+
 	return transform_distance_sq(&l, ref);
 }
 
@@ -1495,19 +1530,28 @@ static int tab_atan[]=
 static int
 atan2_int_lookup(int val)
 {
-	int len=sizeof(tab_atan)/sizeof(int);
-	int i=len/2;
-	int p=i-1;
+	int len = sizeof(tab_atan)/sizeof(int);
+	int i = len/2;
+	int p = i-1;
+
 	for (;;)
 	{
 		i>>=1;
 		if (val < tab_atan[p])
-		p-=i;
+		{
+			p-=i;
+		}
 		else
-		if (val < tab_atan[p+1])
-		return p+(p>>1);
-		else
-		p+=i;
+		{
+			if (val < tab_atan[p+1])
+			{
+				return p+(p>>1);
+			}
+			else
+			{
+				p+=i;
+			}
+		}
 	}
 }
 
@@ -1519,35 +1563,41 @@ atan2_int(int dx, int dy)
 	{
 		return dy < 0 ? 180 : 0;
 	}
+
 	if (! dy)
 	{
 		return dx < 0 ? -90 : 90;
 	}
+
 	if (dx < 0)
 	{
 		dx=-dx;
 		mul=-1;
 	}
+
 	if (dy < 0)
 	{
 		dy=-dy;
 		add=180*mul;
 		mul*=-1;
 	}
+
 	while (dx > 20000 || dy > 20000)
 	{
 		dx/=10;
 		dy/=10;
 	}
+
 	if (dx > dy)
 	{
-		ret=90-atan2_int_lookup(dy*10000/dx);
+		ret = 90 - atan2_int_lookup(dy*10000/dx);
 	}
 	else
 	{
-		ret=atan2_int_lookup(dx*10000/dy);
+		ret = atan2_int_lookup(dx*10000/dy);
 	}
-	return ret*mul+add;
+
+	return ret * mul + add;
 }
 #endif
 
@@ -1555,18 +1605,32 @@ int transform_get_angle_delta(struct coord *c1, struct coord *c2, int dir)
 {
 	int dx = c2->x - c1->x;
 	int dy = c2->y - c1->y;
-#ifndef AVOID_FLOAT 
+
+#ifndef AVOID_FLOAT
+
+	//dbg(0, "**use FLOAT\n");
+
 	double angle;
 	angle = atan2(dx, dy);
 	angle *= 180 / M_PI;
 #else
+
+	//dbg(0, "++AVOID FLOAT\n");
+
 	int angle;
-	angle=atan2_int(dx,dy);
+	angle = atan2_int(dx,dy);
 #endif
+
 	if (dir == -1)
+	{
 		angle = angle - 180;
+	}
+
 	if (angle < 0)
+	{
 		angle += 360;
+	}
+
 	return angle;
 }
 

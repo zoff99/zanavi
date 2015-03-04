@@ -385,7 +385,7 @@ g_ascii_strtod (const gchar *nptr,
 #endif
 
 #if NOT_NEEDED_FOR_NAVIT
-  g_assert (decimal_point_len != 0);
+  //g_assert (decimal_point_len != 0);
 #endif /* NOT_NEEDED_FOR_NAVIT */
 
   decimal_point_pos = NULL;
@@ -607,7 +607,7 @@ g_ascii_formatd (gchar       *buffer,
 #endif
 
 #if NOT_NEEDED_FOR_NAVIT
-  g_assert (decimal_point_len != 0);
+ // g_assert (decimal_point_len != 0);
 #endif /* NOT_NEEDED_FOR_NAVIT */
 
   if (decimal_point[0] != '.' ||

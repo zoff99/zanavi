@@ -33,7 +33,7 @@ struct callback
 {
 	void (*func)();
 	char func_name[400]; // function name as string (function that will be called)
-	char setup_func_name[400]; // function name as string (function that create the callback)
+	char setup_func_name[400]; // function name as string (function that created the callback)
 	int pcount;
 	enum attr_type type;
 	void *p[0];
@@ -41,20 +41,24 @@ struct callback
 
 struct callback_list
 {
+	char cb_name[400]; // callbacklist "function:name"
 	GList *list;
 };
 
-struct callback_list *callback_list_new(void);
+void callback_dump_callbacks();
+struct callback_list *callback_list_new(char *name);
 struct callback *callback_new_attr(void (*func)(void), enum attr_type type, int pcount, void **p);
 struct callback *callback_new_attr_args(const char *module, const int mlen,const char *function, void (*func)(void), enum attr_type type, int count, ...);
 struct callback *callback_new(void (*func)(void), int pcount, void **p);
 struct callback *callback_new_args(const char *module, const int mlen,const char *function, void (*func)(void), int count, ...);
 void callback_destroy_real(const char *module, const int mlen,const char *function, struct callback *cb);
 void callback_set_arg(struct callback *cb, int arg, void *p);
-void callback_list_add(struct callback_list *l, struct callback *cb);
+// void callback_list_add(struct callback_list *l, struct callback *cb);
+void callback_list_add_2(const char *module, const int mlen,const char *function, struct callback_list *l, struct callback *cb);
 struct callback *callback_list_add_new(struct callback_list *l, void (*func)(void), int pcount, void **p);
 void callback_add_names(struct callback *cb, const char *parent_name, const char *func_name);
-void callback_list_remove(struct callback_list *l, struct callback *cb);
+// void callback_list_remove(struct callback_list *l, struct callback *cb);
+void callback_list_remove_2(const char *module, const int mlen,const char *function, struct callback_list *l, struct callback *cb);
 void callback_list_remove_destroy(struct callback_list *l, struct callback *cb);
 void callback_call(struct callback *cb, int pcount, void **p);
 void callback_call_args_real(const char *module, const int mlen,const char *function, struct callback *cb, int count, ...);
@@ -68,6 +72,10 @@ void callback_list_destroy(struct callback_list *l);
 #define callback_destroy(cb) callback_destroy_real(__FILE__,__LINE__,__PRETTY_FUNCTION__,cb)
 
 #define callback_call_args(cb, count, ...) callback_call_args_real(__FILE__,__LINE__,__PRETTY_FUNCTION__,cb, count, __VA_ARGS__)
+
+#define callback_list_add(l, cb) callback_list_add_2(__FILE__,__LINE__,__PRETTY_FUNCTION__,l,cb)
+#define callback_list_remove(l, cb) callback_list_remove_2(__FILE__,__LINE__,__PRETTY_FUNCTION__,l,cb)
+
 
 #define callback_new_0(func) callback_new_args(__FILE__,__LINE__,__PRETTY_FUNCTION__,func, 0)
 #define callback_new_1(func,p1) callback_new_args(__FILE__,__LINE__,__PRETTY_FUNCTION__,func, 1, p1)

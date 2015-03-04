@@ -46,7 +46,7 @@
 
 static void vehicleprofile_set_attr_do(struct vehicleprofile *this_, struct attr *attr)
 {
-	dbg(1, "%s:%d\n", attr_to_name(attr->type), attr->u.num);
+	//dbg(1, "%s:%d\n", attr_to_name(attr->type), attr->u.num);
 	switch (attr->type)
 	{
 		case attr_flags:
@@ -66,7 +66,9 @@ static void vehicleprofile_set_attr_do(struct vehicleprofile *this_, struct attr
 			break;
 		case attr_name:
 			if (this_->name)
+			{
 				g_free(this_->name);
+			}
 			/* previously used strdupn not available on win32 */
 			this_->name = g_strdup(attr->u.str);
 			break;
@@ -102,7 +104,7 @@ static void vehicleprofile_set_attr_do(struct vehicleprofile *this_, struct attr
 struct vehicleprofile *
 vehicleprofile_new(struct attr *parent, struct attr **attrs)
 {
-	dbg(0, "EEnter\n");
+	//dbg(0, "EEnter\n");
 
 	struct vehicleprofile *this_;
 	struct attr **attr, *type_attr;
@@ -124,7 +126,7 @@ vehicleprofile_new(struct attr *parent, struct attr **attrs)
 		vehicleprofile_set_attr_do(this_, *attr);
 	}
 
-	dbg(0, "return\n");
+	//dbg(0, "return\n");
 	return this_;
 }
 

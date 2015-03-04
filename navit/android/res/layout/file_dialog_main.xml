@@ -53,8 +53,11 @@
 		android:layout_above="@+id/fdLinearLayoutList">
 		<TextView android:id="@+id/path" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" />
+
+		<!-- listview for files and dirs -->
 		<ListView android:id="@android:id/list" android:layout_width="fill_parent"
 			android:layout_height="fill_parent" />
+
 		<TextView android:id="@android:id/empty"
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
 			android:text="@string/fs_no_data" />

@@ -195,5 +195,8 @@ event_glib_new(struct event_methods *meth)
 void
 event_glib_init(void)
 {
+	dbg(0, "event_glib_init\n");
 	plugin_register_event_type("glib", event_glib_new);
 }
+
+

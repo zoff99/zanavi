@@ -19,7 +19,6 @@
 
 package com.zoffcc.applications.zanavi;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,22 +27,27 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.LayoutParams;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class NavitMapPreviewActivity extends Activity
+public class NavitMapPreviewActivity extends ActionBarActivity
 {
 	int selected_id;
 	private ImageView view = null;
+	private LinearLayout ll;
 
 	public static Canvas view_canvas = null;
 	public static Bitmap view_bitmap = null;
@@ -71,9 +75,62 @@ public class NavitMapPreviewActivity extends Activity
 
 	public static MapPreviewConfig[] mapconf = new MapPreviewConfig[MaxConfigs];
 
+	//	@Override
+	//	protected void onPostCreate(Bundle savedInstanceState)
+	//	{
+	//		super.onPostCreate(savedInstanceState);
+	//		Toolbar bar;
+	//
+	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	//		{
+	//			ViewGroup root_view = (ViewGroup) ll;
+	//			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+	//			bar.setTitle(Navit.get_text("Map Preview"));
+	//			root_view.addView(bar, 0); // insert at top
+	//		}
+	//		else
+	//		{
+	//			ViewGroup root_view = (ViewGroup) ll;
+	//			// ListView content = (ListView) root_view.getChildAt(0);
+	//			ViewGroup content = ll;
+	//
+	//			root_view.removeAllViews();
+	//
+	//			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+	//			bar.setTitle(Navit.get_text("Map Preview"));
+	//			root_view.addView(bar);
+	//
+	//			int height;
+	//			TypedValue tv = new TypedValue();
+	//			if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true))
+	//			{
+	//				height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+	//			}
+	//			else
+	//			{
+	//				height = bar.getHeight();
+	//			}
+	//
+	//			content.setPadding(0, height, 0, 0);
+	//
+	//			root_view.addView(content);
+	//		}
+	//
+	//		bar.setNavigationOnClickListener(new View.OnClickListener()
+	//		{
+	//			@Override
+	//			public void onClick(View v)
+	//			{
+	//				finish();
+	//			}
+	//		});
+	//	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		this.selected_id = -1;
 
 		super.onCreate(savedInstanceState);
@@ -187,9 +244,27 @@ public class NavitMapPreviewActivity extends Activity
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 
+		ll = new LinearLayout(this);
+		ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		ll.setOrientation(LinearLayout.VERTICAL);
+
+		ViewGroup root_view = (ViewGroup) ll;
+		Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+		bar.setTitle(Navit.get_text("Map Preview"));
+
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+		// root_view.addView(bar, 0); // insert at top
+
 		// scrollview
 		ScrollView sv = new ScrollView(this);
-		sv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		sv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 		// panel linearlayout
 		LinearLayout relativelayout = new LinearLayout(this);
@@ -359,8 +434,11 @@ public class NavitMapPreviewActivity extends Activity
 
 		sv.addView(relativelayout);
 
+		ll.addView(bar);
+		ll.addView(sv);
+
 		// set the main view
-		setContentView(sv);
+		setContentView(ll);
 	}
 
 	@Override
@@ -375,7 +453,7 @@ public class NavitMapPreviewActivity extends Activity
 	{
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra("selected_id", String.valueOf(this.selected_id));
-		setResult(Activity.RESULT_OK, resultIntent);
+		setResult(ActionBarActivity.RESULT_OK, resultIntent);
 
 		if (view_bitmap != null)
 		{

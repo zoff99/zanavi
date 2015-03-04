@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -160,6 +161,11 @@ public class FileDialog extends ListActivity
 		setResult(RESULT_CANCELED, getIntent());
 
 		setContentView(R.layout.file_dialog_main);
+
+		//ListView my_listview = (ListView) findViewById(android.R.id.list);
+		//TextView my_t = (TextView) my_listview.findViewById(android.R.id.text1);
+		//my_t.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+
 		myPath = (TextView) findViewById(R.id.path);
 		mFileName = (EditText) findViewById(R.id.fdEditTextFile);
 

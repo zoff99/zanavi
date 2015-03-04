@@ -32,6 +32,8 @@
 #include "item.h"
 #include "debug.h"
 
+extern long global_last_spoken_base;
+
 #ifdef HAVE_API_ANDROID
 #include <android/log.h>
 #endif
@@ -53,6 +55,9 @@ static struct sockaddr_in debug_sin;
 int debug_level = 0;
 int segv_level = 0;
 int timestamp_prefix = 0;
+
+int global_func_indent_counter = -1;
+const char* global_func_indent_spaces = "                             ";
 
 static int dummy;
 static GHashTable *debug_hash;
@@ -82,8 +87,8 @@ static void sigsegv(int sig)
 
 void debug_init(const char *program_name)
 {
-	gdb_program = g_strdup(program_name);
-	signal(SIGSEGV, sigsegv);
+//	gdb_program = g_strdup(program_name); // L
+//	signal(SIGSEGV, sigsegv); // L
 	debug_hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free_func, NULL);
 	debug_fp = stderr;
 }
@@ -127,8 +132,10 @@ debug_new(struct attr *parent, struct attr **attrs)
 	{
 		struct attr *socket_attr=attr_search(attrs, NULL, attr_socket);
 		char *p,*s;
+
 		if (!socket_attr)
-		return NULL;
+			return NULL;
+
 		s=g_strdup(socket_attr->u.str);
 		p=strchr(s,':');
 		if (!p)
@@ -152,7 +159,9 @@ debug_new(struct attr *parent, struct attr **attrs)
 #endif
 	if (!name || !level)
 		return NULL;
+
 	debug_level_set(name->u.str, level->u.num);
+
 	return (struct debug *) &dummy;
 }
 
@@ -160,8 +169,37 @@ int debug_level_get(const char *name)
 {
 	if (!debug_hash)
 		return 0;
+
 	return GPOINTER_TO_INT(g_hash_table_lookup(debug_hash, name));
 }
+
+void debug_get_timestamp_millis(long *ts_millis)
+{
+
+//  struct timeval
+//  {
+//      time_t      tv_sec;     /* seconds */
+//      suseconds_t tv_usec;    /* microseconds */
+//  };
+
+	struct timeval tv;
+
+	if (gettimeofday(&tv, NULL) == -1)
+	{
+		ts_millis = -1;
+		return;
+	}
+
+	if (global_last_spoken_base != 0)
+	{
+		*ts_millis = (((long)tv.tv_sec - global_last_spoken_base) * 1000) + ((int)tv.tv_usec / 1000);
+	}
+	else
+	{
+		*ts_millis = ((long)tv.tv_sec * 1000) + ((int)tv.tv_usec / 1000);
+	}
+}
+
 
 static void debug_timestamp(char *buffer)
 {
@@ -184,6 +222,42 @@ static void debug_timestamp(char *buffer)
 #endif
 }
 
+#ifdef HAVE_API_ANDROID
+
+/* Android log priority values, in ascending priority order. */
+/*
+typedef enum android_LogPriority {
+ANDROID_LOG_UNKNOWN = 0,
+ANDROID_LOG_DEFAULT,
+ANDROID_LOG_VERBOSE,
+ANDROID_LOG_DEBUG,
+ANDROID_LOG_INFO,
+ANDROID_LOG_WARN,
+ANDROID_LOG_ERROR,
+ANDROID_LOG_FATAL,
+ANDROID_LOG_SILENT,
+} android_LogPriority; 
+*/
+
+static android_LogPriority
+dbg_level_to_android(dbg_level level)
+{
+	switch(level) {
+		case lvl_unset:
+			return ANDROID_LOG_UNKNOWN;
+		case lvl_error:
+			return ANDROID_LOG_ERROR;
+		case lvl_warning:
+			return ANDROID_LOG_WARN;
+		case lvl_info:
+			return ANDROID_LOG_INFO;
+		case lvl_debug:
+			return ANDROID_LOG_DEBUG;
+	}
+	return ANDROID_LOG_UNKNOWN;
+}
+#endif
+
 void debug_vprintf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap)
 {
 #if defined HAVE_API_WIN32_CE || defined _MSC_VER
@@ -191,7 +265,6 @@ void debug_vprintf(int level, const char *module, const int mlen, const char *fu
 #else
 	char buffer[mlen + flen + 3];
 #endif
-	FILE *fp = debug_fp;
 
 	sprintf(buffer, "%s:%s", module, function);
 	if (debug_level_get(module) >= level || debug_level_get(buffer) >= level)
@@ -214,25 +287,7 @@ void debug_vprintf(int level, const char *module, const int mlen, const char *fu
 		MessageBoxW(NULL, muni, TEXT("Navit - Error"), MB_APPLMODAL|MB_OK|MB_ICONERROR);
 #else
 #ifdef HAVE_API_ANDROID
-		/*
-		 * Android log priority values, in ascending priority order.
-		 */
-		/*
-		 typedef enum android_LogPriority
-		 {
-		 ANDROID_LOG_UNKNOWN = 0,
-		 ANDROID_LOG_DEFAULT, // only for SetMinPriority()
-		 ANDROID_LOG_VERBOSE,
-		 ANDROID_LOG_DEBUG,
-		 ANDROID_LOG_INFO,
-		 ANDROID_LOG_WARN,
-		 ANDROID_LOG_ERROR,
-		 ANDROID_LOG_FATAL,
-		 ANDROID_LOG_SILENT, // only for SetMinPriority(); must be last
-		 } android_LogPriority;
-		 */
-
-		__android_log_print(ANDROID_LOG_DEBUG,"navit", "%s", xbuffer);
+		__android_log_print(dbg_level_to_android(lvl_info), "navit", "%s", xbuffer);
 #else
 #ifdef HAVE_SOCKET
 		if (debug_socket != -1)
@@ -241,8 +296,13 @@ void debug_vprintf(int level, const char *module, const int mlen, const char *fu
 			return;
 		}
 #endif
+		FILE *fp = debug_fp;
+
 		if (!fp)
+		{
 			fp = stderr;
+		}
+
 		fprintf(fp, "%s", xbuffer);
 		fflush(fp);
 #endif
@@ -250,12 +310,78 @@ void debug_vprintf(int level, const char *module, const int mlen, const char *fu
 	}
 }
 
+
+
+void debug_vprintf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap)
+{
+#if defined HAVE_API_WIN32_CE || defined _MSC_VER
+	char buffer[4096];
+#else
+	char buffer[mlen + flen + 3];
+#endif
+
+	sprintf(buffer, "FUNC:%.*s%s:%s", abs(2 * indent), global_func_indent_spaces, module, function);
+	if (debug_level_get(module) >= level || debug_level_get(buffer) >= level)
+	{
+#if defined(DEBUG_WIN32_CE_MESSAGEBOX)
+		wchar_t muni[4096];
+#endif
+		char xbuffer[4096];
+		xbuffer[0] = '\0';
+		if (prefix)
+		{
+			if (timestamp_prefix)
+				debug_timestamp(xbuffer);
+			strcpy(xbuffer + strlen(xbuffer), buffer);
+			strcpy(xbuffer + strlen(xbuffer), ":");
+		}
+		vsprintf(xbuffer + strlen(xbuffer), fmt, ap);
+#ifdef DEBUG_WIN32_CE_MESSAGEBOX
+		mbstowcs(muni, xbuffer, strlen(xbuffer)+1);
+		MessageBoxW(NULL, muni, TEXT("Navit - Error"), MB_APPLMODAL|MB_OK|MB_ICONERROR);
+#else
+#ifdef HAVE_API_ANDROID
+		__android_log_print(dbg_level_to_android(lvl_info), "navit", "%s", xbuffer);
+#else
+#ifdef HAVE_SOCKET
+		if (debug_socket != -1)
+		{
+			sendto(debug_socket, xbuffer, strlen(xbuffer), 0, (struct sockaddr *)&debug_sin, sizeof(debug_sin));
+			return;
+		}
+#endif
+		FILE *fp = debug_fp;
+
+		if (!fp)
+		{
+			fp = stderr;
+		}
+
+		fprintf(fp, "%s", xbuffer);
+		fflush(fp);
+#endif
+#endif
+	}
+}
+
+
+
 void debug_printf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...)
 {
 #ifdef _DEBUG_BUILD_
 	va_list ap;
 	va_start(ap, fmt);
 	debug_vprintf(level, module, mlen, function, flen, prefix, fmt, ap);
+	va_end(ap);
+#endif
+}
+
+void debug_printf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...)
+{
+#ifdef _DEBUG_BUILD_
+	va_list ap;
+	va_start(ap, fmt);
+	debug_vprintf_func(level, indent, module, mlen, function, flen, prefix, fmt, ap);
 	va_end(ap);
 #endif
 }

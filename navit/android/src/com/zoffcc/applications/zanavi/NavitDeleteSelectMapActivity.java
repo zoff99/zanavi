@@ -22,24 +22,89 @@ package com.zoffcc.applications.zanavi;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.LayoutParams;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 public class NavitDeleteSelectMapActivity extends ListActivity
 {
 	private int selected_id = -1;
+	private int my_id = 0;
+
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		super.onPostCreate(savedInstanceState);
+		Toolbar bar;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(my_id).getParent().getParent();
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("delete maps"));
+			root_view.addView(bar, 0); // insert at top
+		}
+		else
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(android.R.id.content);
+			ListView content = (ListView) root_view.getChildAt(0);
+
+			root_view.removeAllViews();
+
+			LinearLayout ll = new LinearLayout(this);
+			ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			ll.setOrientation(LinearLayout.VERTICAL);
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("delete maps"));
+			root_view.addView(ll);
+
+			//			int height;
+			//			TypedValue tv = new TypedValue();
+			//			if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true))
+			//			{
+			//				height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+			//			}
+			//			else
+			//			{
+			//				height = bar.getHeight();
+			//			}
+			//
+			//			content.setPadding(0, height, 0, 0);
+
+			ll.addView(bar);
+			ll.addView(content);
+		}
+
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
 
 		NavitMapDownloader.init_ondisk_maps();
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, NavitMapDownloader.OSM_MAP_NAME_LIST_ondisk);
 		setListAdapter(adapter);
 		this.getListView().setFastScrollEnabled(true);
+		my_id = this.getListView().getId();
 	}
 
 	@Override

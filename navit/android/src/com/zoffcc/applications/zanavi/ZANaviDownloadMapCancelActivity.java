@@ -38,11 +38,14 @@ public class ZANaviDownloadMapCancelActivity extends Activity
 
 	public static TextView addr_view2 = null;
 	TextView addr_view = null;
+	TextView info_view = null;
 	private static ZANaviDownloadMapCancelActivity my_object = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
 
 		my_object = this;
@@ -59,6 +62,14 @@ public class ZANaviDownloadMapCancelActivity extends Activity
 		addr_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
 		addr_view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		addr_view.setPadding(4, 10, 4, 10);
+
+		// info text
+		info_view = new TextView(this);
+		info_view.setText(Navit.get_text("press HOME to download in the background")); //TRANS
+		info_view.setGravity(Gravity.CENTER);
+		info_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+		info_view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		info_view.setPadding(4, 10, 4, 10);
 
 		// message
 		addr_view2 = new TextView(this);
@@ -123,6 +134,7 @@ public class ZANaviDownloadMapCancelActivity extends Activity
 		panel.addView(addr_view);
 		panel.addView(btnSearch);
 		panel.addView(btnSearch2);
+		panel.addView(info_view);
 		panel.addView(addr_view2);
 
 		// set the main view

@@ -73,7 +73,7 @@ static void
 config_new_int(void)
 {
 	config=g_new0(struct config, 1);
-	config->cbl=callback_list_new();
+	config->cbl=callback_list_new("config_new_int:config->cbl");
 #ifndef HAVE_API_WIN32_CE
 	signal(SIGTERM, config_terminate);
 #ifndef HAVE_API_WIN32

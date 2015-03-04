@@ -63,6 +63,24 @@
             android:summary="Use Imperial units instead of metric units"
             android:title="Imperial" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Tracking" android:key="category_tracking">
+		<fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="250"
+            android:dialogMessage="0:connected value"
+            android:key="tracking_connected_pref"
+            android:max="1000"
+            android:summary="Roadsegment must be connected to previous roadsegment"
+            android:text=""
+            android:title="Roadsegment connected value" />
+		<fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="40"
+            android:dialogMessage="0:angle value"
+            android:key="tracking_angle_pref"
+            android:max="200"
+            android:summary="Roadsegment must point in the direction of your heading"
+            android:text=""
+            android:title="Roadsegment direction" />
+	</PreferenceCategory>
     <PreferenceCategory android:title="Routing" >
         <CheckBoxPreference
             android:defaultValue="true"
@@ -75,6 +93,18 @@
             android:summary="use faster and better index search [donate version]"
             android:title="index search" />
 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="roadspeed_warning"
+            android:summary="Warns when driving to fast [donate version]"
+            android:title="Roadspeed warning" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="lane_assist"
+            android:summary="Shows which lanes you need to drive on [donate version]"
+            android:title="Lane assistance" />
+
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/trafficlights_delayArray"
@@ -82,7 +112,55 @@
             android:key="trafficlights_delay"
             android:summary="calculate traffic lights delay for routing"
             android:title="Traffic lights delay" />
+        <ListPreference
+            android:defaultValue="car"
+            android:entries="@array/routing_profileArray"
+            android:entryValues="@array/routing_profileValues"
+            android:key="routing_profile"
+            android:summary="set the profile for routing"
+            android:title="Routing Profile" />
 
+        <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="68"
+            android:dialogMessage="10:road priority 1"
+            android:key="road_priority_001"
+            android:max="200"
+            android:summary="change the usage of roads for bicycle routing"
+            android:text=""
+            android:title="Street priority 1" />
+
+        <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="329"
+            android:dialogMessage="10:road priority 2"
+            android:key="road_priority_002"
+            android:max="500"
+            android:summary="change the usage of larger roads for bicycle routing"
+            android:text=""
+            android:title="Street priority 2" />
+
+         <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="5000"
+            android:dialogMessage="10:road priority 3"
+            android:key="road_priority_003"
+            android:max="5000"
+            android:summary="change the usage of even bigger roads for bicycle routing"
+            android:text=""
+            android:title="Street priority 3" />
+
+         <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="5"
+            android:dialogMessage="0:road priority 4"
+            android:key="road_priority_004"
+            android:max="20"
+            android:summary="change the usage of roads with cycle lanes"
+            android:text=""
+            android:title="Cycle lanes priority" />
+
+         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="avoid_sharp_turns"
+            android:summary="try to avoid sharp turns, and rather go a longer way around [BETA]"
+            android:title="Avoid sharp turns" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="speak_street_names"
@@ -104,6 +182,11 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="GUI" >
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_status_bar"
+            android:summary="always show top status bar"
+            android:title="top status bar" />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="show_3d_map"
             android:summary="show map in 3D [BETA]"
@@ -123,6 +206,11 @@
             android:key="autozoom_flag"
             android:summary="set map zoom automatically according to driving speed"
             android:title="Autozoom" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="c_linedrawing"
+            android:summary="map drawing is faster, but it may look choppy"
+            android:title="Faster Mapdrwaing" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_anti_aliasing"
@@ -163,6 +251,13 @@
             android:title="Vehicle 3D" />
 
         <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/themesArray"
+            android:entryValues="@array/themesValues"
+            android:key="current_theme"
+            android:summary="Select Application Theme"
+            android:title="Theme" />
+        <ListPreference
             android:defaultValue="2"
             android:entries="@array/mapfontsizeArray"
             android:entryValues="@array/mapfontsizeValues"
@@ -176,8 +271,7 @@
             android:entryValues="@array/drawatorderValues"
             android:key="drawatorder"
             android:summary="Draw more Detail on map. change only on fast devices!"
-            android:title="Draw more Detail" />
-        -->
+            android:title="Draw more Detail" />        -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/drawatorder2Array"
@@ -229,6 +323,16 @@
             android:title="Debug Functions" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="enable_debug_write_gpx"
+            android:summary="write route to GPX file [DEBUG]"
+            android:title="Write route" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_debug_enable_comm"
+            android:summary="Enable ZANavi COMM Channel [DEBUG]"
+            android:title="Enable COMM channel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="item_dump"
             android:summary="show item dump [DEBUG]"
             android:title="show item dump" />
@@ -253,7 +357,15 @@
             android:dialogTitle="Enter Map Directory"
             android:key="map_directory"
             android:summary="Change mapdirectory. needs a RESTART!!"
-            android:title="Map Directory" />
+            android:title="Custom Map Directory" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/storageArray"
+            android:entryValues="@array/storageValues"
+            android:key="storage_directory"
+            android:summary="Change mapdirectory. needs a RESTART!!"
+            android:title="Select Storage" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Info" >
         <EditTextPreference

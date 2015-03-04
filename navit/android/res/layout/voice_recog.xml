@@ -1,56 +1,72 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recogscrollView"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fb_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#000000" >
+    android:orientation="vertical" >
 
-    <TableLayout
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar2vi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationContentDescription="@string/abc_action_bar_up_description"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    <ScrollView
+        android:id="@+id/recogscrollView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#000000" >
+        android:layout_height="fill_parent" >
 
-        <TextView
-            android:id="@+id/Header"
+        <TableLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingBottom="10dip"
-            android:text="Voice Search, speak your Destination"
-            android:textSize="20sp" />
+            android:layout_height="fill_parent" >
 
-        <Button
-            android:id="@+id/speakButton"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="#000000"
-            android:drawableTop="@drawable/microphone_icon"
-            android:gravity="center"
-            android:onClick="speakButtonClicked"
-            android:paddingBottom="20dip"
-            android:paddingTop="20dip"
-            android:text="Click to talk\nzum sprechen drücken" />
+            <TextView
+                android:id="@+id/Header"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="10dip"
+                android:text="Voice Search, speak your Destination"
+                android:textSize="20sp" />
 
-        <com.zoffcc.applications.zanavi.ZANaviBGTextView
-            android:id="@+id/Line1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#000000"
-            android:clickable="true"
-            android:gravity="center|center_horizontal"
-            android:onClick="Line1Clicked"
-            android:paddingBottom="10dip"
-            android:paddingTop="10dip"
-            android:textSize="26sp" />
+            <Button
+                android:id="@+id/speakButton"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:drawableTop="@drawable/microphone_icon"
+                android:gravity="center"
+                android:onClick="speakButtonClicked"
+                android:paddingBottom="20dip"
+                android:paddingTop="20dip"
+                android:text="Click to talk\nzum sprechen drücken" />
 
-        <com.zoffcc.applications.zanavi.ZANaviBGTextView
-            android:id="@+id/Line2"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:gravity="center|center_horizontal"
-            android:onClick="Line1Clicked"
-            android:textSize="22sp" />
-    </TableLayout>
+            <com.zoffcc.applications.zanavi.ZANaviBGTextView
+                android:id="@+id/Line1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#000000"
+                android:clickable="true"
+                android:gravity="center|center_horizontal"
+                android:onClick="Line1Clicked"
+                android:paddingBottom="10dip"
+                android:paddingTop="10dip"
+                android:textSize="26sp" />
 
-</ScrollView>
+            <com.zoffcc.applications.zanavi.ZANaviBGTextView
+                android:id="@+id/Line2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#000000"
+                android:clickable="true"
+                android:gravity="center|center_horizontal"
+                android:onClick="Line1Clicked"
+                android:textSize="22sp" />
+        </TableLayout>
+    </ScrollView>
+
+</LinearLayout>

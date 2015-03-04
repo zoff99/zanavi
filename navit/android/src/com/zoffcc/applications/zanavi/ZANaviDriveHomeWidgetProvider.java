@@ -41,14 +41,18 @@ public class ZANaviDriveHomeWidgetProvider extends AppWidgetProvider
 			int appWidgetId = appWidgetIds[i];
 
 			// create an intent to launch ZANavi
-			Intent intent = new Intent(context, Navit.class);
+			Intent intent = new Intent(context, com.zoffcc.applications.zanavi.Navit.class);
 			// but some data into the intent
 			Bundle sendBundle = new Bundle();
-			sendBundle.putLong("ZANAVI_INTENT_type", Navit.NAVIT_START_INTENT_DRIVE_HOME);
+			sendBundle.putLong("com.zoffcc.applications.zanavi.ZANAVI_INTENT_type", Navit.NAVIT_START_INTENT_DRIVE_HOME);
 			intent.putExtras(sendBundle);
+			System.out.println("DH:W 001 B=" + sendBundle.describeContents());
+			System.out.println("DH:W 001 B=" + sendBundle.toString());
+			System.out.println("DH:W 002 I=" + intent.toString());
 
 			// if ZANavi main activity already running, then only bring to front, otherwise start it //  Intent.FLAG_ACTIVITY_NEW_TASK
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			System.out.println("DH:W 003 I=" + pendingIntent.toString());
 
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_home);
 			views.setOnClickPendingIntent(R.id.icon_widget_home, pendingIntent);

@@ -91,6 +91,7 @@ struct search_list
 
 // func definition
 static int ascii_cmp_local_faster(char *name, char *match, int partial);
+static int ascii_cmp_local_faster_DEBUG(char *name, char *match, int partial);
 // func definition
 
 static guint search_item_hash_hash(gconstpointer key)
@@ -1072,6 +1073,7 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 	int search_order;
 	struct attr att;
 	struct attr att2;
+	struct attr debug_att2;
 	char *town_string2;
 	char *hn_fold = NULL;
 	char *street_name_fold = NULL;
@@ -1082,7 +1084,7 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 	msh = mapset_open(ms);
 
 	search_order = 18;
-	search_radius_this = 20;
+	search_radius_this = global_search_radius_for_housenumbers; // old value: 20; // search this far around street-coord to find potential housenumbers for this street
 
 	hn_fold = linguistics_fold_and_prepare_complete(hn_name_match, 0);
 	street_name_fold = linguistics_fold_and_prepare_complete(street_name_match, 0);
@@ -1142,12 +1144,13 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 	sel = map_selection_rect_new(&center99, search_radius_this, search_order);
 	sel->range.min = type_house_number;
 	sel->range.max = type_house_number;
-	sel->u.c_rect.lu.x = center99.x - search_radius_this;
-	sel->u.c_rect.lu.y = center99.y + search_radius_this;
-	sel->u.c_rect.rl.x = center99.x + search_radius_this;
-	sel->u.c_rect.rl.y = center99.y - search_radius_this;
+	//sel->u.c_rect.lu.x = center99.x - search_radius_this;
+	//sel->u.c_rect.lu.y = center99.y + search_radius_this;
+	//sel->u.c_rect.rl.x = center99.x + search_radius_this;
+	//sel->u.c_rect.rl.y = center99.y - search_radius_this;
 
-	// dbg(0, "hn=%s sn=%s\n", hn_name_match, street_name_match);
+
+	// dbg(0, "hn=%s hn fold=%s sn=%s partial=%d street_name_fold=%s\n", hn_name_match, hn_fold, street_name_match, partial, street_name_fold);
 	// dbg(0, "cx=%d cy=%d\n", c->x, c->y);
 
 	while (msh && (map = mapset_next(msh, 0)))
@@ -1183,12 +1186,29 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 								// does it have a housenumber?
 								if (item_attr_get(item, attr_house_number, &att))
 								{
+
+
+								// -- DEBUG -- //if (!strncmp(att.u.str, "11", 2))
+								//{
+
+									//dbg(0, "----------\n");
+									//dbg(0, "XY:hn1 attr=%s fold=%s item->type=%d\n", att.u.str, hn_fold, item->type);
+									//if (item_attr_get(item, attr_street_name, &debug_att2))
+									//{
+									//	dbg(0, "XY:hn1 str attr=%s str fold=%s\n", debug_att2.u.str, street_name_fold);
+									//}
+									//item_attr_rewind(item);
+
 									// match housenumber to our string
 									if (!ascii_cmp_local_faster(att.u.str, hn_fold, partial))
 									{
+										//dbg(0, "XY:found hn match!\n");
+											
 										// if this housenumber has a streetname tag, compare it now
 										if (item_attr_get(item, attr_street_name, &att2))
 										{
+											//dbg(0, "XY:XX:hn str attr=%s hn=%s\n", att2.u.str, att.u.str);
+
 											if (!ascii_cmp_local_faster(att2.u.str, street_name_fold, partial))
 											{
 												// coords of result
@@ -1220,6 +1240,14 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 											}
 										}
 									}
+
+
+
+
+
+								//}
+
+
 								}
 							}
 						}
@@ -1673,6 +1701,61 @@ static int ascii_cmp_local_faster(char *name, char *match, int partial)
 
 	return ret;
 }
+
+static int ascii_cmp_local_faster_DEBUG(char *name, char *match, int partial)
+{
+	char *s1_a;
+	char *s1 = name;
+	int ret;
+
+	s1_a = linguistics_fold_and_prepare_complete(s1, 0);
+
+	if (!s1_a)
+	{
+		dbg(0,"return 001:1\n");
+		return 1;
+	}
+
+	dbg(0,"s1=%s match=%s\n", s1_a, match);
+
+	if (strlen(s1_a) == 0)
+	{
+		// only special chars in string, return "no match"
+		dbg(0,"return 002:1\n");
+		return 1;
+	}
+
+
+	// --- old ---
+	//ret = linguistics_compare(s1, match, partial);
+	// --- old ---
+
+	if (partial == 1)
+	{
+		ret = strncmp(s1_a, match, strlen(match));
+	}
+	else
+	{
+		if (strlen(s1_a) == strlen(match))
+		{
+			ret = strncmp(s1_a, match, strlen(match));
+		}
+		else
+		{
+			ret = 1;
+		}
+	}
+
+
+	if (s1_a)
+	{
+		g_free(s1_a);
+	}
+
+	dbg(0,"return 099:%d\n", ret);
+	return ret;
+}
+
 
 struct navit *global_navit;
 

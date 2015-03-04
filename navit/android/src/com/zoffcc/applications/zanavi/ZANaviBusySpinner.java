@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import android.util.AttributeSet;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -44,6 +45,31 @@ public class ZANaviBusySpinner extends ImageView
 	public ZANaviBusySpinner(Context context)
 	{
 		super(context);
+		spinner_width = 12;
+
+		if (Navit.metrics.densityDpi >= 320)//&&(Navit.PREF_shrink_on_high_dpi))
+		{
+			float dpi_factor = ((float) NavitGraphics.Global_want_dpi_other / (float) Navit.metrics.densityDpi);
+			//System.out.println("FFFFFF==y:" + Navit.metrics.densityDpi);
+			//System.out.println("FFFFFF==y:" + dpi_factor);
+			spinner_size = (int) (35f / dpi_factor);
+			spinner_width = (int) (12f / dpi_factor);
+		}
+
+		this.paint = new Paint();
+		this.paint.setColor(Color.BLUE);
+		this.paint.setAlpha(150);
+		rotateAnim = null;
+		paint.setAntiAlias(true);
+		paint.setStrokeWidth(spinner_width);
+		paint.setStyle(Style.STROKE);
+		ZANaviBusySpinner.active = false;
+		this.r = new RectF(1, 1, 1, 1);
+	}
+
+	public ZANaviBusySpinner(Context context, AttributeSet attrs)
+	{
+		super(context, attrs);
 		spinner_width = 12;
 
 		if (Navit.metrics.densityDpi >= 320)//&&(Navit.PREF_shrink_on_high_dpi))

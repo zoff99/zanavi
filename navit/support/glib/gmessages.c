@@ -43,7 +43,7 @@
 
 #include "glib.h"
 #if NOT_NEEDED_FOR_NAVIT
-#include "gdebug.h"
+//#include "gdebug.h"
 #endif /* NOT_NEEDED_FOR_NAVIT */
 #include "gprintfint.h"
 #include "gthreadprivate.h"
@@ -983,8 +983,8 @@ g_print (const gchar *format,
   va_end (args);
 
 //#ifdef HAVE_API_ANDROID
-	#include "debug.h"
-	dbg(0, string);
+	//#include "debug.h"
+	//dbg(0, string);
 //#endif
 
 #if 0

@@ -21,7 +21,6 @@ package com.zoffcc.applications.zanavi;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -31,14 +30,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.speech.RecognizerIntent;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ZANaviVoiceInput extends Activity
+public class ZANaviVoiceInput extends ActionBarActivity
 {
-	private static final int REQUEST_CODE = 8453702;
+	private static final int REQUEST_CODE = 847;
 	// private ListView wordsList;
 	private ZANaviBGTextView TextLine1;
 	private ZANaviBGTextView TextLine2;
@@ -56,9 +56,28 @@ public class ZANaviVoiceInput extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
+
+		// Override how this activity is animated into view
+		// The new activity is pulled in from the left and the current activity is kept still
+		// This has to be called before onCreate
+		overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
+
 		setContentView(R.layout.voice_recog);
 
+		android.support.v7.widget.Toolbar bar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2vi);
+		bar.setTitle(Navit.get_text("Voice Search"));
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+		
 		do_location_search = false;
 
 		speakButton = (Button) findViewById(R.id.speakButton);
@@ -70,9 +89,11 @@ public class ZANaviVoiceInput extends Activity
 		// wordsList = (ListView) findViewById(R.id.list);
 		TextLine1 = (ZANaviBGTextView) findViewById(R.id.Line1);
 		TextLine1.setBackgroundColor(Color.BLACK);
+		TextLine1.setTextColor(Color.WHITE);
 		TextLine2 = (ZANaviBGTextView) findViewById(R.id.Line2);
 		TextLine1.set_bg_percent(0);
 		TextLine1.set_bg_color(Color.BLACK);
+		TextLine2.setTextColor(Color.WHITE);
 
 		// Disable button if no recognition service is present
 		PackageManager pm = getPackageManager();
@@ -100,6 +121,16 @@ public class ZANaviVoiceInput extends Activity
 			do_location_search = false;
 			start_location_search();
 		}
+	}
+
+	@Override
+	protected void onPause()
+	{
+		// Whenever this activity is paused (i.e. looses focus because another activity is started etc)
+		// Override how this activity is animated out of view
+		// The new activity is kept still and this activity is pushed out to the left
+		overridePendingTransition(R.anim.hold, R.anim.push_out_to_left);
+		super.onPause();
 	}
 
 	/**
@@ -388,7 +419,7 @@ public class ZANaviVoiceInput extends Activity
 		resultIntent.putExtra("address_string", addr);
 		resultIntent.putExtra("lat", lat);
 		resultIntent.putExtra("lon", lon);
-		setResult(Activity.RESULT_OK, resultIntent);
+		setResult(ActionBarActivity.RESULT_OK, resultIntent);
 		//System.out.println("XYZ:finish");
 		finish();
 	}

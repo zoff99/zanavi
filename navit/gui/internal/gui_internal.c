@@ -95,6 +95,77 @@
 #include "linguistics.h"
 
 
+
+
+#if 0
+// ------ VERY BAD !!!!! --------
+// ------ VERY BAD !!!!! --------
+// ------ VERY BAD !!!!! --------
+
+
+
+struct search_list_common
+{
+	void *parent;
+	struct item unique, item;
+	int selected;
+	struct pcoord *c;
+	char *town_name;
+	char *district_name;
+	char *postal;
+	char *postal_mask;
+	char *county_name;
+};
+
+struct search_list_country
+{
+	struct search_list_common common;
+	char *car;
+	char *iso2;
+	char *iso3;
+	char *name;
+	char *flag;
+};
+
+struct search_list_town
+{
+	struct search_list_common common;
+	struct item itemt;
+	char *county;
+};
+
+struct search_list_street
+{
+	struct search_list_common common;
+	char *name;
+};
+
+struct search_list_house_number
+{
+	struct search_list_common common;
+	char *house_number;
+	int interpolation;
+};
+
+
+struct search_list_result
+{
+	int id;
+	struct pcoord *c;
+	struct search_list_country *country;
+	struct search_list_town *town;
+	struct search_list_street *street;
+	struct search_list_house_number *house_number;
+};
+
+// ------ VERY BAD !!!!! --------
+// ------ VERY BAD !!!!! --------
+// ------ VERY BAD !!!!! --------
+
+#endif
+
+
+
 extern char *version;
 
 struct form {
@@ -477,7 +548,10 @@ static struct menu_data * gui_internal_menu_data(struct gui_priv *this);
 static int gui_internal_is_active_vehicle(struct gui_priv *this, struct vehicle *vehicle);
 static void gui_internal_html_menu(struct gui_priv *this, const char *document, char *anchor);
 static void gui_internal_html_load_href(struct gui_priv *this, char *href, int replace);
+
+#ifdef PLUGSSS
 static void gui_internal_destroy(struct gui_priv *this);
+#endif
 
 /*
  * * Display image scaled to specific size
@@ -3189,6 +3263,9 @@ static char *
 postal_str(struct search_list_result *res, int level)
 {
 	char *ret=NULL;
+
+#ifdef XXXXXX1
+
 	if (res->town->common.postal)
 		ret=res->town->common.postal;
 	if (res->town->common.postal_mask)
@@ -3205,6 +3282,9 @@ postal_str(struct search_list_result *res, int level)
 		ret=res->house_number->common.postal;
 	if (res->house_number->common.postal_mask)
 		ret=res->house_number->common.postal_mask;
+
+#endif
+
 	return ret;
 }
 
@@ -3947,7 +4027,9 @@ gui_internal_cmd2_quit(struct gui_priv *this, char *function, struct attr **in, 
 	navit.u.navit=this->nav;
 	navit_destroy(navit.u.navit);
 	config_remove_attr(config, &navit);
+#ifdef PLUGSSS
 	gui_internal_destroy(this);
+#endif
 	event_main_loop_quit();
 }
 
@@ -5472,8 +5554,11 @@ static int gui_internal_set_graphics(struct gui_priv *this, struct graphics *gra
 	struct transformation *trans=navit_get_trans(this->nav);
 
 	win=graphics_get_data(gra, "window");
-        if (! win)
-                return 1;
+	if (! win)
+	{
+		return 1;
+	}
+
 	navit_ignore_graphics_events(this->nav, 1);
 	this->gra=gra;
 	this->win=win;
@@ -5502,10 +5587,14 @@ static int gui_internal_set_graphics(struct gui_priv *this, struct graphics *gra
 
 	// set fullscreen if needed
 	if (this->fullscreen)
+	{
 		this->win->fullscreen(this->win, this->fullscreen != 0);
+	}
 	/* Was resize callback already issued? */
 	if (navit_get_ready(this->nav) & 2)
+	{
 		gui_internal_setup_gc(this);
+	}
 	return 0;
 }
 
@@ -6447,7 +6536,7 @@ gui_internal_cmd2_about(struct gui_priv *this, char *function, struct attr **in,
 	w->flags=gravity_top_center|orientation_horizontal|flags_fill;
 
 	//app name
-	text=g_strdup_printf("%s",(" "));
+	text=g_strdup(" ");
 	gui_internal_widget_append(wb, w=gui_internal_label_new(this, text));
 	w->flags=gravity_bottom_center|orientation_horizontal|flags_fill;
 	g_free(text);
@@ -6457,7 +6546,7 @@ gui_internal_cmd2_about(struct gui_priv *this, char *function, struct attr **in,
 	g_free(text);
 
 	//Version
-	text=g_strdup_printf("%s",(" "));
+	text=g_strdup(" ");
 	gui_internal_widget_append(wb, w=gui_internal_label_new(this, text));
 	w->flags=gravity_bottom_center|orientation_horizontal|flags_fill;
 	g_free(text);
@@ -6467,11 +6556,11 @@ gui_internal_cmd2_about(struct gui_priv *this, char *function, struct attr **in,
 	g_free(text);
 
 	//Site
-	text=g_strdup_printf("%s",(" "));
+	text=g_strdup(" ");
 	gui_internal_widget_append(wb, w=gui_internal_label_new(this, text));
 	w->flags=gravity_bottom_center|orientation_horizontal|flags_fill;
 	g_free(text);
-	text=g_strdup_printf("http://zanavi.cc/");
+	text=g_strdup("http://zanavi.cc/");
 	// gui_internal_widget_append(wb, w=gui_internal_label_new(this, text));
 	gui_internal_widget_append(wb, w=gui_internal_label_font_new(this, text,1));
 	w->flags=gravity_top_center|orientation_horizontal|flags_expand;
@@ -6504,7 +6593,7 @@ gui_internal_cmd2_about(struct gui_priv *this, char *function, struct attr **in,
 	gui_internal_widget_append(wb, w=gui_internal_label_new(this, text));
 	w->flags=gravity_bottom_center|orientation_horizontal|flags_fill;
 	g_free(text);
-	text=g_strdup_printf("Martin Schaller");
+	text=g_strdup("Martin Schaller");
 	gui_internal_widget_append(wb, w=gui_internal_label_new(this, text));
 	w->flags=gravity_bottom_center|orientation_horizontal|flags_fill;
 	g_free(text);
@@ -6738,7 +6827,7 @@ static struct command_table commands[] = {
 //# Comment:
 //# Authors: Martin Schaller (04/2008)
 //##############################################################################################################
-static struct gui_priv * gui_internal_new(struct navit *nav, struct gui_methods *meth, struct attr **attrs, struct gui *gui)
+struct gui_priv * gui_internal_new(struct navit *nav, struct gui_methods *meth, struct attr **attrs, struct gui *gui)
 {
 	struct color color_white={0xffff,0xffff,0xffff,0xffff};
 	struct color color_black={0x0,0x0,0x0,0xffff};
@@ -6859,7 +6948,7 @@ static struct gui_priv * gui_internal_new(struct navit *nav, struct gui_methods 
 	this->data.priv=this;
 	this->data.gui=&gui_internal_methods_ext;
 	this->data.widget=&gui_internal_widget_methods;
-	this->cbl=callback_list_new();
+	this->cbl=callback_list_new("gui_internal_new:this->cbl");
 
 	return this;
 }
@@ -6869,6 +6958,7 @@ static struct gui_priv * gui_internal_new(struct navit *nav, struct gui_methods 
 //# Comment:
 //# Authors: Martin Schaller (04/2008)
 //##############################################################################################################
+#ifdef PLUGSSS
 void plugin_init(void)
 {
 	plugin_register_gui_type("internal", gui_internal_new);
@@ -6882,3 +6972,5 @@ gui_internal_destroy(struct gui_priv *this)
 	g_free(this->html_text);
 	g_free(this);
 }
+#endif
+

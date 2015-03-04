@@ -80,6 +80,17 @@ typedef struct _GList GList;
 // --
 // --------------------------------------------
 
+#define ROAD_ANGLE_IS_STRAIGHT_ABS 10
+#define ROAD_ANGLE_DISTANCE_FOR_STRAIGHT 78
+
+// --------------------------------------------
+// --
+// if the turn angle is greater than this (in degrees) in bicycle mode, then speak a turn command
+#define ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE 65
+
+#define ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY 25
+// --
+// --------------------------------------------
 
 
 extern int allow_gui_internal;
@@ -107,6 +118,7 @@ extern int hold_drawing;
 extern int global_stop_demo_vehicle;
 extern int global_show_route_rectangles;
 extern int global_traffic_light_delay;
+extern int global_clinedrawing_active;
 extern int global_draw_multipolygons;
 extern int global_have_dpi_value;
 extern float global_dpi_factor;
@@ -130,6 +142,81 @@ extern int route_status_previous;
 extern long long global_route_memory_size;
 extern int global_old_vehicle_speed;
 extern int global_old_vehicle_speed_for_autozoom;
+
+extern int global_avoid_sharp_turns_flag;
+extern int global_avoid_sharp_turns_min_angle;
+extern int global_avoid_sharp_turns_min_penalty;
+
+extern int global_search_radius_for_housenumbers;
+extern int global_vehicle_profile;
+extern int global_cycle_lanes_prio;
+extern int global_cycle_track_prio;
+
+extern double global_v_pos_lat;
+extern double global_v_pos_lng;
+extern double global_v_pos_dir;
+
+extern int global_demo_vehicle;
+extern int global_demo_vehicle_short_switch;
+extern long global_last_spoken;
+extern long global_last_spoken_base;
+
+
+#define MAX_DEBUG_COORDS 100
+
+extern struct coord global_debug_route_seg_winner_start;
+extern struct coord global_debug_route_seg_winner_end;
+extern struct coord global_debug_seg_winner_start;
+extern struct coord global_debug_seg_winner_end;
+extern struct coord global_debug_route_seg_winner_p_start;
+extern struct coord global_debug_seg_winner_p_start;
+extern struct coord global_debug_seg_route_start;
+extern struct coord global_debug_seg_route_end;
+extern struct coord global_debug_trlast_start;
+extern struct coord global_debug_trlast_end;
+extern struct coord *global_debug_coord_list;
+extern int global_debug_coord_list_items;
+extern int global_has_gpsfix;
+extern int global_pos_is_underground;
+
+extern GList *global_all_cbs;
+
+#include "coord.h"
+
+
+#define MAX_SHARP_TURN_LIST_ENTRIES 500
+
+struct global_sharp_turn
+{
+	int dir;
+	int angle;
+	struct coord c1;
+	struct coord cs;
+	struct coord ce;
+};
+
+
+extern int global_sharp_turn_list_count;
+extern struct global_sharp_turn *global_sharp_turn_list;
+
+
+
+
+#define MAX_FREETEXT_LIST_ENTRIES 500
+#define MAX_FREETEXT_ENTRY_LEN 300
+
+struct global_freetext
+{
+	struct coord c1;
+	char text[MAX_FREETEXT_ENTRY_LEN];
+};
+
+
+extern int global_freetext_list_count;
+extern struct global_freetext *global_freetext_list;
+
+
+
 
 extern GHashTable *global_transform_hash;
 extern GHashTable *global_transform_hash2;
@@ -191,6 +278,7 @@ void navit_speak(struct navit *this_);
 void navit_window_roadbook_destroy(struct navit *this_);
 void navit_window_roadbook_new(struct navit *this_);
 void navit_reload_maps(struct navit *this_);
+void navit_predraw(struct navit *this_);
 void navit_init(struct navit *this_);
 void navit_zoom_to_rect(struct navit *this_, struct coord_rect *r);
 void navit_zoom_to_route(struct navit *this_, int orientation);
@@ -217,6 +305,7 @@ void navit_layer_set_active(struct navit *this, char *name, int active, int draw
 void navit_motion(void *data, struct point *p);
 void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value);
 void displaylist_shift_for_dpi_value_in_layers(struct navit *this_, double factor);
+int navit_is_demo_vehicle();
 
 void navit_set_cursors(struct navit *this_);
 
@@ -232,13 +321,14 @@ void navit_command_add_table(struct navit*this_, struct command_table *commands,
 // extern static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_orientation, int *dir);
 int navit_get_cur_pnt(struct navit *this_, struct point *p);
 
-#include "coord.h"
+
 #include "point.h"
 #include "item.h"
 #include "attr.h"
 
 struct coord global_vehicle_pos_onscreen;
 struct coord_geo global_last_vehicle_pos_geo;
+// struct coord_geo global_cur_vehicle_pos_geo;
 
 //! The navit_vehicule
 struct navit_vehicle
@@ -325,6 +415,9 @@ struct navit *global_navit;
 
 // dirty global var for waypoint bitmap
 struct graphics_image *global_img_waypoint;
+
+char* g_strdup_printf_4_str(const char *format, const char *str1, const char *str2, const char *str3, const char *str4);
+char* g_strdup_printf_2_str(const char *format, const char *str1, const char *str2);
 
 /* end of prototypes */
 #ifdef __cplusplus

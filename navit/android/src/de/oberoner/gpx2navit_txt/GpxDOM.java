@@ -41,6 +41,7 @@ import itcrowd.gps.util.DistanceUtil;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -49,11 +50,22 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.Text;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,6 +77,135 @@ import org.xml.sax.SAXException;
 public class GpxDOM
 {
 	protected Document gpxDoc;
+
+	public class SaxToDom
+	{
+		public SaxToDom(XMLReader reader, InputSource input)
+		{
+			myReader = reader;
+			myInput = input;
+		}
+
+		public Document makeDom()
+		{
+			Document doc = null;
+			try
+			{
+				// Find the implementation
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				factory.setNamespaceAware(true);
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				DOMImplementation impl = builder.getDOMImplementation();
+
+				// Create the document
+				doc = impl.createDocument(null, null, null);
+
+				// The Handlers and the actual building
+				SaxToDomHandler handlers = new SaxToDomHandler(doc);
+				myReader.setContentHandler(handlers);
+				myReader.setErrorHandler(handlers);
+				myReader.parse(myInput);
+			}
+			// For the catch handlers below, use your usual logging facilities.
+			catch (DOMException e)
+			{
+				System.err.println(e);
+			}
+			catch (ParserConfigurationException e)
+			{
+				System.err.println(e);
+			}
+			catch (SAXException e)
+			{
+				System.err.println(e);
+			}
+			catch (IOException e)
+			{
+				System.err.println(e);
+			}
+			return doc;
+		}
+
+		private XMLReader myReader;
+		private InputSource myInput;
+	}
+
+	class SaxToDomHandler extends DefaultHandler
+	{
+		public SaxToDomHandler(Document doc)
+		{
+			myDoc = doc;
+			myCurrentNode = myDoc;
+		}
+
+		// Add it in the DOM tree, at the right place.
+		public void startElement(String uri, String name, String qName, Attributes attrs)
+		{
+			// Create the element.
+			Element elem = myDoc.createElementNS(uri, qName);
+			// Add each attribute.
+			for (int i = 0; i < attrs.getLength(); ++i)
+			{
+				String ns_uri = attrs.getURI(i);
+				String qname = attrs.getQName(i);
+				String value = attrs.getValue(i);
+				Attr attr = myDoc.createAttributeNS(ns_uri, qname);
+				attr.setValue(value);
+				elem.setAttributeNodeNS(attr);
+			}
+			// Actually add it in the tree, and adjust the right place.
+			myCurrentNode.appendChild(elem);
+			myCurrentNode = elem;
+		}
+
+		// Adjust the current place for subsequent additions.
+		public void endElement(String uri, String name, String qName)
+		{
+			myCurrentNode = myCurrentNode.getParentNode();
+		}
+
+		// Add a new text node in the DOM tree, at the right place.
+		public void characters(char[] ch, int start, int length)
+		{
+			String str = new String(ch, start, length);
+			Text text = myDoc.createTextNode(str);
+			myCurrentNode.appendChild(text);
+		}
+
+		// Add a new text node in the DOM tree, at the right place.
+		public void ignorableWhitespace(char[] ch, int start, int length)
+		{
+			String str = new String(ch, start, length);
+			Text text = myDoc.createTextNode(str);
+			myCurrentNode.appendChild(text);
+		}
+
+		// Add a new text PI in the DOM tree, at the right place.
+		public void processingInstruction(String target, String data)
+		{
+			ProcessingInstruction pi = myDoc.createProcessingInstruction(target, data);
+			myCurrentNode.appendChild(pi);
+		}
+
+		// For the handlers below, use your usual logging facilities.
+		public void error(SAXParseException e)
+		{
+			System.err.println("Erreur non fatale  (ligne " + e.getLineNumber() + ", col " + e.getColumnNumber() + ") : " + e.getMessage());
+		}
+
+		public void fatalError(SAXParseException e)
+		{
+			System.err.println("Erreur fatale : " + e.getMessage());
+		}
+
+		public void warning(SAXParseException e)
+		{
+			System.err.println("Warning : " + e.getMessage());
+		}
+
+		private Document myDoc;
+		private Node myCurrentNode;
+	}
 
 	public class GPX_Track
 	{
@@ -80,30 +221,53 @@ public class GpxDOM
 		{
 			File inFile = new File(GpxFilePath);
 
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			gpxDoc = docBuilder.parse(inFile);
+			XMLReader xmlReader = XMLReaderFactory.createXMLReader("org.ccil.cowan.tagsoup.Parser");
+			FileInputStream ii = new FileInputStream(inFile);
+			System.out.println("GpxDOM 000.4");
+			SaxToDom std = new SaxToDom(xmlReader, new InputSource(ii));
+			gpxDoc = std.makeDom();
+			System.out.println("GpxDOM 000.5");
+			ii.close();
+
+			// -------- OLD DOM parser method ---------
+			// -------- OLD DOM parser method ---------
+			// -------- OLD DOM parser method ---------
+			//			System.out.println("GpxDOM 001");
+			//			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			//			System.out.println("GpxDOM 002");
+			//			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			//			System.out.println("GpxDOM 003");
+			//			gpxDoc = docBuilder.parse(inFile);
+			//			System.out.println("GpxDOM 004");
+			// -------- OLD DOM parser method ---------
+			// -------- OLD DOM parser method ---------
 
 			// Check if file is really a GPX-File
 			Element gpxElement = gpxDoc.getDocumentElement();
+			System.out.println("GpxDOM 005");
+
 			if (!"gpx".equals(gpxElement.getNodeName()))
 			{
+				System.out.println("GpxDOM 006");
 				gpxDoc = null;
 				throw new SAXException("This is not a GPX file: " + gpxElement.getNodeName());
 			}
 		}
-		catch (ParserConfigurationException e)
+		catch (Exception e)
 		{
+			System.out.println("GpxDOM 097");
 			e.printStackTrace();
 		}
-		catch (SAXException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		//		catch (SAXException e)
+		//		{
+		//			System.out.println("GpxDOM 098");
+		//			e.printStackTrace();
+		//		}
+		//		catch (IOException e)
+		//		{
+		//			System.out.println("GpxDOM 099");
+		//			e.printStackTrace();
+		//		}
 	}
 
 	public GPX_Track getTrackLabel()
@@ -122,10 +286,15 @@ public class GpxDOM
 				{
 					try
 					{
+						System.out.println("getTrackLabel 002");
 						Element firstElement = (Element) nn;
+						System.out.println("getTrackLabel 003");
 						NodeList nameElementList = firstElement.getElementsByTagName("name");
+						System.out.println("getTrackLabel 004");
 						Element nameElement = (Element) nameElementList.item(0);
+						System.out.println("getTrackLabel 005");
 						NodeList name = nameElement.getChildNodes();
+						System.out.println("getTrackLabel 006");
 						// System.out.println("ii:" + ii + ":" + name.item(0).getNodeValue());
 						NavitTrkptHeader h = new NavitTrkptHeader();
 						h.setLabel("\"" + MainFrame.remove_special_chars(name.item(0).getNodeValue()) + "\"");
@@ -133,7 +302,9 @@ public class GpxDOM
 					}
 					catch (Exception e)
 					{
-
+						NavitTrkptHeader h = new NavitTrkptHeader();
+						h.setLabel("\"" + MainFrame.remove_special_chars("Unnamed") + "\"");
+						header.add(h);
 					}
 				}
 

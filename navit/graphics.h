@@ -42,8 +42,7 @@ enum draw_mode_num
 	draw_mode_begin_clear, // 1
 	draw_mode_end, // 2
 	draw_mode_cursor, // 3
-	draw_mode_end_lazy
-// 4
+	draw_mode_end_lazy // 4
 };
 
 #include "item.h"
@@ -104,8 +103,8 @@ struct graphics_methods
 	void (*draw_mode)(struct graphics_priv *gr, enum draw_mode_num mode);
 	void (*draw_lines)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count);
 	void (*draw_lines2)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int oneway);
-	void (*draw_lines3)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int width, int dashes, struct color *c);
-	void (*draw_lines4)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int width, int type, int dashes, struct color *c);
+	void (*draw_lines3)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int width, int dashes, struct color *c, int clinedrawing_mode_active, int with_end);
+	void (*draw_lines4)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int width, int type, int dashes, struct color *c, int with_end);
 	void (*draw_lines_dashed)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int oneway);
 	void (*draw_polygon)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count);
 	void (*draw_polygon2)(struct graphics_priv *gr, struct graphics_gc_priv *gc, struct point *p, int count, int order, int oneway);

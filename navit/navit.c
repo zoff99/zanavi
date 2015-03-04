@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,6 +94,44 @@
 #include "libc.h"
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
+// #define NAVIT_FUNC_CALLS_DEBUG_PRINT 1
+
+
+// --------------- debug function calls ------------------
+// --------------- debug function calls ------------------
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	#undef return2
+	#define return2	dbg_func(0, global_func_indent_counter, "return(%d)\n", __LINE__);global_func_indent_counter--;return
+
+	#define __F_START__ global_func_indent_counter++;dbg_func(0, global_func_indent_counter, "enter\n");
+	#define __F_END__   dbg_func(0, global_func_indent_counter, "leave\n");global_func_indent_counter--;
+#else
+	#undef return2
+	#define return2	return
+
+	#define __F_START__
+	#define __F_END__
+#endif
+// --------------- debug function calls ------------------
+// --------------- debug function calls ------------------
+
+
+
+
+
+
 /**
  * @defgroup navit the navit core instance. navit is the object containing nearly everything: A set of maps, one or more vehicle, a graphics object for rendering the map, a gui object for displaying the user interface, a route object, a navigation object and so on. Be warned that it is theoretically possible to have more than one navit object
  * @{
@@ -136,12 +174,13 @@ int cache_size_file = 1024 * 1024 * 10; // default value was: 20971520 (~20 MB)
 int draw_polylines_fast = 0; // default: 0
 int limit_order_corrected = 4; // remain at this order level for drawing streets etc.
 int shift_order = 0; // shift order level (for displaying objects) by this values (should only be bigger than zero!!)
-int global_search_street_size_factor = 1; // make search radius for streets bigger
+int global_search_street_size_factor = 1; // make search radius for streets bigger (not used on indexsearch)
 int disable_map_drawing = 0; // dont draw the map and dont read data from file (hopefully saving resources)
 int hold_drawing = 0; // 0 -> draw normal , 1 -> dont do any drawing
 int global_stop_demo_vehicle = 0; // 0 -> demo vehicle can move, 1 -> demo vehicle stands still
 int global_show_route_rectangles = 0; // 1 -> show route rectangles, 0 -> dont show route rectangles
 int global_traffic_light_delay = 0; // 0 -> dont account for traffic lights in route, >0 -> calc a delay for each traffic light
+int global_clinedrawing_active = 0; // 0 -> java line drawing, 1 -> C line drawing
 int global_draw_multipolygons = 1; // 0 -> dont draw lines and triangles from multipolygons, 1 -> draw them
 int global_have_dpi_value = 240;
 float global_dpi_factor = 1.0f;
@@ -149,6 +188,50 @@ int global_order_level_for_fast_draw = 13;
 int global_show_english_labels = 1; // 0 -> only "normal" names/labels shown on map
 									// 1 -> show "normal, english"
 									// 2 -> show only "english" labels
+int global_avoid_sharp_turns_flag = 0; // 0 -> normal routing, 1 -> try to avoid sharp turns / u-turns
+int global_avoid_sharp_turns_min_angle = 40; // at what angle is it a sharp turn?
+int global_avoid_sharp_turns_min_penalty = 2000; // routing penalty for sharp turns
+
+int global_search_radius_for_housenumbers = 300; // search this far around street-coord to find potential housenumbers for this street
+int global_vehicle_profile = 0; // 0 -> car, 1 -> bicycle, 2 -> bicylce no one-ways
+int global_cycle_lanes_prio = 5; // how much prio weight will be subtracted from prio weight if a road has a cycle lane (painted white line for bicycles)
+int global_cycle_track_prio = 1; // unused for now!!
+
+double global_v_pos_lat = 0.0; // global vehicle position
+double global_v_pos_lng = 0.0; // global vehicle position
+double global_v_pos_dir = 0.0; // global vehicle direction
+
+int global_demo_vehicle = 0;
+int global_demo_vehicle_short_switch = 0;
+long global_last_spoken = -1;
+long global_last_spoken_base = 0;
+
+GList *global_all_cbs = NULL;
+
+struct coord global_debug_route_seg_winner_start;
+struct coord global_debug_route_seg_winner_end;
+struct coord global_debug_seg_winner_start;
+struct coord global_debug_seg_winner_end;
+struct coord global_debug_route_seg_winner_p_start;
+struct coord global_debug_route_seg_winner_p_end;
+struct coord global_debug_seg_winner_p_start;
+struct coord global_debug_seg_route_start;
+struct coord global_debug_seg_route_end;
+struct coord global_debug_trlast_start;
+struct coord global_debug_trlast_end;
+
+struct coord *global_debug_coord_list;
+int global_debug_coord_list_items = 0;
+int global_has_gpsfix = 0;
+int global_pos_is_underground = 0;
+
+
+int global_sharp_turn_list_count = 0;
+struct global_sharp_turn *global_sharp_turn_list = NULL;
+
+int global_freetext_list_count = 0;
+struct global_freetext *global_freetext_list = NULL;
+
 
 GHashTable *global_transform_hash = NULL;
 GHashTable *global_transform_hash2 = NULL;
@@ -172,23 +255,12 @@ int global_old_vehicle_speed_for_autozoom = -1;
 
 void navit_add_mapset(struct navit *this_, struct mapset *ms)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	this_->mapsets = g_list_append(this_->mapsets, ms);
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
-#endif
 }
 
 struct mapset *
 navit_get_mapset(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (this_->mapsets)
 	{
 		return this_->mapsets->data;
@@ -203,10 +275,6 @@ navit_get_mapset(struct navit *this_)
 struct tracking *
 navit_get_tracking(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->tracking;
 }
 
@@ -223,10 +291,6 @@ navit_get_tracking(struct navit *this_)
 char*
 navit_get_user_data_directory(int create)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	char *dir;
 	// dir = getenv("NAVIT_USER_DATADIR");
 	dir = navit_share_dir;
@@ -244,11 +308,7 @@ navit_get_user_data_directory(int create)
 
 void navit_draw_async(struct navit *this_, int async)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
-	//dbg(0,"DO__DRAW:ndasync enter, async=%d\n", async);
+__F_START__
 
 	//dbg(0,"EEnter this_->blocked=%d\n",this_->blocked);
 	if (this_->blocked)
@@ -256,41 +316,36 @@ void navit_draw_async(struct navit *this_, int async)
 		this_->blocked |= 2;
 		//dbg(0,"set this_->blocked=%d\n",this_->blocked);
 		// dbg(0,"DO__DRAW:ndasync return 001\n");
-		return;
+		return2;
 	}
+
 	transform_setup_source_rect(this_->trans);
 	//dbg(0,"call graphics_draw\n");
 
 	// dbg(0,"DO__DRAW:gras_draw call\n");
 	graphics_draw(this_->gra, this_->displaylist, this_->mapsets->data, this_->trans, this_->layout_current, async, NULL, this_->graphics_flags | 1);
 	// dbg(0,"DO__DRAW:ndasync leave\n");
+
+__F_END__
 }
 
 void navit_draw(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
-	// dbg(0,"DO__DRAW:nd:enter\n");
+__F_START__
 
 	//dbg(0,"EEnter this_->ready=%d\n",this_->ready);
 	if (this_->ready == 3)
 	{
-		//dbg(0,"navit_draw_async_001\n");
+		// dbg(0,"navit_draw_async_001\n");
 		// dbg(0,"DO__DRAW:navit_draw_async call\n");
 		navit_draw_async(this_, 0);
 	}
 
-	// dbg(0,"DO__DRAW:nd:leave\n");
+__F_END__
 }
 
 int navit_get_ready(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->ready;
 }
 
@@ -298,10 +353,6 @@ int navit_get_ready(struct navit *this_)
 // UNUSED -----
 void navit_draw_displaylist(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (this_->ready == 3)
 	{
 		// //DBG dbg(0,"call graphics_displaylist_draw 2")
@@ -311,10 +362,6 @@ void navit_draw_displaylist(struct navit *this_)
 
 static void navit_map_progress(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct map *map;
 	struct mapset *ms;
 	struct mapset_handle *msh;
@@ -344,11 +391,8 @@ static void navit_map_progress(struct navit *this_)
 
 static void navit_redraw_route(struct navit *this_, struct route *route, struct attr *attr)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+__F_START__
 
-	//dbg(0,"enter\n");
 	int updated;
 
 	if ((this_->route) && (this_->route->route_status_was_updated == 1))
@@ -362,52 +406,51 @@ static void navit_redraw_route(struct navit *this_, struct route *route, struct 
 
 	if (attr->type != attr_route_status)
 	{
-		////DBG dbg(0,"ret 1\n");
-		return;
+		return2;
 	}
+
 	updated = attr->u.num;
-	////DBG dbg(0,"updated=%d\n", updated);
+
 	if (this_->ready != 3)
 	{
-		////DBG dbg(0,"ret 2\n");
-		return;
+		return2;
 	}
+
 	if (updated != route_status_path_done_new)
 	{
-		////DBG dbg(0,"ret 3\n");
-		return;
+		return2;
 	}
+
 	if (this_->vehicle)
 	{
 		if (this_->vehicle->follow_curr == 1)
 		{
-			////DBG dbg(0,"ret 4\n");
 			////DBG dbg(0,"disabled -> we want redraw!!\n");
-			// return;
+			// return2;
 		}
+
 		if (this_->vehicle->follow_curr <= this_->vehicle->follow)
 		{
 			this_->vehicle->follow_curr = this_->vehicle->follow;
 		}
 	}
-	////DBG dbg(0,"draw s*\n");
-	navit_draw(this_);
-	////DBG dbg(0,"draw e*\n");
+
+	// *++*-- DISABLED --*++* // navit_draw(this_);
+
+__F_END__
 }
 
 void navit_handle_resize(struct navit *this_, int w, int h)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+__F_START__
 
-	// dbg(0, "EEnter %p\n", this_);
 	struct map_selection sel;
+
 	int callback = (this_->ready == 1);
-	// dbg(0, "pre this_->ready=%d\n", this_->ready);
 	this_->ready = this_->ready | 2;
-	// dbg(0, "set this_->ready=%d\n", this_->ready);
+
 	memset(&sel, 0, sizeof(sel));
+
 	this_->w = w;
 	this_->h = h;
 	sel.u.p_rect.rl.x = w;
@@ -415,29 +458,24 @@ void navit_handle_resize(struct navit *this_, int w, int h)
 	transform_set_screen_selection(this_->trans, &sel);
 	graphics_init(this_->gra);
 	graphics_set_rect(this_->gra, &sel.u.p_rect);
+
 	if (callback)
 	{
-		//DBG dbg(0,"callback do\n");
+		// HINT: this triggers all the OSD drawing (next turn, ETA, etc.)
 		callback_list_call_attr_1(this_->attr_cbl, attr_graphics_ready, this_);
 	}
+
 	if (this_->ready == 3)
 	{
-		// dbg(0, "navit_draw_async_002\n");
-		// navit_draw_async(this_, 1);
-		// dbg(0,"DO__DRAW:navit_draw_async call\n");
+		// dbg(0,"navit_draw_async_007\n");
 		navit_draw_async(this_, 0);
 	}
 
-	// dbg(0, "return\n");
+__F_END__
 }
 
 void navit_resize(void *data, int w, int h)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
-	//DBG dbg(0,"EEnter %p\n", data);
 	struct navit *this = data;
 	if (!this->ignore_graphics_events)
 	{
@@ -448,28 +486,16 @@ void navit_resize(void *data, int w, int h)
 
 int navit_get_width(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->w;
 }
 
 int navit_get_height(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->h;
 }
 
 static void navit_popup(void *data)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct navit *this_ = data;
 	popup(this_, 1, &this_->pressed);
 	this_->button_timeout = NULL;
@@ -478,31 +504,20 @@ static void navit_popup(void *data)
 
 int navit_ignore_button(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (this_->ignore_button)
 		return 1;
+
 	this_->ignore_button = 1;
 	return 0;
 }
 
 void navit_ignore_graphics_events(struct navit *this_, int ignore)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	this_->ignore_graphics_events = ignore;
 }
 
 void update_transformation(struct transformation *tr, struct point *old, struct point *new, struct point *rot)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct coord co, cn;
 	struct coord c, *cp;
 	int yaw;
@@ -528,10 +543,6 @@ void update_transformation(struct transformation *tr, struct point *old, struct 
 
 void navit_set_timeout(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
 	// --------- DISABLE -----------
 	return;
 	// --------- DISABLE -----------
@@ -539,10 +550,6 @@ void navit_set_timeout(struct navit *this_)
 
 int navit_handle_button(struct navit *this_, int pressed, int button, struct point *p, struct callback *popup_callback)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	int border = 16;
 
 	// dbg(1, "enter %d %d (ignore %d)\n", pressed, button, this_->ignore_button);
@@ -615,7 +622,9 @@ int navit_handle_button(struct navit *this_, int pressed, int button, struct poi
 			transform_copy(this_->trans, this_->trans_cursor);
 			graphics_overlay_disable(this_->gra, 0);
 			if (!this_->zoomed)
+			{
 				navit_set_timeout(this_);
+			}
 			navit_draw(this_);
 		}
 		else
@@ -626,10 +635,6 @@ int navit_handle_button(struct navit *this_, int pressed, int button, struct poi
 
 static void navit_button(void *data, int pressed, int button, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct navit *this = data;
 	// dbg(1, "enter %d %d ignore %d\n", pressed, button, this->ignore_graphics_events);
 	if (!this->ignore_graphics_events)
@@ -647,10 +652,6 @@ static void navit_button(void *data, int pressed, int button, struct point *p)
 // UNUSED ---
 static void navit_motion_timeout(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	// dbg(0,"EEnter\n");
 	int dx, dy;
 
 	if (this_->drag_bitmap)
@@ -698,10 +699,8 @@ static void navit_motion_timeout(struct navit *this_)
 
 void navit_handle_motion(struct navit *this_, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
+__F_START__
+
 	int dx, dy;
 
 	if (this_->button_pressed && !this_->popped)
@@ -732,14 +731,12 @@ void navit_handle_motion(struct navit *this_, struct point *p)
 			// -------- DISABLE -------
 		}
 	}
+
+__F_END__
 }
 
 void navit_motion(void *data, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct navit *this = data;
 	if (!this->ignore_graphics_events)
 	{
@@ -747,12 +744,10 @@ void navit_motion(void *data, struct point *p)
 	}
 }
 
-static void navit_predraw(struct navit *this_)
+void navit_predraw(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
+__F_START__
+
 	GList *l;
 	struct navit_vehicle *nv;
 	transform_copy(this_->trans, this_->trans_cursor);
@@ -765,14 +760,12 @@ static void navit_predraw(struct navit *this_)
 		navit_vehicle_draw(this_, nv, NULL);
 		l = g_list_next(l);
 	}
+
+__F_END__
 }
 
 static void navit_scale(struct navit *this_, long scale, struct point *p, int draw)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	//DBG dbg(0,"EEnter\n");
 	struct coord c1, c2, *center;
 
 	if (scale < this_->zoom_min)
@@ -831,9 +824,6 @@ static void navit_scale(struct navit *this_, long scale, struct point *p, int dr
  */
 static long navit_autozoom(struct navit *this_, struct coord *center, int speed, int draw)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	struct point pc;
 	int distance, w, h;
 	long new_scale;
@@ -917,6 +907,7 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 
 	if (new_scale > scale)
 	{
+		// zoom out
 		if (new_scale > (scale + 20))
 		{
 			scale = scale + 10;
@@ -932,7 +923,20 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 	}
 	else if (new_scale < scale)
 	{
-		if ((new_scale + 20) < scale)
+		// zoom in
+		if ((new_scale + 5500) < scale)
+		{
+			scale = scale - 4000;
+		}
+		else if ((new_scale + 1850) < scale)
+		{
+			scale = scale - 1000;
+		}
+		else if ((new_scale + 450) < scale)
+		{
+			scale = scale - 200;
+		}
+		else if ((new_scale + 20) < scale)
 		{
 			scale = scale - 10;
 		}
@@ -979,10 +983,6 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
  */
 void navit_zoom_in(struct navit *this_, int factor, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans) / factor;
 	if (scale < 1)
 	{
@@ -1002,10 +1002,6 @@ void navit_zoom_in(struct navit *this_, int factor, struct point *p)
  */
 void navit_zoom_out(struct navit *this_, int factor, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans) * factor;
 	////DBG dbg(0,"zoom out -> scale=%d",scale);
 	navit_scale(this_, scale, p, 1);
@@ -1013,19 +1009,11 @@ void navit_zoom_out(struct navit *this_, int factor, struct point *p)
 
 int navit_get_cur_pnt(struct navit *this_, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return navit_get_cursor_pnt(this_, p, 0, NULL);
 }
 
 void navit_zoom_in_cursor(struct navit *this_, int factor)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct point p;
 	if (this_->vehicle && this_->vehicle->follow_curr <= 1 && navit_get_cursor_pnt(this_, &p, 0, NULL))
 	{
@@ -1040,10 +1028,6 @@ void navit_zoom_in_cursor(struct navit *this_, int factor)
 
 void navit_zoom_to_scale(struct navit *this_, int new_scale)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	//DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans);
 	long new_scale_long = new_scale;
 	//DBG dbg(0,"zoom to scale -> old scale=%d",scale);
@@ -1054,17 +1038,10 @@ void navit_zoom_to_scale(struct navit *this_, int new_scale)
 	{
 		navit_scale(this_, new_scale_long, NULL, 1);
 	}
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
-#endif
 }
 
 void navit_zoom_to_scale_with_center_point(struct navit *this_, int new_scale, struct point *p)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	//DBG dbg(0,"EEnter\n");
 	long scale = transform_get_scale(this_->trans);
 	long new_scale_long = new_scale;
 
@@ -1080,10 +1057,6 @@ void navit_zoom_to_scale_with_center_point(struct navit *this_, int new_scale, s
 
 void navit_zoom_out_cursor(struct navit *this_, int factor)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct point p;
 	if (this_->vehicle && this_->vehicle->follow_curr <= 1 && navit_get_cursor_pnt(this_, &p, 0, NULL))
 	{
@@ -1098,30 +1071,18 @@ void navit_zoom_out_cursor(struct navit *this_, int factor)
 
 static int navit_cmd_zoom_in(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	navit_zoom_in_cursor(this_, 2);
 	return 0;
 }
 
 static int navit_cmd_zoom_out(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	navit_zoom_out_cursor(this_, 2);
 	return 0;
 }
 
 static void navit_cmd_say(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (in && in[0] && ATTR_IS_STRING(in[0]->type) && in[0]->u.str)
 	{
 		navit_say(this, in[0]->u.str);
@@ -1143,10 +1104,6 @@ static GHashTable *cmd_attr_var_hash = NULL;
  */
 static void navit_cmd_set_int_var(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	char*key;
 	struct attr*val;
 	if (!cmd_int_var_hash)
@@ -1176,10 +1133,6 @@ static void navit_cmd_set_int_var(struct navit *this, char *function, struct att
 //TODO free stored attributes on navit_destroy
 static void navit_cmd_set_attr_var(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	char*key;
 	struct attr*val;
 	if (!cmd_attr_var_hash)
@@ -1208,10 +1161,6 @@ static void navit_cmd_set_attr_var(struct navit *this, char *function, struct at
  */
 static void navit_cmd_toggle_layer(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (in && in[0] && ATTR_IS_STRING(in[0]->type) && in[0]->u.str)
 	{
 		if (this->layout_current && this->layout_current->layers)
@@ -1232,6 +1181,34 @@ static void navit_cmd_toggle_layer(struct navit *this, char *function, struct at
 	}
 }
 
+
+void navit_layer_toggle_active(struct navit *this, char *name, int draw)
+{
+	if (name)
+	{
+		if (this->layout_current && this->layout_current->layers)
+		{
+			GList* layers = this->layout_current->layers;
+			while (layers)
+			{
+				struct layer *l = layers->data;
+				if (l && !strcmp(l->name, name))
+				{
+					l->active ^= 1;
+					if (draw == 1)
+					{
+						navit_draw(this);
+					}
+					return;
+				}
+				layers = g_list_next(layers);
+			}
+		}
+	}
+}
+
+
+
 /**
  * command to set the active state of a named layer of the current layout
  *
@@ -1243,10 +1220,6 @@ static void navit_cmd_toggle_layer(struct navit *this, char *function, struct at
  */
 void navit_layer_set_active(struct navit *this, char *name, int active, int draw)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	//dbg(0,"EEnter\n");
 	if (name)
 	{
 		if (this->layout_current && this->layout_current->layers)
@@ -1282,10 +1255,6 @@ void navit_layer_set_active(struct navit *this, char *name, int active, int draw
  */
 static void navit_cmd_map_add_curr_pos(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr **list = g_new0(struct attr *,2);
 	struct attr*val = g_new0(struct attr,1);
 	struct mapset* ms;
@@ -1374,10 +1343,6 @@ static void navit_cmd_map_add_curr_pos(struct navit *this, char *function, struc
  */
 static void navit_cmd_map_item_set_attr(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (in && in[0] && ATTR_IS_STRING(in[0]->type) && in[0]->u.str && //map name
 			in[1] && ATTR_IS_ITEM(in[1]->type) && //item
 			in[2] && ATTR_IS_STRING(in[2]->type) && in[2]->u.str && //attr_type str
@@ -1447,10 +1412,6 @@ static void navit_cmd_map_item_set_attr(struct navit *this, char *function, stru
  */
 static void navit_cmd_get_attr_var(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr **list = g_new0(struct attr *,2);
 	if (!cmd_int_var_hash)
 	{
@@ -1490,10 +1451,6 @@ static void navit_cmd_get_attr_var(struct navit *this, char *function, struct at
  */
 static void navit_cmd_get_int_var(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr **list = g_new0(struct attr *,2);
 	if (!cmd_int_var_hash)
 	{
@@ -1535,10 +1492,6 @@ GList *cmd_int_var_stack = NULL;
  */
 static void navit_cmd_push_int(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (in && in[0] && ATTR_IS_NUMERIC(in[0]->type))
 	{
 		struct attr*val = g_new(struct attr,1);
@@ -1559,10 +1512,6 @@ static void navit_cmd_push_int(struct navit *this, char *function, struct attr *
  */
 static void navit_cmd_pop_int(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr **list = g_new0(struct attr *,2);
 	if (!cmd_int_var_stack)
 	{
@@ -1592,10 +1541,6 @@ static void navit_cmd_pop_int(struct navit *this, char *function, struct attr **
  */
 static void navit_cmd_int_stack_size(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr **list;
 	struct attr *attr = g_new0(struct attr ,1);
 	attr->type = attr_type_int_begin;
@@ -1615,10 +1560,6 @@ static void navit_cmd_int_stack_size(struct navit *this, char *function, struct 
 
 static void navit_cmd_set_destination(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct pcoord pc;
 	char *description = NULL;
 	if (!in)
@@ -1663,10 +1604,6 @@ static void navit_cmd_set_destination(struct navit *this, char *function, struct
 
 static void navit_cmd_fmt_coordinates(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr attr;
 	attr.type = attr_type_string_begin;
 	attr.u.str = "Fix me";
@@ -1688,10 +1625,6 @@ static void navit_cmd_fmt_coordinates(struct navit *this, char *function, struct
  */
 static void navit_cmd_strjoin(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct attr attr;
 	gchar *ret, *sep;
 	int i;
@@ -1731,10 +1664,6 @@ static void navit_cmd_strjoin(struct navit *this, char *function, struct attr **
  */
 static void navit_cmd_spawn(struct navit *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	int i, j, nparms, nvalid;
 	const char ** argv = NULL;
 	struct spawn_process_info *pi;
@@ -1795,22 +1724,13 @@ static struct command_table
 
 void navit_command_add_table(struct navit*this_, struct command_table *commands, int count)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	command_add_table(this_->attr_cbl, commands, count, this_);
 }
+
 
 struct navit *
 navit_new(struct attr *parent, struct attr **attrs)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
-	dbg(0, "+#+:enter\n");
-
 	struct navit *this_=g_new0(struct navit, 1);
 	struct pcoord center;
 	struct coord co;
@@ -1820,9 +1740,52 @@ navit_new(struct attr *parent, struct attr **attrs)
 	g.lat = 53.13;
 	g.lng = 11.70;
 
+
+	global_demo_vehicle = 0;
+	global_demo_vehicle_short_switch = 0;
+
+
+	// set base for timestamps
+	struct timeval tv2;
+	if (gettimeofday(&tv2, NULL) == -1)
+	{
+		global_last_spoken_base = 0;
+	}
+	else
+	{
+		global_last_spoken_base = (long)tv2.tv_sec;
+	}
+
+	global_debug_coord_list = g_new0(struct coord, (2 * (MAX_DEBUG_COORDS + 2)));
+	global_debug_coord_list_items = 0;
+
+	global_debug_route_seg_winner_start.x = 0;
+	global_debug_route_seg_winner_start.y = 0;
+	global_debug_route_seg_winner_end.x = 0;
+	global_debug_route_seg_winner_end.y = 0;
+
+	global_debug_seg_winner_start.x = 0;
+	global_debug_seg_winner_start.y = 0;
+	global_debug_seg_winner_end.x = 0;
+	global_debug_seg_winner_end.y = 0;
+
+	global_debug_route_seg_winner_p_start.x = 0;
+	global_debug_route_seg_winner_p_start.y = 0;
+
+	global_debug_seg_winner_p_start.x = 0;
+	global_debug_seg_winner_p_start.y = 0;
+
+	global_debug_seg_route_start.x = 0;
+	global_debug_seg_route_start.y = 0;
+
+	global_debug_seg_route_end.x = 0;
+	global_debug_seg_route_end.y = 0;
+
+
+
 	this_->self.type = attr_navit;
 	this_->self.u.navit = this_;
-	this_->attr_cbl = callback_list_new();
+	this_->attr_cbl = callback_list_new("navit_new:this_->attr_cbl");
 
 	this_->orientation = -1;
 	this_->tracking_flag = 1;
@@ -1886,13 +1849,11 @@ navit_new(struct attr *parent, struct attr **attrs)
 
 static int navit_set_gui(struct navit *this_, struct gui *gui)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (this_->gui)
 		return 0;
+
 	this_->gui = gui;
+
 	if (gui_has_main_loop(this_->gui))
 	{
 		if (!main_loop_gui)
@@ -1910,30 +1871,21 @@ static int navit_set_gui(struct navit *this_, struct gui *gui)
 
 void navit_add_message(struct navit *this_, char *message)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	// message_new(this_->messages, message);
 }
 
 struct message *navit_get_messages(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	// return message_get(this_->messages);
 }
 
 static int navit_set_graphics(struct navit *this_, struct graphics *gra)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	if (this_->gra)
+	{
 		return 0;
+	}
+
 	this_->gra = gra;
 
 	/*
@@ -1950,45 +1902,31 @@ static int navit_set_graphics(struct navit *this_, struct graphics *gra)
 	callback_add_names(this_->predraw_callback, "navit_set_graphics", "navit_predraw");
 	graphics_add_callback(gra, this_->predraw_callback);
 
-	////DBG dbg(0,"111111111\n");
 	return 1;
 }
 
 struct graphics *
 navit_get_graphics(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->gra;
 }
 
 struct vehicleprofile *
 navit_get_vehicleprofile(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->vehicleprofile;
 }
 
 GList *
 navit_get_vehicleprofiles(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return this_->vehicleprofiles;
 }
 
 static void navit_projection_set(struct navit *this_, enum projection pro, int draw)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct coord_geo g;
 	struct coord *c;
@@ -2013,9 +1951,8 @@ static void navit_projection_set(struct navit *this_, enum projection pro, int d
  */
 void navit_set_destination(struct navit *this_, struct pcoord *c, const char *description, int async)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	char *destination_file;
 	if (c)
@@ -2055,9 +1992,8 @@ void navit_set_destination(struct navit *this_, struct pcoord *c, const char *de
  */
 void navit_add_waypoint_to_route(struct navit *this_, struct pcoord *c, const char *description, int async)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	if (this_->destination_valid == 1)
 	{
 		//int count = 0;
@@ -2088,9 +2024,8 @@ void navit_add_waypoint_to_route(struct navit *this_, struct pcoord *c, const ch
  */
 void navit_set_destinations(struct navit *this_, struct pcoord *c, int count, const char *description, int async)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	char *destination_file;
 	if (c && count)
@@ -2127,9 +2062,8 @@ void navit_set_destinations(struct navit *this_, struct pcoord *c, int count, co
  */
 int navit_check_route(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	if (this_->route)
 	{
@@ -2141,9 +2075,8 @@ int navit_check_route(struct navit *this_)
 
 static int navit_former_destinations_active(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	return 0;
@@ -2170,9 +2103,8 @@ static int navit_former_destinations_active(struct navit *this_)
 
 static void navit_add_former_destinations_from_file(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	char *destination_file = bookmarks_get_destination_file(FALSE);
 	struct attr *attrs[4];
@@ -2237,9 +2169,8 @@ static void navit_add_former_destinations_from_file(struct navit *this_)
 
 void navit_textfile_debug_log(struct navit *this_, const char *fmt, ...)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	va_list ap;
 	char *str1, *str2;
@@ -2257,9 +2188,8 @@ void navit_textfile_debug_log(struct navit *this_, const char *fmt, ...)
 
 void navit_textfile_debug_log_at(struct navit *this_, struct pcoord *pc, const char *fmt, ...)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	va_list ap;
 	char *str1, *str2;
@@ -2277,12 +2207,12 @@ void navit_textfile_debug_log_at(struct navit *this_, struct pcoord *pc, const c
 
 void navit_say(struct navit *this_, char *text)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	if (this_->speech)
 	{
+		//dbg(0,"say(1) s=%s\n", text);
 		speech_say(this_->speech, text);
 	}
 }
@@ -2293,9 +2223,8 @@ void navit_say(struct navit *this_, char *text)
  */
 static void navit_cmd_announcer_toggle(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct attr attr, speechattr;
 
 	// search for the speech attribute
@@ -2324,9 +2253,8 @@ static void navit_cmd_announcer_toggle(struct navit *this_)
 
 void navit_cmd_announcer_on(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct attr attr, speechattr;
 
 	// search for the speech attribute
@@ -2346,9 +2274,8 @@ void navit_cmd_announcer_on(struct navit *this_)
 
 void navit_cmd_announcer_off(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct attr attr, speechattr;
 
 	// search for the speech attribute
@@ -2368,9 +2295,8 @@ void navit_cmd_announcer_off(struct navit *this_)
 
 void navit_speak(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct navigation *nav = this_->navigation;
 	struct map *map = NULL;
@@ -2379,24 +2305,37 @@ void navit_speak(struct navit *this_)
 	struct attr attr;
 
 	if (!speech_get_attr(this_->speech, attr_active, &attr, NULL))
+	{
 		attr.u.num = 1;
+	}
+
 	// dbg(1, "this_.speech->active %i\n", attr.u.num);
+
 	if (!attr.u.num)
+	{
 		return;
+	}
 
 	if (nav)
 		map = navigation_get_map(nav);
+
 	if (map)
 		mr = map_rect_new(map, NULL);
+
 	if (mr)
 	{
 		while ((item = map_rect_get_item(mr)) && (item->type == type_nav_position || item->type == type_nav_none))
 			;
+
 		if (item && item_attr_get(item, attr_navigation_speech, &attr))
 		{
-			speech_say(this_->speech, attr.u.str);
+			//dbg(0,"say(2) s=X%sX\n", attr.u.str);
+			if (strlen(attr.u.str) > 0)
+			{
+				speech_say(this_->speech, attr.u.str);
+			}
 			//navit_add_message(this_, attr.u.str);
-			navit_textfile_debug_log(this_, "type=announcement label=\"%s\"", attr.u.str);
+			// navit_textfile_debug_log(this_, "type=announcement label=\"%s\"", attr.u.str);
 		}
 		map_rect_destroy(mr);
 	}
@@ -2404,9 +2343,8 @@ void navit_speak(struct navit *this_)
 
 static void navit_window_roadbook_update(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct navigation *nav = this_->navigation;
 	struct map *map = NULL;
@@ -2503,9 +2441,8 @@ static void navit_window_roadbook_update(struct navit *this_)
 
 void navit_window_roadbook_destroy(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0, "enter\n");
 	navigation_unregister_callback(this_->navigation, attr_navigation_long, this_->roadbook_callback);
 	this_->roadbook_window = NULL;
@@ -2514,9 +2451,8 @@ void navit_window_roadbook_destroy(struct navit *this_)
 
 void navit_window_roadbook_new(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	if (!this_->gui || this_->roadbook_callback || this_->roadbook_window)
 	{
 		return;
@@ -2530,9 +2466,11 @@ void navit_window_roadbook_new(struct navit *this_)
 
 void navit_remove_all_maps(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
+
+	dbg(0,"ROUTExxPOSxx:navit_remove_all_maps:enter\n");
+
 	struct mapset *ms;
 	struct map *map3;
 
@@ -2555,6 +2493,8 @@ void navit_remove_all_maps(struct navit *this_)
 	{
 		struct attr callback;
 		// this_->route_cb=callback_new_attr_1(callback_cast(navit_redraw_route), attr_route_status, this_);
+
+
 		callback.type = attr_callback;
 		callback.u.callback = this_->route_cb;
 		route_remove_attr(this_->route, &callback);
@@ -2658,9 +2598,8 @@ void navit_map_active_flag(struct navit *this_, int activate, const char *mapnam
 	// activate = 0 -> deactivate
 	// activate = 1 -> activate
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct mapset *ms;
 	struct map *map3;
 
@@ -2693,9 +2632,8 @@ void navit_map_active_flag(struct navit *this_, int activate, const char *mapnam
 
 void navit_add_all_maps(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+__F_START__
+
 	struct map *map3;
 
 	if (this_->mapsets)
@@ -2713,6 +2651,8 @@ void navit_add_all_maps(struct navit *this_)
 		struct attr map2_attr;
 		struct attr *attrs[4];
 		char *map_file;
+
+		dbg(0, "001\n");
 
 		parent.type = attr_navit;
 		parent.u.navit = this_;
@@ -2842,6 +2782,8 @@ void navit_add_all_maps(struct navit *this_)
 		// traffic map --------------------
 
 
+		dbg(0, "002\n");
+
 
 		// world map2 --------------------
 		parent.type = attr_navit;
@@ -2915,6 +2857,8 @@ void navit_add_all_maps(struct navit *this_)
 		g_free(map_file);
 		// world map5 --------------------
 
+		dbg(0, "003\n");
+
 
 #if 0
 		// world map6 --------------------
@@ -2952,6 +2896,8 @@ void navit_add_all_maps(struct navit *this_)
 		g_free(map_file);
 		// world map6 --------------------
 #endif
+
+		dbg(0, "004\n");
 
 
 		int i = 1;
@@ -3066,36 +3012,66 @@ void navit_add_all_maps(struct navit *this_)
 	//transform_setup_source_rect(this_->trans);
 	//graphics_draw(this_->gra, this_->displaylist, this_->mapsets->data, this_->trans, this_->layout_current, async, NULL, this_->graphics_flags|1);
 
-	struct displaylist *dl = navit_get_displaylist(this_);
-	dl->ms = this_->mapsets->data;
-	dl->m = NULL;
-	dl->msh = NULL;
-
-	if (this_->route)
+	if (this_->mapsets)
 	{
-		struct mapset *ms;
-		ms = this_->mapsets->data;
-		route_set_mapset(this_->route, ms);
+		dbg(0, "005\n");
 
-		struct attr callback;
-		this_->route_cb = callback_new_attr_1(callback_cast(navit_redraw_route), attr_route_status, this_);
-		callback_add_names(this_->route_cb, "navit_add_all_maps", "navit_redraw_route");
-		callback.type = attr_callback;
-		callback.u.callback = this_->route_cb;
-		route_add_attr(this_->route, &callback);
-		// ***** route_set_projection(this_->route, transform_get_projection(this_->trans));
-	}
+		struct displaylist *dl = navit_get_displaylist(this_);
+		dbg(0, "005a dl=%p\n", dl);
+		dbg(0, "005a1 ms=%p\n", this_->mapsets);
+		dbg(0, "005a2 ms=%p\n", this_->mapsets->data);
+		dl->ms = this_->mapsets->data;
+		dbg(0, "005b\n");
+		dl->m = NULL;
+		dbg(0, "005c\n");
+		dl->msh = NULL;
 
-	if (this_->tracking)
-	{
-		struct mapset *ms;
-		ms = this_->mapsets->data;
+		dbg(0, "005.1\n");
 
-		tracking_set_mapset(this_->tracking, ms);
 		if (this_->route)
 		{
-			tracking_set_route(this_->tracking, this_->route);
+			dbg(0, "005.2\n");
+
+			struct mapset *ms;
+			dbg(0, "005.3\n");
+			ms = this_->mapsets->data;
+			dbg(0, "005.4\n");
+			route_set_mapset(this_->route, ms);
+
+			dbg(0, "005.5\n");
+
+			struct attr callback;
+			this_->route_cb = callback_new_attr_1(callback_cast(navit_redraw_route), attr_route_status, this_);
+			dbg(0, "005.6\n");
+			callback_add_names(this_->route_cb, "navit_add_all_maps", "navit_redraw_route");
+			dbg(0, "005.7\n");
+			callback.type = attr_callback;
+			dbg(0, "005.8\n");
+			callback.u.callback = this_->route_cb;
+			dbg(0, "005.9\n");
+			route_add_attr(this_->route, &callback);
+			dbg(0, "005.10\n");
+			// ***** route_set_projection(this_->route, transform_get_projection(this_->trans));
+
+
 		}
+
+
+		dbg(0, "006\n");
+
+
+		if (this_->tracking)
+		{
+			struct mapset *ms;
+			ms = this_->mapsets->data;
+
+			tracking_set_mapset(this_->tracking, ms);
+			if (this_->route)
+			{
+				tracking_set_route(this_->tracking, this_->route);
+			}
+		}
+
 	}
 
 	// ready for drawing map
@@ -3103,22 +3079,30 @@ void navit_add_all_maps(struct navit *this_)
 
 	// draw map
 	// navit_draw(this_);
+
+__F_END__
 }
 
 void navit_reload_maps(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
+
+	dbg(0,"ROUTExxPOSxx:navit_reload_maps:enter\n");
+
 	navit_remove_all_maps(this_);
 	navit_add_all_maps(this_);
 }
 
+
+// --- forward def ----
+void navit_set_vehicle_position_to_screen_center(struct navit *this_);
+// --- forward def ----
+
 void navit_init(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct mapset *ms;
 	struct map *map;
@@ -3148,6 +3132,13 @@ void navit_init(struct navit *this_)
 		navit_destroy(this_);
 		return;
 	}
+
+
+#ifdef NAVIT_FREE_TEXT_DEBUG_PRINT
+	dbg(0, "DEST::route_clear_freetext_list(000)\n");
+	route_clear_freetext_list();
+#endif
+
 
 	//DBG dbg(0, "Connecting gui to graphics\n");
 
@@ -3266,12 +3257,16 @@ void navit_init(struct navit *this_)
 
 	if (this_->route)
 	{
+/*
+*DISABLED* done in "navit_add_all_maps"
+
 		struct attr callback;
 		this_->route_cb = callback_new_attr_1(callback_cast(navit_redraw_route), attr_route_status, this_);
 		callback_add_names(this_->route_cb, "navit_init", "navit_redraw_route");
 		callback.type = attr_callback;
 		callback.u.callback = this_->route_cb;
 		route_add_attr(this_->route, &callback);
+*/
 	}
 
 	if (this_->navigation)
@@ -3294,6 +3289,9 @@ void navit_init(struct navit *this_)
 	//dbg(0, "g0\n");
 	bookmarks_set_center_from_file(this_->bookmarks, center_file);
 	g_free(center_file);
+
+	dbg(0, "Set Vehicle Position to Center\n");
+	navit_set_vehicle_position_to_screen_center(this_);
 
 #if 0
 	if (this_->menubar)
@@ -3350,19 +3348,139 @@ void navit_init(struct navit *this_)
 	//dbg(0, "1111111111\n");
 }
 
+
+
+// ----- forward def! -----
+void navit_set_position_without_map_drawing(struct navit *this_, struct pcoord *c);
+// ----- forward def! -----
+
+void navit_set_vehicle_position_to_screen_center_only_for_route_struct(struct navit *this_)
+{
+	struct coord c;
+	char *center_file;
+	center_file = bookmarks_get_center_file(FALSE);
+	bookmarks_get_center_from_file(this_->bookmarks, center_file, &c);
+	g_free(center_file);
+
+	struct pcoord pc;
+	pc.x = c.x;
+	pc.y = c.y;
+	pc.pro = transform_get_projection(this_->trans);
+	// result: pc.x, pc.y
+
+	// set position
+	navit_set_position_without_map_drawing(this_, &pc);
+}
+
+void navit_set_vehicle_position_to_screen_center(struct navit *this_)
+{
+
+	// map center to pixel x,y on screen
+	// enum projection pro = transform_get_projection(this_->trans);
+	// struct point pnt;
+	// struct coord *c992;
+	// c992 = transform_get_center(this_->trans);
+	// transform(this_->trans, pro, c992, &pnt, 1, 0, 0, NULL);
+	// dbg(0, "navit_set_vehicle_position_to_screen_center pnt.x=%d pnt.y=%d\n", pnt.x, pnt.y);
+	// result: pnt.x, pnt.y
+
+
+	// geo to pixel-on-screen
+	// struct coord c99;
+	// struct coord_geo g99;
+	// g99.lat = lat;
+	// g99.lng = lon;
+	// dbg(0,"zzzzz %f, %f\n",a, b);
+	// dbg(0,"yyyyy %f, %f\n",g99.lat, g99.lng);
+	// transform_from_geo(projection_mg, &g99, &c99);
+	// dbg(0,"%d %d %f %f\n",c99.x, c99.y, g99.lat, g99.lng);
+
+	// enum projection pro = transform_get_projection(global_navit->trans_cursor);
+	// struct point pnt;
+	// transform(global_navit->trans, pro, &c99, &pnt, 1, 0, 0, NULL);
+	// dbg(0,"x=%d\n",pnt.x);
+	// dbg(0,"y=%d\n",pnt.y);
+
+
+	struct coord c;
+	char *center_file;
+	center_file = bookmarks_get_center_file(FALSE);
+	bookmarks_get_center_from_file(this_->bookmarks, center_file, &c);
+	g_free(center_file);
+
+
+	// coord to geo
+	struct coord_geo g22;
+	// struct coord c22;
+	////DBG // dbg(0,"%f, %f\n",a, b);
+	////DBG // dbg(0,"%d, %d\n",p.x, p.y);
+	transform_to_geo(projection_mg, &c, &g22);
+	dbg(0,"navit_set_vehicle_position_to_screen_center: %d, %d, %f, %f\n",c.x, c.y, g22.lat, g22.lng);
+	// result = g_strdup_printf("%f:%f", g22.lat, g22.lng);
+
+
+	// set vehicle position to pixel x,y
+	//struct point p;
+	//struct coord c;
+
+	// pixel-x
+	//p.x = pnt.x;
+	// pixel-y
+	//p.y = pnt.y;
+
+	//transform_reverse(this_->trans, &p, &c);
+
+	struct pcoord pc;
+	pc.x = c.x;
+	pc.y = c.y;
+	pc.pro = transform_get_projection(this_->trans);
+	// result: pc.x, pc.y
+
+	// set position
+	navit_set_position_without_map_drawing(this_, &pc);
+
+
+	//center.pro = projection_screen;
+	//center.x = 0;
+	//center.y = 0;
+	//DBG dbg(0, "veh new 5\n");
+	// transform_setup(this_->vehicle->vehicle->trans, &pc, 16, 0);
+	// transform_set_center(this_->vehicle->vehicle->trans, &c);
+	// zzzzzzzzzzzzzz int vehicle_set_cursor_data_01(struct vehicle *this, struct point *pnt)
+
+	if ((this_) && (this_->vehicle))
+	{
+		this_->vehicle->coord.x = c.x;
+		this_->vehicle->coord.y = c.y;
+	}
+
+	if ((this_) && (this_->vehicle) && (this_->vehicle->vehicle))
+	{
+		float speed = 0;
+		float direction = 0;
+		double height = 0;
+		float radius = 0;
+		long gpstime = 0;
+		vehicle_update_(this_->vehicle->vehicle, g22.lat, g22.lng, speed, direction, height, radius, gpstime);
+	}
+	else
+	{
+		dbg(0, "navit_set_vehicle_position_to_screen_center: no vehicle set !!\n");
+	}
+}
+
+
+
+
 void navit_zoom_to_rect(struct navit *this_, struct coord_rect *r)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct coord c;
 	int scale = 16;
 
 	c.x = (r->rl.x + r->lu.x) / 2;
 	c.y = (r->rl.y + r->lu.y) / 2;
 	transform_set_center(this_->trans, &c);
-	// dbg(1, "%x,%x-%x,%x\n", r->rl.x, r->rl.y, r->lu.x, r->lu.y);
+
 	while (scale < 1 << 20)
 	{
 		struct point p1, p2;
@@ -3370,16 +3488,23 @@ void navit_zoom_to_rect(struct navit *this_, struct coord_rect *r)
 		transform_setup_source_rect(this_->trans);
 		transform(this_->trans, transform_get_projection(this_->trans), &r->lu, &p1, 1, 0, 0, NULL);
 		transform(this_->trans, transform_get_projection(this_->trans), &r->rl, &p2, 1, 0, 0, NULL);
-		// dbg(1, "%d,%d-%d,%d\n", p1.x, p1.y, p2.x, p2.y);
-		if (p1.x < 0 || p2.x < 0 || p1.x > this_->w || p2.x > this_->w || p1.y < 0 || p2.y < 0 || p1.y > this_->h || p2.y > this_->h)
-			scale *= 2;
-		else
-			break;
 
+		if (p1.x < 0 || p2.x < 0 || p1.x > this_->w || p2.x > this_->w || p1.y < 0 || p2.y < 0 || p1.y > this_->h || p2.y > this_->h)
+		{
+			scale *= 2;
+		}
+		else
+		{
+			break;
+		}
 	}
+
+	dbg(0, "scale=%d\n", scale);
+	dbg(0, "this_->ready=%d\n", this_->ready);
+
 	if (this_->ready == 3)
 	{
-		////DBG dbg(0,"navit_draw_async_004\n");
+		// dbg(0,"navit_draw_async_004\n");
 		//dbg(0,"DO__DRAW:navit_draw_async call\n");
 		navit_draw_async(this_, 0);
 	}
@@ -3387,53 +3512,62 @@ void navit_zoom_to_rect(struct navit *this_, struct coord_rect *r)
 
 void navit_zoom_to_route(struct navit *this_, int orientation)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	struct map *map;
 	struct map_rect *mr = NULL;
 	struct item *item;
 	struct coord c;
 	struct coord_rect r;
 	int count = 0;
+
 	if (!this_->route)
+	{
 		return;
-	// dbg(1, "enter\n");
+	}
+
 	map = route_get_map(this_->route);
-	// dbg(1, "map=%p\n", map);
+
 	if (map)
+	{
 		mr = map_rect_new(map, NULL);
-	// dbg(1, "mr=%p\n", mr);
+	}
+
 	if (mr)
 	{
 		while ((item = map_rect_get_item(mr)))
 		{
-			// dbg(1, "item=%s\n", item_to_name(item->type));
 			while (item_coord_get(item, &c, 1))
 			{
-				// dbg(1, "coord\n");
 				if (!count)
+				{
 					r.lu = r.rl = c;
+				}
 				else
+				{
 					coord_rect_extend(&r, &c);
+				}
 				count++;
 			}
 		}
 		map_rect_destroy(mr);
 	}
+
 	if (!count)
+	{
 		return;
+	}
+
 	if (orientation != -1)
+	{
 		transform_set_yaw(this_->trans, orientation);
+	}
+
 	navit_zoom_to_rect(this_, &r);
 }
 
 static void navit_cmd_zoom_to_route(struct navit *this)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	navit_zoom_to_route(this, 0);
 }
@@ -3447,9 +3581,8 @@ static void navit_cmd_zoom_to_route(struct navit *this)
  */
 void navit_set_center(struct navit *this_, struct pcoord *center, int set_timeout)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct coord *c = transform_center(this_->trans);
 	struct coord c1, c2;
@@ -3481,9 +3614,8 @@ void navit_set_center(struct navit *this_, struct pcoord *center, int set_timeou
 
 static void navit_set_center_coord_screen(struct navit *this_, struct coord *c, struct point *p, int set_timeout)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	int width, height;
 	struct point po;
@@ -3506,9 +3638,8 @@ static void navit_set_center_coord_screen(struct navit *this_, struct coord *c, 
  */
 void navit_set_cursors(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct attr name;
 	struct navit_vehicle *nv;
 	struct cursor *c;
@@ -3544,9 +3675,8 @@ void navit_set_cursors(struct navit *this_)
 
 void navit_remove_cursors(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct attr name;
 	struct navit_vehicle *nv;
 	struct cursor *c;
@@ -3568,9 +3698,8 @@ void navit_remove_cursors(struct navit *this_)
 
 static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_orientation, int *dir)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	int width, height;
 	struct navit_vehicle *nv = this_->vehicle;
@@ -3612,6 +3741,8 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 		if (this_->tracking && this_->tracking_flag)
 		{
 			mdir = tracking_get_angle(this_->tracking) - this_->orientation;
+			dbg(0, "+++++tr angle=%d\n", tracking_get_angle(this_->tracking));
+			dbg(0, "+++++this ori=%d\n", this_->orientation);
 		}
 		else
 		{
@@ -3630,9 +3761,8 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 
 void navit_set_center_cursor(struct navit *this_, int autozoom, int keep_orientation)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	int dir;
 	struct point pn;
@@ -3645,33 +3775,30 @@ void navit_set_center_cursor(struct navit *this_, int autozoom, int keep_orienta
 
 static void navit_set_center_cursor_draw(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	//dbg(0,"EEnter\n");
 	navit_set_center_cursor(this_, 1, 0);
 	if (this_->ready == 3)
 	{
-		//dbg(0,"navit_draw_async_005\n");
+		// dbg(0,"navit_draw_async_005\n");
 		//dbg(0,"DO__DRAW:navit_draw_async call (AS)\n");
-		navit_draw_async(this_, 1);
+		// zzz554 // navit_draw_async(this_, 1);
 	}
 }
 
 static void navit_cmd_set_center_cursor(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	navit_set_center_cursor_draw(this_);
 }
 
 void navit_set_center_screen(struct navit *this_, struct point *p, int set_timeout)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct coord c;
 	struct pcoord pc;
@@ -3695,10 +3822,7 @@ switch((*attrs)->type)
 
 static int navit_set_attr_do(struct navit *this_, struct attr *attr, int init)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
+
 	int dir = 0, orient_old = 0, attr_updated = 0;
 	struct coord co;
 	long zoom;
@@ -3842,7 +3966,9 @@ static int navit_set_attr_do(struct navit *this_, struct attr *attr, int init)
 			break;
 		case attr_tracking:
 			attr_updated = (this_->tracking_flag != !!attr->u.num);
+			// dbg(0, "set attr:attr_tracking old=%d\n", this_->tracking_flag);
 			this_->tracking_flag = !!attr->u.num;
+			// dbg(0, "set attr:attr_tracking new=%d\n", this_->tracking_flag);
 			break;
 		case attr_transformation:
 			this_->trans = attr->u.transformation;
@@ -3902,37 +4028,29 @@ static int navit_set_attr_do(struct navit *this_, struct attr *attr, int init)
 		default:
 			return 0;
 	}
+
 	if (attr_updated && !init)
 	{
+		// dbg(0, "set attr:call callback_list_call_attr_2\n");
 		callback_list_call_attr_2(this_->attr_cbl, attr->type, this_, attr);
+
 		if (attr->type == attr_osd_configuration)
 		{
 			graphics_draw_mode(this_->gra, draw_mode_end);
 		}
 	}
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
-#endif
-
 	return 1;
 }
 
 int navit_set_attr(struct navit *this_, struct attr *attr)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
 	return navit_set_attr_do(this_, attr, 0);
 }
 
 int navit_get_attr(struct navit *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
+
 	struct message *msg;
 	int len, offset;
 	int ret = 1;
@@ -4134,18 +4252,13 @@ int navit_get_attr(struct navit *this_, enum attr_type type, struct attr *attr, 
 	}
 	attr->type = type;
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
-#endif
-
 	return ret;
 }
 
 void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	GList *l;
 	struct layout *lay;
@@ -4296,9 +4409,8 @@ void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value)
 
 void displaylist_shift_for_dpi_value_in_layers(struct navit *this_, double factor)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	GList *l;
 	struct layout *lay;
@@ -4412,9 +4524,8 @@ void displaylist_shift_for_dpi_value_in_layers(struct navit *this_, double facto
 
 static int navit_add_log(struct navit *this_, struct log *log)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	struct attr type_attr;
 	if (!log_get_attr(log, attr_type, &type_attr, NULL))
 		return 0;
@@ -4432,9 +4543,8 @@ static int navit_add_log(struct navit *this_, struct log *log)
 
 static int navit_add_layout(struct navit *this_, struct layout *layout)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 	struct attr active;
 	this_->layouts = g_list_append(this_->layouts, layout);
@@ -4449,9 +4559,8 @@ static int navit_add_layout(struct navit *this_, struct layout *layout)
 
 int navit_add_attr(struct navit *this_, struct attr *attr)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	int ret = 1;
@@ -4513,9 +4622,8 @@ int navit_add_attr(struct navit *this_, struct attr *attr)
 
 int navit_remove_attr(struct navit *this_, struct attr *attr)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	int ret = 1;
 	switch (attr->type)
 	{
@@ -4536,25 +4644,22 @@ int navit_remove_attr(struct navit *this_, struct attr *attr)
 struct attr_iter *
 navit_attr_iter_new(void)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 return g_new0(struct attr_iter, 1);
 }
 
 void navit_attr_iter_destroy(struct attr_iter *iter)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	g_free(iter);
 }
 
 void navit_add_callback(struct navit *this_, struct callback *cb)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	callback_list_add(this_->attr_cbl, cb);
@@ -4562,9 +4667,8 @@ void navit_add_callback(struct navit *this_, struct callback *cb)
 
 void navit_remove_callback(struct navit *this_, struct callback *cb)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	callback_list_remove(this_->attr_cbl, cb);
@@ -4578,17 +4682,14 @@ void navit_remove_callback(struct navit *this_, struct callback *cb)
  */
 static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, struct point *pnt)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-	////DBG dbg(0,"EEnter\n");
+__F_START__
 
 	struct point cursor_pnt;
 	enum projection pro;
 
 	if (this_->blocked)
 	{
-		return;
+		return2;
 	}
 
 	if (pnt)
@@ -4600,7 +4701,7 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 		pro = transform_get_projection(this_->trans_cursor);
 		if (!pro)
 		{
-			return;
+			return2;
 		}
 		transform(this_->trans_cursor, pro, &nv->coord, &cursor_pnt, 1, 0, 0, NULL);
 	}
@@ -4629,6 +4730,8 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 	cursor_draw(nv->cursor, &pnt2, nv->dir-transform_get_angle(this_->trans, 0), nv->speed > 2, 1);
 #endif
 #endif
+
+__F_END__
 }
 
 
@@ -4638,8 +4741,19 @@ static void navit_vehicle_draw(struct navit *this_, struct navit_vehicle *nv, st
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
+
+__F_START__
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+	dbg(0, "\n");
+	dbg(0, "==================================================================================\n");
+	dbg(0, "==================================================================================\n");
+	dbg(0, "\n");
+#endif
+
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+	dbg(0, "ROUTExxPOSxx:navit_vehicle_update:enter\n");
 #endif
 
 #ifdef NAVIT_MEASURE_TIME_DEBUG
@@ -4667,39 +4781,140 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	if (this_->ready != 3)
 	{
 		//profile(0,"return 1\n");
-		return;
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:return 003\n");
+#endif
+
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "\n");
+		dbg(0, "==================================================================================\n");
+		dbg(0, "==================================================================================\n");
+		dbg(0, "\n");
+#endif
+
+		return2;
 	}
 
-	navit_layout_switch(this_);
+	// **OLD** navit_layout_switch(this_);
 	if (this_->vehicle == nv && this_->tracking_flag)
 	{
 		tracking = this_->tracking;
 	}
+	//// else tracking = NULL !! -> important for next "if" clause!!
+
+	// ------ DEBUG ------ remember real GPS postion (unchanged) -------
+	// ------ DEBUG ------ remember real GPS postion (unchanged) -------
+	// ------ DEBUG ------ remember real GPS postion (unchanged) -------
+	struct attr attr_pos_unchanged;
+	if (vehicle_get_attr(nv->vehicle, attr_position_coord_geo, &attr_pos_unchanged, NULL))
+	{
+		if (attr_pos_unchanged.u.coord_geo)
+		{
+			global_v_pos_lat = attr_pos_unchanged.u.coord_geo->lat;
+			global_v_pos_lng = attr_pos_unchanged.u.coord_geo->lng;
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			struct coord cc999;
+			transform_from_geo(pro, attr_pos_unchanged.u.coord_geo, &cc999);
+			dbg(0, "ROUTExxPOSxx:navit_vehicle_update: %d %d\n", cc999.x, cc999.y);
+#endif
+
+		}
+	}
+
+	if (vehicle_get_attr(nv->vehicle, attr_position_direction, &attr_pos_unchanged, NULL))
+	{
+		global_v_pos_dir = *attr_pos_unchanged.u.numd;
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:navit_vehicle_update: dir=%f\n", (float)global_v_pos_dir);
+#endif
+	}
+	// ------ DEBUG ------ remember real GPS postion (unchanged) -------
+	// ------ DEBUG ------ remember real GPS postion (unchanged) -------
+	// ------ DEBUG ------ remember real GPS postion (unchanged) -------
+
 
 	if (tracking)
 	{
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:tracking_update: 001\n");
+#endif
+
+		// set postition from tracking (changing it to nearest street)
 		tracking_update(tracking, nv->vehicle, this_->vehicleprofile, pro);
 		attr_object = tracking;
 		get_attr = (int(*)(void *, enum attr_type, struct attr *, struct attr_iter *)) tracking_get_attr;
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:tracking_update: 001-a\n");
+#endif
 	}
 	else
 	{
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:tracking_update (unchanged): 001.bb\n");
+#endif
+
+		// set position from vehicle (unchanged)
 		attr_object = nv->vehicle;
 		get_attr = (int(*)(void *, enum attr_type, struct attr *, struct attr_iter *)) vehicle_get_attr;
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:tracking_update (unchanged): 001.bb-a\n");
+#endif
 	}
 
 	if (get_attr(attr_object, attr_position_valid, &attr_valid, NULL))
 	{
 		if (!attr_valid.u.num != attr_position_valid_invalid)
 		{
-			return;
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "ROUTExxPOSxx:return 001\n");
+#endif
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "\n");
+			dbg(0, "==================================================================================\n");
+			dbg(0, "==================================================================================\n");
+			dbg(0, "\n");
+#endif
+
+			return2;
 		}
 	}
+
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+	struct attr attr_pos_99;
+	if (get_attr(attr_object, attr_position_coord_geo, &attr_pos_99, NULL))
+	{
+		if (attr_pos_99.u.coord_geo)
+		{
+			struct coord cc999;
+			transform_from_geo(pro, attr_pos_99.u.coord_geo, &cc999);
+			dbg(0, "ROUTExxPOSxx:get pos: %d %d\n", cc999.x, cc999.y);
+		}
+	}
+#endif
+
 
 	// load attrs with data from vehicle
 	if (!get_attr(attr_object, attr_position_direction, &attr_dir, NULL) || !get_attr(attr_object, attr_position_speed, &attr_speed, NULL) || !get_attr(attr_object, attr_position_coord_geo, &attr_pos, NULL))
 	{
-		return;
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:return 002\n");
+#endif
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "\n");
+		dbg(0, "==================================================================================\n");
+		dbg(0, "==================================================================================\n");
+		dbg(0, "\n");
+#endif
+
+		return2;
 	}
 	// load attrs with data from vehicle
 
@@ -4753,15 +4968,33 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	{
 		if (tracking)
 		{
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "ROUTExxPOSxx:navit_vehicle_update: 001\n");
+#endif
 			route_set_position_from_tracking(this_->route, tracking, pro);
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "ROUTExxPOSxx:navit_vehicle_update: 001-a\n");
+#endif
 		}
 		else
 		{
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "ROUTExxPOSxx:YYYYY:navit_vehicle_update: 002\n");
+#endif
 			route_set_position(this_->route, &cursor_pc);
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "ROUTExxPOSxx:navit_vehicle_update: 002-a\n");
+#endif
 		}
 	}
 
-	callback_list_call_attr_0(this_->attr_cbl, attr_position);
+	// --------------------------------------------------------------
+	// --------------------------------------------------------------
+	// this calls: graphics_load_mapset (and draws the map)
+	// --------------------------------------------------------------
+	/// -------**++**-- DISABLE --**++**---- callback_list_call_attr_0(this_->attr_cbl, attr_position);
+	// --------------------------------------------------------------
+	// --------------------------------------------------------------
 
 	// navit_textfile_debug_log(this_, "type=trackpoint_tracked");
 	/*
@@ -4798,6 +5031,13 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 #endif
 	}
 
+
+
+// -------- ??????????
+// -------- ??????????
+// -------- ??????????
+// -------- ??????????
+// -------- ??????????
 	if (this_->button_pressed != 1 && this_->follow_cursor && nv->follow_curr <= nv->follow && (nv->follow_curr == 1 || !transform_within_border(this_->trans_cursor, &cursor_pnt, this_->border)))
 	{
 		if (hold_drawing == 0)
@@ -4814,6 +5054,14 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 			navit_vehicle_draw(this_, nv, pnt);
 		}
 	}
+// -------- ??????????
+// -------- ??????????
+// -------- ??????????
+// -------- ??????????
+// -------- ??????????
+
+
+
 
 	if (nv->follow_curr > 1)
 	{
@@ -4824,7 +5072,15 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 		nv->follow_curr = nv->follow;
 	}
 
+
+
+	// where does this go????? ----------
+	// where does this go????? ----------
 	callback_list_call_attr_2(this_->attr_cbl, attr_position_coord_geo, this_, nv->vehicle);
+	// where does this go????? ----------
+	// where does this go????? ----------
+
+
 
 	/* Finally, if we reached our destination, stop navigation. */
 	if (this_->route)
@@ -4870,7 +5126,9 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 		if (this_->ready == 3)
 		{
 			//dbg(0,"location update:draw:start\n");
-			//navit_draw_async(this_, 1);
+			// dbg(0,"navit_draw_async_006\n");
+			// zzz554 //
+			navit_draw_async(this_, 0);
 			//dbg(0,"location update:draw:end\n");
 		}
 		// draw???????
@@ -4880,15 +5138,35 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
 	debug_mrp("navit_vehicle_update:", debug_measure_end(s_));
 #endif
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+	dbg(0, "ROUTExxPOSxx:navit_vehicle_update:leave\n");
 #endif
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+	dbg(0, "\n");
+	dbg(0, "==================================================================================\n");
+	dbg(0, "==================================================================================\n");
+	dbg(0, "\n");
+#endif
+
+__F_END__
+
 }
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 // --- this gets called at every positon update (from GPS, or demo vehicle!!) !! ------
 
 
+
+int navit_is_demo_vehicle()
+{
+	if (global_demo_vehicle == 1)
+	{
+		return 1;
+	}
+
+	return 0;
+}
 
 
 /**
@@ -4900,28 +5178,51 @@ static void navit_vehicle_update(struct navit *this_, struct navit_vehicle *nv)
  */
 void navit_set_position(struct navit *this_, struct pcoord *c)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+__F_START__
+
 	//DBG dbg(0,"EEnter\n");
 
 	if (this_->route)
 	{
-		route_set_position(this_->route, c);
-		callback_list_call_attr_0(this_->attr_cbl, attr_position);
+//#ifdef NAVIT_ROUTING_DEBUG_PRINT
+//		dbg(0, "ROUTExxPOSxx:YYYYY:navit_set_position: 001\n");
+//#endif
+		// ******* NOT USE ******** // route_set_position(this_->route, c);
+		// ******* NOT USE ******** // callback_list_call_attr_0(this_->attr_cbl, attr_position);
 	}
 
 	if (this_->ready == 3)
 	{
 		navit_draw(this_);
 	}
+
+__F_END__
 }
 
-static int navit_set_vehicleprofile(struct navit *this_, char *name)
+/**
+ * Set the position of the vehicle, without drawing the map
+ *
+ */
+void navit_set_position_without_map_drawing(struct navit *this_, struct pcoord *c)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
+
+
+
+	if (this_->route)
+	{
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+		dbg(0, "ROUTExxPOSxx:YYYYY:navit_set_position_without_map_drawing: 001\n");
 #endif
+		route_set_position(this_->route, c);
+		callback_list_call_attr_0(this_->attr_cbl, attr_position);
+	}
+}
+
+
+int navit_set_vehicleprofile(struct navit *this_, char *name)
+{
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	struct attr attr;
@@ -4935,7 +5236,9 @@ static int navit_set_vehicleprofile(struct navit *this_, char *name)
 			{
 				this_->vehicleprofile = l->data;
 				if (this_->route)
+				{
 					route_set_profile(this_->route, this_->vehicleprofile);
+				}
 				return 1;
 			}
 		}
@@ -4946,9 +5249,8 @@ static int navit_set_vehicleprofile(struct navit *this_, char *name)
 
 static void navit_set_vehicle(struct navit *this_, struct navit_vehicle *nv)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	struct attr attr;
@@ -4988,9 +5290,8 @@ static void navit_set_vehicle(struct navit *this_, struct navit_vehicle *nv)
  */
 int navit_add_vehicle(struct navit *this_, struct vehicle *v)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	struct navit_vehicle *nv=g_new0(struct navit_vehicle, 1);
 	struct attr follow, active, animate;
@@ -5002,15 +5303,22 @@ int navit_add_vehicle(struct navit *this_, struct vehicle *v)
 	global_last_vehicle_pos_geo.lat = 0;
 	global_last_vehicle_pos_geo.lng = 0;
 
+	// global_cur_vehicle_pos_geo.lat = 0;
+	// global_cur_vehicle_pos_geo.lon = 0;
+
 	nv->animate_cursor = 0;
 	if ((vehicle_get_attr(v, attr_follow, &follow, NULL)))
 		nv->follow = follow.u.num;
+
 	nv->follow_curr = nv->follow;
 	this_->vehicles = g_list_append(this_->vehicles, nv);
+
 	if ((vehicle_get_attr(v, attr_active, &active, NULL)) && active.u.num)
 		navit_set_vehicle(this_, nv);
+
 	if ((vehicle_get_attr(v, attr_animate, &animate, NULL)))
 		nv->animate_cursor = animate.u.num;
+
 	nv->callback.type = attr_callback;
 
 	// gets called via this callback in vehicle_android.c [in function: vehicle_android_callback]
@@ -5033,53 +5341,37 @@ int navit_add_vehicle(struct navit *this_, struct vehicle *v)
 struct gui *
 navit_get_gui(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	return this_->gui;
 }
 
 struct transformation *
 navit_get_trans(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	return this_->trans;
 }
 
 struct route *
 navit_get_route(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	return this_->route;
 }
 
 struct navigation *
 navit_get_navigation(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	return this_->navigation;
 }
 
 struct displaylist *
 navit_get_displaylist(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	return this_->displaylist;
 }
 
 void navit_layout_switch(struct navit *n)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	int currTs = 0;
@@ -5172,9 +5464,8 @@ void navit_layout_switch(struct navit *n)
 
 int navit_set_vehicle_by_name(struct navit *n, const char *name)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	struct vehicle *v;
@@ -5203,9 +5494,8 @@ int navit_set_vehicle_by_name(struct navit *n, const char *name)
 
 int navit_set_layout_by_name(struct navit *n, const char *name)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	struct layout *l;
@@ -5245,9 +5535,8 @@ int navit_set_layout_by_name(struct navit *n, const char *name)
 
 void navit_disable_suspend()
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	gui_disable_suspend(global_navit->gui);
@@ -5273,7 +5562,7 @@ char* navit_item_dump(struct item *item, int pretty)
 
 	if (item == NULL)
 	{
-		ret_value = g_strdup_printf("");
+		ret_value = g_strdup("");
 		return ret_value;
 	}
 
@@ -5450,9 +5739,8 @@ char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pre
 	struct attr hn_attr;
 	char *ret_str = NULL;
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	mindist = 1000;
 
@@ -5460,7 +5748,7 @@ char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pre
 	if (!h)
 	{
 		// dbg(0,"return 1\n");
-		ret_str = g_strdup_printf("");
+		ret_str = g_strdup("");
 		return ret_str;
 	}
 
@@ -5541,7 +5829,7 @@ char* navit_find_nearest_item_dump(struct mapset *ms, struct pcoord *pc, int pre
 	if (ret_str == NULL)
 	{
 		// dbg(0,"was NULL\n");
-		ret_str = g_strdup_printf("");
+		ret_str = g_strdup("");
 	}
 
 	return ret_str;
@@ -5571,12 +5859,11 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 	struct attr street_name_attr;
 	char *street_name = NULL;
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	mindist = 10000; // start with small radius at the beginning!
-	street_name = g_strdup_printf(" ");
+	street_name = g_strdup(" ");
 
 	h = mapset_open(ms);
 
@@ -5712,9 +5999,8 @@ navit_find_nearest_street_hn(struct mapset *ms, struct pcoord *pc)
 	char *street_name = NULL;
 	char *street_name_saved = NULL;
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	// first find a street
 	street_name_saved = navit_find_nearest_street(ms, pc);
@@ -5946,12 +6232,11 @@ navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 	char *street_coords = NULL;
 	char *street_coords_tmp = NULL;
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 
 	mindist = 10000; // start with small radius at the beginning!
-	street_coords = g_strdup_printf("");
+	street_coords = g_strdup_printf("", "");
 
 	h = mapset_open(ms);
 
@@ -6092,9 +6377,8 @@ navit_find_nearest_street_coords(struct mapset *ms, struct pcoord *pc)
 // UNUSDED -------
 int navit_block(struct navit *this_, int block)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	////DBG dbg(0,"EEnter\n");
 
 	if (block > 0)
@@ -6114,11 +6398,282 @@ int navit_block(struct navit *this_, int block)
 	return 0;
 }
 
+FILE * navit_start_gpx_file(char *filename)
+{
+    char *header1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>"
+                    "<gpx version=\"1.1\" creator=\"ZANavi http://zanavi.cc\"\n"
+                    "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                    "     xmlns=\"http://www.topografix.com/GPX/1/1\"\n"
+                    "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n"
+					"<metadata>\n"
+					"	<name>ZANavi Debug log</name>\n"
+					"	<desc>ZANavi</desc>\n"
+					"	<author>\n"
+					"		<name>ZANavi</name>\n"
+					"	</author>\n"
+					"</metadata>\n"
+					"<trk>\n"
+					"<trkseg>\n"
+					" <name>ACTIVE LOG</name>\n";
+
+    FILE *fp;
+
+	if (filename)
+	{
+    	fp = fopen(filename,"w");
+	}
+	else
+	{
+    	fp = fopen("/sdcard/zanavi_debug_001.gpx","w");
+	}
+
+    fprintf(fp, "%s", header1);
+
+	return fp;
+}
+
+void navit_add_trkpoint_to_gpx_file(FILE *fp, struct coord *c)
+{
+	struct coord_geo g;
+	transform_to_geo(projection_mg, c, &g);
+	fprintf(fp, " <trkpt lat='%4.6f' lon='%4.6f'><time>2014-10-02T09:30:10Z</time></trkpt>\n", g.lat, g.lng);
+}
+
+
+void navit_end_gpx_track_seg(FILE *fp)
+{
+	fprintf(fp,"</trkseg>\n</trk>\n");
+}
+
+void navit_start_gpx_track_seg(FILE *fp)
+{
+	fprintf(fp,"<trk>\n<trkseg>\n");
+}
+
+
+void navit_end_gpx_file(FILE *fp)
+{
+    char *trailer1= "</trkseg>\n"
+					"</trk>\n"
+					"</gpx>\n";
+
+	fprintf(fp,"%s",trailer1);
+	fclose(fp);
+}
+
+void navit_route_export_gpx_to_file(struct navit *this_, char *filename)
+{
+
+
+
+	dbg(0,"Dumping route to %s\n", filename);
+
+	struct point p;
+	struct map *map=NULL;
+	struct navigation *nav = NULL;
+	struct map_rect *mr=NULL;
+	struct item *item =NULL;
+	struct attr attr,route;
+	struct coord c;
+	struct coord_geo g;
+	struct transformation *trans;
+	
+    char *header1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>"
+                    "<gpx version=\"1.1\" creator=\"ZANavi http://zanavi.cc\"\n"
+                    "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                    "     xmlns=\"http://www.topografix.com/GPX/1/1\"\n"
+                    "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n"
+					"<metadata>\n"
+					"	<name>ZANavi Track log</name>\n"
+					"	<desc>ZANavi</desc>\n"
+					"	<author>\n"
+					"		<name>ZANavi</name>\n"
+					"	</author>\n"
+					"</metadata>\n"
+					"<trk>\n"
+					"<trkseg>\n"
+					" <name>ACTIVE LOG</name>\n";
+
+    char *trailer1= "</trkseg>\n"
+					"</trk>\n";
+
+//	char *trkcolor= "<extensions>\n"
+//					"	<gpxx:TrackExtension>\n"
+//					"		<gpxx:DisplayColor>Magenta</gpxx:DisplayColor>\n"
+//					"	</gpxx:TrackExtension>\n"
+//					"</extensions>\n";
+
+    char *header2 = "<rte>\n";
+
+    char *trailer2= "</rte>\n"
+					"</gpx>\n";
+
+
+	// -------- full route ---------
+	// -------- full route ---------
+	struct route *route2 = NULL;
+	struct map *route_map2 = NULL;
+	struct map_rect *mr2 = NULL;
+	struct item *item2 = NULL;
+	struct coord c2;
+
+	route2 = navit_get_route(this_);
+
+	if (route2)
+	{
+		route_map2 = route_get_map(route2);
+	}
+
+	if (route_map2)
+	{
+		mr2 = map_rect_new(route_map2, NULL);
+	}
+
+	if (mr2)
+	{
+		item2 = map_rect_get_item(mr2);
+	}
+
+	if (item2 && item2->type == type_route_start)
+	{
+		item2 = map_rect_get_item(mr2);
+	}
+
+    FILE *fp;
+    fp = fopen(filename,"w");
+    fprintf(fp, "%s", header1);
+	int first3 = 0;
+
+	if (item2 && item_coord_get(item2, &c2, 1))
+	{
+		transform_to_geo(projection_mg, &c2, &g);
+		fprintf(fp, " <trkpt lat='%4.16f' lon='%4.16f'><time>2014-10-02T09:30:10Z</time></trkpt>\n", g.lat, g.lng);
+
+		while (item2)
+		{
+			if (!item_coord_get(item2, &c2, 1))
+			{
+				item2 = map_rect_get_item(mr2);
+				first3 = 1;
+				continue;
+			}
+
+			if (first3 == 0)
+			{
+				transform_to_geo(projection_mg, &c2, &g);
+				fprintf(fp, " <trkpt lat='%4.16f' lon='%4.16f'><time>2014-10-02T09:30:10Z</time></trkpt>\n", g.lat, g.lng);
+			}
+			else
+			{
+				first3 = 0;
+				// fprintf(fp, "Y**********\n");
+			}
+		}
+	}
+
+	map_rect_destroy(mr2);
+
+	// -------- full route ---------
+	// -------- full route ---------
+
+
+
+
+
+    nav = navit_get_navigation(this_);
+
+    if (!nav)
+	{
+            return;
+    }
+
+    map = navigation_get_map(nav);
+
+    if (map)
+	{
+		mr = map_rect_new(map,NULL);
+	}
+	else
+	{
+		return;
+	}
+
+  	trans = navit_get_trans(this_);
+
+
+	//while((item = map_rect_get_item(mr)))
+	//{
+	//	item_coord_get(item, &c, 1);
+	//	transform_to_geo(projection_mg, &c, &g);
+	//	fprintf(fp, " <trkpt lon='%4.16f' lat='%4.16f'><time>2014-10-02T09:30:10Z</time></trkpt>\n", g.lng, g.lat);
+	//}
+	map_rect_destroy(mr);
+
+
+
+	fprintf(fp,"%s",trailer1);
+
+
+
+	mr = map_rect_new(map,NULL);
+	while ((item = map_rect_get_item(mr)))
+	{
+		if (item_attr_get(item, attr_navigation_long, &attr))
+		{
+			item_coord_get(item, &c, 1);
+			transform_to_geo(projection_mg, &c, &g);
+			fprintf(fp, "<wpt lat=\"%4.16f\" lon=\"%4.16f\"><time>2014-10-02T09:30:10Z</time><name>%s:%s</name><sym>Dot</sym><type>Dot></type></wpt>\n", g.lat, g.lng, item_to_name(item->type), map_convert_string(item->map,attr.u.str));
+		}
+		else
+		{
+			// must be the start point (without navigation command)
+			item_coord_get(item, &c, 1);
+			transform_to_geo(projection_mg, &c, &g);
+			fprintf(fp, "<wpt lat=\"%4.16f\" lon=\"%4.16f\"><time>2014-10-02T09:30:10Z</time><name>START</name><sym>Dot</sym><type>Dot></type></wpt>\n", g.lat, g.lng);
+		}
+	}
+	map_rect_destroy(mr);
+
+
+
+	fprintf(fp,"%s",header2);
+
+
+
+	mr = map_rect_new(map,NULL);
+	while ((item = map_rect_get_item(mr)))
+	{
+		if (item_attr_get(item, attr_navigation_long, &attr))
+		{
+			item_coord_get(item, &c, 1);
+			transform_to_geo(projection_mg, &c, &g);
+			fprintf(fp, "<rtept lat='%4.16f' lon='%4.16f'><name>%s:%s</name></rtept>\n", g.lat, g.lng, item_to_name(item->type), map_convert_string(item->map,attr.u.str));
+		}
+		else
+		{
+			// must be the start point (without navigation command)
+			item_coord_get(item, &c, 1);
+			transform_to_geo(projection_mg, &c, &g);
+			fprintf(fp, "<rtept lat='%4.16f' lon='%4.16f'><name>START</name></rtept>\n", g.lat, g.lng);
+		}
+	}
+	map_rect_destroy(mr);
+
+	fprintf(fp,"%s",trailer2);
+
+	fclose(fp);
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
+}
+
+
 void navit_destroy(struct navit *this_)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+
+
 	dbg(0, "EEnter\n");
 
 	struct mapset*ms;

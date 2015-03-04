@@ -6,12 +6,14 @@
 	<xsl:include href="map_sdcard_navitmap_bin.xslt"/>
 	<xsl:include href="osd_minimum.xslt"/>
         <xsl:template match="/config/plugins/plugin[1]" priority="100">
+<!--
 		<plugin path="$NAVIT_PREFIX/lib/libgraphics_android.so" ondemand="no"/>
 		<xsl:text>&#x0A;        </xsl:text>
 		<plugin path="$NAVIT_PREFIX/lib/libvehicle_android.so" ondemand="no"/>
 		<xsl:text>&#x0A;        </xsl:text>
 		<plugin path="$NAVIT_PREFIX/lib/libspeech_android.so" ondemand="no"/>
 		<xsl:text>&#x0A;        </xsl:text>
+-->
 		<xsl:next-match/>
         </xsl:template>
         <xsl:template match="/config/navit/graphics">

@@ -83,6 +83,10 @@ struct mapset *mapset_new(struct attr *parent, struct attr **attrs)
 
 	ms=g_new0(struct mapset, 1);
 
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
+
 	return ms;
 }
 

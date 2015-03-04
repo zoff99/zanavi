@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -71,6 +71,7 @@
 #include "event.h"
 //
 #include "attr.h"
+#include "track.h"
 #include "navit.h"
 #include "route.h"
 
@@ -84,6 +85,36 @@
 static pthread_cond_t uiConditionVariable = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t uiConditionMutex = PTHREAD_MUTEX_INITIALIZER;
 
+
+
+
+
+// #define NAVIT_FUNC_CALLS_DEBUG_PRINT 1
+
+
+// --------------- debug function calls ------------------
+// --------------- debug function calls ------------------
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	#undef return2
+	#define return2	dbg_func(0, global_func_indent_counter, "return(%d)\n", __LINE__);global_func_indent_counter--;return
+
+	#define __F_START__ global_func_indent_counter++;dbg_func(0, global_func_indent_counter, "enter\n");
+	#define __F_END__   dbg_func(0, global_func_indent_counter, "leave\n");global_func_indent_counter--;
+#else
+	#undef return2
+	#define return2	return
+
+	#define __F_START__
+	#define __F_END__
+#endif
+// --------------- debug function calls ------------------
+// --------------- debug function calls ------------------
+
+
+
+
+
+
 //##############################################################################################################
 //# Description:
 //# Comment:
@@ -93,6 +124,8 @@ static pthread_mutex_t uiConditionMutex = PTHREAD_MUTEX_INITIALIZER;
 // above what "order" level to show only prerendered-map or vector-map
 #define ORDER_USE_PRERENDERED_MAP 5
 #define ORDER_USE_NORMAL_MAP 6
+#define ORDER_USE_PRERENDERED_MAP__C 4
+#define ORDER_USE_NORMAL_MAP__C 3
 #define ORDER_USE_BORDERS_MAP 14
 
 // minimum (line legth * 32) squared (in pixel) to show text label
@@ -317,19 +350,25 @@ struct graphics * graphics_new(struct attr *parent, struct attr **attrs)
 
 	// dbg(0, "plugins\n");
 
+#ifdef PLUGSSS
 	graphicstype_new = plugin_get_graphics_type(type_attr->u.str);
 	if (!graphicstype_new)
 	{
 		return NULL;
 	}
+#endif
 
 	// dbg(0, "g 003\n");
 
 	this_=g_new0(struct graphics, 1);
-	this_->cbl = callback_list_new();
-	// dbg(0, "g 003.1\n");
+	this_->cbl = callback_list_new("graphics_new:this_->cbl");
+
+#ifdef PLUGSSS
 	this_->priv = (*graphicstype_new)(parent->u.navit, &this_->meth, attrs, this_->cbl);
-	// dbg(0, "g 003.2\n");
+#else
+	this_->priv = graphics_android_new(parent->u.navit, &this_->meth, attrs, this_->cbl);
+#endif
+
 	this_->attrs = attr_list_dup(attrs);
 	this_->brightness = 0;
 	this_->contrast = 65536;
@@ -895,16 +934,19 @@ void graphics_draw_bigmap(struct graphics *this_, struct graphics_gc *gc, int ya
 //##############################################################################################################
 int graphics_draw_drag(struct graphics *this_, struct point *p)
 {
-	////DBG // dbg(0,"ooo enter ooo\n");
+__F_START__
 
 	if (!this_->meth.draw_drag)
 	{
-		return 0;
+		return2 0;
 	}
 	////DBG // dbg(0,"draw DRAG start ...\n");
 	this_->meth.draw_drag(this_->priv, p);
 	////DBG // dbg(0,"draw DRAG end ...\n");
-	return 1;
+	return2 1;
+
+__F_END__
+
 }
 
 void graphics_background_gc(struct graphics *this_, struct graphics_gc *gc)
@@ -1803,11 +1845,16 @@ static int clip_line(struct wpoint *p1, struct wpoint *p2, struct point_rect *r)
 	return ret;
 }
 
-static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics_gc *gc, struct point *pa, int count, int *width, int step, int poly, int order, int oneway, int dashes, struct color *c)
+
+
+// --------------- COLORs ---------------
+static struct color bicycle_blue =	{ 0x0000,0x0000,0xf9f9,0xffff }; // RR GG BB AA
+static struct color bicycle_green =	{ 0x0808,0x8a8a,0x0808,0xffff }; // RR GG BB AA
+// --------------- COLORs ---------------
+
+
+static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics_gc *gc, struct point *pa, int count, int *width, int step, int poly, int order, int oneway, int dashes, struct color *c, int mark_way)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 
 	struct point *p = g_alloca(sizeof(struct point) * (count + 1));
 	struct wpoint p1, p2;
@@ -1818,6 +1865,7 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 	// const int max_segs = 2000;
 	int max_segs = 20; // send max this many segments to java with one single call
 	struct point_rect r = gra->r;
+
 
 	if (order < global_order_level_for_fast_draw)
 	{
@@ -1930,7 +1978,19 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 				//else
 				//{
 				// draw as line
-				gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i], dashes, c);
+				if (mark_way == 1)
+				{
+					// dbg(0, "CYCLE LANE:001\n");
+					// mark way with bicycle lanes
+					gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i] + 4, dashes, &bicycle_green, global_clinedrawing_active, 0);
+				}
+				else if (mark_way == 2)
+				{
+					// dbg(0, "CYCLE LANE:001\n");
+					// mark way with bicycle tracks
+					gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i] + 4, dashes, &bicycle_blue, global_clinedrawing_active, 0);
+				}
+				gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i], dashes, c, global_clinedrawing_active, 1);
 				//draw_lines_count_3++;
 				//}
 
@@ -1955,8 +2015,19 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 				//else
 				//{
 
+				if (mark_way == 1)
+				{
+					// mark way with bicycle lanes
+					gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i] + 4, 1, dashes, &bicycle_green, 0);
+				}
+				else if (mark_way == 2)
+				{
+					// mark way with bicycle track
+					gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i] + 4, 1, dashes, &bicycle_blue, 0);
+				}
+
 				// draw as line
-				gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i], 1, dashes, c);
+				gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i], 1, dashes, c, 1);
 				//draw_lines_count_4++;
 				//}
 
@@ -1972,7 +2043,19 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 				// ******* street has bridge ********
 				// ******* street has bridge ********
 				// ******* street has bridge ********
-				gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i], 2, dashes, c);
+
+				if (mark_way == 1)
+				{
+					// mark way with bicycle lanes
+					gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i] + 4, 2, dashes, &bicycle_green, 0);
+				}
+				else if (mark_way == 2)
+				{
+					// mark way with bicycle track
+					gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i] + 4, 2, dashes, &bicycle_blue, 0);
+				}
+
+				gra->meth.draw_lines4(gra->priv, gc->priv, p, out, order, width[i], 2, dashes, c, 1);
 				//draw_lines_count_4++;
 
 				// one way arrow
@@ -1987,7 +2070,7 @@ static void graphics_draw_polyline_clipped(struct graphics *gra, struct graphics
 			{
 				// OLD // gra->meth.draw_lines2(gra->priv, gc->priv, p, out, order, 0);
 
-				gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i], dashes, c);
+				gra->meth.draw_lines3(gra->priv, gc->priv, p, out, order, width[i], dashes, c, global_clinedrawing_active, 1);
 				//draw_lines_count_3++;
 
 				// one way arrow
@@ -2070,57 +2153,59 @@ static void graphics_draw_polygon_clipped(struct graphics *gra, struct graphics_
 	}
 	else
 	{
-p1	=g_new(struct point, count_in*8+1);
-	p2=g_new(struct point, count_in*8+1);
-}
+		p1 = g_new0(struct point, count_in*8+1);
+		p2 = g_new0(struct point, count_in*8+1);
+	}
 
-pout=p1;
-for (edge = 0; edge < 4; edge++)
-{
-	p=pin;
-	s=pin+count_in-1;
-	count_out=0;
-	for (i = 0; i < count_in; i++)
+	pout=p1;
+	for (edge = 0; edge < 4; edge++)
 	{
-		if (is_inside(p, &r, edge))
+		p=pin;
+		s=pin+count_in-1;
+		count_out=0;
+		for (i = 0; i < count_in; i++)
 		{
-			if (! is_inside(s, &r, edge))
+			if (is_inside(p, &r, edge))
 			{
-				poly_intersection(s,p,&r,edge,&pi);
-				pout[count_out++]=pi;
+				if (! is_inside(s, &r, edge))
+				{
+					poly_intersection(s,p,&r,edge,&pi);
+					pout[count_out++]=pi;
+				}
+				pout[count_out++]=*p;
 			}
-			pout[count_out++]=*p;
+			else
+			{
+				if (is_inside(s, &r, edge))
+				{
+					poly_intersection(p,s,&r,edge,&pi);
+					pout[count_out++]=pi;
+				}
+			}
+			s=p;
+			p++;
+		}
+		count_in=count_out;
+		if (pin == p1)
+		{
+			pin=p2;
+			pout=p1;
 		}
 		else
 		{
-			if (is_inside(s, &r, edge))
-			{
-				poly_intersection(p,s,&r,edge,&pi);
-				pout[count_out++]=pi;
-			}
+			pin=p1;
+			pout=p2;
 		}
-		s=p;
-		p++;
 	}
-	count_in=count_out;
-	if (pin == p1)
-	{
-		pin=p2;
-		pout=p1;
-	}
-	else
-	{
-		pin=p1;
-		pout=p2;
-	}
-}
 
-gra->meth.draw_polygon(gra->priv, gc->priv, pin, count_in);
-if (count_in >= limit)
-{
-	g_free(p1);
-	g_free(p2);
-}
+
+
+	gra->meth.draw_polygon(gra->priv, gc->priv, pin, count_in);
+	if (count_in >= limit)
+	{
+		g_free(p1);
+		g_free(p2);
+	}
 }
 
 static void display_context_free(struct display_context *dc)
@@ -2143,6 +2228,7 @@ get_font(struct graphics *gra, int size)
 	{
 		size = 64;
 	}
+
 	if (size >= gra->font_len)
 	{
 		gra->font=g_renew(struct graphics_font *, gra->font, size+1);
@@ -2151,10 +2237,12 @@ get_font(struct graphics *gra, int size)
 			gra->font[gra->font_len++] = NULL;
 		}
 	}
+
 	if (!gra->font[size])
 	{
 		gra->font[size] = graphics_font_new(gra, size * gra->font_size, 0);
 	}
+
 	return gra->font[size];
 }
 
@@ -2233,13 +2321,8 @@ static int limit_count(struct coord *c, int count)
 	return count;
 }
 
-static void displayitem_draw(struct displayitem *di, void *dummy, struct display_context *dc, int order, int allow_dashed, int run_type)
+static void displayitem_draw(struct displayitem *di, void *dummy, struct display_context *dc, int order, int allow_dashed, int run_type, int is_first)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
-	//// dbg(0, "EEnter\n");
 
 	int *width = g_alloca(sizeof(int) * dc->maxlen);
 	struct point *pa = g_alloca(sizeof(struct point) * dc->maxlen);
@@ -2251,6 +2334,9 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 	char *path;
 	struct color custom_color;
 	int dont_draw = 0;
+
+	int oneway;
+	int mark_way;
 
 	//if (run_type > 100) // dbg(0,"enter\n");
 
@@ -2374,6 +2460,9 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			count = transform(dc->trans, dc->pro, di->c, pa, count, mindist, 0, NULL);
 		}
 
+		//dbg(0,"**dc->type=%s count=%d\n", item_to_name(dc->type), count);
+		//dbg(0,"** e->type=%s\n", item_to_name(e->type));
+
 		switch (e->type)
 		{
 			case element_polygon:
@@ -2396,15 +2485,36 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 					poly = 3;
 				}
 
-				int oneway = 0;
-
+				oneway = 0;
 				if (di->item.flags & NAVIT_AF_ONEWAYREV)
 				{
 					oneway = 2;
+					if (di->item.flags & NAVIT_AF_ONEWAY_BICYCLE_NO)
+					{
+						oneway = oneway + 4; // oneway does not apply to bicycles here
+					}
 				}
 				else if (di->item.flags & NAVIT_AF_ONEWAY)
 				{
 					oneway = 1;
+					if (di->item.flags & NAVIT_AF_ONEWAY_BICYCLE_NO)
+					{
+						oneway = oneway + 4; // oneway does not apply to bicycles here
+					}
+				}
+
+				mark_way = 0;
+				// dbg(0, "CYCLE LANE:002 is_first=%d\n", is_first);
+				if ((dc->type != type_cycleway) && (is_first == 1) && ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)))
+				{
+					if (di->item.flags & NAVIT_AF_BICYCLE_LANE)
+					{
+						mark_way = 1; // way with cycle lane
+					}
+					else if (di->item.flags & NAVIT_AF_BICYCLE_TRACK)
+					{
+						mark_way = 2; // way with cycle track (sperate bicycle lane)
+					}
 				}
 
 				// -------- apply dashes -------
@@ -2424,7 +2534,7 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 
 				if (dc->type == type_border_country)
 				{
-					graphics_draw_polyline_clipped(gra, gc, pa, count, width, 99, poly, order, oneway, e->u.polyline.dash_num, &e->color);
+					graphics_draw_polyline_clipped(gra, gc, pa, count, width, 99, poly, order, oneway, e->u.polyline.dash_num, &e->color, 0);
 				}
 				else
 				{
@@ -2449,16 +2559,47 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 
 							custom_color.a = 0xffff;
 
-							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &custom_color);
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &custom_color, 0);
 						}
 						else
 						{
-							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color);
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, 0);
 						}
 					}
-					else
+					// change color of route if in bicycle-route-mode and we want to drive against the oneway street
+					else if ((dc->type == type_street_route) && (global_vehicle_profile == 1) && ((di->col_int_value >> 26) & 3))
 					{
-						graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color);
+						// if oneway and route goes against it
+						if (  ((di->col_int_value >> 24) & 2) && ((di->col_int_value >> 26) & 1)  )
+						{
+							//struct attr attr_98;
+							//if (item_attr_get(&(di->item), attr_direction, &attr_98))
+							//{
+
+							// custom_color.a = ((di->col_int_value >> 24) & 3); // "1" == 1 , "-1" == 3 , "0" == 0 direction of route on street
+							// ((di->col_int_value >> 26) & 3) // 1 == NAVIT_AF_ONEWAY, 2 == NAVIT_AF_ONEWAYREV
+
+							// dbg(0, "direction(2).0=%x\n", di->col_int_value);
+							// dbg(0, "direction(2)=%x oneway bicycle=%d\n", custom_color.a, ((di->col_int_value >> 26) & 3));
+							//}
+
+							// mark route in ORANGE here
+							custom_color.r = 0xff << 8;
+							custom_color.g = 0x80 << 8;
+							custom_color.b = 0x00 << 8;
+
+							custom_color.a = 0xffff;
+
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &custom_color, 0);
+						}
+						else
+						{
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, 0);
+						}
+					}
+					else // all other ways
+					{
+						graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, mark_way);
 					}
 				}
 
@@ -2544,7 +2685,6 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 
 							if (e->text_size)
 							{
-
 								struct graphics_font *font = get_font(gra, e->text_size);
 								struct graphics_gc *gc_background = dc->gc_background;
 								if (!gc_background && e->u.circle.background_color.a)
@@ -2566,6 +2706,17 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 								}
 
 							}
+						}
+					}
+					else // circle without label
+					{
+						if (dont_draw == 0)
+						{
+							if (e->u.circle.width > 1)
+							{
+								gc->meth.gc_set_linewidth(gc->priv, e->u.polyline.width);
+							}
+							graphics_draw_circle(gra, gc, pa, e->u.circle.radius);
 						}
 					}
 				}
@@ -2602,7 +2753,9 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 				if (count)
 				{
 					dont_draw = 0;
-					//dbg(0,"poi-on_map:#%d:%s\n", poi_icon_on_map_count, item_to_name(dc->type));
+
+					// dbg(0,"MAP:poi-on_map:#%d:%s\n", poi_icon_on_map_count, item_to_name(dc->type));
+
 					if (item_is_poi(dc->type))
 					{
 						if (poi_icon_on_map_count > MAX_POI_ICONS_ON_MAP)
@@ -2633,12 +2786,15 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 									src = "%s";
 								}
 								icon = g_strdup_printf(src, di->label + strlen(di->label) + 1);
+
 								path = graphics_icon_path(icon);
 								g_free(icon);
 							}
 							else
 							{
 								path = graphics_icon_path(e->u.icon.src);
+
+								// dbg(0,"MAP:icon=%s\n", path);
 							}
 
 							img = graphics_image_new_scaled_rotated(gra, path, e->u.icon.width, e->u.icon.height, e->u.icon.rotation);
@@ -2660,7 +2816,8 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 							}
 							else
 							{
-								// missing icon // // dbg(0, "-- ICON MISSING -- failed to load icon '%s'\n", path);
+								// missing icon //
+								dbg(0, "-- ICON MISSING -- failed to load icon '%s'\n", path);
 							}
 
 							g_free(path);
@@ -2709,8 +2866,12 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 	}
 
 	//if (run_type > 100) // dbg(0,"gg099\n");
-
 }
+
+
+
+
+
 /**
  * FIXME
  * @param <>
@@ -2719,17 +2880,19 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
  */
 static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *display_list, struct itemgra *itm, int run_type)
 {
-	// // dbg(0,"Enter\n");
 
 	struct element *e;
 	GList *es, *types;
 	struct display_context *dc = &display_list->dc;
 	struct hash_entry *entry;
 	int draw_it = 1;
+	int is_first_item = 1;
 
 #ifdef NAVIT_MEASURE_TIME_DEBUG
 	clock_t s_ = debug_measure_start();
 #endif
+
+	is_first_item = 1;
 
 	es = itm->elements;
 	while (es)
@@ -2749,7 +2912,7 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 			}
 
 			dc->type = GPOINTER_TO_INT(types->data);
-			//// dbg(0,"**type=%d\n", dc->type);
+			// dbg(0,"**type=%s\n", item_to_name(dc->type));
 
 			if (global_draw_multipolygons == 0)
 			{
@@ -2781,14 +2944,16 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 				entry = get_hash_entry(display_list, dc->type);
 				if (entry && entry->di)
 				{
-					// // dbg(0,"++type=%s\n", item_to_name(dc->type));
+					//dbg(0,"++type=%s\n", item_to_name(dc->type));
+					//dbg(0, "is_first_item=%d run_type=%d\n", is_first_item, run_type);
 					//if (!strcmp(item_to_name(dc->type), "border_country"))
 					//{
 					//	displayitem_draw(entry->di, NULL, dc, display_list->order, 1, 101);
 					//}
 					//else
 					//{
-					displayitem_draw(entry->di, NULL, dc, display_list->order, 1, run_type);
+					displayitem_draw(entry->di, NULL, dc, display_list->order, 1, run_type, is_first_item);
+					is_first_item = 0;
 					//}
 					// // dbg(0,"**+gc free\n");
 					display_context_free(dc);
@@ -2803,6 +2968,8 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 #ifdef NAVIT_MEASURE_TIME_DEBUG
 	debug_mrp("xdisplay_draw_elements:", debug_measure_end(s_));
 #endif
+
+
 }
 
 void graphics_draw_itemgra(struct graphics *gra, struct itemgra *itm, struct transformation *t, char *label)
@@ -2856,7 +3023,7 @@ void graphics_draw_itemgra(struct graphics *gra, struct itemgra *itm, struct tra
 		}
 		dc.e = e;
 		di->next = NULL;
-		displayitem_draw(di, NULL, &dc, transform_get_scale(t), 0, 99);
+		displayitem_draw(di, NULL, &dc, transform_get_scale(t), 0, 99, 0);
 		display_context_free(&dc);
 		es = g_list_next(es);
 	}
@@ -2870,7 +3037,6 @@ void graphics_draw_itemgra(struct graphics *gra, struct itemgra *itm, struct tra
  */
 static void xdisplay_draw_layer(struct displaylist *display_list, struct graphics *gra, struct layer *lay, int order)
 {
-	//DBG // dbg(0,"ooo enter ooo\n");
 
 	GList *itms;
 	struct itemgra *itm;
@@ -2903,8 +3069,7 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 		run_type = 99; // draw only 1 pass, bridges and tunnels will be drawn in any order
 	}
 
-	//// dbg(0,"layer name=%s\n", lay->name);
-
+	// dbg(0,"layer name=%s\n", lay->name);
 
 	// reset max drawing counters ----------------------
 	poi_on_map_count = 0;
@@ -3123,15 +3288,601 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 				}
 			}
 		}
+
+
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+				// -------- DEBUG -------- draw real GPS position ---------
+				// -------- DEBUG -------- draw real GPS position ---------
+				// -------- DEBUG -------- draw real GPS position ---------
+				if (!global_img_waypoint)
+				{
+					char *path2;
+					path2 = graphics_icon_path("nav_waypoint_bk_center.png");
+					global_img_waypoint = graphics_image_new_scaled_rotated(gra, path2, 59, 59, 0);
+
+					// compensate for streched images on high dpi devices
+					global_img_waypoint->hot.x = (int)((float)global_img_waypoint->width / 2.0f / (float)global_dpi_factor);
+					global_img_waypoint->hot.y = (int)((float)global_img_waypoint->height / 2.0f / (float)global_dpi_factor);
+
+					g_free(path2);
+				}
+
+				struct coord_geo g33;
+				struct coord c33;
+				struct point p2;
+				g33.lat = global_v_pos_lat;
+				g33.lng = global_v_pos_lng;
+
+				transform_from_geo(projection_mg, &g33, &c33);
+				enum projection pro = transform_get_projection(global_navit->trans_cursor);
+
+
+				// cos = x
+				// sin = y
+				struct point *p_temp3 = g_alloca(sizeof(struct point) * (2 + 1));
+				struct color debug_red2 = { 0xfafa,0x1010,0x0000,0xffff }; // RR GG BB AA
+
+				transform(global_navit->trans, pro, &c33, &p2, 1, 0, 0, NULL);
+				p_temp3[0].x = p2.x;
+				p_temp3[0].y = p2.y;
+
+				double dd = tracking_get_direction(global_navit->tracking);
+				double temp_4 = (global_v_pos_dir - dd) - 90.0f;
+
+				p_temp3[0].x = p_temp3[0].x + 36 * (navit_cos(temp_4 * M_PI / 180));
+				p_temp3[0].y = p_temp3[0].y + 36 * (navit_sin(temp_4 * M_PI / 180));
+
+				p_temp3[1].x = p_temp3[0].x;
+				p_temp3[1].y = p_temp3[0].y;
+
+				p_temp3[1].x = p_temp3[1].x + 35 * (navit_cos(temp_4 * M_PI / 180));
+				p_temp3[1].y = p_temp3[1].y + 35 * (navit_sin(temp_4 * M_PI / 180));
+
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp3, 2, 15, 14, 0, &debug_red2, global_clinedrawing_active, 1);
+
+
+				// ------ text -------
+				graphics_gc_set_foreground(gra->gc[0], &debug_red2);
+				graphics_gc_set_linewidth(gra->gc[0], 8);
+				struct point p7;
+				struct graphics_font *font8 = get_font(gra, 21);
+				char *dir_label=g_strdup_printf("%4.1f : %4.1f", (float)global_v_pos_dir, (float)dd);
+				p7.x = p2.x + 25;  // move text label a bit to the right, so it does not overlap the circle
+				p7.y = p2.y - 160;  // move label a bit up (y-axis)
+				gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8->priv, dir_label, &p7, 0x10000, 0);
+				g_free(dir_label);
+				// ------ text -------
+
+
+				p2.x = p2.x - global_img_waypoint->hot.x; // hot = 29
+				p2.y = p2.y - global_img_waypoint->hot.y; // hot = 29
+				gra->meth.draw_image(gra->priv, gra->gc[0]->priv, &p2, global_img_waypoint->priv);
+
+				// -------- DEBUG -------- draw real GPS position ---------
+				// -------- DEBUG -------- draw real GPS position ---------
+				// -------- DEBUG -------- draw real GPS position ---------
+
+
+				// -------- DEBUG -------- draw winner track segment ---------
+				// -------- DEBUG -------- draw winner track segment ---------
+				// -------- DEBUG -------- draw winner track segment ---------
+				struct color debug_orange = { 0xffff,0x4040,0x0000,0xffff }; // RR GG BB AA
+				struct point *p_temp = g_alloca(sizeof(struct point) * (2 + 1));
+				enum projection pro3 = transform_get_projection(global_navit->trans_cursor);
+
+				if (global_navit->route)
+				{
+					if (global_navit->destination_valid == 1)
+					{
+						transform(global_navit->trans, pro3, &global_debug_route_seg_winner_start, &p_temp[0], 1, 0, 0, NULL);
+						transform(global_navit->trans, pro3, &global_debug_route_seg_winner_end, &p_temp[1], 1, 0, 0, NULL);
+						gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp, 2, 15, 30, 0, &debug_orange, global_clinedrawing_active, 1);
+					}
+				}
+
+				struct color debug_turkoise = { 0x0404,0xb4b4,0xaeae,0xffff }; // RR GG BB AA
+				transform(global_navit->trans, pro3, &global_debug_seg_winner_start, &p_temp[0], 1, 0, 0, NULL);
+				transform(global_navit->trans, pro3, &global_debug_seg_winner_end, &p_temp[1], 1, 0, 0, NULL);
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp, 2, 15, 20, 0, &debug_turkoise, global_clinedrawing_active, 1);
+
+
+				if (global_navit->route)
+				{
+					if (global_navit->destination_valid == 1)
+					{
+						struct color debug_red = { 0xffff,0x0000,0x0000,0xffff }; // RR GG BB AA
+						graphics_gc_set_foreground(gra->gc[0], &debug_red);
+						graphics_gc_set_linewidth(gra->gc[0], 10);
+						transform(global_navit->trans, pro3, &global_debug_route_seg_winner_p_start, &p_temp[0], 1, 0, 0, NULL);
+						gra->meth.draw_circle(gra->priv, gra->gc[0]->priv, &p_temp[0], 44);
+					}
+				}
+
+				struct color debug_green = { 0x0000,0xffff,0x0000,0xffff }; // RR GG BB AA
+				graphics_gc_set_foreground(gra->gc[0], &debug_green);
+				graphics_gc_set_linewidth(gra->gc[0], 8);
+				transform(global_navit->trans, pro3, &global_debug_seg_winner_p_start, &p_temp[0], 1, 0, 0, NULL);
+				gra->meth.draw_circle(gra->priv, gra->gc[0]->priv, &p_temp[0], 36);
+
+				if (global_navit->route)
+				{
+					if (global_navit->destination_valid == 1)
+					{
+						struct color debug_yellow = { 0xf7f7,0xfefe,0x2e2e,0xffff }; // RR GG BB AA
+						transform(global_navit->trans, pro3, &global_debug_seg_route_start, &p_temp[0], 1, 0, 0, NULL);
+						transform(global_navit->trans, pro3, &global_debug_seg_route_end, &p_temp[1], 1, 0, 0, NULL);
+						gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp, 2, 15, 8, 0, &debug_yellow, global_clinedrawing_active, 1);
+					}
+				}
+
+
+
+
+
+
+
+// ============================== debug lines ==============================
+// ============================== debug lines ==============================
+// ============================== debug lines ==============================
+#if 0
+				struct color debug_purple = { 0xffff,0x0000,0xffff,0xffff }; // RR GG BB AA
+				transform(global_navit->trans, pro3, &global_debug_trlast_start, &p_temp[0], 1, 0, 0, NULL);
+				transform(global_navit->trans, pro3, &global_debug_trlast_end, &p_temp[1], 1, 0, 0, NULL);
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp, 2, 15, 18, 0, &debug_purple, global_clinedrawing_active, 1);
+
+
+				struct color debug_purple0 = { 0x1010,0xfefe,0xefef,0xffff }; // RR GG BB AA
+				struct color debug_purple1 = { 0x3030,0xaeae,0x4f4f,0xffff }; // RR GG BB AA
+				struct color debug_purple2 = { 0x1010,0x7878,0x3030,0xffff }; // RR GG BB AA
+				struct color debug_red3 = { 0xffff,0x0000,0x0000,0xffff }; // RR GG BB AA
+				struct color *debug_color_pp;
+				int ii2;
+				int jj;
+
+				//dbg(0,"global_debug_coord_list:LOOP:num=%d\n", global_debug_coord_list_items);
+
+				for (ii2 = 0; ii2 < global_debug_coord_list_items; ii2++)
+				{
+
+					//dbg(0,"global_debug_coord_list:LOOP:coord_list=%d\n", ii2);
+
+					transform(global_navit->trans, pro3, &global_debug_coord_list[ii2], &p_temp[0], 1, 0, 0, NULL);
+					ii2++;
+					transform(global_navit->trans, pro3, &global_debug_coord_list[ii2], &p_temp[1], 1, 0, 0, NULL);
+
+					jj = ((ii2 - 1) % 3);
+					if (jj == 0)
+					{
+						debug_color_pp = &debug_purple0;
+					}
+					else if (jj == 1)
+					{
+						debug_color_pp = &debug_purple1;
+					}
+					else
+					{
+						debug_color_pp = &debug_purple2;
+					}
+
+
+					gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp, 2, 15, 6, 0, debug_color_pp, global_clinedrawing_active, 1);
+
+					// ------ text -------
+					graphics_gc_set_foreground(gra->gc[0], &debug_red3);
+					graphics_gc_set_linewidth(gra->gc[0], 6);
+					struct point p7;
+					struct graphics_font *font8 = get_font(gra, 21);
+					char *dir_label=g_strdup_printf("%d", (ii2 - 1));
+					p7.x = p_temp[0].x + 0;  // move text label a bit to the right, so it does not overlap the circle
+					p7.y = p_temp[0].y + 0;  // move label a bit down (y-axis)
+					gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8->priv, dir_label, &p7, 0x10000, 0);
+					g_free(dir_label);
+					// ------ text -------
+
+					// ------ text -------
+					//graphics_gc_set_foreground(gra->gc[0], &debug_red3);
+					//graphics_gc_set_linewidth(gra->gc[0], 6);
+					//struct point p7;
+					//struct graphics_font *font8 = get_font(gra, 21);
+					dir_label=g_strdup_printf("%d", ii2);
+					p7.x = p_temp[1].x + 8;  // move text label a bit to the right, so it does not overlap the circle
+					p7.y = p_temp[1].y + 8;  // move label a bit down (y-axis)
+					gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8->priv, dir_label, &p7, 0x10000, 0);
+					g_free(dir_label);
+					// ------ text -------
+
+				}
+#endif
+// ============================== debug lines ==============================
+// ============================== debug lines ==============================
+// ============================== debug lines ==============================
+
+
+
+
+
+
+				// -------- DEBUG -------- draw winner track segment ---------
+				// -------- DEBUG -------- draw winner track segment ---------
+				// -------- DEBUG -------- draw winner track segment ---------
+#endif
+
+
 	}
 	// dirty hack to draw "waypoint(s)" ---------------------------
+	// dirty hack to draw "route arrows" ---------------------------
+	else if (strncmp("RouteArrows", lay->name, 11) == 0)
+	{
+		if (global_navit->route)
+		{
+			if (global_navit->destination_valid == 1)
+			{
+
+#define MAX_ROUTE_ARROW_LINE_LENGTH 50.0f
+#define MAX_ROUTE_ARROW_LINE_LENGTH_SQ 2500
+#define MIN_ROUTE_ARROW_LINE_LENGTH_SQ 2000
+#define MAX_ROUTE_ARROW_TO_SHOW 2 // default 2
+
+				struct navigation *nav = NULL;
+				struct map *map=NULL;
+				struct map_rect *mr=NULL;
+				struct item *item8 =NULL;
+				struct attr attr8;
+				struct coord c8;
+				struct coord c11;
+				struct color route_arrrow_green_1 = { 0x0404,0xb4b4,0xaeae,0xffff }; // RR GG BB AA first line and arrow
+				struct color route_arrrow_green_2 = { 0x0909,0x8484,0x7f7f,0xffff }; // RR GG BB AA all the next lines and arrows
+				struct color *route_arrrow_green = &route_arrrow_green_1;
+				struct point *p8 = g_alloca(sizeof(struct point));
+				struct point *p9_temp = g_alloca(sizeof(struct point) * (2 + 1));
+				struct point *p11_temp = g_alloca(sizeof(struct point) * (2 + 1));
+				enum projection pro3 = transform_get_projection(global_navit->trans_cursor);
+				int route_arrow_count = 0;
+				int arrow_waiting = 0;
+
+
+#ifdef NAVIT_SHOW_ROUTE_ARROWS
+
+				graphics_gc_set_foreground(gra->gc[0], route_arrrow_green);
+				graphics_gc_set_linewidth(gra->gc[0], 8);
+
+				nav = navit_get_navigation(global_navit);
+				if (nav)
+				{
+					map = navigation_get_map(nav);
+					if (map)
+					{
+						mr = map_rect_new(map,NULL);
+						if (mr)
+						{
+							while ((item8 = map_rect_get_item(mr)))
+							{
+
+								if (item8->type == type_nav_destination)
+								{
+									break;
+								}
+
+								if (item_attr_get(item8, attr_navigation_long, &attr8))
+								{
+									route_arrow_count++;
+
+									if (route_arrow_count > MAX_ROUTE_ARROW_TO_SHOW)
+									{
+										break;
+									}
+									else if (route_arrow_count == 2)
+									{
+										route_arrrow_green = &route_arrrow_green_2;
+									}
+
+									item_coord_get(item8, &c8, 1);
+
+#if 0
+									graphics_gc_set_foreground(gra->gc[0], &route_arrrow_green);
+									graphics_gc_set_linewidth(gra->gc[0], 8);
+									transform(global_navit->trans, pro3, &c8, p8, 1, 0, 0, NULL);
+									gra->meth.draw_circle(gra->priv, gra->gc[0]->priv, p8, 45);
+
+									struct graphics_font *font8 = get_font(gra, 25);
+									char *arrow_label=g_strdup_printf("%d", route_arrow_count);
+
+									p8->x = p8->x + 45;  // move text label a bit to the right, so it does not overlap the circle
+									p8->y = p8->y + (int)(25 / 2); // move label a bit down, so that it is in the middle of the circle (on y-axis)
+
+									gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8->priv, arrow_label, p8, 0x10000, 0);
+									g_free(arrow_label);
+#endif
+
+
+									// --- find the segments for this maneuver ---
+									struct route *route2 = NULL;
+									struct map *route_map2 = NULL;
+									struct map_rect *mr2 = NULL;
+									struct item *item2 = NULL;
+									struct coord c2;
+									struct coord c2_prev;
+									float route_line_length_sq;
+									int first2 = 1;
+									int first3 = 0;
+									int found_seg = 0;
+									float dx, dy;
+									int added_seg = 0;
+
+									c2.x = 0;
+									c2.y = 0;
+									c2_prev.x = c2.x;
+									c2_prev.y = c2.y;
+
+									route2 = navit_get_route(global_navit);
+									if (route2)
+									{
+										route_map2 = route_get_map(route2);
+										if (route_map2)
+										{
+											mr2 = map_rect_new(route_map2, NULL);
+											if (mr2)
+											{
+												item2 = map_rect_get_item(mr2);
+												while (item2)
+												{
+													if (!item_coord_get(item2, &c2, 1))
+													{
+														first3 = 1;
+														item2 = map_rect_get_item(mr2);
+														continue;
+													}
+
+													// loop all coords of the route ----------------------
+													if (first3 == 1)
+													{
+														first3 = 0;
+													}
+													else
+													{
+														if ( ((c2.x == c8.x) && (c2.y == c8.y)) || (found_seg == 1) )
+														{
+															//if (first2 == 1)
+															//{
+															//	first2 = 0;
+															//}
+															//else
+															{
+																//dbg(0, "11draw:c2.x=%d c2.y=%d c2_prev.x=%d c2_prev.y=%d\n", c2.x, c2.y, c2_prev.x, c2_prev.y);
+																if (found_seg == 1)
+																{
+																	// draw arrow head at the end
+
+																	route_line_length_sq = (float)transform_distance_sq(&c2_prev, &c2);
+																	if ((added_seg == 0) && (route_line_length_sq < MIN_ROUTE_ARROW_LINE_LENGTH_SQ))
+																	{
+																		// draw line
+																		transform(global_navit->trans, pro3, &c2_prev, &p9_temp[0], 1, 0, 0, NULL);
+																		transform(global_navit->trans, pro3, &c2, &p9_temp[1], 1, 0, 0, NULL);
+																		gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p9_temp, 2, 15, 28, 0, route_arrrow_green, global_clinedrawing_active, 1);
+
+																		// add next coord to line/arrow
+																		found_seg = 0;
+																		added_seg = 1;
+																	}
+																	else
+																	{
+																		if (route_line_length_sq > MAX_ROUTE_ARROW_LINE_LENGTH_SQ)
+																		{
+																			route_line_length_sq = sqrt(route_line_length_sq);
+																			// make line shorter (move coord c2 backward)
+																			dx = ((float)(c2.x - c2_prev.x)) / route_line_length_sq;
+																			dy = ((float)(c2.y - c2_prev.y)) / route_line_length_sq;
+																			c2.x = c2_prev.x + (int)(dx * MAX_ROUTE_ARROW_LINE_LENGTH);
+																			c2.y = c2_prev.y + (int)(dy * MAX_ROUTE_ARROW_LINE_LENGTH);
+																		}
+
+																		transform(global_navit->trans, pro3, &c2_prev, &p9_temp[0], 1, 0, 0, NULL);
+																		transform(global_navit->trans, pro3, &c2, &p9_temp[1], 1, 0, 0, NULL);
+																		arrow_waiting = 1;
+																		p11_temp[0].x = p9_temp[0].x;
+																		p11_temp[0].y = p9_temp[0].y;
+																		p11_temp[1].x = p9_temp[1].x;
+																		p11_temp[1].y = p9_temp[1].y;
+																		c11.x = c2.x;
+																		c11.y = c2.y;
+																		// gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p9_temp, 2, 15, 28, 0, route_arrrow_green, global_clinedrawing_active, 4);
+																	}
+																}
+																else
+																{
+																	route_line_length_sq = (float)transform_distance_sq(&c2_prev, &c2);
+																	if (route_line_length_sq > MAX_ROUTE_ARROW_LINE_LENGTH_SQ)
+																	{
+																		route_line_length_sq = sqrt(route_line_length_sq);
+																		// make line shorter (move coord c2_prev forward)
+																		dx = ((float)(c2.x - c2_prev.x)) / route_line_length_sq;
+																		dy = ((float)(c2.y - c2_prev.y)) / route_line_length_sq;
+																		c2_prev.x = c2.x - (int)(dx * MAX_ROUTE_ARROW_LINE_LENGTH);
+																		c2_prev.y = c2.y - (int)(dy * MAX_ROUTE_ARROW_LINE_LENGTH);
+																	}
+
+																	transform(global_navit->trans, pro3, &c2_prev, &p9_temp[0], 1, 0, 0, NULL);
+																	transform(global_navit->trans, pro3, &c2, &p9_temp[1], 1, 0, 0, NULL);
+
+																	gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p9_temp, 2, 15, 28, 0, route_arrrow_green, global_clinedrawing_active, 1);
+
+																	if (arrow_waiting == 1)
+																	{
+																		arrow_waiting = 0;
+																		if (((abs(c2.x - c11.x)<4) && (abs(c2.y - c11.y)<4))  ||  ((abs(c2_prev.x - c11.x)<4) && (abs(c2_prev.y - c11.y)<4)))
+																		{
+																			gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p11_temp, 2, 15, 28, 0, route_arrrow_green, global_clinedrawing_active, 1);
+																		}
+																		else
+																		{
+																			if (route_arrow_count == 2)
+																			{
+																				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p11_temp, 2, 15, 28, 0, &route_arrrow_green_1, global_clinedrawing_active, 4);
+																			}
+																			else
+																			{
+																				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p11_temp, 2, 15, 28, 0, &route_arrrow_green_2, global_clinedrawing_active, 4);
+																			}
+																		}
+																	}
+
+																}
+															}
+
+															if (found_seg == 0)
+															{
+																found_seg++;
+															}
+															else if (found_seg == 1)
+															{
+																break;
+															}
+
+														}
+													}
+													c2_prev.x = c2.x;
+													c2_prev.y = c2.y;
+
+													// loop all coords of the route ----------------------
+												}
+												map_rect_destroy(mr2);
+											}
+										}
+									}
+									// --- find the segments for this maneuver ---
+
+								}
+							}
+							map_rect_destroy(mr);
+
+							if (arrow_waiting == 1)
+							{
+								// if there is still an arrow to be drawn, draw it now
+								arrow_waiting = 0;
+								gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p11_temp, 2, 15, 28, 0, route_arrrow_green, global_clinedrawing_active, 4);
+							}
+
+						}
+					}
+				}
+
+#endif
+
+
+
+#ifdef NAVIT_FREE_TEXT_DEBUG_PRINT
+				// ------- free text list ----------
+				// ------- free text list ----------
+
+				struct color debug_blue2a = { 0x0000,0x0000,0xffff,0xffff }; // RR GG BB AA
+				struct color debug_black2a = { 0x0000,0x0000,0x0000,0xffff }; // RR GG BB AA
+				struct point *p_temp13a = g_alloca(sizeof(struct point));
+				struct point *p9_temp13a = g_alloca(sizeof(struct point) * (2 + 1));
+				enum projection pro4a = transform_get_projection(global_navit->trans_cursor);
+				graphics_gc_set_linewidth(gra->gc[0], 8);
+
+				int ij1a;
+				for (ij1a=0; ij1a < global_freetext_list_count; ij1a++)
+				{
+					transform(global_navit->trans, pro4a, &global_freetext_list[ij1a].c1, p_temp13a, 1, 0, 0, NULL);
+					graphics_gc_set_foreground(gra->gc[0], &debug_blue2a);
+					gra->meth.draw_circle(gra->priv, gra->gc[0]->priv, p_temp13a, 36);
+
+					// ------ text -------
+					struct point p7a;
+					struct graphics_font *font8a = get_font(gra, 10);
+					graphics_gc_set_foreground(gra->gc[0], &debug_black2a);
+					p7a.x = p_temp13a->x + 25;  // move text label a bit to the right, so it does not overlap the circle
+					p7a.y = p_temp13a->y + 25;  // move label a bit down (y-axis)
+					gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8a->priv, global_freetext_list[ij1a].text, &p7a, 0x10000, 0);
+					// ------ text -------
+				}
+
+				// ------- free text list ----------
+				// ------- free text list ----------
+#endif
+
+
+
+
+
+
+				// ------- sharp turn angle list ----------
+				// ------- sharp turn angle list ----------
+#ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_DRAW
+				struct color debug_green2 = { 0x0000,0xffff,0x0000,0xffff }; // RR GG BB AA
+				struct color debug_blue2 = { 0x0000,0x0000,0xffff,0xffff }; // RR GG BB AA
+				struct color debug_red2 = { 0xffff,0x0000,0x0000,0xffff }; // RR GG BB AA
+				struct point *p_temp13 = g_alloca(sizeof(struct point));
+				struct point *p9_temp13 = g_alloca(sizeof(struct point) * (2 + 1));
+				enum projection pro4 = transform_get_projection(global_navit->trans_cursor);
+				graphics_gc_set_linewidth(gra->gc[0], 8);
+
+				int ij1;
+				for (ij1=0; ij1 < global_sharp_turn_list_count;ij1++)
+				{
+					transform(global_navit->trans, pro4, &global_sharp_turn_list[ij1].c1, p_temp13, 1, 0, 0, NULL);
+					if (global_sharp_turn_list[ij1].dir == 1)
+					{
+						graphics_gc_set_foreground(gra->gc[0], &debug_green2);
+					}
+					else
+					{
+						graphics_gc_set_foreground(gra->gc[0], &debug_blue2);
+					}
+					gra->meth.draw_circle(gra->priv, gra->gc[0]->priv, p_temp13, 36);
+
+
+					// --- line of turn angle ---
+					p9_temp13[0].x = p_temp13->x;
+					p9_temp13[0].y = p_temp13->y;
+					transform(global_navit->trans, pro3, &global_sharp_turn_list[ij1].cs, &p9_temp13[1], 1, 0, 0, NULL);
+					gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p9_temp13, 2, 15, 12, 0, &debug_red2, global_clinedrawing_active, 1);
+					transform(global_navit->trans, pro3, &global_sharp_turn_list[ij1].ce, &p9_temp13[1], 1, 0, 0, NULL);
+					gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p9_temp13, 2, 15, 5, 0, &debug_green2, global_clinedrawing_active, 1);
+					// --- line of turn angle ---
+
+
+
+					// ------ text -------
+					// graphics_gc_set_foreground(gra->gc[0], &debug_red2);
+					// graphics_gc_set_linewidth(gra->gc[0], 8);
+					struct point p7;
+					struct graphics_font *font8 = get_font(gra, 21);
+					char *dir_label=g_strdup_printf("%d", global_sharp_turn_list[ij1].angle);
+
+					if (global_sharp_turn_list[ij1].angle > 0)
+					{
+						p7.x = p_temp13->x + 25;  // move text label a bit to the right, so it does not overlap the circle
+						p7.y = p_temp13->y + 25 + (int)((float)global_sharp_turn_list[ij1].angle / 2.0f);  // move label a bit down (y-axis)
+					}
+					else
+					{
+						p7.x = p_temp13->x + 25;  // move text label a bit to the right, so it does not overlap the circle
+						p7.y = p_temp13->y + 0 + (int)((float)global_sharp_turn_list[ij1].angle / 2.0f);  // move label a bit down (y-axis)
+					}
+					gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8->priv, dir_label, &p7, 0x10000, 0);
+					g_free(dir_label);
+					// ------ text -------
+
+				}
+#endif
+				// ------- sharp turn angle list ----------
+				// ------- sharp turn angle list ----------
+
+			}
+		}
+	}
+	// dirty hack to draw "route arrows" ---------------------------
 
 
 	if (send_refresh == 1)
 	{
 		// dummy "ready" signal ------------------------------------------
 		// dbg(0, "dummy \"ready\" signal (layers)\n");
-		gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 96, 0, NULL);
+		gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 96, 0, NULL, 1);
 		// dummy "ready" signal ------------------------------------------
 	}
 
@@ -3145,7 +3896,7 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
  */
 static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra, struct layout *l, int order)
 {
-	////DBG // dbg(0,"ooo enter ooo\n");
+__F_START__
 
 	GList *lays;
 	struct layer *lay;
@@ -3255,9 +4006,10 @@ static void xdisplay_draw(struct displaylist *display_list, struct graphics *gra
 
 	// dummy "start" signal ------------------------------------------
 	// // dbg(0, "dummy \"start\" signal\n");
-	// gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 97);
+	// gra->meth.draw_lines4(gra->priv, NULL, NULL, NULL, 1, 1, 97, 0);
 	// dummy "start" signal ------------------------------------------
 
+__F_END__
 }
 
 /**
@@ -3317,9 +4069,7 @@ static void displaylist_update_hash(struct displaylist *displaylist)
 static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 {
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+__F_START__
 
 	// int rnd = rand();
 	// dbg(0, "DO__DRAW:%d enter\n", rnd);
@@ -3366,7 +4116,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 		// dbg(0,"DO__DRAW:%d OK UN-lock mutex 001\n", rnd);
 
 		// dbg(0,"DO__DRAW:%d return 001\n", rnd);
-		return;
+		return2;
 	}
 	// ---- disable map view -----
 	// ---- disable map view -----
@@ -3412,14 +4162,29 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	pro = transform_get_projection(displaylist->dc.trans);
 
 	// if zoomed out too much then use prerendered map tiles
-	if (displaylist->order_hashed < ORDER_USE_PRERENDERED_MAP) // ==5 , (4,3,2,1,0)--> no vector map
+	if (global_clinedrawing_active)
 	{
-		draw_vector_map = 0;
-	}
+		if (displaylist->order_hashed < ORDER_USE_PRERENDERED_MAP__C)
+		{
+			draw_vector_map = 0;
+		}
 
-	if (displaylist->order_hashed > ORDER_USE_NORMAL_MAP) // ==6 , (7,8,9, ...)--> no tile map
+		if (displaylist->order_hashed > ORDER_USE_NORMAL_MAP__C)
+		{
+			draw_tile_map = 0;
+		}
+	}
+	else
 	{
-		draw_tile_map = 0;
+		if (displaylist->order_hashed < ORDER_USE_PRERENDERED_MAP) // ==5 , (4,3,2,1,0)--> no vector map
+		{
+			draw_vector_map = 0;
+		}
+
+		if (displaylist->order_hashed > ORDER_USE_NORMAL_MAP) // ==6 , (7,8,9, ...)--> no tile map
+		{
+			draw_tile_map = 0;
+		}
 	}
 
 	displaylist->order = order_corrected;
@@ -3428,6 +4193,9 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 	// reset value;
 	// cancel_drawing_global = 0;
+
+	char *ttt22 = NULL;
+
 
 	while (!cancel)
 	{
@@ -3454,7 +4222,13 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 			if (map_get_attr(displaylist->m, attr_name, &map_name_attr, NULL))
 			{
-				//dbg(0,"#+* start reading map file #+*=%s\n",map_name_attr.u.str);
+				// dbg(0,"MAP:#+* start reading map file #+*=%s\n", map_name_attr.u.str);
+				if (ttt22)
+				{
+					g_free(ttt22);
+				}
+				ttt22 = g_strdup(map_name_attr.u.str);
+
 				if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
 				{
 					if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/borders.bin", map_name_attr.u.str, 41) == 0)
@@ -3576,13 +4350,16 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 			displaylist->mr = map_rect_new(displaylist->m, displaylist->sel);
 		}
 
+
 		if (displaylist->mr)
 		{
+			// dbg(0,"MAP:001:map=%s\n", ttt22);
 			// draw vector map, or not?
 			// dbg(0,"draw_vector_map=%d mapset_need_draw=%d\n", draw_vector_map, mapset_need_draw);
 			// ****** if ((draw_vector_map) || (mapset_need_draw == 1))
 			if (mapset_need_draw == 1)
 			{
+				//dbg(0,"MAP:002:map=%s\n", ttt22);
 
 				//// dbg(0, "XXXXXYYYYYYY Draw: A.01\n");
 
@@ -3596,6 +4373,8 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 				int _item_counter_ = 0;
 				while ((item = map_rect_get_item(displaylist->mr)))
 				{
+					//dbg(0,"MAP:003:map=%s\n", ttt22);
+
 					_item_counter_++;
 
 					int label_count = 0;
@@ -3625,7 +4404,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 
 							//// dbg(0,"return 002\n");
 							// dbg(0, "DO__DRAW:%d return 002\n", rnd);
-							return;
+							return2;
 						}
 						else
 						{
@@ -3665,6 +4444,8 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					{
 						continue;
 					}
+
+					//dbg(0,"MAP:004:map=%s\n", ttt22);
 
 					//// dbg(0, "XXXXXYYYYYYY Draw: A.item2\n");
 
@@ -3833,6 +4614,44 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 						col_int_value = 0;
 					}
 
+
+					struct attr attr_88;
+					if (item->type == type_street_route)
+					{
+						if (item_attr_get(item, attr_direction, &attr_88))
+						{
+							//dbg(0, "direction(1a1)=%d %x\n", attr_88.u.num, col_int_value);
+							col_int_value = col_int_value & 0xffffff;
+							//dbg(0, "direction(1a2)=%x %x\n", attr_88.u.num, col_int_value);
+							//dbg(0, "direction(1a2.1)=%x %x\n", (attr_88.u.num & 3), ((attr_88.u.num & 3) << 24));
+							col_int_value = col_int_value | ((attr_88.u.num & 3) << 24);
+							//dbg(0, "direction(1a3)=%x %x\n", attr_88.u.num, col_int_value);
+						}
+						else
+						{
+							//dbg(0, "direction(1b1)=%x\n", col_int_value);
+							col_int_value = col_int_value & 0xffffff;
+							//dbg(0, "direction(1b2)=%x\n", col_int_value);
+						}
+
+						if (item_attr_get(item, attr_details, &attr_88))
+						{
+							// dbg(0, "direction(0)=%x\n", attr_88.u.num);
+
+							// #define NAVIT_AF_ONEWAY				(1<<0)
+							// #define NAVIT_AF_ONEWAYREV			(1<<1)
+							// #define NAVIT_AF_ONEWAY_BICYCLE_NO	(1<<16)
+
+							if (attr_88.u.num & NAVIT_AF_ONEWAY_BICYCLE_NO)
+							{
+								// dbg(0, "direction(0)=%x\n", (attr_88.u.num & (NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)));
+								// dbg(0, "direction(0.1)=%x %x\n", col_int_value, (attr_88.u.num & (NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)) << 26 );
+								col_int_value = col_int_value | ((attr_88.u.num & (NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)) << 26);
+							}
+						}
+					}
+
+
 					// --------======== LABELS ========--------
 					// --------======== LABELS ========--------
 					if (label_count > 0)
@@ -3884,7 +4703,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 					 displaylist->busy = 0;
 
 					 // dbg(0,"return 003\n");
-					 return;
+					 return2;
 					 }
 					 */
 
@@ -3895,6 +4714,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 				// ------ READ all items in this map rectangle ---------
 				// ------ READ all items in this map rectangle ---------
 
+				//dbg(0,"MAP:013:map=%s\n", ttt22);
 
 				////DBG // dbg(0, "XXXXXYYYYYYY Draw: A.02\n");
 
@@ -3922,6 +4742,13 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	debug_mrp("do_draw:load", debug_measure_end(s_));
 #endif
 	s_ = debug_measure_start();
+
+
+
+	// dbg(0, "DO__DRAW:%d dummy \"draw-start\" signal\n", rnd);
+#ifdef HAVE_API_ANDROID
+		android_return_generic_int(2, 77);
+#endif
 
 	// remove the "wait" screen
 	//#ifdef HAVE_API_ANDROID
@@ -4065,10 +4892,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
 	// dbg(0, "DO__DRAW:%d leave\n", rnd);
 	// dbg(0, "DO__DRAW:%d __\n", rnd);
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
-#endif
-
+__F_END__
 }
 
 /**
@@ -4079,9 +4903,7 @@ static void do_draw(struct displaylist *displaylist, int cancel, int flags)
  */
 void graphics_displaylist_draw(struct graphics *gra, struct displaylist *displaylist, struct transformation *trans, struct layout *l, int flags)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
+__F_START__
 
 	// // dbg(0,"ooo enter ooo flags=%d\n", flags);
 
@@ -4127,7 +4949,8 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 	if (flags & 1)
 	{
 		// calls -> navit.c navit_predraw --> draw all vehicles
-		callback_list_call_attr_0(gra->cbl, attr_predraw);
+		// *********++-- DISABLED --++******* // callback_list_call_attr_0(gra->cbl, attr_predraw);
+		navit_predraw(global_navit);
 	}
 
 	gra->meth.draw_mode(gra->priv, (flags & 8) ? draw_mode_begin_clear : draw_mode_begin);
@@ -4152,7 +4975,8 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 
 	if (flags & 1)
 	{
-		callback_list_call_attr_0(gra->cbl, attr_postdraw);
+		// calls: "graphics_displaylist_draw"
+		// ***********++-- DISABLED --++*********** // callback_list_call_attr_0(gra->cbl, attr_postdraw);
 	}
 
 	if (!(flags & 4))
@@ -4160,32 +4984,22 @@ void graphics_displaylist_draw(struct graphics *gra, struct displaylist *display
 		gra->meth.draw_mode(gra->priv, draw_mode_end);
 	}
 
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:leave\n");
-#endif
-
+__F_END__
 }
 
 static void graphics_load_mapset(struct graphics *gra, struct displaylist *displaylist, struct mapset *mapset, struct transformation *trans, struct layout *l, int async, struct callback *cb, int flags)
 {
-	// dbg(0, "DO__DRAW:gl_ms enter\n");
+__F_START__
 
 	int order = transform_get_order(trans);
 
-	//// dbg(0,"enter displaylist->busy=%d\n",displaylist->busy);
-	//// dbg(0,"async=%d\n",async);
 	if (displaylist->busy)
 	{
 		if (async == 1)
 		{
-			//// dbg(0,"**draw 1.a\n");
-			// dbg(0, "DO__DRAW:gl_ms return 001\n");
-			return;
+			return2;
 		}
-		///// dbg(0,"**draw 1\n");
-		// dbg(0, "DO__DRAW:gl_ms return 002\n");
-		return;
-		//do_draw(displaylist, 1, flags);
+		return2;
 	}
 	xdisplay_free(displaylist);
 
@@ -4201,7 +5015,6 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
 		order += l->order_delta;
 	}
 	displaylist->order = order;
-	//// dbg(0,"set:1:displaylist->busy=%d\n",displaylist->busy);
 	displaylist->busy = 1;
 	displaylist->layout = l;
 
@@ -4227,17 +5040,15 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
 
 	if (async)
 	{
-		if (!displaylist->idle_cb)
-		{
-			//dbg(0,"**draw 2.b1\n");
-			displaylist->idle_cb = callback_new_3(callback_cast(do_draw), displaylist, 0, flags);
-			callback_add_names(displaylist->idle_cb, "graphics_load_mapset", "do_draw");
-			//// dbg(0,"**draw 2.b2\n");
-		}
-		//dbg(0,"**draw 2.b3\n");
+		//if (!displaylist->idle_cb)
+		//{
+			// this calls "do_draw"
+			// *++*-- DISABLED --*++* // displaylist->idle_cb = callback_new_3(callback_cast(do_draw), displaylist, 0, flags);
+			// *++*-- DISABLED --*++* // callback_add_names(displaylist->idle_cb, "graphics_load_mapset", "do_draw");
+			do_draw(displaylist, 0, flags);
+		//}
 		//dbg(0, "DO__DRAW:call 003 (async callback)\n");
-		displaylist->idle_ev = event_add_idle(1000, displaylist->idle_cb);
-		// dbg(0, "**draw 2.b4 %p\n", displaylist->idle_ev);
+		// *++*-- DISABLED --*++* // displaylist->idle_ev = event_add_idle(1000, displaylist->idle_cb);
 	}
 	else
 	{
@@ -4246,7 +5057,7 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
 		do_draw(displaylist, 0, flags);
 	}
 
-	// dbg(0, "DO__DRAW:gl_ms leave\n");
+__F_END__
 }
 
 /**
@@ -4257,24 +5068,28 @@ static void graphics_load_mapset(struct graphics *gra, struct displaylist *displ
  */
 void graphics_draw(struct graphics *gra, struct displaylist *displaylist, struct mapset *mapset, struct transformation *trans, struct layout *l, int async, struct callback *cb, int flags)
 {
+__F_START__
 	//// dbg(0,"ooo enter ooo\n");
 
 	// dbg(0, "DO__DRAW:gras_draw enter\n");
 	graphics_load_mapset(gra, displaylist, mapset, trans, l, async, cb, flags);
 	// dbg(0, "DO__DRAW:gras_draw leave\n");
+__F_END__
 }
 
 int graphics_draw_cancel(struct graphics *gra, struct displaylist *displaylist)
 {
-	//DBG // dbg(0,"ooo enter ooo\n");
+__F_START__
 
 	if (!displaylist->busy)
 	{
-		return 0;
+		return2 0;
 	}
 	// dbg(0, "DO__DRAW:call 002\n");
 	do_draw(displaylist, 1, 0);
-	return 1;
+	return2 1;
+
+__F_END__
 }
 
 /**

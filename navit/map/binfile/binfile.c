@@ -557,10 +557,6 @@ binfile_extract(struct map_priv *m, char *dir, char *filename, int partial)
 
 static int binfile_attr_get(void *priv_data, enum attr_type attr_type, struct attr *attr)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
-
 	// try to return "0" on any problem, to avoid crash!!
 
 	struct map_rect_priv *mr = priv_data;
@@ -1435,7 +1431,7 @@ download(struct map_priv *m, struct map_rect_priv *mr, struct zip_cd *cd, int zi
 		if (download->mr)
 			m->progress = g_strdup_printf("Download Tile %d 0%%", download->zipfile);
 		else
-			m->progress = g_strdup_printf("Download Map Information 0%%");
+			m->progress = g_strdup("Download Map Information 0%%");
 		callback_list_call_attr_0(m->cbl, attr_progress);
 		return NULL;
 	}
@@ -1495,7 +1491,7 @@ download(struct map_priv *m, struct map_rect_priv *mr, struct zip_cd *cd, int zi
 				break;
 			case 5:
 				g_free(m->progress);
-				m->progress = g_strdup_printf("Download Map Information 50%%");
+				m->progress = g_strdup("Download Map Information 50%%");
 				callback_list_call_attr_0(m->cbl, attr_progress);
 				if (download_eoc(download))
 					download->state = 6;
@@ -1507,7 +1503,7 @@ download(struct map_priv *m, struct map_rect_priv *mr, struct zip_cd *cd, int zi
 				break;
 			case 6:
 				g_free(m->progress);
-				m->progress = g_strdup_printf("Download Map Information 100%%");
+				m->progress = g_strdup("Download Map Information 100%%");
 				callback_list_call_attr_0(m->cbl, attr_progress);
 				if (download_directory_start(download))
 					download->state = 7;
@@ -1825,12 +1821,14 @@ static int map_parse_submap(struct map_rect_priv *mr, int async)
 	struct range mima;
 	if (binfile_coord_get(mr->item.priv_data, c, 2) != 2)
 		return 0;
+
 	r.lu.x = c[0].x;
 	r.lu.y = c[1].y;
 	r.rl.x = c[1].x;
 	r.rl.y = c[0].y;
 	if (!binfile_attr_get(mr->item.priv_data, attr_order, &at))
 		return 0;
+
 #if __BYTE_ORDER == __BIG_ENDIAN
 	mima.min = le16_to_cpu(at.u.range.max);
 	mima.max = le16_to_cpu(at.u.range.min);
@@ -2328,17 +2326,26 @@ static gboolean duplicate_equal(gconstpointer a, gconstpointer b)
 {
 	const struct duplicate *da = a;
 	const struct duplicate *db = b;
-	return (da->c.x == db->c.x && da->c.y == da->c.y && g_str_equal(da->str, db->str));
+	return (da->c.x == db->c.x && da->c.y == db->c.y && g_str_equal(da->str, db->str));
 }
+
 
 static int duplicate(struct map_search_priv *msp, struct item *item, enum attr_type attr_type)
 {
 	struct attr attr;
+
 	if (!msp->search_results)
+	{
 		msp->search_results = g_hash_table_new_full(duplicate_hash, duplicate_equal, g_free_func, NULL);
+	}
+
 	binfile_attr_rewind(item->priv_data);
+
 	if (!item_attr_get(item, attr_type, &attr))
+	{
 		return 1;
+	}
+
 	{
 		int len = sizeof(struct coord) + strlen(attr.u.str) + 1;
 		char *buffer = g_alloca(sizeof(char) * len);
@@ -3086,7 +3093,7 @@ static void binfile_check_version(struct map_priv *m)
 	}
 }
 
-static struct map_priv *
+struct map_priv *
 map_new_binfile(struct map_methods *meth, struct attr **attrs, struct callback_list *cbl)
 {
 	struct map_priv *m;
@@ -3144,6 +3151,7 @@ map_new_binfile(struct map_methods *meth, struct attr **attrs, struct callback_l
 	return m;
 }
 
+#ifdef PLUGSSS
 void plugin_init(void)
 {
 	// dbg(1, "binfile: plugin_init\n");
@@ -3153,4 +3161,5 @@ void plugin_init(void)
 	}
 	plugin_register_map_type("binfile", map_new_binfile);
 }
+#endif
 

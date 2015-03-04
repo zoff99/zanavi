@@ -1,153 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-
- <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fb_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:scrollbars="none"
-    android:layout_weight="1">
-    <LinearLayout
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:orientation="vertical">
+    android:orientation="vertical" >
 
-<TableLayout
-    android:id="@+id/MainLayout"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:isScrollContainer="true"
-    android:stretchColumns="3" >
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_gravity="left" >
-
-        <ToggleButton
-            android:id="@+id/toggleButtonNS"
-            android:layout_width="55dp"
-            android:layout_height="60dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            android:textOff="S"
-            android:textOn="N" />
-
-        <net.technologichron.manacalc.NumberPicker
-            android:id="@+id/lat1"
-            android:layout_width="75dp"
-            android:layout_height="180dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            maxValue="99"
-            minValue="0"
-            nheight="50"
-            nwidth="65"
-            android:orientation="vertical" >
-
-        </net.technologichron.manacalc.NumberPicker>
-
-        <net.technologichron.manacalc.NumberPicker
-            android:id="@+id/lat2"
-            android:layout_width="75dp"
-            android:layout_height="180dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            maxValue="99"
-            minValue="0"
-            nheight="50"
-            nwidth="65"
-            android:orientation="vertical" >
-
-        </net.technologichron.manacalc.NumberPicker>
-
-        <net.technologichron.manacalc.NumberPicker
-            android:id="@+id/lat3"
-            android:layout_width="120dp"
-            android:layout_height="180dp"
-            android:layout_gravity="left"
-            android:layout_weight="3"
-            maxValue="999"
-            minValue="0"
-            nheight="50"
-            nwidth="75"
-            android:orientation="vertical" >
-
-        </net.technologichron.manacalc.NumberPicker>
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_gravity="left" >
-
-        <ToggleButton
-            android:id="@+id/toggleButtonWE"
-            android:layout_width="55dp"
-            android:layout_height="60dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            android:textOff="E"
-            android:textOn="W" />
-
-        <net.technologichron.manacalc.NumberPicker
-            android:id="@+id/lon1"
-            android:layout_width="75dp"
-            android:layout_height="180dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            maxValue="99"
-            minValue="0"
-            nheight="50"
-            nwidth="65"
-            android:orientation="vertical" >
-
-        </net.technologichron.manacalc.NumberPicker>
-
-        <net.technologichron.manacalc.NumberPicker
-            android:id="@+id/lon2"
-            android:layout_width="75dp"
-            android:layout_height="180dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            maxValue="99"
-            minValue="0"
-            nheight="50"
-            nwidth="65"
-            android:orientation="vertical" >
-
-        </net.technologichron.manacalc.NumberPicker>
-
-        <net.technologichron.manacalc.NumberPicker
-            android:id="@+id/lon3"
-            android:layout_width="120dp"
-            android:layout_height="180dp"
-            android:layout_gravity="left"
-            android:layout_weight="3"
-            maxValue="999"
-            minValue="0"
-            nheight="50"
-            nwidth="75"
-            android:orientation="vertical" >
-
-        </net.technologichron.manacalc.NumberPicker>
-    </TableRow>
-
-    <Button
-        android:id="@+id/ok01"
-        android:layout_width="fill_parent"
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar2vi"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View" />
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationContentDescription="@string/abc_action_bar_up_description"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
 
-    <Button
-        android:id="@+id/dst01"
+    <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="set as Destination" />
-    
-    <Button
-        android:id="@+id/cancel01"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancel" />
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:scrollbars="none" >
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
 
-</TableLayout>
+            <TableLayout
+                android:id="@+id/MainLayout"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:isScrollContainer="true"
+                android:stretchColumns="3" >
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="left" >
+
+                    <ToggleButton
+                        android:id="@+id/toggleButtonNS"
+                        android:layout_width="55dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        android:textOff="S"
+                        android:textOn="N" />
+
+                    <net.technologichron.manacalc.NumberPicker
+                        android:id="@+id/lat1"
+                        android:layout_width="75dp"
+                        android:layout_height="180dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        maxValue="99"
+                        minValue="0"
+                        nheight="50"
+                        nwidth="65"
+                        android:orientation="vertical" >
+                    </net.technologichron.manacalc.NumberPicker>
+
+                    <net.technologichron.manacalc.NumberPicker
+                        android:id="@+id/lat2"
+                        android:layout_width="75dp"
+                        android:layout_height="180dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        maxValue="99"
+                        minValue="0"
+                        nheight="50"
+                        nwidth="65"
+                        android:orientation="vertical" >
+                    </net.technologichron.manacalc.NumberPicker>
+
+                    <net.technologichron.manacalc.NumberPicker
+                        android:id="@+id/lat3"
+                        android:layout_width="120dp"
+                        android:layout_height="180dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="3"
+                        maxValue="999"
+                        minValue="0"
+                        nheight="50"
+                        nwidth="75"
+                        android:orientation="vertical" >
+                    </net.technologichron.manacalc.NumberPicker>
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="left" >
+
+                    <ToggleButton
+                        android:id="@+id/toggleButtonWE"
+                        android:layout_width="55dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        android:textOff="E"
+                        android:textOn="W" />
+
+                    <net.technologichron.manacalc.NumberPicker
+                        android:id="@+id/lon1"
+                        android:layout_width="75dp"
+                        android:layout_height="180dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        maxValue="99"
+                        minValue="0"
+                        nheight="50"
+                        nwidth="65"
+                        android:orientation="vertical" >
+                    </net.technologichron.manacalc.NumberPicker>
+
+                    <net.technologichron.manacalc.NumberPicker
+                        android:id="@+id/lon2"
+                        android:layout_width="75dp"
+                        android:layout_height="180dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="1"
+                        maxValue="99"
+                        minValue="0"
+                        nheight="50"
+                        nwidth="65"
+                        android:orientation="vertical" >
+                    </net.technologichron.manacalc.NumberPicker>
+
+                    <net.technologichron.manacalc.NumberPicker
+                        android:id="@+id/lon3"
+                        android:layout_width="120dp"
+                        android:layout_height="180dp"
+                        android:layout_gravity="left"
+                        android:layout_weight="3"
+                        maxValue="999"
+                        minValue="0"
+                        nheight="50"
+                        nwidth="75"
+                        android:orientation="vertical" >
+                    </net.technologichron.manacalc.NumberPicker>
+                </TableRow>
+
+                <Button
+                    android:id="@+id/ok01"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="View" />
+
+                <Button
+                    android:id="@+id/dst01"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="set as Destination" />
+
+                <Button
+                    android:id="@+id/cancel01"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel" />
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
-</ScrollView>

@@ -5,7 +5,10 @@
 #if USE_POSIX_THREADS
 #include <pthread.h>
 #endif
-#include "debug.h"
+
+//#define NO_G_VECTORS 1
+// #include "debug.h"
+//#undef NO_G_VECTORS
 
 #define g_return_if_fail
 
@@ -47,4 +50,6 @@ char* g_convert               (const char  *str,
 
 #define g_thread_supported() TRUE
 
-#define g_assert(expr) dbg_assert (expr)
+// #define g_assert(expr) dbg_assert (expr)
+
+

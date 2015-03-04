@@ -107,7 +107,10 @@ int item_coord_get(struct item *it, struct coord *c, int count)
 int item_coord_set(struct item *it, struct coord *c, int count, enum change_mode mode)
 {
 	if (!it->meth->item_coord_set)
+	{
 		return 0;
+	}
+
 	return it->meth->item_coord_set(it->priv_data, c, count, mode);
 }
 
@@ -1504,8 +1507,12 @@ static gboolean item_hash_equal(gconstpointer a, gconstpointer b)
 {
 	const struct item *itm_a = a;
 	const struct item *itm_b = b;
+
 	if (item_is_equal(*itm_a, *itm_b))
+	{
 		return TRUE;
+	}
+
 	return FALSE;
 }
 

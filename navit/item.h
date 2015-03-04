@@ -34,9 +34,15 @@ enum item_type {
 #undef ITEM
 };
 
+
+// ------- dont forget to update these if you add street types for navigation !! -------
+// ------- dont forget to update these if you add street types for navigation !! -------
 #define route_item_first type_street_0
 #define route_item_last type_footway_and_piste_nordic
 extern int default_flags[];
+// ------- dont forget to update these if you add street types for navigation !! -------
+// ------- dont forget to update these if you add street types for navigation !! -------
+
 
 #include "attr.h"
 

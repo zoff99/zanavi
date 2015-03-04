@@ -57,7 +57,7 @@
 #include "gthreadprivate.h"
 #include "galias.h"
 
-#include "debug.h"
+// #include "debug.h"
 
 #define MEM_PROFILE_TABLE_SIZE 4096
 
@@ -190,14 +190,14 @@ gpointer g_realloc(gpointer mem, gsize n_bytes)
 void g_free_debug_func(const char *file, const int line, const char *function, gpointer mem)
 {
 #ifdef HAVE_API_ANDROID
-#ifdef DEBUG_GLIB_MEM_FUNCTIONS
-	gsize *p = mem;
-	p -= 2;
-	gsize n_bytes = p[1];
-	dbg(0,"%s:%s:%d: g_free %p size=%"G_GSIZE_FORMAT" bytes\n", file, function, line, mem, n_bytes);
-#else
-	dbg(0,"%s:%s:%d: g_free %p\n", file, function, line, mem);
-#endif
+// #ifdef DEBUG_GLIB_MEM_FUNCTIONS
+// 	gsize *p = mem;
+// 	p -= 2;
+// 	gsize n_bytes = p[1];
+// 	dbg(0,"%s:%s:%d: g_free %p size=%"G_GSIZE_FORMAT" bytes\n", file, function, line, mem, n_bytes);
+// #else
+// 	dbg(0,"%s:%s:%d: g_free %p\n", file, function, line, mem);
+// #endif
 #endif
 
 	if (G_UNLIKELY(!g_mem_initialized))
@@ -221,7 +221,7 @@ g_debug_free_func(gpointer mem)
 	// g_free_debug_func("unknown",0,"unknown",mem);
 
 #ifdef HAVE_API_ANDROID
-	dbg(0,"%s:%s:%d: g_free %p\n", "unknown", "unknown", "0", mem);
+// 	dbg(0,"%s:%s:%d: g_free %p\n", "unknown", "unknown", "0", mem);
 #endif
 
 	if (G_UNLIKELY (!g_mem_initialized))
@@ -412,26 +412,26 @@ static void profile_print_locked(guint *local_data, gboolean success)
 		{
 			need_header = FALSE;
 #ifdef HAVE_API_ANDROID
-			dbg(0, " blocks of | allocated  | freed      | allocated  | freed      | n_bytes   \n");
-			dbg(0, "  n_bytes  | n_times by | n_times by | n_times by | n_times by | remaining \n");
-			dbg(0, "           | malloc()   | free()     | realloc()  | realloc()  |           \n");
-			dbg(0, "===========|============|============|============|============|===========\n");
+// 			dbg(0, " blocks of | allocated  | freed      | allocated  | freed      | n_bytes   \n");
+// 			dbg(0, "  n_bytes  | n_times by | n_times by | n_times by | n_times by | remaining \n");
+// 			dbg(0, "           | malloc()   | free()     | realloc()  | realloc()  |           \n");
+// 			dbg(0, "===========|============|============|============|============|===========\n");
 #endif
 		}
 
 		if (i < MEM_PROFILE_TABLE_SIZE)
 		{
 #ifdef HAVE_API_ANDROID
-			dbg(0, "%10u | %10ld | %10ld | %10ld | %10ld |%+11ld\n",
-					i, t_malloc, t_free, t_realloc, t_refree,
-					(t_malloc - t_free + t_realloc - t_refree) * i);
+// 			dbg(0, "%10u | %10ld | %10ld | %10ld | %10ld |%+11ld\n",
+// 					i, t_malloc, t_free, t_realloc, t_refree,
+// 					(t_malloc - t_free + t_realloc - t_refree) * i);
 #endif
 		}
 		else if (i >= MEM_PROFILE_TABLE_SIZE)
 		{
 #ifdef HAVE_API_ANDROID
-			dbg(0, "   >%6u | %10ld | %10ld | %10ld | %10ld |        ***\n",
-					i, t_malloc, t_free, t_realloc, t_refree);
+// 			dbg(0, "   >%6u | %10ld | %10ld | %10ld | %10ld |        ***\n",
+// 					i, t_malloc, t_free, t_realloc, t_refree);
 #endif
 		}
 	}
@@ -439,7 +439,7 @@ static void profile_print_locked(guint *local_data, gboolean success)
 	if (need_header)
 	{
 #ifdef HAVE_API_ANDROID
-		dbg(0, " --- none ---\n");
+// 		dbg(0, " --- none ---\n");
 #endif
 	}
 }
@@ -479,20 +479,20 @@ void g_mem_profile(void)
 	// profile_print_locked (local_data, TRUE);
 
 #ifdef HAVE_API_ANDROID
-	dbg(0, "GLib Memory statistics (failing operations):\n");
+// 	dbg(0, "GLib Memory statistics (failing operations):\n");
 #endif
 	profile_print_locked(local_data, FALSE);
 #ifdef HAVE_API_ANDROID
-	dbg(0, "Total bytes: allocated=%"G_GSIZE_FORMAT", "
-			"zero-initialized=%"G_GSIZE_FORMAT" (%.2f%%), "
-			"freed=%"G_GSIZE_FORMAT" (%.2f%%), "
-			"remaining=%"G_GSIZE_FORMAT"\n",
-			local_allocs,
-			local_zinit,
-			((gdouble) local_zinit) / local_allocs * 100.0,
-			local_frees,
-			((gdouble) local_frees) / local_allocs * 100.0,
-			local_allocs - local_frees);
+// 	dbg(0, "Total bytes: allocated=%"G_GSIZE_FORMAT", "
+// 			"zero-initialized=%"G_GSIZE_FORMAT" (%.2f%%), "
+// 			"freed=%"G_GSIZE_FORMAT" (%.2f%%), "
+// 			"remaining=%"G_GSIZE_FORMAT"\n",
+// 			local_allocs,
+// 			local_zinit,
+// 			((gdouble) local_zinit) / local_allocs * 100.0,
+// 			local_frees,
+// 			((gdouble) local_frees) / local_allocs * 100.0,
+// 			local_allocs - local_frees);
 #endif
 }
 
@@ -566,8 +566,8 @@ static void profiler_free(gpointer mem)
 	if (p[0]) /* free count */
 	{
 #ifdef HAVE_API_ANDROID
-		dbg (0, "free(%p): memory has been freed %"G_GSIZE_FORMAT" times already",
-				p + 2, p[0]);
+// 		dbg (0, "free(%p): memory has been freed %"G_GSIZE_FORMAT" times already",
+// 				p + 2, p[0]);
 #endif
 		profiler_log(PROFILER_FREE, p[1], /* length */
 		FALSE);
@@ -615,9 +615,9 @@ static gpointer profiler_try_realloc(gpointer mem, gsize n_bytes)
 	if (mem && p[0]) /* free count */
 	{
 #ifdef HAVE_API_ANDROID
-		dbg(0, "realloc(%p, %"G_GSIZE_FORMAT"): "
-				"memory has been freed %"G_GSIZE_FORMAT" times already",
-				p + 2, (gsize) n_bytes, p[0]);
+// 		dbg(0, "realloc(%p, %"G_GSIZE_FORMAT"): "
+// 				"memory has been freed %"G_GSIZE_FORMAT" times already",
+// 				p + 2, (gsize) n_bytes, p[0]);
 #endif
 		profiler_log(PROFILER_ALLOC | PROFILER_RELOC, n_bytes, FALSE);
 

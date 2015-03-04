@@ -167,7 +167,7 @@ char *getcwd ();
 
 
 # ifndef HAVE_STPCPY
-static char *stpcpy (char *dest, const char *src);
+char *stpcpy (char *dest, const char *src);
 # endif
 # ifndef HAVE_MEMPCPY
 static void *mempcpy (void *dest, const void *src, size_t n);
@@ -1177,7 +1177,7 @@ guess_category_value (int category, const char *categoryname)
    function is available, though.  Also allow the symbol HAVE_STPCPY
    to be defined.  */
 #if !_LIBC && !HAVE_STPCPY
-static char *
+char *
 stpcpy (char *dest, const char *src)
 {
   while ((*dest++ = *src++) != '\0')

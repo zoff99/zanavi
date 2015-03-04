@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011 - 2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,15 @@
 
 package com.zoffcc.applications.zanavi;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 import android.content.Context;
 import android.location.Criteria;
@@ -51,6 +59,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class NavitVehicle
@@ -65,6 +74,29 @@ public class NavitVehicle
 	private static float compass_heading;
 	private static float current_accuracy = 99999999F;
 	private static long last_real_gps_update = -1;
+	static boolean sat_status_enabled = false;
+	static boolean sat_status_icon_updated = false;
+	static int sat_status_icon_last = -1;
+	static int sat_status_icon_now = -1;
+	static float gps_last_bearing = 0.0f;
+	static double gps_last_lat = 0.0d;
+	static double gps_last_lon = 0.0d;
+	static int gps_last_lat_1000 = 0;
+	static int gps_last_lon_1000 = 0;
+	static int fast_provider_status = 0;
+	static int disregard_first_fast_location = 0;
+
+	static long MILLIS_AFTER_GPS_FIX_IS_LOST = 2000;
+
+	static TunnelExtrapolationThread te_thread = null;
+
+	static File pos_recording_file;
+	// static File pos_recording_file_gpx;
+	static File speech_recording_file_gpx;
+	static BufferedWriter pos_recording_writer;
+	// static BufferedWriter pos_recording_writer_gpx;
+	static BufferedWriter speech_recording_writer_gpx;
+	static boolean speech_recording_started = false;
 
 	int sats1_old = -1;
 	int satsInFix1_old = -1;
@@ -75,7 +107,7 @@ public class NavitVehicle
 	public static final float GPS_SPEED_ABOVE_USE_FOR_HEADING = (float) (9 / 3.6f); //  (9 km/h) / (3.6) ~= m/s
 
 	private static String preciseProvider_s = null;
-	private static String fastProvider_s = null;
+	static String fastProvider_s = null;
 
 	public static long last_p_fix = 0;
 	public static long last_f_fix = 0;
@@ -85,24 +117,65 @@ public class NavitVehicle
 
 	static long last_gps_status_update = 0L;
 
+	static DecimalFormat df2 = new DecimalFormat("#.####");
+
 	public static Location last_location = null;
 
 	public static native void VehicleCallback(double lat, double lon, float speed, float direction, double height, float radius, long gpstime);
 
 	public static void VehicleCallback2(Location location)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+		String dd_text = "";
+
 		if (Navit.Global_Init_Finished != 0)
 		{
 			if (Navit.Global_Location_update_not_allowed == 0)
 			{
 				if (NavitGraphics.DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:Gps");
+
+				// change bearing/direction to last good bearing -------------------
+				// change bearing/direction to last good bearing -------------------
+				// change bearing/direction to last good bearing -------------------
+				if ((location.getSpeed() < 5f) && (location.getBearing() == 0.0f) && (gps_last_bearing != 0.0f))
+				{
+					//if ((gps_last_lat_1000 == (int) (location.getLatitude() * 1000)) && (gps_last_lon_1000 == (int) (location.getLongitude() * 1000)))
+					//{
+					dd_text = dd_text + "a:";
+					location.setBearing(gps_last_bearing);
+					//}
+				}
+
+				if (location.getBearing() != 0.0f)
+				{
+					dd_text = dd_text + "n:";
+					gps_last_bearing = location.getBearing();
+				}
+				// change bearing/direction to last good bearing -------------------
+				// change bearing/direction to last good bearing -------------------
+				// change bearing/direction to last good bearing -------------------
+
+				if (Navit.PREF_enable_debug_write_gpx)
+				{
+					pos_recording_add(1, location.getLatitude(), location.getLongitude(), location.getSpeed(), location.getBearing(), location.getTime());
+				}
+
+				if (Navit.NAVIT_DEBUG_TEXT_VIEW) ZANaviOSDDebug01.add_text(dd_text + "b=" + location.getBearing() + " lb=" + gps_last_bearing);
+
 				Navit.cwthr.VehicleCallback3(location);
+				gps_last_lat = location.getLatitude();
+				gps_last_lon = location.getLongitude();
+				gps_last_lat_1000 = (int) (gps_last_lat * 1000);
+				gps_last_lon_1000 = (int) (gps_last_lon * 1000);
 			}
 		}
 		else
 		{
 			System.out.println("VehicleCallback2:Global_Init_Finished == 0 !!!!!!!");
 		}
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+
 	}
 
 	// private static SatStatusThread st = null;
@@ -148,7 +221,7 @@ public class NavitVehicle
 
 				try
 				{
-					Thread.sleep(3000);
+					Thread.sleep(2000);
 				}
 				catch (InterruptedException e)
 				{
@@ -164,6 +237,71 @@ public class NavitVehicle
 
 	NavitVehicle(Context context)
 	{
+		// ---------------------
+		// ---------------------
+		// ------- DEBUG: test #ifdef equivalent --------
+		// ---------------------
+		//		final long ccccc = 2000000000L; // 2.000.000.000 (2 billion) iterations!
+		//		// ---------------------
+		//		final boolean flag1 = true;
+		//		final boolean flag2 = false;
+		//		// ---------------------
+		//		long aa1 = System.currentTimeMillis();
+		//		long j = 0;
+		//		while (j < ccccc)
+		//		{
+		//			if (flag1)
+		//			{
+		//				if (flag2)
+		//				{
+		//					j++;
+		//				}
+		//				else
+		//				{
+		//					j++;
+		//				}
+		//			}
+		//		}
+		//		long aa2 = System.currentTimeMillis();
+		//		System.out.println("NVVVVV:3a:" + ((float) (aa2 - aa1) / 1000f));
+		//		// ---------------------
+		//		boolean flag1b = true;
+		//		boolean flag2b = false;
+		//		// ---------------------
+		//		aa1 = System.currentTimeMillis();
+		//		j = 0;
+		//		while (j < ccccc)
+		//		{
+		//			if (flag1b)
+		//			{
+		//				if (flag2b)
+		//				{
+		//					j++;
+		//				}
+		//				else
+		//				{
+		//					j++;
+		//				}
+		//			}
+		//		}
+		//		aa2 = System.currentTimeMillis();
+		//		System.out.println("NVVVVV:3b:" + ((float) (aa2 - aa1) / 1000f));
+		//		// ---------------------
+		//		// ---------------------
+		//		aa1 = System.currentTimeMillis();
+		//		j = 0;
+		//		while (j < ccccc)
+		//		{
+		//			j++;
+		//		}
+		//		aa2 = System.currentTimeMillis();
+		//		System.out.println("NVVVVV:3c:" + ((float) (aa2 - aa1) / 1000f));
+		// ---------------------
+		// ---------------------
+		// ------- DEBUG test #ifdef equivalent --------
+		// ---------------------
+		// ---------------------
+
 		vehicle_handler_ = Navit.vehicle_handler;
 
 		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -173,10 +311,18 @@ public class NavitVehicle
 		{
 			public void onLocationChanged(Location location)
 			{
+				if (disregard_first_fast_location > 0)
+				{
+					Log.e("NavitVehicle", "LocationChanged provider=fast" + " disregard_first_fast_location=" + disregard_first_fast_location);
+
+					disregard_first_fast_location--;
+					return;
+				}
+
 				last_f_fix = location.getTime();
-				// if last gps fix was longer than 4 secs. ago, use this fix
+				// if last gps fix was longer than 8 secs. ago, use this fix
 				// and we dont have a GPS lock
-				if ((last_p_fix + 4000 < last_f_fix) && (Navit.satsInFix < 3))
+				if ((last_p_fix + 8000 < last_f_fix) && (Navit.satsInFix < 3))
 				{
 					if (Navit.PREF_follow_gps)
 					{
@@ -243,6 +389,12 @@ public class NavitVehicle
 			{
 				last_p_fix = location.getTime();
 				current_accuracy = location.getAccuracy();
+
+				if (location != null)
+				{
+					Navit.mLastLocationMillis = SystemClock.elapsedRealtime();
+					Navit.mLastLocation = location;
+				}
 
 				if (Navit.PREF_follow_gps)
 				{
@@ -358,7 +510,7 @@ public class NavitVehicle
 
 		try
 		{
-			locationManager.requestLocationUpdates(preciseProvider, 0, 0, preciseLocationListener);
+			//*in onresume()*// locationManager.requestLocationUpdates(preciseProvider, 0, 0, preciseLocationListener);
 		}
 		catch (Exception e)
 		{
@@ -367,7 +519,7 @@ public class NavitVehicle
 
 		try
 		{
-			// If the 2 providers is the same, only activate one listener
+			// If the 2 providers are the same, only activate one listener
 			if (fastProvider == null || preciseProvider.compareTo(fastProvider) == 0)
 			{
 				fastProvider = null;
@@ -376,7 +528,7 @@ public class NavitVehicle
 			{
 				if (Navit.PREF_use_fast_provider)
 				{
-					locationManager.requestLocationUpdates(fastProvider, 0, 0, fastLocationListener);
+					//*in onresume()*//locationManager.requestLocationUpdates(fastProvider, 30000L, 8.0f, fastLocationListener); // (long)time [milliseconds], (float)minDistance [meters]
 				}
 			}
 		}
@@ -391,7 +543,65 @@ public class NavitVehicle
 			{
 				if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS)
 				{
-					if (last_gps_status_update + 2200 < System.currentTimeMillis())
+
+					boolean old_fix = Navit.isGPSFix;
+					// ------------------------------
+					// thanks to: http://stackoverflow.com/questions/2021176/how-can-i-check-the-current-status-of-the-gps-receiver
+					// ------------------------------
+					if (Navit.mLastLocation != null)
+					{
+						Navit.isGPSFix = (SystemClock.elapsedRealtime() - Navit.mLastLocationMillis) < MILLIS_AFTER_GPS_FIX_IS_LOST;
+					}
+					//					if (Navit.isGPSFix)
+					//					{
+					//						// A fix has been acquired.
+					//					}
+					//					else
+					//					{
+					//						// The fix has been lost.
+					//					}
+					if (old_fix != Navit.isGPSFix)
+					{
+						try
+						{
+							Message msg = new Message();
+							Bundle b = new Bundle();
+							b.putInt("Callback", 102);
+							if (Navit.isGPSFix)
+							{
+								b.putString("s", "1");
+							}
+							else
+							{
+								b.putString("s", "0");
+							}
+							msg.setData(b);
+							Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+						}
+						catch (Exception e)
+						{
+						}
+
+						if (Navit.PREF_show_sat_status)
+						{
+							// redraw NavitOSDJava
+							System.out.println("xx paint 10 xx");
+							NavitGraphics.OSD_new.postInvalidate();
+						}
+
+						if (Navit.want_tunnel_extrapolation())
+						{
+							turn_on_tunnel_extrapolation();
+						}
+						else
+						{
+							turn_off_tunnel_extrapolation();
+						}
+					}
+
+					// ------------------------------
+
+					if (last_gps_status_update + 4000 < System.currentTimeMillis())
 					{
 						last_gps_status_update = System.currentTimeMillis();
 
@@ -426,11 +636,8 @@ public class NavitVehicle
 								if (Navit.PREF_show_sat_status)
 								{
 									// redraw NavitOSDJava
-									Message msg = NavitOSDJava.progress_handler_.obtainMessage();
-									Bundle b = new Bundle();
-									msg.what = 1;
-									msg.setData(b);
-									NavitOSDJava.progress_handler_.sendMessage(msg);
+									System.out.println("xx paint 11 xx");
+									NavitGraphics.OSD_new.postInvalidate();
 								}
 							}
 						}
@@ -444,12 +651,69 @@ public class NavitVehicle
 					// System.out.println("Statellites: " + Navit.satsInFix + "/" + Navit.sats);
 					// get new gpsstatus --------
 				}
+				else if (event == GpsStatus.GPS_EVENT_FIRST_FIX)
+				{
+					Navit.isGPSFix = true;
+					turn_off_tunnel_extrapolation();
+
+					try
+					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 102);
+						b.putString("s", "1");
+						msg.setData(b);
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					}
+					catch (Exception e)
+					{
+					}
+
+					if (Navit.PREF_show_sat_status)
+					{
+						// redraw NavitOSDJava
+						System.out.println("xx paint 8 xx");
+						NavitGraphics.OSD_new.postInvalidate();
+					}
+				}
+				else if (event == GpsStatus.GPS_EVENT_STOPPED)
+				{
+					Navit.isGPSFix = false;
+
+					if (Navit.want_tunnel_extrapolation())
+					{
+						turn_on_tunnel_extrapolation();
+					}
+
+					try
+					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 102);
+						b.putString("s", "0");
+						msg.setData(b);
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					}
+					catch (Exception e)
+					{
+					}
+
+					if (Navit.PREF_show_sat_status)
+					{
+						// redraw NavitOSDJava
+						System.out.println("xx paint 9 xx");
+						NavitGraphics.OSD_new.postInvalidate();
+					}
+				}
 			}
 		};
+
 	}
 
 	public static void set_mock_location__fast(Location mock_location)
 	{
+		float save_speed;
+
 		try
 		{
 			//locationManager_s.setTestProviderLocation("ZANavi_mock", mock_location);
@@ -459,7 +723,15 @@ public class NavitVehicle
 			{
 				if (mock_location.getSpeed() == 0.0f)
 				{
-					float save_speed = last_location.getSpeed();
+					if (last_location != null)
+					{
+						save_speed = last_location.getSpeed();
+					}
+					else
+					{
+						save_speed = 0.0f;
+						last_location = mock_location;
+					}
 					mock_location.setSpeed(0.2f);
 					//Log.e("NavitVehicle", "call VehicleCallback 003");
 					VehicleCallback2(mock_location);
@@ -497,6 +769,70 @@ public class NavitVehicle
 		}
 	}
 
+	public static class location_coords
+	{
+		double lat;
+		double lon;
+	}
+
+	public static location_coords get_last_known_pos()
+	{
+		location_coords ret = new location_coords();
+
+		try
+		{
+			Location l = locationManager_s.getLastKnownLocation(preciseProvider_s);
+			if (l != null)
+			{
+				if (l.getAccuracy() > 0)
+				{
+					if ((l.getLatitude() != 0) && (l.getLongitude() != 0))
+					{
+						ret.lat = l.getLatitude();
+						ret.lon = l.getLongitude();
+						return ret;
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		try
+		{
+			// If the 2 providers are the same, only activate one listener
+			if (fastProvider_s != null)
+			{
+				if (Navit.PREF_use_fast_provider)
+				{
+					if (!Navit.DemoVehicle)
+					{
+						Location l = locationManager_s.getLastKnownLocation(fastProvider_s);
+						//System.out.println("ZANAVI:getLastKnownLocation=" + l);
+						if (l != null)
+						{
+							if (l.getAccuracy() > 0)
+							{
+								if ((l.getLatitude() != 0) && (l.getLongitude() != 0))
+								{
+									ret.lat = l.getLatitude();
+									ret.lon = l.getLongitude();
+									return ret;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		return null;
+	}
+
 	public static void set_last_known_pos_precise_provider()
 	{
 		try
@@ -527,9 +863,16 @@ public class NavitVehicle
 
 	public static void set_last_known_pos_fast_provider()
 	{
+		System.out.println("fast_provider_status=" + fast_provider_status);
+
+		if (fast_provider_status == 0)
+		{
+			return;
+		}
+
 		try
 		{
-			// If the 2 providers is the same, only activate one listener
+			// If the 2 providers are the same, only activate one listener
 			if (fastProvider_s != null)
 			{
 				if (Navit.PREF_use_fast_provider)
@@ -568,16 +911,21 @@ public class NavitVehicle
 
 	public static void turn_on_fast_provider()
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		try
 		{
-			// If the 2 providers is the same, only activate one listener
+			// If the 2 providers are the same, only activate one listener
 			if (fastProvider_s != null)
 			{
 				if (Navit.PREF_use_fast_provider)
 				{
 					if (!Navit.DemoVehicle)
 					{
-						locationManager_s.requestLocationUpdates(fastProvider_s, 0, 0, fastLocationListener_s);
+						disregard_first_fast_location = 2;
+						locationManager_s.requestLocationUpdates(fastProvider_s, 30000L, 8.0f, fastLocationListener_s); // (long)time [milliseconds], (float)minDistance [meters]
+
+						fast_provider_status = 1;
 						//System.out.println("ZANAVI:turn on fast provider");
 					}
 				}
@@ -588,10 +936,13 @@ public class NavitVehicle
 			e.printStackTrace();
 		}
 
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	public static void turn_on_precise_provider()
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		try
 		{
 			locationManager_s.requestLocationUpdates(preciseProvider_s, 0, 0, preciseLocationListener_s);
@@ -615,6 +966,9 @@ public class NavitVehicle
 		{
 			e.printStackTrace();
 		}
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+
 	}
 
 	public static void turn_off_precise_provider()
@@ -651,6 +1005,7 @@ public class NavitVehicle
 					e3.printStackTrace();
 				}
 				locationManager_s.addGpsStatusListener(gps_status_listener_s);
+				sat_status_enabled = true;
 			}
 		}
 		catch (Exception e)
@@ -666,6 +1021,8 @@ public class NavitVehicle
 		{
 			Navit.sats = 0;
 			Navit.satsInFix = 0;
+			sat_status_enabled = true;
+
 			if (preciseProvider_s != null)
 			{
 				locationManager_s.removeGpsStatusListener(gps_status_listener_s);
@@ -682,6 +1039,7 @@ public class NavitVehicle
 	{
 		try
 		{
+			fast_provider_status = 0;
 			if (fastProvider_s != null)
 			{
 				locationManager_s.removeUpdates(fastLocationListener_s);
@@ -691,6 +1049,126 @@ public class NavitVehicle
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static class TunnelExtrapolationThread extends Thread
+	{
+		private Boolean running;
+		private static int interval_millis = 990;
+
+		TunnelExtrapolationThread()
+		{
+			this.running = true;
+		}
+
+		public void run()
+		{
+			System.out.println("TunnelExtrapolationThread -- started --");
+			while (this.running)
+			{
+				// request tunnel extrapolation from C code ------------------
+				// request tunnel extrapolation from C code ------------------
+
+				String extrapolated_post_string = NavitGraphics.CallbackGeoCalc(12, 1, interval_millis);
+
+				if (extrapolated_post_string.equals("*ERROR*"))
+				{
+					System.out.println("extrapolated pos:*ERROR*");
+				}
+				else
+				{
+					try
+					{
+						// System.out.println("extrapolated pos:" + extrapolated_post_string);
+						String tmp[] = extrapolated_post_string.split(":", 3);
+						float lat = Float.parseFloat(tmp[0]);
+						float lon = Float.parseFloat(tmp[1]);
+						float dir = Float.parseFloat(tmp[2]);
+						System.out.println("extrapolated pos:" + lat + " " + lon + " " + dir);
+
+						Location l = new Location("ZANavi Tunnel Extrapolation");
+						l.setLatitude(lat);
+						l.setLongitude(lon);
+						l.setBearing(dir);
+						l.setSpeed(50.0f / 3.6f); // in m/s
+						l.setAccuracy(4.0f); // accuracy 4 meters
+						// NavitVehicle.update_compass_heading(dir);
+						NavitVehicle.set_mock_location__fast(l);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+
+				try
+				{
+					Thread.sleep(interval_millis);
+				}
+				catch (InterruptedException e)
+				{
+				}
+			}
+		}
+
+		public void stop_me()
+		{
+			this.running = false;
+			this.interrupt();
+		}
+	}
+
+	static synchronized void turn_on_tunnel_extrapolation()
+	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
+		if (!Navit.tunnel_extrapolation)
+		{
+			if (te_thread != null)
+			{
+				try
+				{
+					// try to clean up old thread
+					te_thread.stop_me();
+					te_thread = null;
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+			te_thread = new TunnelExtrapolationThread();
+			te_thread.start();
+		}
+		Navit.tunnel_extrapolation = true;
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+	}
+
+	static synchronized void turn_off_tunnel_extrapolation()
+	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
+		if (Navit.tunnel_extrapolation)
+		{
+			if (te_thread != null)
+			{
+				try
+				{
+					// try to stop thread
+					te_thread.stop_me();
+					te_thread = null;
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		Navit.tunnel_extrapolation = false;
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	public static void turn_off_all_providers()
@@ -789,4 +1267,238 @@ public class NavitVehicle
 			//e.printStackTrace();
 		}
 	}
+
+	static void speech_recording_start()
+	{
+		speech_recording_started = true;
+
+		String pos_recording_filename_gpx_base = Navit.NAVIT_DATA_DEBUG_DIR + "zanavi_speech_recording";
+		String pos_recording_filename_gpx = pos_recording_filename_gpx_base + ".gpx";
+		String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
+		String pos_recording_filename_gpx_archive = pos_recording_filename_gpx_base + "_" + date + ".gpx";
+
+		String gpx_header_1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + "<gpx version=\"1.1\" creator=\"ZANavi http://zanavi.cc\"\n" + "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + "     xmlns=\"http://www.topografix.com/GPX/1/1\"\n" + "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n" + "<metadata>\n" + "	<name>ZANavi Debug log</name>\n" + "	<desc>ZANavi</desc>\n" + "	<author>\n"
+				+ "		<name>ZANavi</name>\n" + "	</author>\n" + "</metadata>\n";
+
+		speech_recording_file_gpx = new File(pos_recording_filename_gpx);
+
+		try
+		{
+			if (speech_recording_file_gpx.exists())
+			{
+				// archive old GPX file
+				speech_recording_file_gpx.renameTo(new File(pos_recording_filename_gpx_archive));
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		try
+		{
+			speech_recording_file_gpx = new File(pos_recording_filename_gpx);
+		}
+		catch (Exception e)
+		{
+		}
+
+		try
+		{
+			speech_recording_writer_gpx = new BufferedWriter(new FileWriter(speech_recording_file_gpx, true));
+			speech_recording_writer_gpx.write(gpx_header_1);
+			// speech_recording_writer_gpx.write("<rte>\n");
+		}
+		catch (Exception e)
+		{
+		}
+	}
+
+	static void speech_recording_end()
+	{
+
+		String gpx_trailer_1 = "</gpx>\n";
+
+		try
+		{
+			// speech_recording_writer_gpx.write("</rte>\n");
+			speech_recording_writer_gpx.write(gpx_trailer_1);
+			speech_recording_writer_gpx.flush();
+			speech_recording_writer_gpx.close();
+		}
+		catch (Exception e)
+		{
+		}
+	}
+
+	static void pos_recording_start()
+	{
+		String pos_recording_filename_base = Navit.NAVIT_DATA_DEBUG_DIR + "zanavi_pos_recording";
+		String pos_recording_filename = pos_recording_filename_base + ".txt";
+		String pos_recording_filename_gpx_base = Navit.NAVIT_DATA_DEBUG_DIR + "zanavi_pos_recording";
+		String pos_recording_filename_gpx = pos_recording_filename_gpx_base + ".gpx";
+		String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
+		String pos_recording_filename_gpx_archive = pos_recording_filename_gpx_base + "_" + date + ".gpx";
+		String pos_recording_filename_archive = pos_recording_filename_base + "_" + date + ".txt";
+
+		String gpx_header_1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + "<gpx version=\"1.1\" creator=\"ZANavi http://zanavi.cc\"\n" + "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + "     xmlns=\"http://www.topografix.com/GPX/1/1\"\n" + "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n" + "<metadata>\n" + "	<name>ZANavi Debug log</name>\n" + "	<desc>ZANavi</desc>\n" + "	<author>\n"
+				+ "		<name>ZANavi</name>\n" + "	</author>\n" + "</metadata>\n" + "<trk>\n" + "<trkseg>\n" + " <name>ACTIVE LOG</name>\n";
+
+		pos_recording_file = new File(pos_recording_filename);
+		//pos_recording_file_gpx = new File(pos_recording_filename_gpx);
+
+		//		try
+		//		{
+		//			if (pos_recording_file_gpx.exists())
+		//			{
+		//				// archive old GPX file
+		//				pos_recording_file_gpx.renameTo(new File(pos_recording_filename_gpx_archive));
+		//			}
+		//		}
+		//		catch (Exception e)
+		//		{
+		//		}
+
+		try
+		{
+			pos_recording_writer = new BufferedWriter(new FileWriter(pos_recording_file, true));
+			// pos_recording_file_gpx = new File(pos_recording_filename_gpx);
+		}
+		catch (Exception e)
+		{
+		}
+	}
+
+	static void pos_recording_end()
+	{
+
+		String gpx_trailer_1 = "</trkseg>\n" + "</trk>\n" + "</gpx>\n";
+
+		try
+		{
+			//pos_recording_writer_gpx.write(gpx_trailer_1);
+
+			pos_recording_writer.close();
+			// pos_recording_writer_gpx.close();
+		}
+		catch (Exception e)
+		{
+		}
+	}
+
+	static public String customNumberFormat_(String pattern, double value)
+	{
+		// NumberFormat myFormatter = DecimalFormat.getInstance(Locale.US);
+
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+		otherSymbols.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat(pattern, otherSymbols);
+
+		String output = df.format(value);
+		return (output);
+	}
+
+	static void speech_recording_add(double lat, double lon, String text, long time)
+	{
+		try
+		{
+			// speech_recording_writer_gpx.write(" <trkpt lat=\"" + customNumberFormat_("####.######", lat) + "\" lon=\"" + customNumberFormat_("####.######", lon) + "\"><time>2014-10-02T09:30:10Z</time><speed>" + customNumberFormat_("####.##", speed) + "</speed><course>" + customNumberFormat_("####.#", bearing) + "</course></trkpt>\n");
+			// speech_recording_writer_gpx.write(" <rtept lat=\"" + customNumberFormat_("####.######", lat) + "\" lon=\"" + customNumberFormat_("####.######", lon) + "\"><name>" + text + "</name></rtept>" + "\n");
+			speech_recording_writer_gpx.write(" <wpt lat=\"" + customNumberFormat_("####.######", lat) + "\" lon=\"" + customNumberFormat_("####.######", lon) + "\"><time>2014-10-02T09:30:10Z</time>" + "<name>" + text + "</name><sym>Dot</sym><type>Dot</type></wpt>" + "\n");
+		}
+		catch (Exception e)
+		{
+		}
+	}
+
+	static void pos_recording_add(int cmd, double lat, double lon, double speed, double bearing, long time)
+	{
+		if (ZANaviDebugReceiver.dont_save_loc == true)
+		{
+			// dont save (already saved) log
+			return;
+		}
+
+		if (cmd == 0) // empty lines
+		{
+			try
+			{
+				pos_recording_writer.write("\n");
+				pos_recording_writer.write("\n");
+				pos_recording_writer.write("\n");
+				pos_recording_writer.write("\n");
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		else if (cmd == 1) // POS
+		{
+
+			//			try
+			//			{
+			//				pos_recording_writer_gpx.write(" <trkpt lat=\"" + customNumberFormat_("####.######", lat) + "\" lon=\"" + customNumberFormat_("####.######", lon) + "\"><time>2014-10-02T09:30:10Z</time><speed>" + customNumberFormat_("####.##", speed) + "</speed><course>" + customNumberFormat_("####.#", bearing) + "</course></trkpt>\n");
+			//			}
+			//			catch (Exception e)
+			//			{
+			//			}
+
+			try
+			{
+				pos_recording_writer.write("POS:" + "\"" + customNumberFormat_("####.######", lat) + "," + customNumberFormat_("####.######", lon) + "," + customNumberFormat_("####.##", speed) + "," + customNumberFormat_("####.##", bearing) + "\"" + "\n");
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		else if (cmd == 2) // CLR
+		{
+			try
+			{
+
+				// before "CLR" rotate recording file --------------------------
+				// before "CLR" rotate recording file --------------------------
+				String pos_recording_filename_base = Navit.NAVIT_DATA_DEBUG_DIR + "zanavi_pos_recording";
+				String pos_recording_filename = pos_recording_filename_base + ".txt";
+				String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
+				String pos_recording_filename_archive = pos_recording_filename_base + "_" + date + ".txt";
+
+				try
+				{
+					if (pos_recording_file.exists())
+					{
+						pos_recording_writer.close();
+
+						// archive old GPX file
+						pos_recording_file.renameTo(new File(pos_recording_filename_archive));
+						pos_recording_file = new File(pos_recording_filename);
+						pos_recording_writer = new BufferedWriter(new FileWriter(pos_recording_file, true));
+					}
+				}
+				catch (Exception e)
+				{
+				}
+				// before "CLR" rotate recording file --------------------------
+				// before "CLR" rotate recording file --------------------------
+
+				pos_recording_writer.write("CLR:" + "\"\"" + "\n");
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		else if (cmd == 3) // DST
+		{
+			try
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
+				String currentDateandTime = sdf.format(new Date());
+				pos_recording_writer.write("REM:" + "\"Date:" + currentDateandTime + "\"" + "\n");
+				pos_recording_writer.write("DST:" + "\"" + customNumberFormat_("####.######", lat) + "," + customNumberFormat_("####.######", lon) + "\"" + "\n");
+			}
+			catch (Exception e)
+			{
+			}
+		}
+	}
+
 }

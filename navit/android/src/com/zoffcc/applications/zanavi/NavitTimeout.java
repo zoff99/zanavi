@@ -110,6 +110,7 @@ public class NavitTimeout extends Thread
 
 	}
 
+	// ---------- !!! C code does NOT call remove anymore !!! ----------
 	public void remove()
 	{
 		//Log.e("Navit", "remove Event #"+randnum+" - to=" + event_timeout + " multi=" + event_multi + " cid=" + event_callbackid);

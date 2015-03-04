@@ -23,8 +23,10 @@
 #include "item.h"
 #include "speech.h"
 #include "plugin.h"
+#include "navit.h"
 
-struct speech {
+struct speech
+{
 	struct speech_priv *priv;
 	struct speech_methods meth;
 	struct attr **attrs;
@@ -39,27 +41,46 @@ speech_new(struct attr *parent, struct attr **attrs)
 	struct attr *attr;
 
 	attr=attr_search(attrs, NULL, attr_type);
-	if (! attr) {
+	if (! attr)
+	{
 		dbg(0,"type missing\n");
 		return NULL;
 	}
+
 	dbg(1,"type='%s'\n", attr->u.str);
+
+#ifdef PLUGSSS
 	speech_new=plugin_get_speech_type(attr->u.str);
+
 	dbg(1,"new=%p\n", speech_new);
-	if (! speech_new) {
+
+	if (! speech_new)
+	{
 		dbg(0,"wrong type '%s'\n", attr->u.str);
 		return NULL;
 	}
+#endif
+
+
 	this_=g_new0(struct speech, 1);
+
+#ifdef PLUGSSS
 	this_->priv=speech_new(&this_->meth, attrs, parent);
+#else
+	this_->priv = speech_android_new(&this_->meth, attrs, parent);
+#endif
+
 	this_->attrs=attr_list_dup(attrs);
 	dbg(1, "say=%p\n", this_->meth.say);
 	dbg(1,"priv=%p\n", this_->priv);
-	if (! this_->priv) {
+
+	if (! this_->priv)
+	{
 		attr_list_free(this_->attrs);
 		g_free(this_);
 		return NULL;
 	}
+
 	dbg(1,"return %p\n", this_);
 	
 	return this_;
@@ -76,7 +97,7 @@ speech_destroy(struct speech *this_)
 int
 speech_say(struct speech *this_, const char *text)
 {
-	// dbg(1, "this_=%p text='%s' calling %p\n", this_, text, this_->meth.say);
+	debug_get_timestamp_millis(&global_last_spoken);
 	return (this_->meth.say)(this_->priv, text);
 }
 
@@ -113,11 +134,13 @@ speech_estimate_duration(struct speech *this_, char *str)
 	int count;
 	struct attr cps_attr;
 
-	if (!speech_get_attr(this_,attr_cps,&cps_attr,NULL)) {
-		return -1;
-	}
-
 	count = strlen(str);
+
+	if (!speech_get_attr(this_, attr_cps, &cps_attr, NULL))
+	{
+		// just assume 15 char/sec spoken speed
+		return (count * 10) / 15;		
+	}
 	
 	return (count * 10) / cps_attr.u.num;
 }

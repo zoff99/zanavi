@@ -61,22 +61,37 @@ gui_new(struct attr *parent, struct attr **attrs)
 	struct attr *type_attr;
 	struct gui_priv *(*guitype_new)(struct navit *nav, struct gui_methods *meth, struct attr **attrs, struct gui *gui);
 	struct attr cbl;
+
 	if (!(type_attr = attr_search(attrs, NULL, attr_type)))
 	{
 		return NULL;
 	}
 
+#ifdef PLUGSSS
 	guitype_new = plugin_get_gui_type(type_attr->u.str);
+
 	if (!guitype_new)
+	{
 		return NULL;
+	}
+#endif
 
 	this_=g_new0(struct gui, 1);
 	this_->attrs = attr_list_dup(attrs);
+
 	cbl.type = attr_callback_list;
-	cbl.u.callback_list = callback_list_new();
+	cbl.u.callback_list = callback_list_new("gui_new:cbl.u.callback_list");
+
 	this_->attrs = attr_generic_add_attr(this_->attrs, &cbl);
+
+#ifdef PLUGSSS
 	this_->priv = guitype_new(parent->u.navit, &this_->meth, this_->attrs, this_);
+#else
+	this_->priv = gui_internal_new(parent->u.navit, &this_->meth, this_->attrs, this_);
+#endif
+
 	this_->parent = *parent;
+
 	return this_;
 }
 
@@ -149,14 +164,18 @@ struct datawindow *
 gui_datawindow_new(struct gui *gui, char *name, struct callback *click, struct callback *close)
 {
 	struct datawindow *this_;
+
 	if (!gui->meth.datawindow_new)
 		return NULL;this_=g_new0(struct datawindow, 1);
+
 	this_->priv = gui->meth.datawindow_new(gui->priv, name, click, close, &this_->meth);
+
 	if (!this_->priv)
 	{
 		g_free(this_);
 		return NULL;
 	}
+
 	return this_;
 }
 

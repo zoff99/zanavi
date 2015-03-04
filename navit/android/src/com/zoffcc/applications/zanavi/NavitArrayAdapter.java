@@ -22,6 +22,9 @@ package com.zoffcc.applications.zanavi;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +85,23 @@ public class NavitArrayAdapter extends BaseAdapter
 			ImageView imv = (ImageView) itemView.findViewById(R.id.icon_recent_dest);
 			if (a.get(position).equals("1"))
 			{
-				imv.setImageResource(R.drawable.homeicon);
+				if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+				{
+					imv.setImageResource(R.drawable.homeicon);
+				}
+				else
+				{
+					Drawable drawable_homeicon = imv.getResources().getDrawable(R.drawable.homeicon);
+					float[] colorMatrix_Negative = { -1.0f, 0, 0, 0, 255, //red
+							0, -1.0f, 0, 0, 255, //green
+							0, 0, -1.0f, 0, 255, //blue
+							0, 0, 0, 1.0f, 0 //alpha  
+					};
+
+					ColorFilter colorFilter_Negative = new ColorMatrixColorFilter(colorMatrix_Negative);
+					drawable_homeicon.setColorFilter(colorFilter_Negative);
+					imv.setImageDrawable(drawable_homeicon);
+				}
 			}
 		}
 		catch (Exception e)

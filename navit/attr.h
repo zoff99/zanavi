@@ -55,52 +55,59 @@ enum attr_type {
 #undef ATTR
 };
 
-#define NAVIT_AF_ONEWAY		(1<<0)
-#define NAVIT_AF_ONEWAYREV		(1<<1)
-#define NAVIT_AF_NOPASS		(NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)
-#define NAVIT_AF_ONEWAYMASK		(NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)
-#define NAVIT_AF_SEGMENTED		(1<<2)
+#define NAVIT_AF_ONEWAY				(1<<0)
+#define NAVIT_AF_ONEWAYREV			(1<<1)
+#define NAVIT_AF_NOPASS				(NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)
+#define NAVIT_AF_ONEWAYMASK			(NAVIT_AF_ONEWAY|NAVIT_AF_ONEWAYREV)
+#define NAVIT_AF_SEGMENTED			(1<<2)
 #define NAVIT_AF_ROUNDABOUT 		(1<<3)
 #define NAVIT_AF_ROUNDABOUT_VALID	(1<<4)
 #define NAVIT_AF_ONEWAY_EXCEPTION	(1<<5)
 #define NAVIT_AF_SPEED_LIMIT		(1<<6)
-#define NAVIT_AF_RESERVED1		(1<<7)
-#define NAVIT_AF_SIZE_OR_WEIGHT_LIMIT	(1<<8)
-#define NAVIT_AF_THROUGH_TRAFFIC_LIMIT (1<<9)
-#define NAVIT_AF_TOLL			(1<<10)
-#define NAVIT_AF_SEASONAL		(1<<11)
-#define NAVIT_AF_UNPAVED		(1<<12)
-#define NAVIT_AF_FORD			(1<<13)
+// -----------------------------------------------------
+#define NAVIT_AF_RESERVED1			(1<<7) // ----> still unsued, free !!
+// -----------------------------------------------------
+#define NAVIT_AF_SIZE_OR_WEIGHT_LIMIT		(1<<8)
+#define NAVIT_AF_THROUGH_TRAFFIC_LIMIT 		(1<<9)
+#define NAVIT_AF_TOLL				(1<<10)
+#define NAVIT_AF_SEASONAL			(1<<11)
+#define NAVIT_AF_UNPAVED			(1<<12)
+// -----------------------------------------------------
+// #define NAVIT_AF_FORD				(1<<13) // ----> still unsued, free !!
+#define NAVIT_AF_BICYCLE_TRACK		(1<<13) // NEW !!
+// -----------------------------------------------------
 #define NAVIT_AF_UNDERGROUND		(1<<14)
-#define NAVIT_AF_BRIDGE		(1<<15) // NEW !!
-// 16 - 18 is still free!!
+#define NAVIT_AF_BRIDGE				(1<<15) // NEW !!
+#define NAVIT_AF_ONEWAY_BICYCLE_NO	(1<<16) // NEW !!
+#define NAVIT_AF_ONEWAY_BICYCLE_YES	(1<<17) // NEW !!
+#define NAVIT_AF_BICYCLE_LANE		(1<<18) // NEW !!
 #define NAVIT_AF_DANGEROUS_GOODS	(1<<19)
 #define NAVIT_AF_EMERGENCY_VEHICLES	(1<<20)
 #define NAVIT_AF_TRANSPORT_TRUCK	(1<<21)
-#define NAVIT_AF_DELIVERY_TRUCK	(1<<22)
-#define NAVIT_AF_PUBLIC_BUS		(1<<23)
-#define NAVIT_AF_TAXI			(1<<24)	
+#define NAVIT_AF_DELIVERY_TRUCK		(1<<22)
+#define NAVIT_AF_PUBLIC_BUS			(1<<23)
+#define NAVIT_AF_TAXI				(1<<24)	
 #define NAVIT_AF_HIGH_OCCUPANCY_CAR	(1<<25)	
-#define NAVIT_AF_CAR			(1<<26)	
-#define NAVIT_AF_MOTORCYCLE		(1<<27)	
-#define NAVIT_AF_MOPED		(1<<28)	
-#define NAVIT_AF_HORSE		(1<<29)	
-#define NAVIT_AF_BIKE			(1<<30)	
-#define NAVIT_AF_PEDESTRIAN		(1<<31)	
+#define NAVIT_AF_CAR				(1<<26)	// 0x04 000 000
+#define NAVIT_AF_MOTORCYCLE			(1<<27)	// 0x08 000 000
+#define NAVIT_AF_MOPED				(1<<28)	// 0x10 000 000
+#define NAVIT_AF_HORSE				(1<<29)	// 0x20 000 000
+#define NAVIT_AF_BIKE				(1<<30)	// 0x40 000 000
+#define NAVIT_AF_PEDESTRIAN			(1<<31)	// 0x80 000 000
 
 #define NAVIT_AF_PBH (NAVIT_AF_PEDESTRIAN|NAVIT_AF_BIKE|NAVIT_AF_HORSE)
 #define NAVIT_AF_MOTORIZED_FAST (NAVIT_AF_MOTORCYCLE|NAVIT_AF_CAR|NAVIT_AF_HIGH_OCCUPANCY_CAR|NAVIT_AF_TAXI|NAVIT_AF_PUBLIC_BUS|NAVIT_AF_DELIVERY_TRUCK|NAVIT_AF_TRANSPORT_TRUCK|NAVIT_AF_EMERGENCY_VEHICLES)
 #define NAVIT_AF_ALL (NAVIT_AF_PBH|NAVIT_AF_MOPED|NAVIT_AF_MOTORIZED_FAST)
 
 
-#define NAVIT_AF_DG_ANY		(1<<0)
+#define NAVIT_AF_DG_ANY				(1<<0)
 #define NAVIT_AF_DG_WATER_HARMFUL	(1<<1)
 #define NAVIT_AF_DG_EXPLOSIVE		(1<<2)
 #define NAVIT_AF_DG_FLAMMABLE		(1<<3)
 
 /* Values for attributes that could carry relative values */
-#define ATTR_REL_MAXABS			0x40000000
-#define ATTR_REL_RELSHIFT		0x60000000
+#define ATTR_REL_MAXABS			0x40000000	// 0x40 000 000 // (1<<30)
+#define ATTR_REL_RELSHIFT		0x60000000	// 0x60 000 000 // (1<<30) + (1<<29)
 
 enum attr_position_valid {
 	attr_position_valid_invalid,

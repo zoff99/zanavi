@@ -20,14 +20,14 @@
 package com.zoffcc.applications.zanavi;
 
 import net.technologichron.manacalc.NumberPicker;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ToggleButton;
 
-public class GeoCoordEnterDialog extends Activity
+public class GeoCoordEnterDialog extends ActionBarActivity
 {
 	float lat;
 	float lon;
@@ -36,9 +36,23 @@ public class GeoCoordEnterDialog extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.geocoordenter);
-		// setContentView(R.layout.numpicker2);
+		
+		android.support.v7.widget.Toolbar bar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2vi);
+		bar.setTitle(Navit.get_text("Coord Dialog"));
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+
 		final Button ok_button = (Button) findViewById(R.id.ok01);
 		final Button destination_button = (Button) findViewById(R.id.dst01);
 		final Button cancel_button = (Button) findViewById(R.id.cancel01);
@@ -63,7 +77,7 @@ public class GeoCoordEnterDialog extends Activity
 			public void onClick(View v)
 			{
 				Intent resultIntent = new Intent();
-				setResult(Activity.RESULT_CANCELED, resultIntent);
+				setResult(ActionBarActivity.RESULT_CANCELED, resultIntent);
 				finish();
 			}
 		});
@@ -94,7 +108,7 @@ public class GeoCoordEnterDialog extends Activity
 		{
 			this.lon = -this.lon;
 		}
-		setResult(Activity.RESULT_OK, resultIntent);
+		setResult(ActionBarActivity.RESULT_OK, resultIntent);
 		if (what.equals("view"))
 		{
 			resultIntent.putExtra("what", "view");

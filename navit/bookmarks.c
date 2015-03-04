@@ -232,7 +232,7 @@ bookmarks_new(struct attr *parent, struct attr **attrs, struct transformation *t
 	dbg(0,"bb 001\n");
 
 	this_ = g_new0(struct bookmarks,1);
-	this_->attr_cbl=callback_list_new();
+	this_->attr_cbl=callback_list_new("bookmarks_new:this_->attr_cbl");
 	this_->parent=parent;
 	//this_->attrs=attr_list_dup(attrs);
 	this_->trans=trans;
@@ -444,6 +444,33 @@ bookmarks_set_center_from_file(struct bookmarks *this_, char *file)
 	}
 	return;
 }
+
+void
+bookmarks_get_center_from_file(struct bookmarks *this_, char *file, struct coord *center)
+{
+	FILE *f;
+	char *line = NULL;
+
+	dbg(0,"enter\n");
+
+	size_t line_size = 0;
+	enum projection pro;
+
+	f = fopen(file, "r");
+	if (! f)
+		return;
+	getline(&line, &line_size, f);
+	fclose(f);
+	if (line)
+	{
+		pro = transform_get_projection(this_->trans);
+		coord_parse(g_strchomp(line), pro, center);
+		dbg(0,"******** get center from file *********\n");
+		free(line);
+	}
+	return;
+}
+
 
 void
 bookmarks_write_center_to_file(struct bookmarks *this_, char *file)

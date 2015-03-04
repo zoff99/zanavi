@@ -38,15 +38,19 @@
 
 package com.zoffcc.applications.zanavi;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.LayoutParams;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -58,13 +62,11 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class NavitAddressSearchActivity extends Activity
+public class NavitAddressSearchActivity extends ActionBarActivity
 {
-	//private EditText address_string;
 	private AutoCompleteTextView address_string;
 	private EditText hn_string;
 	private CheckBox pm_checkbox;
@@ -73,19 +75,93 @@ public class NavitAddressSearchActivity extends Activity
 	private String search_type;
 	private int search_country_id = 0;
 	private Button search_country_select;
+	private ScrollView sv;
+	private LinearLayout ll;
 
-	// public RelativeLayout NavitAddressSearchActivity_layout;
+	//	@Override
+	//	protected void onPostCreate(Bundle savedInstanceState)
+	//	{
+	//		super.onPostCreate(savedInstanceState);
+	//		Toolbar bar;
+	//
+	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	//		{
+	//			ViewGroup root_view = (ViewGroup) ll;
+	//			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+	//			bar.setTitle(Navit.get_text("address search"));
+	//			root_view.addView(bar, 0); // insert at top
+	//		}
+	//		else
+	//		{
+	//			
+	//			System.out.println("ZZXX22:r1=" + ll);
+	//			System.out.println("ZZXX22:r2=" + (ViewGroup) ll.getChildAt(0));
+	//			System.out.println("ZZXX22:r1=" + findViewById(android.R.id.content));
+	//			
+	//			ViewGroup root_view = (ViewGroup) ll;
+	//			View content = (View) root_view.getChildAt(0);
+	//			
+	//			root_view.removeAllViews();
+	//
+	//			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+	//			bar.setTitle(Navit.get_text("address search"));
+	//			root_view.addView(bar);
+	//
+	//			int height;
+	//			TypedValue tv = new TypedValue();
+	//			if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true))
+	//			{
+	//				height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+	//			}
+	//			else
+	//			{
+	//				height = bar.getHeight();
+	//			}
+	//
+	//			content.setPadding(0, height, 0, 0);
+	//
+	//			root_view.addView(content);
+	//		}
+	//
+	//		bar.setNavigationOnClickListener(new View.OnClickListener()
+	//		{
+	//			@Override
+	//			public void onClick(View v)
+	//			{
+	//				finish();
+	//			}
+	//		});
+	//	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 
+		ll = new LinearLayout(this);
+		ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		ll.setOrientation(LinearLayout.VERTICAL);
+
+		ViewGroup root_view = (ViewGroup) ll;
+		Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+		bar.setTitle(Navit.get_text("Map Preview"));
+
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+
 		// scrollview
-		ScrollView sv = new ScrollView(this);
-		sv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		sv = new ScrollView(this);
+		sv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 		// panel linearlayout
 		LinearLayout panel = new LinearLayout(this);
@@ -336,9 +412,11 @@ public class NavitAddressSearchActivity extends Activity
 		panel.addView(btnSearch);
 
 		sv.addView(panel);
+		ll.addView(bar);
+		ll.addView(sv);
 
 		// set the main view
-		setContentView(sv);
+		setContentView(ll);
 	}
 
 	public void start_country_select_form()
@@ -354,7 +432,7 @@ public class NavitAddressSearchActivity extends Activity
 		case Navit.NavitAddressSearchCountry_id:
 			try
 			{
-				if (resultCode == Activity.RESULT_OK)
+				if (resultCode == ActionBarActivity.RESULT_OK)
 				{
 					search_country_id = Integer.parseInt(data.getStringExtra("selected_id"));
 					// System.out.println("search_country_id=" + search_country_id);
@@ -452,7 +530,7 @@ public class NavitAddressSearchActivity extends Activity
 
 		}
 
-		setResult(Activity.RESULT_OK, resultIntent);
+		setResult(ActionBarActivity.RESULT_OK, resultIntent);
 		finish();
 	}
 }

@@ -4,7 +4,7 @@ SUBDIRS=fib-1.1 support
 if PLUGINS
   SUBDIRS += .
 endif
-DIST_SUBDIRS=autoload binding map maptool fib-1.1 font fonts gui graphics osd plugin speech support vehicle xpm maps
+DIST_SUBDIRS=autoload binding map maptool fib-1.1 font fonts gui graphics osd plugin speech vehicle support xpm maps
 SUBDIRS+=autoload binding map font gui graphics osd plugin speech vehicle xpm
 
 MODULES = $(wildcard $(top_builddir)/navit/binding/*/*.la $(top_builddir)/navit/font/*/*.la $(top_builddir)/navit/graphics/*/*.la $(top_builddir)/navit/gui/*/*.la $(top_builddir)/navit/map/*/*.la $(top_builddir)/navit/osd/*/*.la $(top_builddir)/navit/speech/*/*.la $(top_builddir)/navit/vehicle/*/*.la)
@@ -58,7 +58,23 @@ lib@LIBNAVIT@_la_SOURCES = announcement.c atom.c attr.c cache.c callback.c comma
 	map_data.h mapset.h maptype.h menu.h messages.h navigation.h navit.h osd.h \
 	param.h phrase.h plugin.h point.h plugin_def.h projection.h popup.h route.h profile.h roadprofile.h search.h speech.h start_real.h \
 	transform.h track.h types.h util.h vehicle.h vehicleprofile.h window.h xmlconfig.h zipfile.h \
-	navit_nls.h sunriset.c sunriset.h glib_slice.h maptool/miniz.c
+	navit_nls.h sunriset.c sunriset.h glib_slice.h maptool/miniz.c \
+	snprintf.c snprintf.h
+
+
+if SUPPORT_ANDROID
+  lib@LIBNAVIT@_la_SOURCES += vehicle/android/vehicle_android.c \ 
+	vehicle/demo/vehicle_demo.c \
+	gui/internal/gui_internal.c \
+	graphics/android/graphics_android.c \
+	map/binfile/binfile.c \
+	map/csv/csv.c \
+	map/csv/quadtree.c \
+	map/textfile/textfile.c \
+	osd/core/osd_core.c \
+	speech/android/speech_android.c
+endif
+
 
 XSLTS=@XSLTS@
 navit.xml: navit_shipped.xml  $(foreach xslt, $(subst $(comma), ,$(XSLTS)), $(addsuffix .xslt,$(addprefix xslt/,$(xslt)))) navit_android_xml
@@ -100,7 +116,7 @@ if SUPPORT_ANDROID
 
 v_int = $$(cat $(srcdir)/android/Android_Market_Version_int.txt|grep v_int|cut -d ":" -f 2)
 v_name = "1.0.0-"$$(LANG=C svnversion $(top_srcdir) 2> /dev/null|tr -d ":A-Z" 2> /dev/null)
-b_arch = $(shell if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86";else echo "armeabi"; fi)
+b_arch = $(shell if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86"; elif [ "$(DO_ARMV7_BUILD)" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
 
 
 android/AndroidManifest.xml: android/AndroidManifest.xml.in
@@ -123,12 +139,40 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android/* $(builddir)/android; fi
+
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android/lib/; fi
+	mkdir -p $(builddir)/android/lib/
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(srcdir)/android/tagsoup-1.2.1.jar $(builddir)/android/lib/; fi
+
 	touch $(srcdir)/android/dummy.txt
 	touch $(builddir)/android/dummy.txt
-	android update project -t @ANDROID_PROJECT@ -p android
+
+#	mkdir -p $(builddir)/actionbarsherlock/src/
+#	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/actionbarsherlock/src/; fi
+#	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/actionbarsherlock/src/; fi
+#	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/actionbarsherlock/* $(builddir)/actionbarsherlock; fi
+#	touch $(srcdir)/actionbarsherlock/dummy.txt
+#	touch $(builddir)/actionbarsherlock/dummy.txt
+#
+#	android update project -t @ANDROID_PROJECT@ -p android -l ../actionbarsherlock
+#	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
+
+	mkdir -p $(builddir)/android-support-v7-appcompat/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-v7-appcompat/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-v7-appcompat/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-v7-appcompat/* $(builddir)/android-support-v7-appcompat/; fi
+	touch $(srcdir)/android-support-v7-appcompat/dummy.txt
+	touch $(builddir)/android-support-v7-appcompat/dummy.txt
+
+	if [ "$(builddir)" != "$(srcdir)" ]; then mkdir -p $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(builddir)/android/aidl/com/zoffcc/applications/zanavi_msg/*.aidl $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
+
+#	android update lib-project -t @ANDROID_PROJECT@ -p $(builddir)/android-support-v7-appcompat
+	android update project -t @ANDROID_PROJECT@ -p android -l ../android-support-v7-appcompat
+	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
+
 
 apkg-all: all android/build.xml navit.xml
-
 	mkdir -p android/libs/$(b_arch)
 	cp .libs/*.so android/libs/$(b_arch)/libnavit.so
 	for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/$(b_arch)/$$(basename $$i); done
@@ -186,6 +230,30 @@ apkg-all: all android/build.xml navit.xml
 	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-mdpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
 	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-ldpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
 
+#	remove old libs
+	echo "XXXXXXXXXXXXXXXXX"
+	echo "XXXXXXXXXXXXXXXXX"
+	ls -al android/libs/$(b_arch)/lib*.so
+	rm -f android/libs/$(b_arch)/libgraphics_android.so
+	rm -f android/libs/$(b_arch)/libgraphics_null.so
+	rm -f android/libs/$(b_arch)/libgui_internal.so
+	rm -f android/libs/$(b_arch)/libmap_binfile.so
+	rm -f android/libs/$(b_arch)/libmap_csv.so
+	rm -f android/libs/$(b_arch)/libmap_filter.so
+	rm -f android/libs/$(b_arch)/libmap_mg.so
+	rm -f android/libs/$(b_arch)/libmap_shapefile.so
+	rm -f android/libs/$(b_arch)/libmap_textfile.so
+	rm -f android/libs/$(b_arch)/libosd_core.so
+	rm -f android/libs/$(b_arch)/libspeech_android.so
+	rm -f android/libs/$(b_arch)/libvehicle_android.so
+	rm -f android/libs/$(b_arch)/libvehicle_demo.so
+	rm -f android/libs/$(b_arch)/libvehicle_file.so
+	rm -f android/libs/$(b_arch)/libvehicle_pipe.so
+	rm -f android/libs/$(b_arch)/libvehicle_serial.so
+	rm -f android/libs/$(b_arch)/libvehicle_socket.so
+	echo "XXXXXXXXXXXXXXXXX"
+	echo "XXXXXXXXXXXXXXXXX"
+
 #	clean up
 #	rm android/res2/drawable-hdpi/*
 #	rm android/res2/drawable-mdpi/*
@@ -211,7 +279,8 @@ apkg-all: all android/build.xml navit.xml
 
 #	strip libs if release build is selected
 	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi/* ; echo "done" ; fi
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; i686-android-linux-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
+	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi-v7a/* ; echo "done" ; fi
+	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; /home/navit/_navit_develop/_need/NDK/_unpack/android-ndk-r5c/toolchains/x86-4.8/prebuilt/linux-x86/bin/i686-linux-android-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
 
 
 apkg: apkg-all
@@ -226,7 +295,7 @@ apkg-release: apkg-all
 	cd android && ant release
 #	jarsigner $$(cat ~/.keys_args) android/bin/Navit-unsigned.apk mykey
 #	zipalign -f 4 android/bin/Navit-unsigned.apk android/bin/Navit-aligned.apk
-	zipalign -f 4 android/bin/Navit-release-unsigned.apk android/bin/Navit-aligned.apk
+	/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_SDK_r22.0.1/build-tools/21.1.1/zipalign -f 4 android/bin/Navit-release-unsigned.apk android/bin/Navit-aligned.apk
 	cp android/bin/Navit-aligned.apk android/bin/Navit-debug.apk
 else
 navit_SOURCES = start.c

@@ -52,6 +52,7 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -295,8 +296,8 @@ public class NavitMapDownloader
 	private static Boolean already_inited = false;
 
 	public Boolean stop_me = false;
-	static final int SOCKET_CONNECT_TIMEOUT = 2000; // 2 secs.
-	static final int SOCKET_READ_TIMEOUT = 10000; // 10 secs.
+	static final int SOCKET_CONNECT_TIMEOUT = 22000; // 22 secs.
+	static final int SOCKET_READ_TIMEOUT = 18000; // 18 secs.
 	// static final int MAP_WRITE_FILE_BUFFER = 1024 * 8;
 	static final int MAP_WRITE_MEM_BUFFER = 1024 * 64;
 	static final int MAP_READ_FILE_BUFFER = 1024 * 64;
@@ -371,6 +372,19 @@ public class NavitMapDownloader
 			//Navit.default_brightness_screen_wrapper(); // brightness ---------
 			//
 
+			try
+			{
+				// hide download actionbar icon
+				Message msg2 = Navit.Navit_progress_h.obtainMessage();
+				Bundle b2 = new Bundle();
+				msg2.what = 24;
+				msg2.setData(b2);
+				Navit.Navit_progress_h.sendMessage(msg2);
+			}
+			catch (Exception e)
+			{
+			}
+
 			// ----- service stop -----
 			// ----- service stop -----
 			Navit.getBaseContext_.stopService(Navit.ZANaviMapDownloaderServiceIntent);
@@ -432,6 +446,18 @@ public class NavitMapDownloader
 			File tmp_downloadfile_idx = new File(Navit.CFG_FILENAME_PATH, DOWNLOAD_FILENAME + ".idx");
 			tmp_downloadfile_idx.delete();
 			Log.d("NavitMapDownloader", "(b)removed " + tmp_downloadfile.getAbsolutePath());
+
+			try
+			{
+				Message msg2 = Navit.Navit_progress_h.obtainMessage();
+				Bundle b2 = new Bundle();
+				msg2.what = 24;
+				msg2.setData(b2);
+				Navit.Navit_progress_h.sendMessage(msg2);
+			}
+			catch (Exception e)
+			{
+			}
 
 			// close cancel dialoag activity
 			Message msg2 = new Message();
@@ -645,13 +671,33 @@ public class NavitMapDownloader
 						}
 					}
 
+					if (stop_me)
+					{
+						// ok we need to be stopped! close all files and end
+						d_url_disconnect(c);
+						this.running = false;
+						mapdownload_error_code_inc();
+						break;
+					}
+
 					// BufferedInputStream bif = d_url_get_bif(c);
 					InputStream bif = (InputStream) d_url_get_bif(c);
 					if (bif != null)
 					{
+
 						// do the real downloading here
 						try
 						{
+							if (stop_me)
+							{
+								// ok we need to be stopped! close all files and end
+								bif.close();
+								d_url_disconnect(c);
+								this.running = false;
+								mapdownload_error_code_inc();
+								break;
+							}
+
 							// System.out.println("DEBUG_MAP_DOWNLOAD::" + this.my_num + "buf avail1=" + bif.available());
 
 							// len1 -> number of bytes actually read
@@ -773,6 +819,7 @@ public class NavitMapDownloader
 										{
 											sleep_e.printStackTrace();
 										}
+
 										// System.out.println("" + this.my_num + " " + already_read + " - " + (already_read - this.start_byte));
 										// System.out.println("+++++++++++++ still downloading +++++++++++++");
 									}
@@ -814,14 +861,15 @@ public class NavitMapDownloader
 										{
 											f_rnd.write(buffer, len1_part1, len1_part2);
 										}
-
 										// System.out.println("DEBUG_MAP_DOWNLOAD::" + this.my_num + "next split file: current_split=" + current_split + " next_split=" + next_split + " already_read=" + already_read + " MAX_SINGLE_BINFILE_SIZE=" + MAX_SINGLE_BINFILE_SIZE + " len1=" + len1 + " len1_part2=" + len1_part2 + " len1_part1=" + len1_part1);
-
 									}
 									else
 									{
 										// actually write len1 bytes to output file
+										// System.out.println("MultiStreamDownloaderThread " + this.my_num + " XX 011.08 len1=" + len1 + " cur pos=" + f_rnd.getFilePointer());
+										// !!!!!! this command can take up to 2 minutes to finish on large files !!!!!!
 										f_rnd.write(buffer, 0, len1);
+										// System.out.println("MultiStreamDownloaderThread " + this.my_num + " XX 011.09");
 									}
 									// ********
 
@@ -837,7 +885,6 @@ public class NavitMapDownloader
 								}
 							}
 							d_close_file(f_rnd, this.my_num);
-
 							bif.close();
 							d_url_disconnect(c);
 
@@ -1122,6 +1169,11 @@ public class NavitMapDownloader
 						System.out.println("line=" + line);
 					}
 				}
+			}
+
+			if (br != null)
+			{
+				br.close();
 			}
 		}
 		catch (IOException e)
@@ -1480,7 +1532,7 @@ public class NavitMapDownloader
 	{
 		System.out.println("find_file_on_other_mapserver:first server name=" + map_servers_list);
 
-		String other_server_name = d_get_servername();
+		String other_server_name = d_get_servername(false, map_values);
 		int i = 0;
 		for (i = 0; i < 4; i++)
 		{
@@ -1495,7 +1547,7 @@ public class NavitMapDownloader
 				catch (InterruptedException e)
 				{
 				}
-				other_server_name = d_get_servername();
+				other_server_name = d_get_servername(false, map_values);
 			}
 			else
 			{
@@ -1585,7 +1637,21 @@ public class NavitMapDownloader
 		System.out.println("final_fileName=" + final_fileName);
 		System.out.println("up_map=" + up_map);
 
-		String this_server_name = d_get_servername();
+		try
+		{
+			// show download actionbar icon
+			Message msg2 = Navit.Navit_progress_h.obtainMessage();
+			Bundle b2 = new Bundle();
+			msg2.what = 23;
+			msg2.setData(b2);
+			Navit.Navit_progress_h.sendMessage(msg2);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		String this_server_name = d_get_servername(true, map_values);
 		if (this_server_name == null)
 		{
 			msg = handler.obtainMessage();
@@ -2151,7 +2217,7 @@ public class NavitMapDownloader
 		// NEVER enable this on a production release!!!!!!!!!!
 	}
 
-	public String d_get_servername()
+	public String d_get_servername(boolean first_run, zanavi_osm_map_values map_values)
 	{
 		// this is only for debugging
 		// NEVER enable this on a production release!!!!!!!!!!
@@ -2160,10 +2226,28 @@ public class NavitMapDownloader
 		// NEVER enable this on a production release!!!!!!!!!!
 		// NEVER enable this on a production release!!!!!!!!!!
 
+		System.out.println("XXX 001");
+
 		String servername = null;
 		try
 		{
 			URL url = new URL(ZANAVI_MAPS_SEVERTEXT_URL);
+
+			if (!first_run)
+			{
+				url = new URL(ZANAVI_MAPS_SEVERTEXT_URL + "?SUBREQ=1");
+			}
+			else
+			{
+				try
+				{
+					url = new URL(ZANAVI_MAPS_SEVERTEXT_URL + "?MAP=" + URLEncoder.encode(map_values.url, "UTF-8"));
+				}
+				catch (Exception e_url)
+				{
+				}
+			}
+
 			System.out.println(ZANAVI_MAPS_SEVERTEXT_URL);
 
 			HttpURLConnection c = (HttpURLConnection) url.openConnection();
@@ -2171,16 +2255,33 @@ public class NavitMapDownloader
 			c.addRequestProperty("User-Agent", ua_);
 			c.addRequestProperty("Pragma", "no-cache");
 
+			System.out.println("XXX 002");
+
 			c.setRequestMethod("GET");
 			c.setDoOutput(true);
 			c.setReadTimeout(SOCKET_READ_TIMEOUT);
 			c.setConnectTimeout(SOCKET_CONNECT_TIMEOUT);
+
+			System.out.println("XXX 003");
+
 			try
 			{
+
+				System.out.println("XXX 004");
+
 				c.connect();
+
+				System.out.println("XXX 005");
+
 				BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()), 4096);
+
+				System.out.println("XXX 006");
+
 				String str;
 				str = in.readLine();
+
+				System.out.println("XXX 007");
+
 				if (str != null)
 				{
 					if (str.length() > 2)
@@ -2201,6 +2302,8 @@ public class NavitMapDownloader
 		{
 			e.printStackTrace();
 		}
+
+		System.out.println("XXX 099");
 
 		return servername;
 	}
@@ -2645,14 +2748,14 @@ public class NavitMapDownloader
 				for (j = 0; j < num_loops; j++)
 				{
 					f.readFully(buffer_seek);
-					try
-					{
-						Thread.sleep(2);
-					}
-					catch (Exception x)
-					{
-						x.printStackTrace();
-					}
+					//					try
+					//					{
+					//						Thread.sleep(2);
+					//					}
+					//					catch (Exception x)
+					//					{
+					//						x.printStackTrace();
+					//					}
 				}
 				long this_fp = 1900000000L + (num_loops * buf_size);
 				System.out.println("open file: 3 " + this_fp);

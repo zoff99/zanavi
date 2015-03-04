@@ -919,7 +919,7 @@ command_add_table(struct callback_list *cbl, struct command_table *table, int co
 {
 	struct attr attr;
 	command_add_table_attr(table, count, data, &attr);
-	callback_list_add(cbl, attr.u.callback);
+	/// -------**++**-- DISABLE --**++**---- 	callback_list_add(cbl, attr.u.callback);
 }
 
 void

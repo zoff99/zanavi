@@ -195,7 +195,9 @@ int plugin_load(struct plugin *pl)
 		dbg(0,"can't load '%s', already loaded\n", pl->name);
 		return 0;
 	}
+
 	mod=g_module_open(pl->name, G_MODULE_BIND_LOCAL | (pl->lazy ? G_MODULE_BIND_LAZY : 0));
+
 	if (! mod)
 	{
 		dbg(0,"can't load '%s', Error '%s'\n", pl->name, g_module_error());
@@ -212,11 +214,14 @@ int plugin_load(struct plugin *pl)
 		pl->mod=mod;
 		pl->init=init;
 	}
+
 	return 1;
 #else
 	return 0;
 #endif
+
 }
+
 
 char *
 plugin_get_name(struct plugin *pl)
@@ -532,53 +537,78 @@ plugin_get_type(enum plugin_type type, const char *type_name, const char *name)
 	struct plugin *pl;
 	char *mod_name, *filename = NULL, *corename = NULL;
 
-	//dbg(1, "type=\"%s\", name=\"%s\"\n", type_name, name);
+	dbg(0, "type=\"%s\", name=\"%s\"\n", type_name, name);
 
 	l = plugin_types[type];
 	while (l)
 	{
 		nv = l->data;
+
 		if (!g_ascii_strcasecmp(nv->name, name))
 			return nv->val;
+
 		l = g_list_next(l);
 	}
+
 	if (!pls)
 		return NULL;
+
+
 	lpls = pls->list;
 	filename = g_strjoin("", "lib", type_name, "_", name, NULL);
 	corename = g_strjoin("", "lib", type_name, "_", "core", NULL);
+	dbg(0, "filename=%s corename=%s\n", filename, corename);
+
 	while (lpls)
 	{
 		pl = lpls->data;
 		if ((mod_name = g_strrstr(pl->name, "/")))
+		{
 			mod_name++;
+		}
 		else
+		{
 			mod_name = pl->name;
-		//dbg(2, "compare '%s' with '%s'\n", mod_name, filename);
+		}
+
+		dbg(0, "compare '%s' with '%s'\n", mod_name, filename);
 		if (!g_ascii_strncasecmp(mod_name, filename, strlen(filename)) || !g_ascii_strncasecmp(mod_name, corename, strlen(corename)))
 		{
-			//dbg(1, "Loading module \"%s\"\n", pl->name);
+			dbg(0, "Loading module \"%s\"\n", pl->name);
 			if (plugin_get_active(pl))
+			{
 				if (!plugin_load(pl))
+				{
 					plugin_set_active(pl, 0);
+				}
+			}
+
 			if (plugin_get_active(pl))
+			{
 				plugin_call_init(pl);
+			}
+
 			l = plugin_types[type];
 			while (l)
 			{
 				nv = l->data;
+
 				if (!g_ascii_strcasecmp(nv->name, name))
 				{
 					g_free(filename);
 					g_free(corename);
 					return nv->val;
 				}
+
 				l = g_list_next(l);
 			}
 		}
+
 		lpls = g_list_next(lpls);
 	}
+
 	g_free(filename);
 	g_free(corename);
+
 	return NULL;
 }

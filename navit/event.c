@@ -115,6 +115,8 @@ event_request_system(const char *system, const char *requestor)
 		}
 		return 1;
 	}
+
+#ifdef PLUGSSS
 	event_type_new=plugin_get_event_type(system);
 	if (! event_type_new)
 	{
@@ -122,6 +124,10 @@ event_request_system(const char *system, const char *requestor)
                 return 0;
 	}
 	event_type_new(&event_methods);
+#else
+	event_android_new(&event_methods);
+#endif
+
 	e_system=system;
 	e_requestor=requestor;
 	

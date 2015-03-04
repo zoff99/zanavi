@@ -49,7 +49,7 @@
 #include "transform.h"
 #include "util.h"
 #include "event.h"
-#include "coord.h"
+// #include "coord.h"
 #include "navit.h"
 #include "transform.h"
 #include "projection.h"
@@ -127,6 +127,7 @@ vehicle_new(struct attr *parent, struct attr **attrs)
 	}
 	////DBG dbg(0, "source='%s' type='%s'\n", source->u.str, type);
 
+#ifdef PLUGSSS
 	vehicletype_new = plugin_get_vehicle_type(type);
 	if (!vehicletype_new)
 	{
@@ -134,10 +135,30 @@ vehicle_new(struct attr *parent, struct attr **attrs)
 		g_free(type);
 		return NULL;
 	}
-	g_free(type);
+#endif
+
 	this_ = g_new0(struct vehicle, 1);
-	this_->cbl = callback_list_new();
+	this_->cbl = callback_list_new("vehicle_new:this_->cbl");
+
+
+
+#ifdef PLUGSSS
 	this_->priv = vehicletype_new(&this_->meth, this_->cbl, attrs);
+#else
+
+	if (strncmp("demo", type, 4) == 0)
+	{
+		this_->priv = vehicle_demo_new(&this_->meth, this_->cbl, attrs);
+	}
+	else if (strncmp("android", type, 7) == 0)
+	{
+		this_->priv = vehicle_android_new_android(&this_->meth, this_->cbl, attrs);
+	}
+#endif
+
+	g_free(type);
+
+
 	//DBG dbg(0, "veh new 2\n");
 	if (!this_->priv)
 	{
@@ -315,6 +336,7 @@ int vehicle_add_attr(struct vehicle *this_, struct attr *attr)
 	dbg(0,"+#+:enter\n");
 #endif
 	int ret = 1;
+
 	switch (attr->type)
 	{
 		case attr_callback:
@@ -331,6 +353,7 @@ int vehicle_add_attr(struct vehicle *this_, struct attr *attr)
 		default:
 			break;
 	}
+
 	if (ret)
 	{
 		this_->attrs = attr_generic_add_attr(this_->attrs, attr);
@@ -587,6 +610,17 @@ int vehicle_get_cursor_data(struct vehicle *this, struct point *pnt, int *angle,
 	return 1;
 }
 
+//int vehicle_set_cursor_data_01(struct vehicle *this, struct point *pnt)
+//{
+//#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+//	dbg(0,"+#+:enter\n");
+//#endif
+//	this->cursor_pnt.x = pnt->.x;
+//	this->cursor_pnt.y = pnt->.y;
+//	return 1;
+//}
+
+
 static void vehicle_draw_do(struct vehicle *this_, int lazy)
 {
 	// UNUSED ---------
@@ -604,12 +638,20 @@ static void vehicle_log_nmea(struct vehicle *this_, struct log *log)
 	dbg(0,"+#+:enter\n");
 #endif
 	struct attr pos_attr;
+
 	if (!this_->meth.position_attr_get)
+	{
 		return;
+	}
+
 	if (!this_->meth.position_attr_get(this_->priv, attr_position_nmea, &pos_attr))
+	{
 		return;
+	}
+
 	log_write(log, pos_attr.u.str, strlen(pos_attr.u.str), 0);
 }
+
 
 void vehicle_log_gpx_add_tag(char *tag, char **logstr)
 {
@@ -900,4 +942,5 @@ void vehicle_update_(struct vehicle *this_, double lat, double lon, float speed,
 	}
 #endif
 }
+
 

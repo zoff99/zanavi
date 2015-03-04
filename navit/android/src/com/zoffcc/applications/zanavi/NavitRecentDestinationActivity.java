@@ -24,15 +24,21 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.LayoutParams;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.retain.dialog.RenameDialog;
@@ -53,9 +59,56 @@ public class NavitRecentDestinationActivity extends ListActivity
 	private static ArrayList<String> listview_addons = new ArrayList<String>();
 
 	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		super.onPostCreate(savedInstanceState);
+		Toolbar bar;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(my_id).getParent().getParent();
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("Recent destinations"));
+			root_view.addView(bar, 0); // insert at top
+		}
+		else
+		{
+			ViewGroup root_view = (ViewGroup) findViewById(android.R.id.content);
+			ListView content = (ListView) root_view.getChildAt(0);
+
+			root_view.removeAllViews();
+
+			LinearLayout ll = new LinearLayout(this);
+			ll.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			ll.setOrientation(LinearLayout.VERTICAL);
+
+			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
+			bar.setTitle(Navit.get_text("Recent destinations"));
+			root_view.addView(ll);
+
+			ll.addView(bar);
+			ll.addView(content);
+		}
+
+		bar.setNavigationOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				finish();
+			}
+		});
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+
 		super.onCreate(savedInstanceState);
+		overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
+
 		my = this;
 
 		context_items = new String[] { Navit.get_text("delete Destination"), Navit.get_text("rename Destination"), Navit.get_text("set as Home Location") }; // TRANS
@@ -105,10 +158,22 @@ public class NavitRecentDestinationActivity extends ListActivity
 		//	convertView = inflater.inflate(R.layout.search_result_list_header, null);
 		//}
 
+		// getListView().setBackgroundColor(Color.rgb(0, 0, 0));
+
 		this.setListAdapter(adapter);
 		this.getListView().setFastScrollEnabled(true);
 		registerForContextMenu(this.getListView());
 		my_id = this.getListView().getId();
+	}
+
+	@Override
+	protected void onPause()
+	{
+		// Whenever this activity is paused (i.e. looses focus because another activity is started etc)
+		// Override how this activity is animated out of view
+		// The new activity is kept still and this activity is pushed out to the left
+		overridePendingTransition(R.anim.hold, R.anim.push_out_to_right);
+		super.onPause();
 	}
 
 	public static Handler handler1 = new Handler()

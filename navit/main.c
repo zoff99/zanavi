@@ -78,6 +78,7 @@
 #include "libc.h"
 #endif
 
+
 struct map_data *map_data_default;
 
 struct callback_list *cbl;
@@ -522,7 +523,7 @@ void main_init(const char *program)
 
 	spawn_process_init();
 
-	cbl = callback_list_new();
+	cbl = callback_list_new("main_init:cbl");
 #ifdef HAVE_API_WIN32_BASE
 	win_set_nls();
 #endif
@@ -603,6 +604,8 @@ void main_init(const char *program)
 	}
 }
 
+
+
 void main_init_nls(void)
 {
 	char *locale_dir;
@@ -615,4 +618,339 @@ void main_init_nls(void)
 	textdomain(PACKAGE);
 
 	g_free(locale_dir);
+
+
+#if 0
+
+	char *rr22 = NULL;
+
+	//dbg(0, "XXXX777:%s\n",_("Follow the road for the next %s"), "");
+	//dbg(0, "XXXX777:%s\n",_("When possible, please turn around"));
+
+	//rr22 = g_strdup_printf(_("Follow the road for the next %s"), "");
+	//dbg(0, "XXXX777:01:%s\n", rr22);
+	//g_free(rr22);
+
+	//rr22 = g_strdup_printf(_("When possible, please turn around"));
+	//dbg(0, "XXXX777:01:%s\n", rr22);
+	//g_free(rr22);
+
+	rr22 = g_strdup_printf("dem Straßenverlauf", "");
+	dbg(0, "XXXX777:01:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf_custom("dem Straßenverlauf", "");
+	dbg(0, "XXXX777:01a:%s\n", rr22);
+	g_free(rr22);
+
+
+	rr22 = g_strdup("dem Straßenverlauf");
+	dbg(0, "XXXX777:02:%s\n", rr22);
+	g_free(rr22);
+
+
+	va_list args2;
+	rr22 = g_strdup_vprintf("dem Straßenverlauf", args2);
+	dbg(0, "XXXX777:03:%s\n", rr22);
+	g_free(rr22);
+
+
+
+	va_list args3;
+	char *string_ret = NULL;
+	int aa = g_vasprintf(&string_ret, "dem Straßenverlauf", args3);
+	dbg(0, "XXXX777:04:%d\n", aa);
+	rr22 = string_ret;
+	dbg(0, "XXXX777:04:%s\n", rr22);
+	g_free(rr22);
+
+
+	rr22 = g_strdup(_("then turn %1$s%2$s %3$s%4$s"));
+	dbg(0, "XXXX777:05:%s\n", rr22);
+	g_free(rr22);
+
+
+	rr22 = g_strdup_printf(_("then turn %1$s%2$s %3$s%4$s"), "scharf", "links", "in 100 Metern", "Kagran");
+	dbg(0, "XXXX777:06:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf_4_str(_("then turn %1$s%2$s %3$s%4$s"), "scharf", "links", "in 100 Metern", "Kagran");
+	dbg(0, "XXXX777:06a:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf_2_str(_("then turn %2$s%1$s"), "scharf", "links");
+	dbg(0, "XXXX777:06b:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf_2_str(_("then turn %1$s%2$s"), "scharf", "links");
+	dbg(0, "XXXX777:06c:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf("then turn %1$s%2$s %3$s%4$s", "scharf ", "links ", "in 100 Metern ", "Kagran ");
+	dbg(0, "XXXX777:07:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf("then turn %s%s %s%s", "scharf ", "links ", "in 100 Metern ", "Kagran" );
+	dbg(0, "XXXX777:08:%s\n", rr22);
+	g_free(rr22);
+
+	rr22 = g_strdup_printf("%s %f %d", "sßel3p2", 3.4583453f, -3472);
+	dbg(0, "XXXX777:09:%s\n", rr22);
+	g_free(rr22);
+
+
+#endif
+
 }
+
+
+gchar* g_strdup_printf_custom(const gchar *format, ...)
+{
+  gchar *buffer;
+  va_list args;
+
+  va_start (args, format);
+  buffer = g_strdup_vprintf_custom (format, args);
+  va_end (args);
+
+  return buffer;
+}
+
+gchar* g_strdup_vprintf_custom(const gchar *format,	  va_list      args)
+{
+  gchar *string = NULL;
+
+  g_vasprintf_custom (&string, format, args);
+
+  return string;
+}
+
+gint g_vasprintf_custom (gchar **string, gchar const *format, va_list args)
+{
+	gint len;
+	g_return_val_if_fail (string != NULL, -1); 
+
+	len = rpl_vasprintf(string , format, args);
+	if (len < 0)
+	{
+		*string = NULL;
+	}
+	else if (!g_mem_is_system_malloc ()) 
+	{
+		/* vasprintf returns malloc-allocated memory */
+		gchar *string1 = g_strndup (*string, len);
+		free (*string);
+		*string = string1;
+	}
+
+   return len;
+}
+
+
+char *replace_str2(const char *str, const char *old, const char *new)
+			{
+				char *ret, *r;
+				const char *p, *q;
+				size_t oldlen = strlen(old);
+				size_t count, retlen, newlen = strlen(new);
+				int samesize = (oldlen == newlen);
+			
+				if (!samesize) {
+					for (count = 0, p = str; (q = strstr(p, old)) != NULL; p = q + oldlen)
+						count++;
+					/* This is undefined if p - str > PTRDIFF_MAX */
+					retlen = p - str + strlen(p) + count * (newlen - oldlen);
+				} else
+					retlen = strlen(str);
+			
+				if ((ret = malloc(retlen + 1)) == NULL)
+					return NULL;
+			
+				r = ret, p = str;
+				while (1) {
+					/* If the old and new strings are different lengths - in other
+					 * words we have already iterated through with strstr above,
+					 * and thus we know how many times we need to call it - then we
+					 * can avoid the final (potentially lengthy) call to strstr,
+					 * which we already know is going to return NULL, by
+					 * decrementing and checking count.
+					 */
+					if (!samesize && !count--)
+						break;
+					/* Otherwise i.e. when the old and new strings are the same
+					 * length, and we don't know how many times to call strstr,
+					 * we must check for a NULL return here (we check it in any
+					 * event, to avoid further conditions, and because there's
+					 * no harm done with the check even when the old and new
+					 * strings are different lengths).
+					 */
+					if ((q = strstr(p, old)) == NULL)
+						break;
+					/* This is undefined if q - p > PTRDIFF_MAX */
+					ptrdiff_t l = q - p;
+					memcpy(r, p, l);
+					r += l;
+					memcpy(r, new, newlen);
+					r += newlen;
+					p = q + oldlen;
+				}
+				strcpy(r, p);
+			
+				return ret;
+			}
+
+
+static __inline__ unsigned int sort4(unsigned int *d)
+{
+#define SWAP(x,y) if (d[y] < d[x]) { unsigned int tmp = d[x]; d[x] = d[y]; d[y] = tmp; }
+SWAP(0, 1);
+SWAP(2, 3);
+SWAP(0, 2);
+SWAP(1, 3);
+SWAP(1, 2);
+#undef SWAP
+}
+
+
+char* g_strdup_printf_4_str(const char *format, const char *str1, const char *str2, const char *str3, const char *str4)
+{
+	static int str_pos_array[4];
+	static int str_pos_array_copy[4];
+	static char* str_array[4];
+
+	str_pos_array[0] = (unsigned int)strstr(format, "%1$s");
+	str_pos_array[1] = (unsigned int)strstr(format, "%2$s");
+	str_pos_array[2] = (unsigned int)strstr(format, "%3$s");
+	str_pos_array[3] = (unsigned int)strstr(format, "%4$s");
+	str_pos_array_copy[0] = str_pos_array[0];
+	str_pos_array_copy[1] = str_pos_array[1];
+	str_pos_array_copy[2] = str_pos_array[2];
+	str_pos_array_copy[3] = str_pos_array[3];
+
+	// dbg(0, "XXXX777:%d %d %d %d \n", str_pos_array[0], str_pos_array[1], str_pos_array[2], str_pos_array[3]);
+	sort4(str_pos_array);
+	// dbg(0, "XXXX777:%d %d %d %d \n", str_pos_array[0], str_pos_array[1], str_pos_array[2], str_pos_array[3]);
+
+	// -- now remove the position info for format --
+	char *format_changed_2 = replace_str2(format, "%1$s", "%s");
+	char *format_changed = replace_str2(format_changed_2, "%2$s", "%s");
+	free(format_changed_2);
+	format_changed_2 = replace_str2(format_changed, "%3$s", "%s");
+	free(format_changed);
+	format_changed = replace_str2(format_changed_2, "%4$s", "%s");
+	free(format_changed_2);
+	// -- now remove the position info for format --
+
+	char* ret_str = NULL;
+	// ---- here comes the ugly part ...
+	if (str_pos_array[0] == str_pos_array_copy[0])
+	{
+		str_array[0] = str1;
+	}
+	else if (str_pos_array[0] == str_pos_array_copy[1])
+	{
+		str_array[0] = str2;
+	}
+	else if (str_pos_array[0] == str_pos_array_copy[2])
+	{
+		str_array[0] = str3;
+	}
+	else if (str_pos_array[0] == str_pos_array_copy[3])
+	{
+		str_array[0] = str4;
+	}
+
+	if (str_pos_array[1] == str_pos_array_copy[0])
+	{
+		str_array[1] = str1;
+	}
+	else if (str_pos_array[1] == str_pos_array_copy[1])
+	{
+		str_array[1] = str2;
+	}
+	else if (str_pos_array[1] == str_pos_array_copy[2])
+	{
+		str_array[1] = str3;
+	}
+	else if (str_pos_array[1] == str_pos_array_copy[3])
+	{
+		str_array[1] = str4;
+	}
+
+	if (str_pos_array[2] == str_pos_array_copy[0])
+	{
+		str_array[2] = str1;
+	}
+	else if (str_pos_array[2] == str_pos_array_copy[1])
+	{
+		str_array[2] = str2;
+	}
+	else if (str_pos_array[2] == str_pos_array_copy[2])
+	{
+		str_array[2] = str3;
+	}
+	else if (str_pos_array[2] == str_pos_array_copy[3])
+	{
+		str_array[2] = str4;
+	}
+
+	if (str_pos_array[3] == str_pos_array_copy[0])
+	{
+		str_array[3] = str1;
+	}
+	else if (str_pos_array[3] == str_pos_array_copy[1])
+	{
+		str_array[3] = str2;
+	}
+	else if (str_pos_array[3] == str_pos_array_copy[2])
+	{
+		str_array[3] = str3;
+	}
+	else if (str_pos_array[3] == str_pos_array_copy[3])
+	{
+		str_array[3] = str4;
+	}
+
+	ret_str = g_strdup_printf(format_changed, str_array[0], str_array[1], str_array[2], str_array[3]);
+	// ---- here comes the ugly part ...
+
+	free(format_changed);
+
+	return ret_str;
+}
+
+
+char* g_strdup_printf_2_str(const char *format, const char *str1, const char *str2)
+{
+	static int str_pos_array[2];
+
+	str_pos_array[0] = (unsigned int)strstr(format, "%1$s");
+	str_pos_array[1] = (unsigned int)strstr(format, "%2$s");
+
+	// -- now remove the position info for format --
+	char *format_changed_2 = replace_str2(format, "%1$s", "%s");
+	char *format_changed = replace_str2(format_changed_2, "%2$s", "%s");
+	free(format_changed_2);
+	// -- now remove the position info for format --
+
+	char* ret_str = NULL;
+	// ---- here comes the ugly part ...
+
+	if (str_pos_array[0] > str_pos_array[1])
+	{
+		ret_str = g_strdup_printf(format_changed, str2, str1);
+	}
+	else
+	{
+		ret_str = g_strdup_printf(format_changed, str1, str2);
+	}
+	// ---- here comes the ugly part ...
+
+	free(format_changed);
+
+	return ret_str;
+}
+
+
+
+

@@ -29,10 +29,12 @@ import android.view.View;
 
 public class ZANaviOSDStreetname extends View
 {
-	private Paint paint = new Paint();
+	private Paint paint_bg = new Paint();
+	private Paint paint_bg2 = new Paint();
+	private Paint paint_p1 = new Paint();
+	private Paint paint_p2 = new Paint();
+	private Paint paint_p3 = new Paint();
 	private RectF f;
-	String my_text = "";
-	String my_text_systematic = "";
 
 	public ZANaviOSDStreetname(Context context)
 	{
@@ -61,91 +63,97 @@ public class ZANaviOSDStreetname extends View
 		{
 			if ((Navit.OSD_nextturn.nextturn_streetname != null) || (Navit.PREF_follow_gps))
 			{
-				my_text = Navit.OSD_nextturn.nextturn_streetname;
-				my_text_systematic = Navit.OSD_nextturn.nextturn_streetname_systematic;
+				String my_text = Navit.OSD_nextturn.nextturn_streetname;
+				String my_text_systematic = Navit.OSD_nextturn.nextturn_streetname_systematic;
 
 				if (NavitGraphics.MAP_DISPLAY_OFF)
 				{
-					paint.setColor(Color.argb(255, 20, 20, 230));
-					paint.setStyle(Paint.Style.FILL_AND_STROKE);
-					paint.setStrokeWidth(2);
-					paint.setAntiAlias(true);
-					c.drawRoundRect(f, 10, 10, paint);
-					paint.setColor(Color.WHITE);
-					paint.setStrokeWidth(3);
-					paint.setStyle(Paint.Style.FILL);
+					paint_bg2.setColor(Color.argb(255, 20, 20, 230));
+					paint_bg2.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint_bg2.setStrokeWidth(2);
+					paint_bg2.setAntiAlias(true);
+					c.drawRoundRect(f, 10, 10, paint_bg2);
+					paint_p1.setColor(Color.WHITE);
+					paint_p1.setStrokeWidth(3);
+					paint_p1.setStyle(Paint.Style.FILL);
 					if ((my_text.length() + 1 + my_text_systematic.length()) > (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth))
 					{
 						if ((my_text.length() + 1 + my_text_systematic.length()) > (2 * (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth)))
 						{
-							paint.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
+							paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
 						}
 						else
 						{
-							paint.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
+							paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
 						}
 					}
 					else
 					{
-						paint.setTextSize(NavitOSDJava.nextt_str_font_size);
+						paint_p1.setTextSize(NavitOSDJava.nextt_str_font_size);
 					}
-					paint.setAntiAlias(true);
-					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_ltxB + NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_ltyB + NavitOSDJava.nextt_str_start_y, paint);
+					paint_p1.setAntiAlias(true);
+					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_ltxB + NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_ltyB + NavitOSDJava.nextt_str_start_y, paint_p1);
 				}
 				else
 				{
-					paint.setColor(NavitOSDJava.OSD_element_bg_001);
-					paint.setStyle(Paint.Style.FILL_AND_STROKE);
-					paint.setStrokeWidth(2);
-					paint.setAntiAlias(true);
-					c.drawRoundRect(f, 10, 10, paint);
-					paint.setColor(Color.BLACK);
-					paint.setStrokeWidth(3);
-					paint.setStyle(Paint.Style.FILL);
+					paint_bg2.setColor(NavitOSDJava.OSD_element_bg_001);
+					paint_bg2.setStyle(Paint.Style.FILL_AND_STROKE);
+					paint_bg2.setStrokeWidth(2);
+					paint_bg2.setAntiAlias(true);
+					c.drawRoundRect(f, 10, 10, paint_bg2);
+					//paint_p1.setColor(Color.BLACK);
+					//paint_p1.setStrokeWidth(3);
+					//paint_p1.setStyle(Paint.Style.FILL);
 					if ((my_text.length() + 1 + my_text_systematic.length()) > (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth))
 					{
 						if ((my_text.length() + 1 + my_text_systematic.length()) > (2 * (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth)))
 						{
-							paint.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
+							//paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
+							paint_p2.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
+							paint_p3.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
 						}
 						else
 						{
-							paint.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
+							//paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
+							paint_p2.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
+							paint_p3.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
 						}
 					}
 					else
 					{
-						paint.setTextSize(NavitOSDJava.nextt_str_font_size);
+						//paint_p1.setTextSize(NavitOSDJava.nextt_str_font_size);
+						paint_p2.setTextSize(NavitOSDJava.nextt_str_font_size);
+						paint_p3.setTextSize(NavitOSDJava.nextt_str_font_size);
 					}
 
 					//System.out.println("xx=" + my_text + " " + NavitOSDJava.nextt_str_start_x + " " + NavitOSDJava.nextt_str_start_y + " " + NavitOSDJava.nextt_str_font_size);
 
-					paint.setColor(NavitOSDJava.OSD_element_text_shadow_001);
-					paint.setStrokeWidth(NavitOSDJava.OSD_element_text_shadow_width);
-					paint.setStyle(Paint.Style.STROKE);
-					paint.setAntiAlias(true);
-					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_start_y, paint);
+					paint_p2.setColor(NavitOSDJava.OSD_element_text_shadow_001);
+					paint_p2.setStrokeWidth(NavitOSDJava.OSD_element_text_shadow_width);
+					paint_p2.setStyle(Paint.Style.STROKE);
+					paint_p2.setAntiAlias(true);
+					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_start_y, paint_p2);
 
-					paint.setColor(NavitOSDJava.OSD_element_text_001);
-					paint.setStrokeWidth(3);
-					paint.setStyle(Paint.Style.FILL);
-					paint.setAntiAlias(true);
-					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_start_y, paint);
+					paint_p3.setColor(NavitOSDJava.OSD_element_text_001);
+					paint_p3.setStrokeWidth(3);
+					paint_p3.setStyle(Paint.Style.FILL);
+					paint_p3.setAntiAlias(true);
+					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_start_y, paint_p3);
 				}
 			}
 			else
 			{
-				paint.setColor(Color.argb(0, 0, 0, 0));
-				paint.setStyle(Paint.Style.FILL);
-				paint.setStrokeWidth(3);
-				paint.setAntiAlias(false);
+				paint_bg.setColor(Color.argb(0, 0, 0, 0));
+				paint_bg.setStyle(Paint.Style.FILL);
+				paint_bg.setStrokeWidth(3);
+				paint_bg.setAntiAlias(false);
 				if (NavitGraphics.MAP_DISPLAY_OFF)
 				{
-					c.drawRect(f, paint);
+					c.drawRect(f, paint_bg);
 				}
 				else
 				{
-					c.drawRect(f, paint);
+					c.drawRect(f, paint_bg);
 				}
 			}
 		}

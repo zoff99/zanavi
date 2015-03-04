@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011 - 2015 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,10 @@
  */
 
 package com.zoffcc.applications.zanavi;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import android.os.StatFs;
 
@@ -84,12 +88,54 @@ public class NavitAvailableSpaceHandler
 		return getExternalAvailableSpaceInBytes(directory) / SIZE_MB;
 	}
 
+	public static float getExternalAvailableSpaceInMBformatted(String directory)
+	{
+		float drive_free = ((float) getExternalAvailableSpaceInBytes(directory)) / (float) (SIZE_MB);
+
+		return drive_free;
+	}
+
+	public static String getExternalAvailableSpaceInMBformattedString(String directory)
+	{
+		float drive_free = getExternalAvailableSpaceInMBformatted(directory);
+		String drive_free_string = SpaceCustomNumberFormat("#.#", drive_free);
+
+		return drive_free_string;
+	}
+
 	/**
-	 * @return gega bytes of bytes available on external storage
+	 * @return giga bytes of bytes available on external storage
 	 */
 	public static long getExternalAvailableSpaceInGB(String directory)
 	{
 		return getExternalAvailableSpaceInBytes(directory) / SIZE_GB;
+	}
+
+	public static float getExternalAvailableSpaceInGBformatted(String directory)
+	{
+		float drive_free = ((float) getExternalAvailableSpaceInBytes(directory)) / (float) (SIZE_GB);
+
+		return drive_free;
+	}
+
+	static String SpaceCustomNumberFormat(String pattern, double value)
+	{
+		// NumberFormat myFormatter = DecimalFormat.getInstance(Locale.US);
+
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.US);
+		otherSymbols.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat(pattern, otherSymbols);
+
+		String output = df.format(value);
+		return (output);
+	}
+
+	public static String getExternalAvailableSpaceInGBformattedString(String directory)
+	{
+		float drive_free = getExternalAvailableSpaceInGBformatted(directory);
+		String drive_free_string = SpaceCustomNumberFormat("#.##", drive_free);
+
+		return drive_free_string;
 	}
 
 	/**

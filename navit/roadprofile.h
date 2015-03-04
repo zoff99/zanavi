@@ -21,10 +21,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-struct roadprofile {
+struct roadprofile
+{
 	struct attr **attrs;
-        int speed;
-        int route_weight;
+	int speed;
+	int route_weight;
+	int route_prio_weight;
 	int maxspeed;
 };
 

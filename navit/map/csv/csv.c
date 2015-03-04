@@ -525,7 +525,7 @@ static struct map_methods map_methods_csv = {
 	csv_get_attr,
 };
 
-static struct map_priv *
+struct map_priv *
 map_new_csv(struct map_methods *meth, struct attr **attrs, struct callback_list *cbl)
 {
 	struct map_priv *m = NULL;
@@ -693,10 +693,12 @@ map_new_csv(struct map_methods *meth, struct attr **attrs, struct callback_list 
 	return m;
 }
 
+#ifdef PLUGSSS
 void
 plugin_init(void)
 {
 	dbg(1,"csv: plugin_init\n");
 	plugin_register_map_type("csv", map_new_csv);
 }
+#endif
 

@@ -87,9 +87,6 @@
 struct map *
 map_new(struct attr *parent, struct attr **attrs)
 {
-#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	dbg(0,"+#+:enter\n");
-#endif
 	struct map *m;
 	struct map_priv *(*maptype_new)(struct map_methods *meth, struct attr **attrs, struct callback_list *cbl);
 	struct attr *type = attr_search(attrs, NULL, attr_type);
@@ -99,7 +96,8 @@ map_new(struct attr *parent, struct attr **attrs)
 		dbg(0, "missing type\n");
 		return NULL;
 	}
-	//dbg(0,"type='%s'\n", type->u.str);
+
+#ifdef PLUGSSS
 	maptype_new = plugin_get_map_type(type->u.str);
 
 	if (!maptype_new)
@@ -107,30 +105,62 @@ map_new(struct attr *parent, struct attr **attrs)
 		dbg(0, "invalid type '%s'\n", type->u.str);
 		return NULL;
 	}
-	//dbg(0,"MM 1");
+#endif
 
 	m=g_new0(struct map, 1);
 	m->attrs = attr_list_dup(attrs);
-	m->attr_cbl = callback_list_new();
+	m->attr_cbl = callback_list_new("map_new:m->attr_cbl");
 
-	// dbg(0, "map_new:map cbl=%p\n", m->attr_cbl);
+	//dbg(0, "map_new:map cbl=%p\n", m->attr_cbl);
+	//dbg(0, "map_new:map type=%s\n", type->u.str);
 
-	//dbg(0,"MM 2");
+#ifdef PLUGSSS
 	m->priv = maptype_new(&m->meth, attrs, m->attr_cbl);
-	//dbg(0,"MM 3");
+#else
+	if (strncmp("binfile", type->u.str, 7) == 0)
+	{
+		m->priv = map_new_binfile(&m->meth, attrs, m->attr_cbl);
+	}
+	else if (strncmp("csv", type->u.str, 3) == 0)
+	{
+		m->priv = map_new_csv(&m->meth, attrs, m->attr_cbl);
+	}
+	else if (strncmp("textfile", type->u.str, 8) == 0)
+	{
+		m->priv = map_new_textfile(&m->meth, attrs, m->attr_cbl);
+	}
+	else if (strncmp("navigation", type->u.str, 10) == 0)
+	{
+		m->priv = navigation_map_new(&m->meth, attrs, m->attr_cbl);
+	}
+	else if (strncmp("tracking", type->u.str, 8) == 0)
+	{
+		m->priv = tracking_map_new(&m->meth, attrs, m->attr_cbl);
+	}
+	else if (strncmp("route_graph", type->u.str, 11) == 0)
+	{
+		m->priv = route_graph_map_new(&m->meth, attrs, m->attr_cbl);
+	}
+	else if (strncmp("route", type->u.str, 5) == 0)
+	{
+		m->priv = route_map_new(&m->meth, attrs, m->attr_cbl);
+	}
+#endif
+
+	//dbg(0, "map_new:map ready\n");
+
+
 	if (!m->priv)
 	{
 		m->refcount = 1;
-		//dbg(0,"MM 4");
 		map_destroy(m);
-		//dbg(0,"MM 5");
 		m = NULL;
 	}
 	else
 	{
 		m->refcount = 0;
 	}
-	//dbg(0,"MM 6");
+
 	return m;
 }
 
@@ -213,13 +243,13 @@ void map_add_callback(struct map *this_, struct callback *cb)
 	struct attr map_name_attr;
 	if (map_get_attr(this_, attr_name, &map_name_attr, NULL))
 	{
-		dbg(0, "map_add_callback:for %s\n", map_name_attr.u.str);
+		//dbg(0, "map_add_callback:for %s\n", map_name_attr.u.str);
 	}
 	else
 	{
-		dbg(0, "map_add_callback:for *unknown*\n");
+		//dbg(0, "map_add_callback:for *unknown*\n");
 	}
-	dbg(0, "map_add_callback:cb=%p\n", cb);
+	//dbg(0, "map_add_callback:cb=%p\n", cb);
 
 	callback_list_add(this_->attr_cbl, cb);
 }
@@ -415,6 +445,7 @@ map_rect_get_item(struct map_rect *mr)
 	ret = mr->m->meth.map_rect_get_item(mr->priv);
 	if (ret)
 		ret->map = mr->m;
+
 	return ret;
 }
 
@@ -435,10 +466,13 @@ map_rect_get_item_byid(struct map_rect *mr, int id_hi, int id_lo)
 	struct item *ret = NULL;
 	dbg_assert(mr != NULL);
 	dbg_assert(mr->m != NULL);
+
 	if (mr->m->meth.map_rect_get_item_byid)
 		ret = mr->m->meth.map_rect_get_item_byid(mr->priv, id_hi, id_lo);
+
 	if (ret)
 		ret->map = mr->m;
+
 	return ret;
 }
 
@@ -508,8 +542,8 @@ map_search_new(struct map *m, struct item *item, struct attr *search_attr, int p
 	dbg(0,"+#+:enter\n");
 #endif
 	struct map_search *this_;
-	dbg(1, "enter(%p,%p,%p,%d)\n", m, item, search_attr, partial);
-	dbg(1, "0x%x 0x%x 0x%x\n", attr_country_all, search_attr->type, attr_country_name);
+	//dbg(1, "enter(%p,%p,%p,%d)\n", m, item, search_attr, partial);
+	//dbg(1, "0x%x 0x%x 0x%x\n", attr_country_all, search_attr->type, attr_country_name);
 	this_=g_new0(struct map_search,1);
 	this_->m = m;
 	this_->search_attr = *search_attr;

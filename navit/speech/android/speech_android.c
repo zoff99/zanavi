@@ -25,8 +25,10 @@
 #include "plugin.h"
 #include "android.h"
 #include "speech.h"
+#include "navit.h"
 
-struct speech_priv {
+struct speech_priv
+{
 	jclass NavitSpeechClass;
 	jobject NavitSpeech;
 	jmethodID NavitSpeech_say;
@@ -35,7 +37,7 @@ struct speech_priv {
 
 
 jclass NavitClass4 = NULL;
-jmethodID Navit_get_speech;
+jmethodID Navit_get_speech = NULL;
 
 static int find_static_method(jclass class, char *name, char *args, jmethodID *ret)
 {
@@ -101,7 +103,15 @@ speech_android_say(struct speech_priv *this, const char *text)
 
 	string = (*jnienv2)->NewStringUTF(jnienv2, str);
 	// dbg(0,"enter %s\n",str);
-    (*jnienv2)->CallVoidMethod(jnienv2, this->NavitSpeech, this->NavitSpeech_say, string);
+
+
+#ifdef NAVIT_DEBUG_SPEECH_POSITION
+    (*jnienv2)->CallVoidMethod(jnienv2, this->NavitSpeech, this->NavitSpeech_say, string, (int)(global_last_vehicle_pos_geo.lat * 100000.0f), (int)(global_last_vehicle_pos_geo.lng * 100000.0f));
+#else
+    (*jnienv2)->CallVoidMethod(jnienv2, this->NavitSpeech, this->NavitSpeech_say, string, 0, 0);
+#endif
+
+
     (*jnienv2)->DeleteLocalRef(jnienv2, string);
 
 	g_free(str);
@@ -148,7 +158,7 @@ speech_android_init(struct speech_priv *ret)
 		return 0;
 	}
 
-	if (!android_find_method(ret->NavitSpeechClass, "say", "(Ljava/lang/String;)V", &ret->NavitSpeech_say))
+	if (!android_find_method(ret->NavitSpeechClass, "say", "(Ljava/lang/String;II)V", &ret->NavitSpeech_say))
 	{
 		return 0;
 	}
@@ -172,7 +182,9 @@ speech_android_init(struct speech_priv *ret)
 	}
 
 	if (!find_static_method(NavitClass4, "get_speech_object", "()Lcom/zoffcc/applications/zanavi/NavitSpeech2;", &Navit_get_speech))
+	{
 		return 0;
+	}
 
 
 	/// --old-- ret->NavitSpeech=(*jnienv2)->NewObject(jnienv2, ret->NavitSpeechClass, cid, android_activity);
@@ -198,7 +210,7 @@ speech_android_init(struct speech_priv *ret)
 	return 1;
 }
 
-static struct speech_priv *
+struct speech_priv *
 speech_android_new(struct speech_methods *meth, struct attr **attrs, struct attr *parent)
 {
 	dbg(0,"EEnter\n");
@@ -226,10 +238,11 @@ speech_android_new(struct speech_methods *meth, struct attr **attrs, struct attr
 	return this;
 }
 
-
+#ifdef PLUGSSS
 void
 plugin_init(void)
 {
 	plugin_register_speech_type("android", speech_android_new);
 }
+#endif
 

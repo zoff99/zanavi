@@ -6,15 +6,57 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zanavi\n"
 "Report-Msgid-Bugs-To: zoff99 <zoff@zanavi.cc>\n"
-"POT-Creation-Date: 2014-02-22 13:11+0100\n"
-"PO-Revision-Date: 2014-02-22 12:30+0000\n"
+"POT-Creation-Date: 2014-04-18 18:50+0200\n"
+"PO-Revision-Date: 2014-04-19 07:35+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: zoff99 <zoff@zanavi.cc>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-02-22 12:32+0000\n"
-"X-Generator: Launchpad (build 16926)\n"
+"X-Launchpad-Export-Date: 2014-04-19 11:32+0000\n"
+"X-Generator: Launchpad (build 16985)\n"
+
+#: ZANaviNormalDonateActivity.java:42
+msgid "_long_text_donate_version_"
+msgstr ""
+"With this Donate Version you activate the faster index search.\\nKeep the "
+"Donate Version installed and then delete and re-download all your maps to "
+"activate the index search"
+
+#: ZANaviNormalDonateActivity.java:43
+msgid "buy Donate Version"
+msgstr "buy Donate Version"
+
+#: ZANaviNormalDonateActivity.java:45
+msgid "_long_text_large_map_donate_version_"
+msgstr ""
+"This Donate Version activates index search and allows you to download the "
+"larger maps (World, Europe, USA).\\nKeep the Donate Version installed and "
+"then delete and re-download all your maps to activate the index search"
+
+#: ZANaviNormalDonateActivity.java:46
+msgid "buy large-map Donate Version"
+msgstr "buy large-map Donate Version"
+
+#: ZANaviNormalDonateActivity.java:48
+msgid "_long_text_donate_app_"
+msgstr "Donate any Amount with the official Donate App"
+
+#: ZANaviNormalDonateActivity.java:49
+msgid "Donate with the offcial Donate App"
+msgstr "Donate with the offcial Donate App"
+
+#: ZANaviNormalDonateActivity.java:69
+msgid "ZANavi Donate Version already installed"
+msgstr "ZANavi Donate Version already installed"
+
+#: ZANaviNormalDonateActivity.java:118
+msgid "ZANavi large map Donate Version already installed"
+msgstr "ZANavi large map Donate Version already installed"
+
+#: ZANaviNormalDonateActivity.java:170
+msgid "starting Donate App"
+msgstr "starting Donate App"
 
 #: NavitMapPreviewActivity.java:201
 msgid "Use as destination"
@@ -32,94 +74,94 @@ msgstr "show destination on map"
 msgid "touch map to zoom"
 msgstr "touch map to zoom"
 
-#: NavitMapDownloader.java:543 NavitMapDownloader.java:1595
-#: NavitMapDownloader.java:1609 NavitMapDownloader.java:1641
+#: NavitMapDownloader.java:568 NavitMapDownloader.java:1660
+#: NavitMapDownloader.java:1674 NavitMapDownloader.java:1706
 msgid "Error downloading map!"
 msgstr "Error downloading map!"
 
-#: NavitMapDownloader.java:717 NavitMapDownloader.java:1543
-#: NavitMapDownloader.java:2102 NavitMapDownloader.java:2509
-#: NavitMapDownloader.java:2622 NavitMapDownloader.java:2834
-#: NavitMapDownloader.java:2912 NavitMapDownloader.java:3031
-#: NavitMapDownloader.java:3055
+#: NavitMapDownloader.java:766 NavitMapDownloader.java:1594
+#: NavitMapDownloader.java:2167 NavitMapDownloader.java:2574
+#: NavitMapDownloader.java:2687 NavitMapDownloader.java:2899
+#: NavitMapDownloader.java:2977 NavitMapDownloader.java:3096
+#: NavitMapDownloader.java:3120
 msgid "Mapdownload"
 msgstr "Mapdownload"
 
-#: NavitMapDownloader.java:751 NavitMapDownloader.java:761
-#: NavitMapDownloader.java:1544
+#: NavitMapDownloader.java:800 NavitMapDownloader.java:810
+#: NavitMapDownloader.java:1595
 msgid "downloading"
 msgstr "downloading"
 
-#: NavitMapDownloader.java:751 NavitMapDownloader.java:760
-#: NavitMapDownloader.java:761
+#: NavitMapDownloader.java:800 NavitMapDownloader.java:809
+#: NavitMapDownloader.java:810
 msgid "ETA"
 msgstr "ETA"
 
-#: NavitMapDownloader.java:882
+#: NavitMapDownloader.java:933
 msgid "Error downloading map, resuming"
 msgstr "Error downloading map\\nresuming ..."
 
-#: NavitMapDownloader.java:1626
+#: NavitMapDownloader.java:1691
 msgid "Map already up to date"
 msgstr "Map already up to date"
 
-#: NavitMapDownloader.java:1847 NavitMapDownloader.java:1848
+#: NavitMapDownloader.java:1912 NavitMapDownloader.java:1913
 msgid "checking map ..."
 msgstr "checking map ..."
 
-#: NavitMapDownloader.java:1864
+#: NavitMapDownloader.java:1929
 msgid "MD5 mismatch"
 msgstr "MD5 mismatch"
 
-#: NavitMapDownloader.java:1989
+#: NavitMapDownloader.java:2054
 msgid "Error downloading index!"
 msgstr "Error downloading index!"
 
-#: NavitMapDownloader.java:2014
+#: NavitMapDownloader.java:2079
 msgid "Index download"
 msgstr "Index download"
 
-#: NavitMapDownloader.java:2015
+#: NavitMapDownloader.java:2080
 msgid "downloading indexfile"
 msgstr "downloading indexfile"
 
-#: NavitMapDownloader.java:2103
+#: NavitMapDownloader.java:2168
 msgid "ready"
 msgstr "ready"
 
-#: NavitMapDownloader.java:2510
+#: NavitMapDownloader.java:2575
 msgid "Creating outputfile, long time"
 msgstr "Creating outputfile\\nthis can take a long time"
 
-#: NavitMapDownloader.java:2623
+#: NavitMapDownloader.java:2688
 msgid "Creating outputfile, wait"
 msgstr "Creating outputfile\\nplease wait"
 
-#: NavitMapDownloader.java:2835 NavitMapDownloader.java:2913
-#: NavitMapDownloader.java:3032 NavitMapDownloader.java:3056
+#: NavitMapDownloader.java:2900 NavitMapDownloader.java:2978
+#: NavitMapDownloader.java:3097 NavitMapDownloader.java:3121
 msgid "generating MD5 checksum"
 msgstr "generating MD5 checksum"
 
-#: NavitMapDownloader.java:2841 NavitMapDownloader.java:2842
-#: NavitMapDownloader.java:3038 NavitMapDownloader.java:3039
+#: NavitMapDownloader.java:2906 NavitMapDownloader.java:2907
+#: NavitMapDownloader.java:3103 NavitMapDownloader.java:3104
 msgid "checking"
 msgstr "checking"
 
 #. . english text: Welcome to ZANavi
-#: Navit.java:1253
+#: Navit.java:1309
 msgid "__INFO_BOX_TITLE__"
 msgstr "Welcome to ZANavi"
 
-#: Navit.java:1279 Navit.java:5889 NavitAndroidOverlay.java:370
+#: Navit.java:1335 Navit.java:6611 NavitAndroidOverlay.java:394
 msgid "Ok"
 msgstr "Ok"
 
-#: Navit.java:1288
+#: Navit.java:1344
 msgid "More info"
 msgstr "More info"
 
 #. . TRANSLATORS: multiline info text for first startup of application (see en_US for english text)
-#: Navit.java:1321
+#: Navit.java:1377
 msgid "__INFO_BOX_TEXT__"
 msgstr ""
 "You are running ZANavi for the first time!\\n\\nTo start select \"download "
@@ -129,215 +171,252 @@ msgstr ""
 "information\\nvisit our Website\\nhttp://zanavi.cc\\n\\n       Have fun "
 "using ZANavi."
 
-#: Navit.java:2898 Navit.java:2980
-msgid "address search (online)"
-msgstr "address search (online)"
+#: Navit.java:2320
+msgid "driving to Home Location"
+msgstr "driving to Home Location"
 
-#: Navit.java:2899 Navit.java:2982
-msgid "address search (offline)"
-msgstr "address search (offline)"
+#: Navit.java:2412
+msgid "No Home Location set"
+msgstr "No Home Location set"
 
-#: Navit.java:2902 Navit.java:2986
-msgid "Stop Navigation"
-msgstr "Stop Navigation"
-
-#: Navit.java:2903 Navit.java:2988
-msgid "Zoom to Route"
-msgstr "Zoom to Route"
-
-#. . TRANSLATORS: it means: "show current target in google maps"
-#. . TRANSLATORS: please keep this text short, to fit in the android menu!
-#: Navit.java:2906 Navit.java:2992
-msgid "Target in gmaps"
-msgstr "Target in gmaps"
-
-#: Navit.java:2907 Navit.java:2994
+#: Navit.java:3216 Navit.java:3225
 msgid "Share Destination"
 msgstr "Share Destination"
 
-#. . TRANSLATORS: text to translate is: exit ZANavi
-#: Navit.java:2910 Navit.java:2998
-msgid "exit navit"
-msgstr "Exit ZANavi"
+#: Navit.java:3217 Navit.java:3226
+msgid "Share my Location"
+msgstr "Share my Location"
 
-#: Navit.java:2911 Navit.java:3000
-msgid "toggle POI"
-msgstr "toggle POI"
+#: Navit.java:3218
+msgid "address search (offline)"
+msgstr "address search (offline)"
 
-#: Navit.java:2912 Navit.java:3002
-msgid "Settings"
-msgstr "Settings"
+#: Navit.java:3219
+msgid "address search (online)"
+msgstr "address search (online)"
 
-#: Navit.java:2915 Navit.java:3006
-msgid "Coord Dialog"
-msgstr "Coord Dialog"
-
-#: Navit.java:2919 Navit.java:3011
-msgid "Announcer Off"
-msgstr "Announcer Off"
-
-#: Navit.java:2924 Navit.java:3016
-msgid "Announcer On"
-msgstr "Announcer On"
-
-#: Navit.java:2927 Navit.java:3020
+#: Navit.java:3220
 msgid "Recent destinations"
 msgstr "Recent destinations"
 
-#: Navit.java:2928 Navit.java:3022
-msgid "add Traffic block"
-msgstr "add Traffic block"
+#: Navit.java:3221 Navit.java:3227
+msgid "Settings"
+msgstr "Settings"
 
-#: Navit.java:2929 Navit.java:3024
-msgid "clear Traffic blocks"
-msgstr "clear Traffic blocks"
+#: Navit.java:3222 NavitAddressSearchActivity.java:165
+msgid "Search"
+msgstr "Search"
 
-#: Navit.java:2930 Navit.java:3026
+#: Navit.java:3223
+msgid "downloading map"
+msgstr "downloading map"
+
+#: Navit.java:3228
+msgid "Zoom to Route"
+msgstr "Zoom to Route"
+
+#: Navit.java:3229
+msgid "Donate with Google Play"
+msgstr "Donate with Google Play"
+
+#: Navit.java:3230 ZANaviDonateActivity.java:40
+msgid "Donate with Bitcoin"
+msgstr "Donate with Bitcoin"
+
+#. . TRANSLATORS: text to translate is: exit ZANavi
+#: Navit.java:3232
+msgid "exit navit"
+msgstr "Exit ZANavi"
+
+#: Navit.java:3233
+msgid "toggle POI"
+msgstr "toggle POI"
+
+#: Navit.java:3234
+msgid "Announcer On"
+msgstr "Announcer On"
+
+#: Navit.java:3235
+msgid "Announcer Off"
+msgstr "Announcer Off"
+
+#: Navit.java:3236
 msgid "download maps"
 msgstr "download maps"
 
-#: Navit.java:2931 Navit.java:3028
+#: Navit.java:3237
 msgid "delete maps"
 msgstr "delete maps"
 
-#: Navit.java:2932 Navit.java:3030
+#: Navit.java:3238
 msgid "show Maps age"
 msgstr "show Maps age"
 
-#: Navit.java:2933 Navit.java:3032
+#: Navit.java:3239
+msgid "Coord Dialog"
+msgstr "Coord Dialog"
+
+#: Navit.java:3240
+msgid "add Traffic block"
+msgstr "add Traffic block"
+
+#: Navit.java:3241
+msgid "clear Traffic blocks"
+msgstr "clear Traffic blocks"
+
+#: Navit.java:3242
 msgid "convert GPX file"
 msgstr "convert GPX file"
 
-#: Navit.java:2934 Navit.java:3034
+#: Navit.java:3243
 msgid "clear GPX map"
 msgstr "clear GPX map"
 
-#: Navit.java:2939 Navit.java:2940 Navit.java:3041 Navit.java:3043
+#: Navit.java:3245 Navit.java:3246
 msgid "Demo Vehicle"
 msgstr "Demo Vehicle"
 
-#: Navit.java:2941 Navit.java:3045
+#: Navit.java:3247
 msgid "Speech Texts"
 msgstr "Speech Texts"
 
-#: Navit.java:2942 Navit.java:3047
+#: Navit.java:3248
 msgid "Nav. Commands"
 msgstr "Nav. Commands"
 
-#: Navit.java:2943 Navit.java:3049
+#: Navit.java:3249
 msgid "toggle Routegraph"
 msgstr "toggle Routegraph"
 
-#: Navit.java:2944 Navit.java:3051
-msgid "spill index files"
-msgstr "spill index files"
-
-#: Navit.java:2948 Navit.java:3057
+#: Navit.java:3251
 msgid "send feedback"
 msgstr "send feedback"
 
-#: Navit.java:2949 Navit.java:3059
+#: Navit.java:3252
 msgid "online Help"
 msgstr "online Help"
 
-#: Navit.java:3128
+#. . TRANSLATORS: it means: "show current target in google maps"
+#. . TRANSLATORS: please keep this text short, to fit in the android menu!
+#: Navit.java:3255
+msgid "Target in gmaps"
+msgstr "Target in gmaps"
+
+#: Navit.java:3258 Navit.java:8522
+msgid "Share"
+msgstr "Share"
+
+#: Navit.java:3357
+msgid "Stop Navigation"
+msgstr "Stop Navigation"
+
+#: Navit.java:3553
 msgid "No address found"
 msgstr "No address found"
 
-#: Navit.java:3252 Navit.java:3268 Navit.java:7586
+#: Navit.java:3619 Navit.java:4215
+msgid "Meeting Point"
+msgstr "Meeting Point"
+
+#: Navit.java:3662
+msgid "my Location"
+msgstr "my Location"
+
+#: Navit.java:3685 Navit.java:3707 Navit.java:3923 Navit.java:3939
+#: Navit.java:8475
 msgid "Enter: City and Street"
 msgstr "Enter: City and Street"
 
 #. . TRANSLATORS: please only translate the first word "Map data" and leave the other words in english
-#: Navit.java:3812 Navit.java:6145 Navit.java:6173
+#: Navit.java:4500 Navit.java:6997 Navit.java:7025
 msgid "Map data (c) OpenStreetMap contributors, CC-BY-SA"
 msgstr "Map data (c) OpenStreetMap contributors"
 
-#: Navit.java:3903
+#: Navit.java:4591
 msgid "No search string"
 msgstr "No search string"
 
-#: Navit.java:4035
+#: Navit.java:4723
 msgid "No search string entered"
 msgstr "No search string entered"
 
-#: Navit.java:4190 Navit.java:4468 Navit.java:8323 Navit.java:8397
+#: Navit.java:4878 Navit.java:5176 Navit.java:9313 Navit.java:9387
 msgid "setting destination to"
 msgstr "setting destination to"
 
-#: Navit.java:4212 Navit.java:4482 Navit.java:8337 Navit.java:8411
+#: Navit.java:4900 Navit.java:5190 Navit.java:9327 Navit.java:9401
 msgid "new Waypoint"
 msgstr "new Waypoint"
 
-#: Navit.java:4545
+#: Navit.java:5263
 msgid "there was a problem with sending feedback"
 msgstr "there was a problem with sending feedback"
 
-#: Navit.java:5337 Navit.java:5395
+#: Navit.java:6057 Navit.java:6115
 msgid "getting search results"
 msgstr "getting search results"
 
-#: Navit.java:5338 Navit.java:5396
+#: Navit.java:6058 Navit.java:6116
 msgid "searching ..."
 msgstr "searching ..."
 
-#: Navit.java:5537 NavitGraphics.java:5710
+#: Navit.java:6257 NavitGraphics.java:5541
 msgid "loading search results"
 msgstr "loading search results"
 
-#: Navit.java:5538 NavitGraphics.java:5711
+#: Navit.java:6258 NavitGraphics.java:5542
 msgid "towns"
 msgstr "towns"
 
-#: Navit.java:5538 NavitGraphics.java:5711
+#: Navit.java:6258 NavitGraphics.java:5542
 msgid "Streets"
 msgstr "Streets"
 
-#: Navit.java:5538 NavitGraphics.java:5711
+#: Navit.java:6258 NavitGraphics.java:5542
 msgid "POI"
 msgstr "POI"
 
-#: Navit.java:5562
+#: Navit.java:6282
 msgid "No Results found!"
 msgstr "No Results found!"
 
-#: Navit.java:5889
+#: Navit.java:6611
 msgid "Possibly not enough space on your device!"
 msgstr "Possibly not enough space on your device!"
 
-#: Navit.java:5897
+#: Navit.java:6619
 msgid "device space"
 msgstr "device space"
 
-#: Navit.java:6124
+#: Navit.java:6976
 msgid "Cancel"
 msgstr "Cancel"
 
-#: Navit.java:7609
-msgid "Meeting Point"
-msgstr "Meeting Point"
+#: Navit.java:9109
+msgid "Send feedback via email ..."
+msgstr "Send feedback via email ..."
 
-#: Navit.java:7633
-msgid "Share"
-msgstr "Share"
+#: Navit.java:9174
+msgid "Please press BACK again to Exit"
+msgstr "Please press BACK again to Exit"
 
-#: Navit.java:8363 Navit.java:8437
+#: Navit.java:9353 Navit.java:9427
 msgid "google search API is not working at this moment, try offline search"
 msgstr "google search API is not working at this moment, try offline search"
 
-#: NavitGraphics.java:6684
+#: NavitGraphics.java:6568
 msgid "Destination set"
 msgstr "Destination set"
 
-#: NavitGraphics.java:6696
+#: NavitGraphics.java:6580
 msgid "No route found / Route blocked"
 msgstr "No route found / Route blocked"
 
-#: NavitGraphics.java:6707
+#: NavitGraphics.java:6591
 msgid "Building route path"
 msgstr "Building route path"
 
-#: NavitGraphics.java:6717
+#: NavitGraphics.java:6601
 msgid "Building route graph"
 msgstr "Building route graph"
 
@@ -729,44 +808,48 @@ msgid "__PREF__summ__navit_lang"
 msgstr "Select Language for messages. needs a RESTART!!"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:226
+#: NavitPreferences.java:232
 msgid "__PREF__title__map_directory"
 msgstr "Map directory"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:228
+#: NavitPreferences.java:234
 msgid "__PREF__summ__map_directory"
 msgstr "activated only after RESTART"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:230
+#: NavitPreferences.java:236
 msgid "__PREF__dialogtitle__map_directory"
 msgstr "Map Directory"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:232
+#: NavitPreferences.java:238
 msgid "__PREF__dialogcancel__map_directory"
 msgstr "Cancel"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:234
+#: NavitPreferences.java:240
 msgid "__PREF__dialogok__map_directory"
 msgstr "Ok"
 
 #. . TRANSLATORS: see en_US for english text to translate!!
-#: NavitPreferences.java:236
+#: NavitPreferences.java:242
 msgid "__PREF__dialogmsg__map_directory"
 msgstr "Enter map directory"
 
-#: NavitRecentDestinationActivity.java:60
+#: NavitRecentDestinationActivity.java:66
 msgid "delete Destination"
 msgstr "delete Destination"
 
-#: NavitRecentDestinationActivity.java:60
+#: NavitRecentDestinationActivity.java:66
 msgid "rename Destination"
 msgstr "rename Destination"
 
-#: NavitRecentDestinationActivity.java:198
+#: NavitRecentDestinationActivity.java:66
+msgid "set as Home Location"
+msgstr "set as Home Location"
+
+#: NavitRecentDestinationActivity.java:228
 msgid "Rename Destination"
 msgstr "Rename Destination"
 
@@ -790,10 +873,6 @@ msgstr "hide duplicates"
 msgid "search full mapfile [BETA]"
 msgstr "search full mapfile [BETA]"
 
-#: NavitAddressSearchActivity.java:165
-msgid "Search"
-msgstr "Search"
-
 #: NavitAddressSearchActivity.java:274
 msgid "last searches"
 msgstr "last searches"
@@ -810,15 +889,19 @@ msgstr "Town"
 msgid "Address or POI-Name"
 msgstr "Address or POI-Name"
 
-#: ZANaviDownloadMapCancelActivity.java:57
+#: ZANaviDownloadMapCancelActivity.java:58
 msgid "Stop map download?"
 msgstr "Stop map download?"
 
-#: ZANaviDownloadMapCancelActivity.java:73
+#: ZANaviDownloadMapCancelActivity.java:66
+msgid "press HOME to download in the background"
+msgstr "press HOME to download in the background"
+
+#: ZANaviDownloadMapCancelActivity.java:82
 msgid "Yes"
 msgstr "Yes"
 
-#: ZANaviDownloadMapCancelActivity.java:109
+#: ZANaviDownloadMapCancelActivity.java:118
 msgid "No"
 msgstr "No"
 
@@ -830,6 +913,38 @@ msgstr "Enter your Feedback text"
 msgid "send"
 msgstr "send"
 
+#: ZANaviDonateActivity.java:42
+msgid "copy Bitcoinaddress to Clipboard"
+msgstr "copy Bitcoinaddress to Clipboard"
+
+#: ZANaviDonateActivity.java:43
+msgid "send Bitcoinaddress and QR Code as Email"
+msgstr "send Bitcoinaddress and QR Code as Email"
+
+#: ZANaviDonateActivity.java:44
+msgid "Donate with Bitcoin Wallet App"
+msgstr "Donate with Bitcoin Wallet App"
+
+#: ZANaviDonateActivity.java:62
+msgid "ZANavi Donation with Bitcoin"
+msgstr "ZANavi Donation with Bitcoin"
+
+#: ZANaviDonateActivity.java:63
+msgid "Bitcoin address"
+msgstr "Bitcoin address"
+
+#: ZANaviDonateActivity.java:63
+msgid "generate QR code"
+msgstr "generate QR code"
+
+#: ZANaviDonateActivity.java:70
+msgid "Send Bitcoin address to email ..."
+msgstr "Send Bitcoin address to email ..."
+
+#: ZANaviDonateActivity.java:82
+msgid "Bitcoinaddress copied to Clipboard"
+msgstr "Bitcoinaddress copied to Clipboard"
+
 #: NavitSpeech2.java:138
 msgid ""
 "Language is not available for TTS! Using your phone's default settings"
@@ -840,35 +955,35 @@ msgstr ""
 msgid "Using Voice for:"
 msgstr "Using Voice for:"
 
-#: ZANaviVoiceInput.java:65
+#: ZANaviVoiceInput.java:71
 msgid "Click to talk"
 msgstr "Click to talk"
 
-#: ZANaviVoiceInput.java:68
+#: ZANaviVoiceInput.java:74
 msgid "Voice Search, speak your Destination"
 msgstr "Voice Search, speak your Destination"
 
-#: ZANaviVoiceInput.java:83 ZANaviVoiceInput.java:84
+#: ZANaviVoiceInput.java:89 ZANaviVoiceInput.java:90
 msgid "Google Speechrecognition not found"
 msgstr "Google Speechrecognition not found"
 
-#: ZANaviVoiceInput.java:189 ZANaviVoiceInput.java:253
-#: ZANaviVoiceInput.java:306
+#: ZANaviVoiceInput.java:205 ZANaviVoiceInput.java:269
+#: ZANaviVoiceInput.java:322
 msgid "you said:"
 msgstr "you said:"
 
-#: ZANaviVoiceInput.java:190 ZANaviVoiceInput.java:254
+#: ZANaviVoiceInput.java:206 ZANaviVoiceInput.java:270
 msgid "searching for the location"
 msgstr "searching for the location"
 
-#: ZANaviVoiceInput.java:203
+#: ZANaviVoiceInput.java:219
 msgid "Find Destination"
 msgstr "Find Destination"
 
-#: ZANaviVoiceInput.java:300 ZANaviVoiceInput.java:305
+#: ZANaviVoiceInput.java:316 ZANaviVoiceInput.java:321
 msgid "Google did not find this location. Please search again"
 msgstr "Google did not find this location. Please search again"
 
-#: NavitAndroidOverlay.java:378
+#: NavitAndroidOverlay.java:402
 msgid "What's here"
 msgstr "What's here"

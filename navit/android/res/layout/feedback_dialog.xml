@@ -1,37 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fb_sv"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fb_root"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/fb_panel"
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationContentDescription="@string/abc_action_bar_up_description"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    <ScrollView
+        android:id="@+id/fb_sv"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="top"
-        android:orientation="vertical" >
+        android:layout_height="fill_parent" >
 
-        <TextView
-            android:id="@+id/fb_label"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
-        </TextView>
-
-        <EditText
-            android:id="@+id/fb_text"
+        <LinearLayout
+            android:id="@+id/fb_panel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:inputType="none"
-            android:scrollbars="vertical"
-            android:singleLine="false" />
+            android:gravity="top"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/fb_sendbutton"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom" />
+            <TextView
+                android:id="@+id/fb_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+            </TextView>
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/fb_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:inputType="none"
+                android:scrollbars="vertical"
+                android:singleLine="false" />
 
-</ScrollView>
+            <Button
+                android:id="@+id/fb_sendbutton"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

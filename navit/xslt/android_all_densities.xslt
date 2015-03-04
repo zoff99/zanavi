@@ -1799,112 +1799,13 @@
 
 		<xsl:text>&#x0A;        </xsl:text>
 
+
 			<layer name="Internal">
 				<itemgra item_types="track" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#3f3f3f" width="1"/>
 				</itemgra>
 				<itemgra item_types="track_tracked" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<polyline color="#3f3fff" width="3"/>
-				</itemgra>
-
-
-				<!-- route graph -->
-				<itemgra item_types="rg_segment" order="0-">
-					<polyline color="#FF089C" width="1"/>
-					<arrows color="#FF089C" width="1"/>
-				</itemgra>
-				<itemgra item_types="rg_point" order="0-">
-					<circle color="#FF089C" radius="10" text_size="7"/>
-				</itemgra>
-				<!-- route graph -->
-
-
-				<itemgra item_types="nav_left_1" order="0-">
-					<icon src="nav_left_1_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_left_2" order="0-">
-					<icon src="nav_left_2_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_left_3" order="0-">
-					<icon src="nav_left_3_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_right_1" order="0-">
-					<icon src="nav_right_1_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_right_2" order="0-">
-					<icon src="nav_right_2_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_right_3" order="0-">
-					<icon src="nav_right_3_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_straight" order="0-">
-					<icon src="nav_straight_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_turnaround" order="0-">
-					<icon src="nav_turnaround_left_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l1" order="0-">
-					<icon src="nav_roundabout_l1_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r1" order="0-">
-					<icon src="nav_roundabout_r1_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l2" order="0-">
-					<icon src="nav_roundabout_l2_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r2" order="0-">
-					<icon src="nav_roundabout_r2_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l3" order="0-">
-					<icon src="nav_roundabout_l3_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r3" order="0-">
-					<icon src="nav_roundabout_r3_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l4" order="0-">
-					<icon src="nav_roundabout_l4_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r4" order="0-">
-					<icon src="nav_roundabout_r4_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l5" order="0-">
-					<icon src="nav_roundabout_l5_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r5" order="0-">
-					<icon src="nav_roundabout_r5_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l6" order="0-">
-					<icon src="nav_roundabout_l6_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r6" order="0-">
-					<icon src="nav_roundabout_r6_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l7" order="0-">
-					<icon src="nav_roundabout_l7_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r7" order="0-">
-					<icon src="nav_roundabout_r7_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_l8" order="0-">
-					<icon src="nav_roundabout_l8_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="nav_roundabout_r8" order="0-">
-					<icon src="nav_roundabout_r8_bk.png" w="32" h="32"/>
-				</itemgra>
-				<itemgra item_types="route_end" order="0-">
-					<icon src="nav_destination_bk_center.png" w="32" h="32"/>
-				</itemgra>
-				<!--
-				<itemgra item_types="route_waypoint" order="0-">
-					<icon src="nav_waypoint_bk_center.png" w="32" h="32"/>
-				</itemgra>
-				-->
-				<itemgra item_types="nav_none" order="0-">
-					<icon src="unknown.png"/>
-				</itemgra>
-				<itemgra item_types="announcement" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
-					<icon src="gui_sound_32_32.png"/>
-					<circle color="#FF089C" radius="10" text_size="7"/>
 				</itemgra>
 			</layer>
 
@@ -1951,6 +1852,11 @@
 					<icon src="tunnel.png"/>
 				</itemgra>
 				-->
+			</layer>
+
+		<xsl:text>&#x0A;        </xsl:text>
+
+			<layer name="POI traffic lights" active="0">
 				<itemgra item_types="traffic_signals" order="{round(14-number($LAYOUT_001_ORDER_DELTA_1))}-">
 					<icon src="traffic_signals.png"/>
 				</itemgra>
@@ -2383,9 +2289,6 @@
 				<itemgra item_types="poi_gc_webcam" order="12-">
 					<icon src="gc_webcam.png"/>
 				</itemgra>
-				<itemgra item_types="traffic_signals" order="13-">
-					<icon src="traffic_signals.png"/>
-				</itemgra>
 				<itemgra item_types="poi_wifi" order="13-">
 					<icon src="wifi.png"/>
 				</itemgra>
@@ -2456,6 +2359,200 @@
 					<circle color="#606060" radius="0" width="0" text_size="10"/>
 				</itemgra>
 			</layer>
+
+		<xsl:text>&#x0A;        </xsl:text>
+
+
+			<layer name="POI bicycle" active="0">
+				<itemgra item_types="poi_bicycle_parking" order="14-15">
+					<circle color="#000000" radius="11" width="10" text_size="12"/>
+					<circle color="#1547C8" radius="7" width="8"/>
+				</itemgra>
+				<itemgra item_types="poi_bicycle_parking" order="16-">
+					<circle color="#000000" radius="20" width="15" text_size="20"/>
+					<circle color="#1547C8" radius="10" width="20"/>
+				</itemgra>
+				<itemgra item_types="poi_bicycle_rental" order="14-15">
+					<circle color="#000000" radius="11" width="10" text_size="12"/>
+					<circle color="#FEFE00" radius="7" width="8"/>
+				</itemgra>
+				<itemgra item_types="poi_bicycle_rental" order="16-">
+					<circle color="#000000" radius="20" width="15" text_size="20"/>
+					<circle color="#FEFE00" radius="10" width="20"/>
+				</itemgra>
+				<itemgra item_types="traffic_crossing_signal" order="15">
+					<circle color="#000000" radius="8" width="6"/>
+					<circle color="#00C000" radius="4" width="4"/>
+				</itemgra>
+				<itemgra item_types="traffic_crossing_signal" order="16-">
+					<circle color="#000000" radius="15" width="10"/>
+					<circle color="#00C000" radius="8" width="8"/>
+				</itemgra>
+<!--
+				<itemgra item_types="traffic_crossing_uncontrolled" order="13-15">
+					<circle color="#000000" radius="8" width="6"/>
+					<circle color="#FEFE00" radius="4" width="4"/>
+				</itemgra>
+				<itemgra item_types="traffic_crossing_uncontrolled" order="16-">
+					<circle color="#000000" radius="15" width="10"/>
+					<circle color="#FEFE00" radius="8" width="8"/>
+				</itemgra>
+-->
+			</layer>
+
+		<xsl:text>&#x0A;        </xsl:text>
+
+			<layer name="RouteArrows" active="1">
+			</layer>
+
+		<xsl:text>&#x0A;        </xsl:text>
+
+
+			<layer name="NavNav" active="1">
+
+				<!-- route graph -->
+				<itemgra item_types="rg_segment" order="13-">
+					<polyline color="#FF089C" width="3"/>
+					<arrows color="#FF089C" width="3"/>
+					<text text_size="17"/>
+				</itemgra>
+				<itemgra item_types="rg_point" order="13-">
+					<circle color="#FF089C" radius="10" text_size="13"/>
+				</itemgra>
+				<!-- route graph -->
+
+
+				<itemgra item_types="nav_left_1" order="0-">
+					<icon src="nav_left_1_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_left_2" order="0-">
+					<icon src="nav_left_2_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_left_3" order="0-">
+					<icon src="nav_left_3_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_right_1" order="0-">
+					<icon src="nav_right_1_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_right_2" order="0-">
+					<icon src="nav_right_2_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_right_3" order="0-">
+					<icon src="nav_right_3_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_straight" order="0-">
+					<icon src="nav_straight_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_turnaround" order="0-">
+					<icon src="nav_turnaround_left_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l1" order="0-">
+					<icon src="nav_roundabout_l1_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r1" order="0-">
+					<icon src="nav_roundabout_r1_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l2" order="0-">
+					<icon src="nav_roundabout_l2_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r2" order="0-">
+					<icon src="nav_roundabout_r2_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l3" order="0-">
+					<icon src="nav_roundabout_l3_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r3" order="0-">
+					<icon src="nav_roundabout_r3_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l4" order="0-">
+					<icon src="nav_roundabout_l4_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r4" order="0-">
+					<icon src="nav_roundabout_r4_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l5" order="0-">
+					<icon src="nav_roundabout_l5_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r5" order="0-">
+					<icon src="nav_roundabout_r5_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l6" order="0-">
+					<icon src="nav_roundabout_l6_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r6" order="0-">
+					<icon src="nav_roundabout_r6_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l7" order="0-">
+					<icon src="nav_roundabout_l7_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r7" order="0-">
+					<icon src="nav_roundabout_r7_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_l8" order="0-">
+					<icon src="nav_roundabout_l8_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+				<itemgra item_types="nav_roundabout_r8" order="0-">
+					<icon src="nav_roundabout_r8_bk_59_59.png" w="32" h="32"/>
+					<circle color="#FF0000" radius="10" text_size="7"/>
+				</itemgra>
+
+
+
+				<itemgra item_types="route_end" order="0-">
+					<icon src="nav_destination_bk_center.png" w="32" h="32"/>
+					<!--<circle color="#FF0000" radius="10" text_size="7"/>-->
+				</itemgra>
+
+
+
+				<itemgra item_types="nav_none" order="0-">
+					<circle color="#FF0000" radius="40" width="9" text_size="7"/>
+					<icon src="mini_roundabout.png"/>
+				</itemgra>
+
+				<itemgra item_types="nav_position" order="0-">
+					<circle color="#00FF00" radius="40" width="9" text_size="7"/>
+					<icon src="mini_roundabout.png"/>
+				</itemgra>
+
+				<itemgra item_types="nav_destination" order="0-">
+					<circle color="#0000FF" radius="40" width="9" text_size="7"/>
+				</itemgra>
+
+
+
+<!--
+				<itemgra item_types="announcement" order="{round(7-number($LAYOUT_001_ORDER_DELTA_1))}-">
+					<icon src="gui_sound_32_32.png"/>
+					<circle color="#FF089C" radius="10" text_size="7"/>
+				</itemgra>
+-->
+
+			</layer>
+
 
 		<xsl:text>&#x0A;        </xsl:text>
 

@@ -177,41 +177,46 @@ public class NavitOSDJava // extends View
 	// private long last_timestamp = 0L;
 	// public static final int UPDATE_INTERVAL = 400; // in ms
 
+	
+	// ------ UNUSED !!!!!!!! --------
+	// ------ UNUSED !!!!!!!! --------
+	// ------ UNUSED !!!!!!!! --------
+	// ------ UNUSED !!!!!!!! --------
 	public NavitOSDJava(Context context)
 	{
-		// super(context);
-
-		progress_handler_ = this.progress_handler;
-
-		OSD_element_bg_001 = Color.argb(255, 80, 80, 150); // Color.argb(255, 190, 190, 190); // Color.argb(140, 136, 136, 136);
-		OSD_element_bg_001_compass = Color.argb(255, 236, 229, 182); //  236, 229, 182
-		OSD_element_text_001 = Color.argb(255, 255, 255, 255); // text color
-		OSD_element_text_shadow_001 = Color.rgb(0, 0, 0); // text shadow
-		OSD_element_text_shadow_width = 5; // 3 + 2;
-
-		// b_ = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		// compass_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-		compass_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		compass_c = new Canvas(compass_b);
-		ddtt_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		ddtt_c = new Canvas(ddtt_b);
-		scale_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		scale_c = new Canvas(ddtt_b);
-		dttarget_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		dttarget_c = new Canvas(dttarget_b);
-		eta_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		eta_c = new Canvas(eta_b);
-		nt_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		nt_c = new Canvas(nt_b);
-
-		rest_osd_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		rest_osd_c = new Canvas(rest_osd_b);
-
-		buffer_osd_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		buffer_osd_c = new Canvas(buffer_osd_b);
-
-		// buffer2_osd_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
-		// buffer2_osd_c = new Canvas(buffer2_osd_b);
+		//		// super(context);
+		//
+		//		progress_handler_ = this.progress_handler;
+		//
+		//		OSD_element_bg_001 = Color.argb(255, 80, 80, 150); // Color.argb(255, 190, 190, 190); // Color.argb(140, 136, 136, 136);
+		//		OSD_element_bg_001_compass = Color.argb(255, 236, 229, 182); //  236, 229, 182
+		//		OSD_element_text_001 = Color.argb(255, 255, 255, 255); // text color
+		//		OSD_element_text_shadow_001 = Color.rgb(0, 0, 0); // text shadow
+		//		OSD_element_text_shadow_width = 5; // 3 + 2;
+		//
+		//		// b_ = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		// compass_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+		//		compass_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		compass_c = new Canvas(compass_b);
+		//		ddtt_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		ddtt_c = new Canvas(ddtt_b);
+		//		scale_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		scale_c = new Canvas(ddtt_b);
+		//		dttarget_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		dttarget_c = new Canvas(dttarget_b);
+		//		eta_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		eta_c = new Canvas(eta_b);
+		//		nt_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		nt_c = new Canvas(nt_b);
+		//
+		//		rest_osd_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		rest_osd_c = new Canvas(rest_osd_b);
+		//
+		//		buffer_osd_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		buffer_osd_c = new Canvas(buffer_osd_b);
+		//
+		//		// buffer2_osd_b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_4444);
+		//		// buffer2_osd_c = new Canvas(buffer2_osd_b);
 	}
 
 	//	@Override
@@ -1046,6 +1051,8 @@ public class NavitOSDJava // extends View
 
 	public void onDraw(Canvas c)
 	{
+		// System.out.println("XYZ:NavitOSDJava -> onDraw");
+		// NOTHING HERE anymore !!!!!!
 	}
 
 	public void onDrawXX(Canvas c)

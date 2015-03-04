@@ -21,6 +21,7 @@ package com.zoffcc.applications.zanavi;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
 
@@ -31,6 +32,16 @@ public class ZANaviBusyText extends TextView
 	public ZANaviBusyText(Context context)
 	{
 		super(context);
+		this.setGravity(Gravity.CENTER);
+		this.setPadding(0, 0, 0, (ZANaviBusySpinner.spinner_size * 2) + (2 * text_size) + 5); // place text above spinner
+		this.setText("");
+		this.setTextColor(Color.parseColor("#FF0000CF"));
+		this.setTextSize(text_size);
+	}
+
+	public ZANaviBusyText(Context context, AttributeSet attrs)
+	{
+		super(context, attrs);
 		this.setGravity(Gravity.CENTER);
 		this.setPadding(0, 0, 0, (ZANaviBusySpinner.spinner_size * 2) + (2 * text_size) + 5); // place text above spinner
 		this.setText("");

@@ -463,7 +463,7 @@ static struct gui_priv * gui_qml_new(struct navit *nav, struct gui_methods *meth
 		command_add_table(attr->u.callback_list, commands, sizeof(commands)/sizeof(struct command_table), this_);
 	}
 
-	this_->cbl=callback_list_new();
+	this_->cbl=callback_list_new("gui_qml_new:this_->cbl");
 
 	return this_;
 }

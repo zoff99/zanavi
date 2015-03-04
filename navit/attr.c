@@ -242,16 +242,18 @@ flags_to_text(int flags)
 	if (flags & NAVIT_AF_ONEWAYREV) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAYREV",ret?"|":"");
 	if (flags & NAVIT_AF_SEGMENTED) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SEGMENTED",ret?"|":"");
 	if (flags & NAVIT_AF_ROUNDABOUT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ROUNDABOUT",ret?"|":"");
+	if (flags & NAVIT_AF_ONEWAY_BICYCLE_NO) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAY_BICYCLE_NO",ret?"|":"");
+	if (flags & NAVIT_AF_ONEWAY_BICYCLE_YES) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAY_BICYCLE_YES",ret?"|":"");
 	if (flags & NAVIT_AF_ROUNDABOUT_VALID) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ROUNDABOUT_VALID",ret?"|":"");
 	if (flags & NAVIT_AF_ONEWAY_EXCEPTION) ret=g_strconcat_printf(ret,"%sNAVIT_AF_ONEWAY_EXCEPTION",ret?"|":"");
 	if (flags & NAVIT_AF_SPEED_LIMIT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SPEED_LIMIT",ret?"|":"");
-	if (flags & NAVIT_AF_RESERVED1) ret=g_strconcat_printf(ret,"%sNAVIT_AF_RESERVED1",ret?"|":"");
+	// if (flags & NAVIT_AF_RESERVED1) ret=g_strconcat_printf(ret,"%sNAVIT_AF_RESERVED1",ret?"|":"");
 	if (flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SIZE_OR_WEIGHT_LIMIT",ret?"|":"");
 	if (flags & NAVIT_AF_THROUGH_TRAFFIC_LIMIT) ret=g_strconcat_printf(ret,"%sNAVIT_AF_THROUGH_TRAFFIC_LIMIT",ret?"|":"");
 	if (flags & NAVIT_AF_TOLL) ret=g_strconcat_printf(ret,"%sNAVIT_AF_TOLL",ret?"|":"");
 	if (flags & NAVIT_AF_SEASONAL) ret=g_strconcat_printf(ret,"%sNAVIT_AF_SEASONAL",ret?"|":"");
 	if (flags & NAVIT_AF_UNPAVED) ret=g_strconcat_printf(ret,"%sNAVIT_AF_UNPAVED",ret?"|":"");
-	if (flags & NAVIT_AF_FORD) ret=g_strconcat_printf(ret,"%sNAVIT_AF_FORD",ret?"|":"");
+	// if (flags & NAVIT_AF_FORD) ret=g_strconcat_printf(ret,"%sNAVIT_AF_FORD",ret?"|":"");
 	if (flags & NAVIT_AF_UNDERGROUND) ret=g_strconcat_printf(ret,"%sNAVIT_AF_UNDERGROUND",ret?"|":"");
 	if (flags & NAVIT_AF_BRIDGE) ret=g_strconcat_printf(ret,"%sNAVIT_AF_BRIDGE",ret?"|":"");
 	if (flags & NAVIT_AF_DANGEROUS_GOODS) ret=g_strconcat_printf(ret,"%sNAVIT_AF_DANGEROUS_GOODS",ret?"|":"");
@@ -280,15 +282,19 @@ attr_to_text(struct attr *attr, struct map *map, int pretty)
 	char *ret;
 	enum attr_type type=attr->type;
 
-	if (type >= attr_type_item_begin && type <= attr_type_item_end) {
+	if (type >= attr_type_item_begin && type <= attr_type_item_end)
+	{
 		struct item *item=attr->u.item;
 		struct attr type, data;
 		if (! item)
 			return g_strdup("(nil)");
+
 		if (! item->map || !map_get_attr(item->map, attr_type, &type, NULL))
 			type.u.str="";
+
 		if (! item->map || !map_get_attr(item->map, attr_data, &data, NULL))
 			data.u.str="";
+
 		return g_strdup_printf("type=0x%x id=0x%x,0x%x map=%p (%s:%s)", item->type, item->id_hi, item->id_lo, item->map, type.u.str, data.u.str);
 	}
 	if (type >= attr_type_string_begin && type <= attr_type_string_end) {
@@ -385,22 +391,34 @@ attr_match(enum attr_type search, enum attr_type found)
 int
 attr_generic_get_attr(struct attr **attrs, struct attr **def_attrs, enum attr_type type, struct attr *attr, struct attr_iter *iter)
 {
-	while (attrs && *attrs) {
-		if (attr_match(type,(*attrs)->type)) {
+	while (attrs && *attrs)
+	{
+		if (attr_match(type,(*attrs)->type))
+		{
 			*attr=**attrs;
 			if (!iter)
+			{
 				return 1;
-			if (*((void **)iter) < (void *)attrs) {
+			}
+
+			if (*((void **)iter) < (void *)attrs)
+			{
 				*((void **)iter)=(void *)attrs;
 				return 1;
 			}
 		}
 		attrs++;
 	}
+
 	if (type == attr_any || type == attr_any_xml)
+	{
 		return 0;
-	while (def_attrs && *def_attrs) {
-		if ((*def_attrs)->type == type) {
+	}
+
+	while (def_attrs && *def_attrs)
+	{
+		if ((*def_attrs)->type == type)
+		{
 			*attr=**def_attrs;
 			return 1;
 		}
@@ -408,6 +426,7 @@ attr_generic_get_attr(struct attr **attrs, struct attr **def_attrs, enum attr_ty
 	}
 	return 0;
 }
+
 
 struct attr **
 attr_generic_set_attr(struct attr **attrs, struct attr *attr)

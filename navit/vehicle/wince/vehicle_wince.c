@@ -894,7 +894,7 @@ vehicle_wince_new(struct vehicle_methods
 		ret->on_eof=2;
 	dbg(0,"on_eof=%d\n", ret->on_eof);
 	*meth = vehicle_wince_methods;
-	ret->priv_cbl = callback_list_new();
+	ret->priv_cbl = callback_list_new("vehicle_wince_new:ret->priv_cbl");
 	callback_list_add(ret->priv_cbl, callback_new_1(callback_cast(vehicle_wince_io), ret));
 	ret->sat_item.type=type_position_sat;
 	ret->sat_item.id_hi=ret->sat_item.id_lo=0;

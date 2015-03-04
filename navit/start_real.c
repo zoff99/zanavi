@@ -86,6 +86,7 @@ int main_real(int argc, char **argv)
 {
 	dbg(0, "in main loop 001 ##########################\n");
 
+
 	xmlerror *error = NULL;
 	char *config_file = NULL;
 	int opt;
@@ -105,10 +106,13 @@ int main_real(int argc, char **argv)
 	_g_slice_thread_init_nomessage();
 	//dbg(0, "in main loop 004 ##########################\n");
 #endif
+
+
 	atom_init();
 	main_init(argv[0]);
 	main_init_nls();
-	debug_init(argv[0]);
+	debug_init(argv[0]); // ??
+
 
 	cp = getenv("NAVIT_LOGFILE");
 	if (cp)
@@ -121,6 +125,9 @@ int main_real(int argc, char **argv)
 		debug_set_logfile("/Storage Card/navit.log");
 	}
 #endif
+
+
+
 
 	//dbg(0, "in main loop 005 ##########################\n");
 	file_init();
@@ -142,6 +149,7 @@ int main_real(int argc, char **argv)
 	//dbg(0, "in main loop 008.4 ##########################\n");
 	linguistics_init();
 	//dbg(0, "in main loop 0014 ##########################\n");
+
 
 	config_file = NULL;
 #ifdef HAVE_GETOPT_H
@@ -210,6 +218,7 @@ int main_real(int argc, char **argv)
 		//list = g_list_append(list, g_strdup("/etc/navit/navit.xml"));
 #endif
 
+
 	//}
 	li = list;
 	for (;;)
@@ -233,6 +242,7 @@ int main_real(int argc, char **argv)
 		li = g_list_next(li);
 	}
 
+
 	// ############### load XML config file, and call all the init/new functions ################
 	// ############### load XML config file, and call all the init/new functions ################
 	// ############### load XML config file, and call all the init/new functions ################
@@ -245,7 +255,6 @@ int main_real(int argc, char **argv)
 	// ############### load XML config file, and call all the init/new functions ################
 	// ############### load XML config file, and call all the init/new functions ################
 
-
 	while (li)
 	{
 		g_free(li->data);
@@ -253,6 +262,7 @@ int main_real(int argc, char **argv)
 	}
 
 	g_list_free(list);
+
 
 	if (!config_get_attr(config, attr_navit, &navit, NULL) && !config_empty_ok)
 	{
@@ -267,5 +277,7 @@ int main_real(int argc, char **argv)
 #ifndef HAVE_API_ANDROID
 	debug_finished();
 #endif
+
+
 	return 0;
 }

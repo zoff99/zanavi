@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 #include <glib.h>
 #include "android.h"
 #include <android/log.h>
+#include <android/bitmap.h>
 #include "navit.h"
 #include "config_.h"
 #include "command.h"
@@ -37,13 +38,17 @@
 #include "search.h"
 #include "start_real.h"
 #include "route.h"
+#include "track.h"
 #include "file.h"
+#include "roadprofile.h"
 #include "navit_nls.h"
 
 // #include "layout.h"
 
 JNIEnv *jnienv;
 jobject *android_activity;
+jobject *main_map_bitmap;
+AndroidBitmapInfo *main_map_bitmapinfo;
 struct callback_list *android_activity_cbl;
 int android_version;
 
@@ -60,6 +65,42 @@ jmethodID NavitGraphics_set_vehicle_values3 = NULL;
 jmethodID NavitGraphics_send_route_rect_to_java = NULL;
 
 struct attr attr;
+
+
+
+
+
+
+
+// #define NAVIT_FUNC_CALLS_DEBUG_PRINT 1
+
+
+// --------------- debug function calls ------------------
+// --------------- debug function calls ------------------
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	#undef return2
+	#define return2	dbg_func(0, global_func_indent_counter, "return(%d)\n", __LINE__);global_func_indent_counter--;return
+
+	#define __F_START__ global_func_indent_counter++;dbg_func(0, global_func_indent_counter, "enter\n");
+	#define __F_END__   dbg_func(0, global_func_indent_counter, "leave\n");global_func_indent_counter--;
+#else
+	#undef return2
+	#define return2	return
+
+	#define __F_START__
+	#define __F_END__
+#endif
+// --------------- debug function calls ------------------
+// --------------- debug function calls ------------------
+
+
+
+
+
+
+
+
+
 
 // ------------------------- COPIED STUFF --- this is generally bad ------------------
 // ------------------------- COPIED STUFF --- this is generally bad ------------------
@@ -284,7 +325,7 @@ JNIEnv* jni_getenv()
 static void gui_internal_search_list_set_default_country2(struct gui_priv *this)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	struct attr search_attr, country_name, country_iso2, *country_attr;
 	struct item *item;
@@ -347,7 +388,7 @@ struct navit *global_navit;
 int android_find_class_global(char *name, jclass *ret)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	JNIEnv *jnienv2;
@@ -369,7 +410,7 @@ int android_find_class_global(char *name, jclass *ret)
 int android_find_method(jclass class, char *name, char *args, jmethodID *ret)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	JNIEnv *jnienv2;
@@ -388,7 +429,7 @@ int android_find_method(jclass class, char *name, char *args, jmethodID *ret)
 int android_find_static_method(jclass class, char *name, char *args, jmethodID *ret)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	JNIEnv *jnienv2;
@@ -404,11 +445,12 @@ int android_find_static_method(jclass class, char *name, char *args, jmethodID *
 	return 1;
 }
 
+
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, jobject activity, jobject lang, int version, jobject display_density_string, jobject n_datadir, jobject n_sharedir)
+Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, jobject activity, jobject lang, int version, jobject display_density_string, jobject n_datadir, jobject n_sharedir, jobject bitmap)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 #ifdef DEBUG_GLIB_MEM_FUNCTIONS
@@ -457,7 +499,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	const char *s;
 	android_version = version;
 	//__android_log_print(ANDROID_LOG_ERROR,"test","called");
-	android_activity_cbl = callback_list_new();
+	android_activity_cbl = callback_list_new("Java_com_zoffcc_applications_zanavi_Navit_NavitMain:android_activity_cbl");
 
 	// SET GLOBAL JNIENV here, this is bad!!
 	// SET GLOBAL JNIENV here, this is bad!!
@@ -470,6 +512,52 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 
 	//jclass someClass = env->FindClass("SomeClass");
 	//gSomeClass = env->NewGlobalRef(someClass);
+
+
+
+#if 0
+	// runtime TEST INT / FLOAT ----------
+	// runtime TEST INT / FLOAT ----------
+	// runtime TEST INT / FLOAT ----------
+	int v1 = 27;
+	int v2 = 13;
+	int r2;
+	int r3;
+
+	int ij1a;
+	int ccc = 10000000;
+	clock_t s_;
+
+	s_ = debug_measure_start();
+	for (ij1a=0; ij1a < ccc; ij1a++)
+	{
+		r2 = ( v1 * 100 * (v2 * 10.0 ) / 10000);
+	}
+	debug_mrp("TEST:INT  :", debug_measure_end(s_));
+
+	s_ = debug_measure_start();
+	for (ij1a=0; ij1a < ccc; ij1a++)
+	{
+		r3 = (int)( (float)v1 * ((float)v2 / 10.0f ));
+	}
+	debug_mrp("TEST:FLOAT:", debug_measure_end(s_));
+	// runtime TEST INT / FLOAT ----------
+	// runtime TEST INT / FLOAT ----------
+	// runtime TEST INT / FLOAT ----------
+#endif
+
+
+
+	main_map_bitmap = (*env)->NewGlobalRef(env, bitmap); // --> ANDROID_BITMAP_FORMAT_RGBA_8888
+	main_map_bitmapinfo = NULL;
+
+	// enum AndroidBitmapFormat {
+	//     ANDROID_BITMAP_FORMAT_NONE      = 0,
+	//     ANDROID_BITMAP_FORMAT_RGBA_8888 = 1,
+	//     ANDROID_BITMAP_FORMAT_RGB_565   = 4,
+	//     ANDROID_BITMAP_FORMAT_RGBA_4444 = 7,
+	//     ANDROID_BITMAP_FORMAT_A_8       = 8,
+	// };
 
 
 	// *only local* android_activity = activity;
@@ -539,7 +627,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	 */
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:leave\n");
+	dbg(0,"+#+:leave\n");
 #endif
 
 }
@@ -548,13 +636,15 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thiz, int param)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
-	//dbg(0, "enter %d\n", param);
+	dbg(0, "enter %d\n", param);
 
 	int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	if (param == -2)
 	{
@@ -571,6 +661,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 			// bookmarks_destroy(global_navit->bookmarks);
 		}
 	}
+#endif
 
 	// param ==  3 // onCreate
 	// param ==  2 // onStart
@@ -581,6 +672,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 	// param == -3 // onDestroy
 	// param == -4 // exit() [java function]
 
+
 	if (param == 3)
 	{
 		// in onCreate at startup
@@ -590,8 +682,11 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 		main_real(1, strings);
 		// dbg(0,"after main_real call\n");
 
+#ifndef NAVIT_DEBUG_BAREMETAL
 		navit_draw(global_navit);
+#endif
 	}
+
 
 	// dbg(0, "acti: 001\n");
 	// callback_list_call_1(android_activity_cbl, param);
@@ -603,6 +698,7 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 	//	// *********EXIT******EXIT******** // exit(0);
 	//}
 
+#ifndef NAVIT_DEBUG_BAREMETAL
 	if (param == -4)
 	{
 		// dbg(0, "acti: 004\n");
@@ -611,22 +707,40 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 		event_main_loop_quit();
 		// dbg(0, "acti: 006\n");
 	}
+#endif
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
 }
 
 JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_SizeChangedCallbackReal(JNIEnv* env, jobject thiz, int w, int h)
+Java_com_zoffcc_applications_zanavi_NavitGraphics_SizeChangedCallbackReal(JNIEnv* env, jobject thiz, int w, int h, jobject bitmap)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// dbg(0,"enter %d %d\n", w, h);
 
 	int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
 
+
+#ifndef NAVIT_DEBUG_BAREMETAL
+
+	if (main_map_bitmap)
+	{
+		(*env)->DeleteGlobalRef(env, main_map_bitmap);
+	}
+	main_map_bitmap = (*env)->NewGlobalRef(env, bitmap); // --> ANDROID_BITMAP_FORMAT_RGBA_8888
+	main_map_bitmapinfo = NULL;
+
 	navit_handle_resize(global_navit, w, h);
+
+#endif
+
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:leave\n");
+	dbg(0,"+#+:leave\n");
 #endif
 }
 
@@ -634,11 +748,14 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallbackReal(JNIEnv* env, jobject thiz, int x1, int y1, int x2, int y2, int draw)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	//int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
+
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	struct point p_end;
 	struct point p_start;
@@ -682,14 +799,18 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_MotionCallbackReal(JNIEnv* env
 	//	android_return_generic_int(2, 0);
 	//#endif
 
+#endif
+
 }
 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_TimeoutCallback(JNIEnv* env, jobject thiz, int delete, int id)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	JNIEnv *jnienv2;
 	jnienv2 = jni_getenv();
@@ -720,13 +841,14 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_TimeoutCallback(JNIEnv* env, j
 	 //dbg(0,"timeout 4\n");
 	 }
 	 */
+#endif
 }
 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitIdle_IdleCallback(JNIEnv* env, jobject thiz, int id)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	//int thread_id = gettid();
@@ -742,7 +864,7 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitWatch_poll(JNIEnv* env, jobject thiz, int fd, int cond)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	struct pollfd pfd;
 	pfd.fd = fd;
@@ -769,7 +891,7 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitWatch_WatchCallback(JNIEnv* env, jobject thiz, int id)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	//DBG // dbg(0, "enter %p %p\n", thiz, (void *) id);
 	callback_call_0((struct callback *) id);
@@ -779,7 +901,7 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitSensors_SensorCallback(JNIEnv* env, jobject thiz, int id, int sensor, float x, float y, float z)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// JNIEnv *jnienv2;
 	// jnienv2 = jni_getenv();
@@ -795,8 +917,10 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv *env, jobject thiz, double lat, double lon, float speed, float direction, double height, float radius, long gpstime)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	// JNIEnv *jnienv2;
 	// jnienv2 = jni_getenv();
@@ -817,17 +941,19 @@ Java_com_zoffcc_applications_zanavi_NavitVehicle_VehicleCallback(JNIEnv *env, jo
 		dbg(0, "no vehicle set !!\n");
 	}
 
+#endif
+
 	//dbg(0,"leave\n");
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:leave\n");
+	dbg(0,"+#+:leave\n");
 #endif
 }
 
 void android_return_search_result(struct jni_object *jni_o, char *str)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// dbg(0,"EEnter\n");
 
@@ -845,7 +971,7 @@ void android_return_search_result(struct jni_object *jni_o, char *str)
 void android_return_generic_int(int id, int i)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	//DBG // dbg(0,"Enter\n");
 
@@ -885,7 +1011,7 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEnv* env, jobject thiz, int id, int partial, jobject str, jobject str_town, jobject str_hn, int search_flags, jobject search_country, jobject latlon, int radius)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	int thread_id = gettid();
@@ -1014,7 +1140,7 @@ JNIEXPORT jint JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackDestinationValid(JNIEnv* env, jobject thiz)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	//DBG // dbg(0,"EEnter\n");
 	config_get_attr(config, attr_navit, &attr, NULL);
@@ -1033,7 +1159,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackDestinationValid(JNIEn
 static void map_preview_label_line(struct point *p, int count, char *label, int font_size)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	int i, x, y, tl, tlm, th, thm, tlsq, l;
 	float lsq;
@@ -1117,7 +1243,7 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitMapPreviewActivity_DrawMapPreview(JNIEnv* env, jobject thiz, jobject latlonzoom, int width, int height, int font_size, int scale, int sel_range)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// config_get_attr(config, attr_navit, &attr, NULL);
 
@@ -1388,7 +1514,7 @@ Java_com_zoffcc_applications_zanavi_NavitMapPreviewActivity_DrawMapPreview(JNIEn
 void android_DrawMapPreview_target(int x, int y)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	JNIEnv *jnienv2;
@@ -1417,7 +1543,7 @@ void android_DrawMapPreview_target(int x, int y)
 void android_DrawMapPreview_text(int x, int y, char *text, int size, int dx, int dy)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	JNIEnv *jnienv2;
@@ -1451,7 +1577,7 @@ void android_DrawMapPreview_text(int x, int y, char *text, int size, int dx, int
 void android_DrawMapPreview_polyline(struct point *p, int count, int type)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// type:
 	// 0 -> normal street
@@ -1500,15 +1626,18 @@ JNIEXPORT jstring JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, jobject thiz, int i, float a, float b)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// dbg(0,"EEnter i=%d\n", i);
+
 
 	int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
 
 	// const char *result;
 	gchar *result;
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	if (i == 1)
 	{
@@ -1569,7 +1698,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 
 		navit_set_center(global_navit, &pc99, 0);
 
-		result = g_strdup_printf("1:1");
+		result = g_strdup("1:1");
 	}
 	else if (i == 4)
 	{
@@ -1686,10 +1815,182 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 		transform(global_navit->trans, projection_mg, &c99, &pnt, 1, 0, 0, NULL);
 		result = g_strdup_printf("%d:%d", pnt.x, pnt.y);
 	}
+	else if (i == 12)
+	{
+		// calculate next position in interpolation on route
+		// return string: lat:lon:direction
+		// example      : 48.62:16.775:45.5
+
+		struct route *route2 = NULL;
+		struct map *route_map2 = NULL;
+		struct map_rect *mr2 = NULL;
+		struct item *item2 = NULL;
+		struct coord pos;
+		struct coord *pos2;
+		struct coord c;
+		struct coord c2;
+		struct coord ci;
+		struct coord_geo g99;
+		struct attr attr;
+		// struct street_data *sd;
+		int seg_speed;
+		int seg_speed_old;
+		int len;
+		int slen;
+		int dx;
+		int dy;
+		float dir;
+		int interval = 1000; // milliseconds
+		int speed = 50; // km/h
+
+
+		if (global_demo_vehicle == 0)
+		{
+			route2 = navit_get_route(global_navit);
+
+			if (route2)
+			{
+				route_map2 = route_get_map(route2);
+			}
+
+			if (route_map2)
+			{
+				mr2 = map_rect_new(route_map2, NULL);
+			}
+
+			if (mr2)
+			{
+				item2 = map_rect_get_item(mr2);
+			}
+
+			if (item2 && item2->type == type_route_start)
+			{
+				item2 = map_rect_get_item(mr2);
+			}
+
+			if (item2 && item2->type == type_route_start_reverse)
+			{
+				item2 = map_rect_get_item(mr2);
+			}
+
+			if (item2 && item_coord_get(item2, &pos, 1))
+			{
+				pos2 = tracking_get_pos(global_navit->tracking);
+				pos.x = pos2->x;
+				pos.y = pos2->y;
+
+				dbg(0,"extrapl:002 posx=%d posy=%d itemtype=%s\n", pos.x, pos.y, item_to_name(item2->type));
+
+				seg_speed = speed;
+				// item_dump_attr_stdout(item2, route_map2);
+				if (item_attr_get(item2, attr_maxspeed, &attr))
+				{
+					dbg(0, "extrapl:002.2 max speed=%d\n", attr.u.num);
+					seg_speed = attr.u.num;
+				}
+				seg_speed_old = seg_speed;
+
+				len = (seg_speed * interval / 1000) / 3.6; // distance in meters that we drive in 1 second with "seg_speed" km/h !!
+
+				while (item2)
+				{
+					if (!item_coord_get(item2, &c, 1))
+					{
+						item2 = map_rect_get_item(mr2);
+
+						if (item2)
+						{
+							dbg(0,"extrapl:004 item type=%s\n", item_to_name(item2->type));
+
+							// item_dump_attr_stdout(item2, route_map2);
+							if (item_attr_get(item2, attr_maxspeed, &attr))
+							{
+								dbg(0, "extrapl:004.2 max speed=%d\n", attr.u.num);
+								seg_speed = attr.u.num;
+							}
+						}
+						continue;
+					}
+
+					slen = transform_distance(projection_mg, &pos, &c); // distance between position and current route coord
+					dbg(0,"extrapl:004.1 slen=%d len=%d\n", slen, len);
+
+					if (slen < len) // need to move along the route some more ...
+					{
+						len = len - slen;
+						dbg(0,"extrapl:005 cx=%d cy=%d len=%d\n", c.x, c.y, len);
+						// now compensate "len" for maybe other speed on next item
+						if (seg_speed != seg_speed_old)
+						{
+							if ((len > 0) && (seg_speed_old > 0)&&(seg_speed > 0))
+							{
+								len = (int)((float)len / (float)seg_speed_old * (float)seg_speed);
+								dbg(0,"extrapl:005.1 len comp.=%d speed=%d speed old=%d\n", len, seg_speed, seg_speed_old);
+							}
+							seg_speed_old = seg_speed;
+						}
+
+						pos = c;
+					}
+					else
+					{
+						if (item_coord_get(item2, &c2, 1) || map_rect_get_item(mr2))
+						{
+							dbg(0,"extrapl:006 c2x=%d c2y=%d\n", c2.x, c2.y);
+							dbg(0,"extrapl:006 cx=%d cy=%d\n", c.x, c.y);
+
+							dx = c.x - pos.x;
+							dy = c.y - pos.y;
+							ci.x = pos.x + dx * len / slen;
+							ci.y = pos.y + dy * len / slen;
+
+							dbg(0,"extrapl:006 cix=%d ciy=%d\n", ci.x, ci.y);
+
+							dir = (float)transform_get_angle_delta(&pos, &c, 0);
+						}
+						else
+						{
+							ci.x = pos.x;
+							ci.y = pos.y;
+							dir = 0.0f;
+							dbg(0, "extrapl:destination reached\n");
+						}
+
+						transform_to_geo(projection_mg, &ci, &g99);
+						dbg(0,"extrapl:099=%f:%f:%f\n", g99.lat, g99.lng, dir);
+						result = g_strdup_printf("%f:%f:%f", g99.lat, g99.lng, dir);
+
+						break;
+					}
+				}
+			}
+			else
+			{
+				result = g_strdup("*ERROR*");
+			}
+
+			if (mr2)
+			{
+				map_rect_destroy(mr2);
+			}
+		}
+		else
+		{
+			result = g_strdup("*ERROR*");
+		}
+	}
+
+#else
+	result = g_strdup("*ERROR*");
+#endif
 
 	// // dbg(0, "result=%s\n", result);
 	jstring js = (*env)->NewStringUTF(env, result);
 	g_free(result);
+
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:leave\n");
+#endif
 
 	return js;
 }
@@ -1698,7 +1999,7 @@ JNIEXPORT jstring JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackLocalizedString(JNIEnv* env, jobject thiz, jobject str)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	// // dbg(0,"EEnter\n");
 
@@ -1726,7 +2027,7 @@ JNIEXPORT jint JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_GetThreadId(JNIEnv* env, jobject thiz)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 
 	int thread_id = gettid();
@@ -1740,21 +2041,24 @@ JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNIEnv* env, jobject thiz, int i, jobject str2)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
+
+__F_START__
 
 	int thread_id = gettid();
 	// dbg(0, "THREAD ID=%d\n", thread_id);
 
+#ifndef NAVIT_DEBUG_BAREMETAL
+
 	const char *s;
 	jobject str = (*env)->NewGlobalRef(env, str2);
-
-	// dbg(0,"enter %d\n",i);
 
 	config_get_attr(config, attr_navit, &attr, NULL);
 	// attr.u.navit
 
 	//DBG // dbg(0,"c1\n");
+
 
 	if (i)
 	{
@@ -1770,6 +2074,382 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
 
+		}
+		else if (i == 102)
+		{
+			// set gpsfix flag
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			int value = atoi(s);
+
+			global_has_gpsfix = value;
+
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 101)
+		{
+			// set demo vehicle flag for tracking
+			dbg(0, "DEMO VEHICLE* flag set\n");
+			global_demo_vehicle_short_switch = 1;
+		}
+		else if (i == 100)
+		{
+			// dump callbacks to log
+			callback_dump_callbacks();
+		}
+		else if (i == 99)
+		{
+			// set angle_pref value
+			if (global_navit->tracking)
+			{
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+				int value = atoi(s);
+
+				struct attr attr99;
+				attr99.type = attr_angle_pref;
+				attr99.u.num = value;
+				
+				tracking_set_attr(global_navit->tracking, &attr99);
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+			}
+		}
+		else if (i == 98)
+		{
+			// set connected_pref value
+			if (global_navit->tracking)
+			{
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+				int value = atoi(s);
+
+				struct attr attr99;
+				attr99.type = attr_connected_pref;
+				attr99.u.num = value;
+				
+				tracking_set_attr(global_navit->tracking, &attr99);
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+			}
+		}
+		else if (i == 97)
+		{
+			// set position to (lat#lon#name)
+			char *name;
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			char parse_str[strlen(s) + 1];
+			strcpy(parse_str, s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+
+			struct coord_geo g;
+			char *p;
+			char *stopstring;
+
+			// lat
+			p = strtok(parse_str, "#");
+			g.lat = strtof(p, &stopstring);
+			// lon
+			p = strtok(NULL, "#");
+			g.lng = strtof(p, &stopstring);
+			// description
+			name = strtok(NULL, "#");
+
+			////DBG // dbg(0,"lat=%f\n",g.lat);
+			////DBG // dbg(0,"lng=%f\n",g.lng);
+			////DBG // dbg(0,"str1=%s\n",name);
+
+			struct coord c;
+			transform_from_geo(projection_mg, &g, &c);
+
+			struct pcoord pc;
+			pc.x = c.x;
+			pc.y = c.y;
+			pc.pro = projection_mg;
+
+			// set position
+			navit_set_position(global_navit, &pc);
+		}
+		else if (i == 96)
+		{
+			// dump route to GPX file
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			if (global_navit->route)
+			{
+				if (global_navit->route->destinations)
+				{
+					navit_route_export_gpx_to_file(global_navit, s);
+				}
+			}
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 95)
+		{
+			// change priority for cycle tracks
+			if (global_vehicle_profile == 1)
+			{
+				int old_value = global_cycle_track_prio;
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+				global_cycle_track_prio = atoi(s);
+
+				if (old_value != atoi(s))
+				{
+					if (global_navit->route)
+					{
+						if (global_navit->route->destinations)
+						{
+							route_path_update(global_navit->route, 1, 1);
+						}
+					}
+				}
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+			}
+		}
+		else if (i == 94)
+		{
+			// change priority for cycle lanes
+			if (global_vehicle_profile == 1)
+			{
+				int old_value = global_cycle_lanes_prio;
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+				global_cycle_lanes_prio = atoi(s);
+
+				if (old_value != atoi(s))
+				{
+					if (global_navit->route)
+					{
+						if (global_navit->route->destinations)
+						{
+							route_path_update(global_navit->route, 1, 1);
+						}
+					}
+				}
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+			}
+		}
+		else if (i == 93)
+		{
+			// change vehicle profile's roadprofile values 003
+
+			if (global_vehicle_profile == 1)
+			{
+
+				int old_value = 0;
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+
+				struct roadprofile *rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_3_land);
+
+				if (rp)
+				{
+					old_value = rp->route_prio_weight;
+				}
+
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_4_land);
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				// calc route new!
+				if (rp)
+				{
+					if (old_value != atoi(s))
+					{
+						if (global_navit->route)
+						{
+							if (global_navit->route->destinations)
+							{
+								route_path_update(global_navit->route, 1, 1);
+							}
+						}
+					}
+				}
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+			}
+
+		}
+		else if (i == 92)
+		{
+			// change vehicle profile's roadprofile values 002
+
+			if (global_vehicle_profile == 1)
+			{
+
+				int old_value = 0;
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+
+				struct roadprofile *rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_3_city);
+
+				if (rp)
+				{
+					old_value = rp->route_prio_weight;
+				}
+
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_4_city);
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_ramp);
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				// calc route new!
+				if (rp)
+				{
+					if (old_value != atoi(s))
+					{
+						if (global_navit->route)
+						{
+							if (global_navit->route->destinations)
+							{
+								route_path_update(global_navit->route, 1, 1);
+							}
+						}
+					}
+				}
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+			}
+
+		}
+		else if (i == 91)
+		{
+			// change vehicle profile's roadprofile values 001
+
+			if (global_vehicle_profile == 1)
+			{
+
+				int old_value = 0;
+				s = (*env)->GetStringUTFChars(env, str, NULL);
+
+				struct roadprofile *rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_2_city);
+
+				if (rp)
+				{
+					old_value = rp->route_prio_weight;
+				}
+
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_1_land);
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_2_land);
+				if (rp)
+				{
+					rp->route_prio_weight = atoi(s);
+				}
+
+				// calc route new!
+				if (rp)
+				{
+					if (old_value != atoi(s))
+					{
+						if (global_navit->route)
+						{
+							if (global_navit->route->destinations)
+							{
+								route_path_update(global_navit->route, 1, 1);
+							}
+						}
+					}
+				}
+
+				(*env)->ReleaseStringUTFChars(env, str, s);
+
+				// <roadprofile item_types="street_0,street_1_city,living_street" speed="20" route_weight="20" route_prio_weight="2">
+				// <roadprofile item_types="street_2_city,street_1_land,street_2_land" speed="15" route_weight="15" route_prio_weight="90">
+
+			}
+
+		}
+		else if (i == 90)
+		{
+			// set vehicleprofile to value of string s ('car','bike')
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			if (!navit_set_vehicleprofile(global_navit, s))
+			{
+			}
+			else
+			{
+				if (!strcmp(s, "car"))
+				{
+					global_vehicle_profile = 0; // car
+				}
+				else if (!strcmp(s, "bike-normal"))
+				{
+					global_vehicle_profile = 1; // bicycle
+				}
+				else if (!strcmp(s, "bike-avoid-roads"))
+				{
+					global_vehicle_profile = 1; // bicycle
+				}
+				else if (!strcmp(s, "bike-no-oneway"))
+				{
+					global_vehicle_profile = 2; // bicycle no one-way!
+				}
+				else
+				{
+					global_vehicle_profile = 0; // car
+				}
+				// dbg(0, "global_vehicle_profile=%d\n", global_vehicle_profile);
+			}
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 89)
+		{
+			// search this far around street-coord to find potential housenumbers for this street
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_search_radius_for_housenumbers = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 88)
+		{
+			// avoid sharp turns penalty
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_avoid_sharp_turns_min_penalty = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 87)
+		{
+			// avoid sharp turns minimum angle. if turn is harder than this angle then set penalty
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_avoid_sharp_turns_min_angle = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 86)
+		{
+			// avoid sharp turns flag to 0 or 1
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_avoid_sharp_turns_flag = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 85)
+		{
+			// C-linedrawing flag to 0 or 1
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_clinedrawing_active = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 84)
 		{
@@ -1872,6 +2552,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 			// _ms_navigation
 			s = (*env)->GetStringUTFChars(env, str, NULL);
 			navit_map_active_flag(global_navit, atoi(s), "_ms_route_graph");
+			navit_map_active_flag(global_navit, atoi(s), "_ms_navigation");
 			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 70)
@@ -2009,6 +2690,10 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 
 			s = (*env)->GetStringUTFChars(env, str, NULL);
 
+			dbg(0, "**SWITCH TO:DEMO VEHICLE**\n");
+			global_demo_vehicle_short_switch = 0;
+			global_demo_vehicle = 1;
+
 			if (global_navit->vehicle)
 			{
 				navit_remove_cursors(global_navit);
@@ -2037,7 +2722,17 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 			follow.u.num = 1;
 
 			speed.type = attr_speed;
-			speed.u.num = atoi(s);
+
+			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+			{
+				// for bicycle it's always 17 km/h
+				speed.u.num = 17;
+			}
+			else
+			{
+				// should be 45 km/h
+				speed.u.num = atoi(s);
+			}
 
 			interval.type = attr_interval;
 			interval.u.num = 1000; // 1 sec.
@@ -2258,6 +2953,8 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 		{
 			// add all scdard maps
 			navit_add_all_maps(global_navit);
+			// get the current vehicle position to the route struct -> set effective starting position for routing
+			navit_set_vehicle_position_to_screen_center_only_for_route_struct(global_navit);
 		}
 		else if (i == 19)
 		{
@@ -2273,6 +2970,11 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 		{
 			// zoom to route
 			navit_zoom_to_route(global_navit, 0);
+
+			// return new zoom level to android
+			long scale = transform_get_scale(global_navit->trans);
+			dbg(0, "A:new scale=%lld\n", scale);
+			android_return_generic_int(3, (int) scale);
 		}
 		else if (i == 16)
 		{
@@ -2344,10 +3046,9 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 		}
 		else if (i == 5)
 		{
-			// call a command (like in gui) --> seems not many commands really work with this :-(
+			// toggle layer on/off
 			s = (*env)->GetStringUTFChars(env, str, NULL);
-			////DBG // dbg(0,"*****string=%s\n",s);
-			command_evaluate(&attr.u.navit->self, s);
+			navit_layer_toggle_active(global_navit, s, 1);
 			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 49)
@@ -2499,12 +3200,16 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackMessageChannelReal(JNI
 
 	// dbg(0,"leave %d\n",i);
 
+#endif
+
+__F_END__
+
 }
 
 void android_send_generic_text(int id, char *text)
 {
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
-	// dbg(0,"+#+:enter\n");
+	dbg(0,"+#+:enter\n");
 #endif
 	//DBG // dbg(0,"Enter\n");
 

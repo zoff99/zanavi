@@ -36,6 +36,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
+#include <stdlib.h>
 #include <glib.h>
 #include <string.h>
 #include "config.h"
@@ -51,6 +52,17 @@
 #include "vehicle.h"
 #include "event.h"
 #include "util.h"
+
+
+
+// **************************
+// *
+// *
+// #define DEMO_VEHICLE_FUZZY 1
+// *
+// *
+// **************************
+
 
 struct vehicle_priv
 {
@@ -68,6 +80,8 @@ struct vehicle_priv
 	char *timep;
 	double speed_diff;
 	int speed_dir;
+	int direction_dir;
+	int direction_diff;
 };
 
 static void vehicle_demo_destroy(struct vehicle_priv *priv)
@@ -110,17 +124,43 @@ static int vehicle_demo_set_attr(struct vehicle_priv *priv, struct attr *attr)
 	return 1;
 }
 
+// ------------ Random -----------
+// ------------ Random -----------
+// Assumes 0 <= range <= RAND_MAX
+// Returns in the half-open interval [0, max]
+static long vehicle_demo_random_at_most(long max)
+{
+  unsigned long
+    // max <= RAND_MAX < ULONG_MAX, so this is okay.
+    num_bins = (unsigned long) max + 1,
+    num_rand = (unsigned long) RAND_MAX + 1,
+    bin_size = num_rand / num_bins,
+    defect   = num_rand % bin_size;
+
+  long x;
+  // This is carefully written not to overflow
+  while (num_rand - defect <= (unsigned long)(x = random()));
+
+  // Truncated division is intentional
+  return x/bin_size;
+}
+// ------------ Random -----------
+// ------------ Random -----------
+
+
 struct vehicle_methods vehicle_demo_methods =
 { vehicle_demo_destroy, vehicle_demo_position_attr_get, vehicle_demo_set_attr, NULL, };
 
 static void vehicle_demo_timer(struct vehicle_priv *priv)
 {
-	struct coord c, c2, pos, ci;
+	struct coord c, c2, pos, ci, c4;
 	int slen, len, dx, dy;
 	struct route *route = NULL;
 	struct map *route_map = NULL;
 	struct map_rect *mr = NULL;
 	struct item *item = NULL;
+	int rdx = 0;
+	int rdy = 0;
 
 	//dbg(0,"stop demo vehicle=%d\n", global_stop_demo_vehicle);
 	if (global_stop_demo_vehicle == 1)
@@ -129,29 +169,62 @@ static void vehicle_demo_timer(struct vehicle_priv *priv)
 		return;
 	}
 
-	// vary the speed of demo vehicle from (x - 20) to (x + 20)
-	if (priv->speed_dir == 1)
+#ifdef DEMO_VEHICLE_FUZZY
+	if (priv->direction_dir == 1)
 	{
-		priv->speed_diff = priv->speed_diff + 2;
-		if (priv->speed_diff > 20)
+		priv->direction_diff = priv->direction_diff + 1;
+		if (priv->direction_diff > 15)
 		{
-			priv->speed_diff = 20;
-			priv->speed_dir = -1;
+			priv->direction_diff = 20;
+			priv->direction_dir = -1;
 		}
 	}
 	else
 	{
-		priv->speed_diff = priv->speed_diff - 2;
-		if (priv->speed_diff < -20)
+		priv->direction_diff = priv->direction_diff - 1;
+		if (priv->direction_diff < -15)
 		{
-			priv->speed_diff = -20;
-			priv->speed_dir = 1;
+			priv->direction_diff = -15;
+			priv->direction_dir = 1;
 		}
 	}
-	priv->config_speed = priv->config_speed + priv->speed_dir + priv->speed_dir;
-	//dbg(0,"demo:speed=%d,speed_diff=%d speed_dir=%d\n", (int)priv->config_speed, (int)priv->speed_diff, (int)priv->speed_dir);
+#endif
 
 	len = (priv->config_speed * priv->interval / 1000) / 3.6;
+
+
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+	{
+		// dont vary speed in bicycle navigationmode
+	}
+	else
+	{
+#ifdef DEMO_VEHICLE_FUZZY
+		// vary the speed of demo vehicle from (x - 20) to (x + 20)
+		if (priv->speed_dir == 1)
+		{
+			priv->speed_diff = priv->speed_diff + 2;
+			if (priv->speed_diff > 20)
+			{
+				priv->speed_diff = 20;
+				priv->speed_dir = -1;
+			}
+		}
+		else
+		{
+			priv->speed_diff = priv->speed_diff - 2;
+			if (priv->speed_diff < -20)
+			{
+				priv->speed_diff = -20;
+				priv->speed_dir = 1;
+			}
+		}
+
+		priv->config_speed = priv->config_speed + priv->speed_dir + priv->speed_dir;
+		//dbg(0,"demo:speed=%d,speed_diff=%d speed_dir=%d\n", (int)priv->config_speed, (int)priv->speed_diff, (int)priv->speed_dir);
+#endif
+	}
+
 	//dbg(0, "###### Entering simulation loop\n");
 	if (priv->navit)
 	{
@@ -196,8 +269,10 @@ static void vehicle_demo_timer(struct vehicle_priv *priv)
 				item = map_rect_get_item(mr);
 				continue;
 			}
+
 			//dbg(0, "next pos=0x%x,0x%x\n", c.x, c.y);
 			slen = transform_distance(projection_mg, &pos, &c);
+
 			////DBG dbg(0, "len=%d slen=%d\n", len, slen);
 			if (slen < len)
 			{
@@ -214,6 +289,16 @@ static void vehicle_demo_timer(struct vehicle_priv *priv)
 					ci.y = pos.y + dy * len / slen;
 					priv->direction = transform_get_angle_delta(&pos, &c, 0);
 					priv->speed = priv->config_speed;
+
+					// DEBUG: bring a little error into the direction value!!
+					// DEBUG: bring a little error into the direction value!!
+					// DEBUG: bring a little error into the direction value!!
+					// priv->direction = priv->direction + priv->direction_diff;
+					// dbg(0, "random angle diff=%d priv->direction=%f\n", priv->direction_diff, priv->direction);
+					// DEBUG: bring a little error into the direction value!!
+					// DEBUG: bring a little error into the direction value!!
+					// DEBUG: bring a little error into the direction value!!
+
 				}
 				else
 				{
@@ -222,8 +307,29 @@ static void vehicle_demo_timer(struct vehicle_priv *priv)
 					priv->speed = 0;
 					////DBG dbg(0, "destination reached\n");
 				}
+
 				//dbg(1, "ci=0x%x,0x%x\n", ci.x, ci.y);
-				transform_to_geo(projection_mg, &ci, &priv->geo);
+
+#ifdef DEMO_VEHICLE_FUZZY
+				// DEBUG: bring a little error into the position!!
+				// DEBUG: bring a little error into the position!!
+				// DEBUG: bring a little error into the position!!
+				rdx = (int)(vehicle_demo_random_at_most(60));
+				rdy = (int)(vehicle_demo_random_at_most(60));
+				//dbg(0, "random pos diff rx=%d ry=%d ci.x=%d ci.y=%d pos.x=%d pos.y=%d\n", (rdx - 10), (rdy - 10), ci.x, ci.y, pos.x, pos.y);
+				c4.x = ci.x + rdx - 30;
+				c4.y = ci.y + rdy - 30;
+				// DEBUG: bring a little error into the position!!
+				// DEBUG: bring a little error into the position!!
+				// DEBUG: bring a little error into the position!!
+#else
+				c4.x = ci.x;
+				c4.y = ci.y;
+#endif
+
+				transform_to_geo(projection_mg, &c4, &priv->geo);
+
+				// ***** calls: navit.c -> navit_vehicle_update
 				callback_list_call_attr_0(priv->cbl, attr_position_coord_geo);
 				break;
 			}
@@ -244,7 +350,7 @@ static void vehicle_demo_timer(struct vehicle_priv *priv)
 	// dbg(0,"rr F\n");
 }
 
-static struct vehicle_priv *
+struct vehicle_priv *
 vehicle_demo_new(struct vehicle_methods *meth, struct callback_list *cbl, struct attr **attrs)
 {
 	struct vehicle_priv *ret;
@@ -253,10 +359,12 @@ vehicle_demo_new(struct vehicle_methods *meth, struct callback_list *cbl, struct
 	//DBG dbg(0, "enter\n");
 	ret = g_new0(struct vehicle_priv, 1);
 	ret->cbl = cbl;
-	ret->interval = 1200;
+	ret->interval = 990;
 	ret->config_speed = 41;
 	ret->speed_diff = 0;
 	ret->speed_dir = 1;
+	ret->direction_dir = 1;
+	ret->direction_diff = 0;
 
 	//dbg(0, "vd 3.1 %d %d\n", ret->interval, ret->config_speed);
 
@@ -295,8 +403,11 @@ vehicle_demo_new(struct vehicle_methods *meth, struct callback_list *cbl, struct
 	return ret;
 }
 
+#ifdef PLUGSSS
 void plugin_init(void)
 {
 	//DBG dbg(0, "enter\n");
 	plugin_register_vehicle_type("demo", vehicle_demo_new);
 }
+#endif
+

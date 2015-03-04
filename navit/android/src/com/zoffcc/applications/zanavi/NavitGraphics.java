@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011 - 2013 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011 - 2014 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
@@ -52,6 +52,8 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Cap;
+import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -60,13 +62,14 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -94,7 +97,8 @@ public class NavitGraphics
 	static Boolean draw_reset_factors = false;
 	static Boolean Global_Map_in_onDraw = false;
 
-	static Boolean synch_drawing_for_map = false;
+	// static Boolean synch_drawing_for_map = false;
+	private static final Object synch_drawing_for_map = new Object();
 	static ZANaviLinearLayout OSD_new = null;
 
 	// DPI ---------------------------------------------
@@ -122,7 +126,10 @@ public class NavitGraphics
 	private Canvas draw_canvas_screen2;
 	private Bitmap draw_bitmap_screen2;
 
+	static ZANaviOSDDebug01 debug_text_view = null;
+
 	public final int map_bg_color = Color.parseColor("#FEF9EE");
+	final Paint paint_bg_color = new Paint(Color.parseColor("#FEF9EE"));
 
 	public final static DashPathEffect dashed_map_lines__high = new DashPathEffect(new float[] { 4, 2 }, 1);
 	public final static DashPathEffect dashed_map_lines__low = new DashPathEffect(new float[] { 15, 11 }, 1);
@@ -184,7 +191,16 @@ public class NavitGraphics
 	public static float ZOOM_MODE_SCALE = 1.0f;
 	public static Boolean DRAG_MODE_ACTIVE = false;
 
-	public static final Boolean DEBUG_SMOOTH_DRIVING = false;
+	// ----------------- DEBUG ----------------
+	// ----------------- DEBUG ----------------
+	// ----------------- DEBUG ----------------
+	public static final Boolean DEBUG_SMOOTH_DRIVING = false; // for debugging only, set this to "false" on release builds!!
+	// ----------------- DEBUG ----------------
+	// ----------------- DEBUG ----------------
+	// ----------------- DEBUG ----------------
+
+	static boolean map_c_drawing = false;
+
 	private static long smooth_driving_ts001 = 0L;
 	private static long smooth_driving_ts002 = 0L;
 	private static long smooth_driving_ts002a = 0L;
@@ -253,7 +269,7 @@ public class NavitGraphics
 	View view;
 	RelativeLayout relativelayout;
 	// --obsolote --- // NavitCamera camera;
-	Activity activity;
+	ActionBarActivity activity;
 
 	private Bitmap bigmap_bitmap_temp = null;
 	private Matrix matrix_oneway_arrows = null;
@@ -288,12 +304,14 @@ public class NavitGraphics
 	public ZANaviBusyText busyspinnertext = null;
 	public static ZANaviBusyText busyspinnertext_ = null;
 
-	public static EmulatedMenuView emu_menu_view;
+	// public static EmulatedMenuView emu_menu_view;
 
 	PointF touch_now_center = new PointF(0, 0);
 
 	private TextView NavitMsgTv2 = null;
 	public static TextView NavitMsgTv2_ = null;
+
+	public static ScrollView NavitMsgTv2sc_ = null;
 
 	public static NavitGlobalMap NavitGlobalMap_ = null;
 
@@ -380,7 +398,10 @@ public class NavitGraphics
 								NavitAOverlay.show_bubble();
 								copy_map_buffer();
 								//System.out.println("invalidate 009");
+								// System.out.println("DO__DRAW:Java:postInvalidate 004");
+								// SYN //
 								Navit.NG__map_main.view.postInvalidate();
+								// map_postInvalidate();
 								//SurfaceView2 vw = (SurfaceView2) Navit.NG__map_main.view;
 								//vw.paint_me();
 								//System.out.println("invalidate 010");
@@ -616,12 +637,22 @@ public class NavitGraphics
 
 	}
 
-	public NavitGraphics(Activity activity, int parent, int x, int y, int w, int h, int alpha, int wraparound, int use_camera)
+	@SuppressLint("NewApi")
+	public NavitGraphics(ActionBarActivity activity, int parent, int x, int y, int w, int h, int alpha, int wraparound, int use_camera)
 	{
-
 		paint_maptile.setFilterBitmap(false);
 		paint_maptile.setAntiAlias(false);
 		paint_maptile.setDither(false);
+
+		paint_bg_color.setColor(Color.parseColor("#FEF9EE"));
+		paint_bg_color.setAntiAlias(false);
+		paint_bg_color.setDither(false);
+
+		STT_B_list[0] = null;
+		STT_B_list[1] = null;
+		STT_B_list[2] = null;
+		STT_B_list[3] = null;
+		STT_B_list[4] = null;
 
 		// shadow for text on map --------------
 		s_factor = 1;
@@ -647,7 +678,6 @@ public class NavitGraphics
 			this.gr_type = 1;
 
 			this.activity = activity;
-			// view = new SurfaceView2(activity)
 			view = new View(activity)
 			{
 				int touch_mode = NONE;
@@ -674,12 +704,19 @@ public class NavitGraphics
 				@Override
 				protected void onDraw(Canvas canvas)
 				{
-					//System.out.println("DO__DRAW:onDraw():- enter");
-					//System.out.println("draw main map:isHardwareAccelerated=" + canvas.isHardwareAccelerated());
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
 
+					// System.out.println("DO__DRAW:onDraw():- enter");
+					//					if (2 == 1 + 1)
+					//					{
+					//						return;
+					//					}
+					// **** // System.out.println("draw main map:isHardwareAccelerated=" + canvas.isHardwareAccelerated());
+
+					// SYN //
 					synchronized (synch_drawing_for_map)
 					{
-						//System.out.println("DO__DRAW:onDraw():- start");
+						// System.out.println("DO__DRAW:onDraw():- start");
 						//System.out.println("*******DRAW INIT******* " + gr_type);
 						//super.onDraw(canvas);
 
@@ -821,9 +858,11 @@ public class NavitGraphics
 								}
 
 								//System.out.println("DO__DRAW:onDraw():drawBitmap2D start");
-								canvas.drawColor(map_bg_color); // fill with yellow-ish bg color
+								// canvas.drawColor(map_bg_color); // fill with yellow-ish bg color
+								canvas.drawPaint(paint_bg_color);
 								// draw bitmap to screen
-								canvas.drawBitmap(draw_bitmap_screen, 0, 0, paint_for_map_display);
+								// canvas.drawBitmap(draw_bitmap_screen, 0, 0, paint_for_map_display);
+								canvas.drawBitmap(draw_bitmap_screen, 0, 0, null);
 								//System.out.println("DO__DRAW:onDraw():drawBitmap2D end");
 
 								canvas.restore();
@@ -831,17 +870,25 @@ public class NavitGraphics
 							}
 
 							// draw vehicle also (it seems on newer android API the vehicle view does not get updated automatically anymore)
-							Navit.NG__vehicle.view.postInvalidate();
+							if (!Navit.PAINT_OLD_API)
+							{
+								Navit.NG__vehicle.view.postInvalidate();
+							}
 
 							Global_Map_in_onDraw = false;
 						}
 						//System.out.println("DO__DRAW:onDraw():- end");
 					}
+
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 				}
 
+				@SuppressLint("NewApi")
 				@Override
 				protected void onSizeChanged(int w, int h, int oldw, int oldh)
 				{
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 					mCanvasWidth = w;
 					mCanvasHeight = h;
 					int h_dpi = h;
@@ -860,6 +907,16 @@ public class NavitGraphics
 					w_dpi = (int) ((float) w * Global_dpi_factor);
 					System.out.println("Global_dpi_factor=" + Global_dpi_factor + " h_dpi=" + h_dpi + " w_dpi=" + w_dpi);
 					// DPI
+
+					// check if we need to hide actionbar icons ---------------------
+					try
+					{
+						Navit.Global_Navit_Object.invalidateOptionsMenu();
+					}
+					catch (Exception e)
+					{
+					}
+					// check if we need to hide actionbar icons ---------------------
 
 					//Log.e("Navit", "NavitGraphics -> onSizeChanged pixels x=" + w + " pixels y=" + h);
 					//Log.e("Navit", "NavitGraphics -> onSizeChanged dpi=" + Navit.metrics.densityDpi);
@@ -1008,6 +1065,7 @@ public class NavitGraphics
 							draw_bitmap = null;
 							draw_canvas = null;
 							System.gc();
+							System.gc();
 							usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
 							usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
 							System.out.println("" + usedMegsString);
@@ -1034,6 +1092,7 @@ public class NavitGraphics
 							draw_bitmap_screen = null;
 							draw_canvas_screen = null;
 							System.gc();
+							System.gc();
 							usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
 							usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
 							System.out.println("" + usedMegsString);
@@ -1059,6 +1118,7 @@ public class NavitGraphics
 							System.out.println("@@@@@@@@ out of VM Memory @@@@@@@@");
 							draw_bitmap_screen2 = null;
 							draw_canvas_screen2 = null;
+							System.gc();
 							System.gc();
 							usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
 							usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
@@ -1094,7 +1154,7 @@ public class NavitGraphics
 					bitmap_h = h;
 
 					// DPI
-					SizeChangedCallback(w_dpi, h_dpi);
+					SizeChangedCallback(w_dpi, h_dpi, draw_bitmap_s);
 					//SizeChangedCallback(w, h);
 
 					// 3D modus -----------------
@@ -1127,6 +1187,8 @@ public class NavitGraphics
 						msg.setData(b);
 						callback_handler.sendMessage(msg);
 					}
+
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 				}
 
 				void printSamples(MotionEvent ev)
@@ -1174,6 +1236,7 @@ public class NavitGraphics
 						if (action == MotionEvent.ACTION_UP)
 						{
 							NavitAndroidOverlay.voice_rec_bar_visible = false;
+							//System.out.println("xx paint 15 xx");
 							NavitAOverlay_s.postInvalidate();
 						}
 						else
@@ -1187,6 +1250,7 @@ public class NavitGraphics
 								{
 									NavitAndroidOverlay.voice_rec_bar_visible = false;
 									NavitAndroidOverlay.voice_rec_bar_visible2 = true;
+									//System.out.println("xx paint 16 xx");
 									NavitAOverlay_s.postInvalidate();
 
 									// open voice search screen
@@ -1205,12 +1269,14 @@ public class NavitGraphics
 								}
 								else
 								{
+									//System.out.println("xx paint 17 xx");
 									NavitAOverlay_s.postInvalidate();
 								}
 							}
 							else
 							{
 								NavitAndroidOverlay.voice_rec_bar_visible = false;
+								//System.out.println("xx paint 18 xx");
 								NavitAOverlay_s.postInvalidate();
 							}
 						}
@@ -1388,6 +1454,7 @@ public class NavitGraphics
 							try
 							{
 								//System.out.println("invalidate 011");
+								//System.out.println("xx paint 19 xx");
 								NavitAOverlay_s.postInvalidate();
 							}
 							catch (Exception e)
@@ -1702,6 +1769,7 @@ public class NavitGraphics
 										try
 										{
 											//System.out.println("invalidate 012");
+											//System.out.println("xx paint 20 xx");
 											NavitAOverlay_s.postInvalidate();
 										}
 										catch (Exception e)
@@ -2082,19 +2150,22 @@ public class NavitGraphics
 				@Override
 				protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect)
 				{
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 					super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
 					//Log.e("NavitGraphics", "FocusChange " + gainFocus);
+
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 				}
 			};
 
 			view.setFocusable(true);
 			view.setFocusableInTouchMode(true);
 			view.setKeepScreenOn(true);
-			relativelayout = new RelativeLayout(activity);
+			// x4x relativelayout = new RelativeLayout(activity);
 
 			if (this.gr_type == 1)
 			{
-				// view_s = (SurfaceView2) view;
 				view_s = view;
 			}
 
@@ -2102,23 +2173,47 @@ public class NavitGraphics
 			//{
 			//	SetCamera(use_camera);
 			//}
-			relativelayout.addView(view);
+			// x4x relativelayout.addView(view);
+
+			// replace the mapview with real mapview!
+			View dummy_map = activity.findViewById(R.id.gui_gr_map);
+			ViewGroup parent_tmp = (ViewGroup) dummy_map.getParent();
+			int index = parent_tmp.indexOfChild(dummy_map);
+			parent_tmp.removeView(dummy_map);
+			parent_tmp.addView(view, index);
+			view.bringToFront();
+			view.postInvalidate();
 
 			// vehicle view
-			RelativeLayout.LayoutParams NavitVehicleGraph_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			relativelayout.addView(Navit.NG__vehicle.view, NavitVehicleGraph_lp);
+			// x4x RelativeLayout.LayoutParams NavitVehicleGraph_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			// x4x relativelayout.addView(Navit.NG__vehicle.view, NavitVehicleGraph_lp);
+			// x4x Navit.NG__vehicle.view.bringToFront();
+			// x4x Navit.NG__vehicle.view.postInvalidate();
+			// vehicle view
+
+			// replace the vehicleview with real vehicleview!
+			View dummy_v = activity.findViewById(R.id.gui_gr_vehicle);
+			ViewGroup parent_v = (ViewGroup) dummy_v.getParent();
+			int index_v = parent_v.indexOfChild(dummy_v);
+			parent_v.removeView(dummy_v);
+			parent_v.addView(Navit.NG__vehicle.view, index_v);
 			Navit.NG__vehicle.view.bringToFront();
 			Navit.NG__vehicle.view.postInvalidate();
-			// vehicle view
 
 			// android overlay
 			//Log.e("Navit", "create android overlay");
-			NavitAOverlay = new NavitAndroidOverlay(relativelayout.getContext());
-			NavitAOverlay_s = NavitAOverlay;
-			RelativeLayout.LayoutParams NavitAOverlay_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			relativelayout.addView(NavitAOverlay, NavitAOverlay_lp);
+			// x4x NavitAOverlay = new NavitAndroidOverlay(relativelayout.getContext());
+			// x4x NavitAOverlay_s = NavitAOverlay;
+			// x4x RelativeLayout.LayoutParams NavitAOverlay_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			// x4x relativelayout.addView(NavitAOverlay, NavitAOverlay_lp);
+			// x4x NavitAOverlay.bringToFront();
+			// x4x NavitAOverlay.postInvalidate();
+
+			NavitAOverlay = (NavitAndroidOverlay) activity.findViewById(R.id.NavitAOverlay);
 			NavitAOverlay.bringToFront();
 			NavitAOverlay.postInvalidate();
+			NavitAOverlay_s = NavitAOverlay;
+
 			// android overlay
 
 			// android OSDJava
@@ -2133,11 +2228,15 @@ public class NavitGraphics
 			// OSD new -------------------------------------------------------
 			// OSD new -------------------------------------------------------
 			// OSD new -------------------------------------------------------
-			LayoutInflater inflater = activity.getLayoutInflater();
-			OSD_new = (ZANaviLinearLayout) inflater.inflate(R.layout.zanavi_osd, relativelayout, false);
-			RelativeLayout.LayoutParams NavitAOSDJava_lp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			relativelayout.addView(OSD_new, NavitAOSDJava_lp2);
+			// x4x LayoutInflater inflater = activity.getLayoutInflater();
+			// x4x OSD_new = (ZANaviLinearLayout) inflater.inflate(R.layout.zanavi_osd, relativelayout, false);
+			// x4x RelativeLayout.LayoutParams NavitAOSDJava_lp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			// x4x relativelayout.addView(OSD_new, NavitAOSDJava_lp2);
+			// x4x OSD_new.bringToFront();
+
+			OSD_new = (ZANaviLinearLayout) activity.findViewById(R.id.OSD_new);
 			OSD_new.bringToFront();
+
 			// OSD new -------------------------------------------------------
 			// OSD new -------------------------------------------------------
 			// OSD new -------------------------------------------------------
@@ -2146,44 +2245,56 @@ public class NavitGraphics
 
 			// android Messages TextView
 			//Log.e("Navit", "create android Messages TextView");
-			NavitMsgTv = new TextView(relativelayout.getContext());
-			NavitMsgTv_ = NavitMsgTv;
-			RelativeLayout.LayoutParams NavitMsgTv_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			// x4x NavitMsgTv = new TextView(relativelayout.getContext());
+			// x4x NavitMsgTv_ = NavitMsgTv;
+			// x4x RelativeLayout.LayoutParams NavitMsgTv_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 			// NavitMsgTv_lp.height = 50;
-			NavitMsgTv_lp.leftMargin = 120;
-			NavitMsgTv_lp.topMargin = 176;
+			// x4x NavitMsgTv_lp.leftMargin = 120;
+			// x4x NavitMsgTv_lp.topMargin = 176;
 			// NavitMsgTv.setHeight(10);
+
+			NavitMsgTv = (TextView) activity.findViewById(R.id.NavitMsgTv);
+			NavitMsgTv_ = NavitMsgTv;
 			int tc = Color.argb(125, 0, 0, 0); // half transparent black
 			NavitMsgTv.setBackgroundColor(tc);
 			NavitMsgTv.setLines(4);
 			NavitMsgTv.setTextSize(12);
 			NavitMsgTv.setTextColor(Color.argb(255, 200, 200, 200)); // almost white
-			relativelayout.addView(NavitMsgTv, NavitMsgTv_lp);
+			// x4x relativelayout.addView(NavitMsgTv, NavitMsgTv_lp);
 			NavitMsgTv.bringToFront();
 			NavitMsgTv.postInvalidate();
 			// android Messages TextView
 
 			// android Speech Messages TextView
 			//Log.e("Navit", "create android Speech Messages TextView");
-			NavitMsgTv2 = new TextView(relativelayout.getContext());
+			// x4x NavitMsgTv2 = new TextView(relativelayout.getContext());
+			// x4x NavitMsgTv2_ = NavitMsgTv2;
+			// x4x RelativeLayout.LayoutParams NavitMsgTv_lp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			// x4x NavitMsgTv_lp2.leftMargin = 10;
+			// x4x NavitMsgTv_lp2.rightMargin = 10;
+			NavitMsgTv2 = (TextView) activity.findViewById(R.id.NavitMsgTv2cc);
 			NavitMsgTv2_ = NavitMsgTv2;
-			RelativeLayout.LayoutParams NavitMsgTv_lp2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			NavitMsgTv_lp2.leftMargin = 10;
-			NavitMsgTv_lp2.rightMargin = 10;
 			int tc2 = Color.argb(125, 0, 0, 0); // half transparent black
 			NavitMsgTv2.setBackgroundColor(tc2);
 			NavitMsgTv2.setTextSize(15);
 			NavitMsgTv2.setTextColor(Color.argb(255, 200, 200, 200)); // almost white
 
-			ScrollView sc = new ScrollView(relativelayout.getContext());
-			RelativeLayout.LayoutParams NavitMsgTv_lp3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-			sc.addView(NavitMsgTv2, NavitMsgTv_lp2);
-			sc.setFadingEdgeLength(20);
-			sc.setScrollbarFadingEnabled(true);
-			sc.setHorizontalScrollBarEnabled(true);
-			sc.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+			// x4x ScrollView sc = new ScrollView(relativelayout.getContext());
+			NavitMsgTv2sc_ = (ScrollView) activity.findViewById(R.id.NavitMsgTv2);
+
+			NavitMsgTv2sc_.bringToFront();
+			NavitMsgTv2sc_.postInvalidate();
+			NavitMsgTv2sc_.setEnabled(false);
+			NavitMsgTv2sc_.setVisibility(View.GONE);
+
+			// x4x RelativeLayout.LayoutParams NavitMsgTv_lp3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			// x4x sc.addView(NavitMsgTv2, NavitMsgTv_lp2);
+			// x4x sc.setFadingEdgeLength(20);
+			// x4x sc.setScrollbarFadingEnabled(true);
+			NavitMsgTv2sc_.setHorizontalScrollBarEnabled(true);
+			NavitMsgTv2sc_.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 			NavitMsgTv2.setGravity(Gravity.BOTTOM);
-			relativelayout.addView(sc, NavitMsgTv_lp3);
+			// x4x relativelayout.addView(sc, NavitMsgTv_lp3);
 
 			NavitMsgTv2.bringToFront();
 			NavitMsgTv2.postInvalidate();
@@ -2192,18 +2303,30 @@ public class NavitGraphics
 			// android Speech Messages TextView
 
 			// busy spinner view on top of everything
-			ZANaviBusySpinner busyspinner = new ZANaviBusySpinner(relativelayout.getContext());
+			// x4x ZANaviBusySpinner busyspinner = new ZANaviBusySpinner(relativelayout.getContext());
+			// x4x busyspinner_ = busyspinner;
+			// x4x RelativeLayout.LayoutParams ZANaviBusySpinner_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			// x4x relativelayout.addView(busyspinner, ZANaviBusySpinner_lp);
+			// x4x busyspinner.bringToFront();
+			// x4x busyspinner.postInvalidate();
+			// x4x busyspinner.setVisibility(View.INVISIBLE);
+
+			ZANaviBusySpinner busyspinner = (ZANaviBusySpinner) activity.findViewById(R.id.busyspinner);
 			busyspinner_ = busyspinner;
-			RelativeLayout.LayoutParams ZANaviBusySpinner_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			relativelayout.addView(busyspinner, ZANaviBusySpinner_lp);
 			busyspinner.bringToFront();
 			busyspinner.postInvalidate();
 			busyspinner.setVisibility(View.INVISIBLE);
 
-			ZANaviBusyText busyspinnertext = new ZANaviBusyText(relativelayout.getContext());
+			// x4x ZANaviBusyText busyspinnertext = new ZANaviBusyText(relativelayout.getContext());
+			// x4x busyspinnertext_ = busyspinnertext;
+			// x4x RelativeLayout.LayoutParams ZANaviBusyText_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			// x4x relativelayout.addView(busyspinnertext, ZANaviBusyText_lp);
+			// x4x busyspinnertext.bringToFront();
+			// x4x busyspinnertext.postInvalidate();
+			// x4x busyspinnertext.setVisibility(View.INVISIBLE);
+
+			ZANaviBusyText busyspinnertext = (ZANaviBusyText) activity.findViewById(R.id.busyspinnertext);
 			busyspinnertext_ = busyspinnertext;
-			RelativeLayout.LayoutParams ZANaviBusyText_lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			relativelayout.addView(busyspinnertext, ZANaviBusyText_lp);
 			busyspinnertext.bringToFront();
 			busyspinnertext.postInvalidate();
 			busyspinnertext.setVisibility(View.INVISIBLE);
@@ -2217,15 +2340,57 @@ public class NavitGraphics
 			//			NavitGlobalMap_.invalidate();
 			// big map overlay
 
-			emu_menu_view = new EmulatedMenuView(relativelayout.getContext(), Navit.Global_Navit_Object);
-			RelativeLayout.LayoutParams emvlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-			emvlp.setMargins(dp_to_px(40), dp_to_px(30), dp_to_px(40), dp_to_px(30));
-			relativelayout.addView(emu_menu_view, emvlp);
-			emu_menu_view.bringToFront();
-			emu_menu_view.setVisibility(View.INVISIBLE);
+			//			emu_menu_view = new EmulatedMenuView(relativelayout.getContext(), Navit.Global_Navit_Object);
+			//			RelativeLayout.LayoutParams emvlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+			//			emvlp.setMargins(dp_to_px(40), dp_to_px(30), dp_to_px(40), dp_to_px(30));
+			//			relativelayout.addView(emu_menu_view, emvlp);
+			//			emu_menu_view.bringToFront();
+			//			emu_menu_view.setVisibility(View.INVISIBLE);
 
-			activity.setContentView(relativelayout);
+			// -------------------------------------------------------
+			// -------------------------------------------------------
+			// replace the view with real debug text view
+
+			if (Navit.NAVIT_DEBUG_TEXT_VIEW)
+			{
+				debug_text_view = new ZANaviOSDDebug01(activity);
+
+				View dummy_v2 = activity.findViewById(R.id.debug_text);
+				ViewGroup parent_v2 = (ViewGroup) dummy_v2.getParent();
+				int index_v2 = parent_v.indexOfChild(dummy_v2);
+				parent_v2.removeView(dummy_v2);
+				parent_v2.addView(debug_text_view, index_v2);
+				debug_text_view.bringToFront();
+				debug_text_view.postInvalidate();
+				// debug_text_view.setDrawingCacheEnabled(true);
+			}
+			else
+			{
+				View dummy_v2 = activity.findViewById(R.id.debug_text);
+				ViewGroup parent_v2 = (ViewGroup) dummy_v2.getParent();
+				int index_v2 = parent_v.indexOfChild(dummy_v2);
+				parent_v2.removeView(dummy_v2);
+			}
+			// -------------------------------------------------------
+			// -------------------------------------------------------
+
+			// x4x activity.setContentView(relativelayout);
+			// view.setDrawingCacheEnabled(true);
+			// view.buildDrawingCache();
 			view.requestFocus();
+
+			// force re-layout -----------------
+			try
+			{
+				activity.getWindow().getDecorView().findViewById(android.R.id.content).invalidate();
+			}
+			catch (Exception e)
+			{
+			}
+			// force re-layout -----------------
+
+			// **** // activity.getWindow().getDecorView().setBackground(null);
+			// **** // activity.getWindow().getDecorView().setBackgroundDrawable(null);
 		}
 		// parent == 0 ---------------
 		else
@@ -2252,6 +2417,7 @@ public class NavitGraphics
 				System.out.println("" + usedMegsString);
 				System.out.println("@@@@@@@@ out of VM Memory @@@@@@@@");
 				System.gc();
+				System.gc();
 				usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
 				usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
 				System.out.println("" + usedMegsString);
@@ -2273,7 +2439,10 @@ public class NavitGraphics
 			{
 				protected void onDraw(Canvas canvas)
 				{
-					//System.out.println("V.Draw x");
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(0, "V");
+
+					// System.out.println("V.Draw x");
+
 					//System.out.println("V.Draw x="+NG__vehicle.vehicle_pos_x+" y="+NG__vehicle.vehicle_pos_y);
 					//System.out.println("V.Draw d=" + Navit.nav_arrow_stopped.getDensity());
 					//System.out.println("V.Draw w=" + Navit.nav_arrow_stopped.getWidth());
@@ -2282,523 +2451,126 @@ public class NavitGraphics
 
 					if (!NavitGraphics.MAP_DISPLAY_OFF)
 					{
-						if (Navit.NG__vehicle.vehicle_speed < 3)
+						if (Navit.DEBUG_DRAW_VEHICLE)
 						{
-							if (Navit.PREF_show_3d_map)
+							if (Navit.NG__vehicle.vehicle_speed < 3)
 							{
-								// 3D modus -----------------
-								canvas.save();
-								if (Navit.PREF_show_vehicle_3d)
+								if (Navit.PREF_show_3d_map)
 								{
-									canvas.concat(cam_m_vehicle);
-									canvas.drawBitmap(Navit.nav_arrow_stopped_small, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_stopped_small.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_stopped_small.getHeight() / 2, null);
+									// 3D modus -----------------
+									canvas.save();
+									if (Navit.PREF_show_vehicle_3d)
+									{
+										canvas.concat(cam_m_vehicle);
+										canvas.drawBitmap(Navit.nav_arrow_stopped_small, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_stopped_small.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_stopped_small.getHeight() / 2, null);
+									}
+									// 3D modus -----------------
+									else
+									{
+										canvas.drawBitmap(Navit.nav_arrow_stopped, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_stopped.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_stopped.getHeight() / 2, null);
+									}
 								}
-								// 3D modus -----------------
 								else
 								{
 									canvas.drawBitmap(Navit.nav_arrow_stopped, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_stopped.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_stopped.getHeight() / 2, null);
 								}
+								if (Navit.PREF_show_3d_map)
+								{
+									// 3D modus -----------------
+									canvas.restore();
+									// 3D modus -----------------
+								}
 							}
 							else
+							// speed >= 3 -----------
 							{
-								canvas.drawBitmap(Navit.nav_arrow_stopped, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_stopped.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_stopped.getHeight() / 2, null);
-							}
-							if (Navit.PREF_show_3d_map)
-							{
-								// 3D modus -----------------
-								canvas.restore();
-								// 3D modus -----------------
-							}
-						}
-						else
-						{
-							if ((Navit.NG__vehicle.vehicle_direction != 0) || (Navit.PREF_show_3d_map))
-							{
-								canvas.save();
-							}
-
-							if (Navit.NG__vehicle.vehicle_direction != 0)
-							{
-								// rotate nav icon if needed
-								canvas.rotate(Navit.NG__vehicle.vehicle_direction, Navit.NG__vehicle.vehicle_pos_x, Navit.NG__vehicle.vehicle_pos_y);
-							}
-
-							if (Navit.PREF_show_3d_map)
-							{
-								// 3D modus -----------------
-								if (Navit.PREF_show_vehicle_3d)
+								if ((Navit.NG__vehicle.vehicle_direction != 0) || (Navit.PREF_show_3d_map))
 								{
-									canvas.concat(cam_m_vehicle);
-									// offset shadow x+2 , y+8
-									canvas.drawBitmap(Navit.nav_arrow_moving_shadow_small, 2 + Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_shadow_small.getWidth() / 2, 8 + Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_shadow_small.getHeight() / 2, null);
-									canvas.drawBitmap(Navit.nav_arrow_moving_small, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_small.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_small.getHeight() / 2, null);
+									canvas.save();
 								}
-								// 3D modus -----------------
+
+								if (Navit.NG__vehicle.vehicle_direction != 0)
+								{
+									// rotate nav icon if needed
+									canvas.rotate(Navit.NG__vehicle.vehicle_direction, Navit.NG__vehicle.vehicle_pos_x, Navit.NG__vehicle.vehicle_pos_y);
+								}
+
+								if (Navit.PREF_show_3d_map)
+								{
+									// 3D modus -----------------
+									if (Navit.PREF_show_vehicle_3d)
+									{
+										canvas.concat(cam_m_vehicle);
+										// offset shadow x+2 , y+8
+										canvas.drawBitmap(Navit.nav_arrow_moving_shadow_small, 2 + Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_shadow_small.getWidth() / 2, 8 + Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_shadow_small.getHeight() / 2, null);
+										canvas.drawBitmap(Navit.nav_arrow_moving_small, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_small.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_small.getHeight() / 2, null);
+									}
+									// 3D modus -----------------
+									else
+									{
+										// offset shadow x+2 , y+8
+										canvas.drawBitmap(Navit.nav_arrow_moving_shadow, 2 + Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_shadow.getWidth() / 2, 8 + Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_shadow.getHeight() / 2, null);
+										canvas.drawBitmap(Navit.nav_arrow_moving, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving.getHeight() / 2, null);
+									}
+								}
 								else
+								// 2D map -----
 								{
 									// offset shadow x+2 , y+8
 									canvas.drawBitmap(Navit.nav_arrow_moving_shadow, 2 + Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_shadow.getWidth() / 2, 8 + Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_shadow.getHeight() / 2, null);
-									canvas.drawBitmap(Navit.nav_arrow_moving, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving.getHeight() / 2, null);
+									if (Navit.tunnel_extrapolation)
+									{
+										canvas.drawBitmap(Navit.nav_arrow_moving_grey, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_grey.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_grey.getHeight() / 2, null);
+									}
+									else
+									{
+										canvas.drawBitmap(Navit.nav_arrow_moving, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving.getHeight() / 2, null);
+									}
+								}
+
+								if ((Navit.NG__vehicle.vehicle_direction != 0) || (Navit.PREF_show_3d_map))
+								{
+									canvas.restore();
 								}
 							}
-							else
-							{
-								// offset shadow x+2 , y+8
-								canvas.drawBitmap(Navit.nav_arrow_moving_shadow, 2 + Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving_shadow.getWidth() / 2, 8 + Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving_shadow.getHeight() / 2, null);
-								canvas.drawBitmap(Navit.nav_arrow_moving, Navit.NG__vehicle.vehicle_pos_x - Navit.nav_arrow_moving.getWidth() / 2, Navit.NG__vehicle.vehicle_pos_y - Navit.nav_arrow_moving.getHeight() / 2, null);
-							}
 
-							if ((Navit.NG__vehicle.vehicle_direction != 0) || (Navit.PREF_show_3d_map))
-							{
-								canvas.restore();
-							}
+							// paint the sweep spot of the vehicle position!!
+							//						Paint paint22 = new Paint();
+							//						paint22.setStyle(Paint.Style.FILL);
+							//						paint22.setStrokeWidth(0);
+							//						paint22.setColor(Color.RED);
+							//						canvas.drawCircle(Navit.NG__vehicle.vehicle_pos_x, Navit.NG__vehicle.vehicle_pos_y, 5, paint22);
+							// paint the sweep spot of the vehicle position!!
 						}
-
-						// paint the sweep spot of the vehicle position!!
-						//						Paint paint22 = new Paint();
-						//						paint22.setStyle(Paint.Style.FILL);
-						//						paint22.setStrokeWidth(0);
-						//						paint22.setColor(Color.RED);
-						//						canvas.drawCircle(Navit.NG__vehicle.vehicle_pos_x, Navit.NG__vehicle.vehicle_pos_y, 5, paint22);
-						// paint the sweep spot of the vehicle position!!
 					}
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1, "V");
 				}
 
 				@Override
 				protected void onSizeChanged(int w, int h, int oldw, int oldh)
 				{
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
 					System.out.println("new width=" + w + " new height=" + h);
+					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 				}
 			};
 
 		} // END IF: parent == 1 ---------------
 
 		parent_num = parent;
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
-
-	public Handler callback_handler = new Handler()
-	{
-		public void handleMessage(Message msg)
-		{
-			if (msg.getData().getInt("Callback") == 1)
-			{
-				// zoom in
-				CallbackMessageChannel(1, "");
-			}
-			else if (msg.getData().getInt("Callback") == 2)
-			{
-				// zoom out
-				CallbackMessageChannel(2, "");
-			}
-			else if (msg.getData().getInt("Callback") == 3)
-			{
-				// get values
-				String lat = msg.getData().getString("lat");
-				String lon = msg.getData().getString("lon");
-				String q = msg.getData().getString("q");
-				// set routing target to lat,lon
-				CallbackMessageChannel(3, lat + "#" + lon + "#" + q);
-			}
-			else if (msg.getData().getInt("Callback") == 48)
-			{
-				// get values
-				String lat = msg.getData().getString("lat");
-				String lon = msg.getData().getString("lon");
-				String q = msg.getData().getString("q");
-				// append to routing, add waypoint at lat,lon
-				CallbackMessageChannel(48, lat + "#" + lon + "#" + q);
-			}
-			else if (msg.getData().getInt("Callback") == 4)
-			{
-				// set routing target to pixel x,y
-				int x = msg.getData().getInt("x");
-				int y = msg.getData().getInt("y");
-
-				CallbackMessageChannel(4, "" + x + "#" + y);
-				try
-				{
-					Navit.follow_button_on();
-				}
-				catch (Exception e2)
-				{
-					e2.printStackTrace();
-				}
-			}
-			else if (msg.getData().getInt("Callback") == 49)
-			{
-				// set routing target to pixel x,y
-				int x = msg.getData().getInt("x");
-				int y = msg.getData().getInt("y");
-
-				CallbackMessageChannel(49, "" + x + "#" + y);
-				try
-				{
-					Navit.follow_button_on();
-				}
-				catch (Exception e2)
-				{
-					e2.printStackTrace();
-				}
-			}
-			else if (msg.getData().getInt("Callback") == 5)
-			{
-				String cmd = msg.getData().getString("cmd");
-				CallbackMessageChannel(5, cmd);
-			}
-			else if (msg.getData().getInt("Callback") == 7)
-			{
-				CallbackMessageChannel(7, "");
-			}
-			else if ((msg.getData().getInt("Callback") > 7) && (msg.getData().getInt("Callback") < 21))
-			{
-				CallbackMessageChannel(msg.getData().getInt("Callback"), "");
-			}
-			else if (msg.getData().getInt("Callback") == 21)
-			{
-				int x = msg.getData().getInt("x");
-				int y = msg.getData().getInt("y");
-				// ??? // ButtonCallback(1, 1, x, y); // down
-			}
-			else if (msg.getData().getInt("Callback") == 22)
-			{
-				int x = msg.getData().getInt("x");
-				int y = msg.getData().getInt("y");
-				// ??? // ButtonCallback(0, 1, x, y); // up
-			}
-			else if (msg.getData().getInt("Callback") == 23)
-			{
-				int x = msg.getData().getInt("x");
-				int y = msg.getData().getInt("y");
-				int x2 = msg.getData().getInt("x2");
-				int y2 = msg.getData().getInt("y2");
-				MotionCallback(x, y, x2, y2);
-			}
-			else if (msg.getData().getInt("Callback") == 24)
-			{
-				try
-				{
-					NavitGraphics.NavitMsgTv_.setVisibility(View.VISIBLE);
-				}
-				catch (Exception e)
-				{
-
-				}
-			}
-			else if (msg.getData().getInt("Callback") == 25)
-			{
-				try
-				{
-					NavitGraphics.NavitMsgTv_.setVisibility(View.INVISIBLE);
-				}
-				catch (Exception e)
-				{
-
-				}
-			}
-			else if (msg.getData().getInt("Callback") == 30)
-			{
-				// 2D
-				// String s = msg.getData().getString("s");
-				CallbackMessageChannel(30, "");
-			}
-			else if (msg.getData().getInt("Callback") == 31)
-			{
-				// 3D
-				// String s = msg.getData().getString("s");
-				CallbackMessageChannel(31, "");
-			}
-			else if (msg.getData().getInt("Callback") == 32)
-			{
-				// switch to specific 3D pitch
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(32, s);
-			}
-			else if (msg.getData().getInt("Callback") == 33)
-			{
-				// zoom to specific zoomlevel
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(33, s);
-			}
-			else if (msg.getData().getInt("Callback") == 34)
-			{
-				// announcer voice OFF
-				CallbackMessageChannel(34, "");
-			}
-			else if (msg.getData().getInt("Callback") == 35)
-			{
-				// announcer voice ON
-				CallbackMessageChannel(35, "");
-			}
-			else if (msg.getData().getInt("Callback") == 36)
-			{
-				// switch "Lock on road" ON
-				CallbackMessageChannel(36, "");
-			}
-			else if (msg.getData().getInt("Callback") == 37)
-			{
-				// switch "Lock on road" OFF
-				CallbackMessageChannel(37, "");
-			}
-			else if (msg.getData().getInt("Callback") == 38)
-			{
-				// switch "Northing" ON
-				CallbackMessageChannel(38, "");
-			}
-			else if (msg.getData().getInt("Callback") == 39)
-			{
-				// switch "Northing" OFF
-				CallbackMessageChannel(39, "");
-			}
-			else if (msg.getData().getInt("Callback") == 40)
-			{
-				// switch "Map follows Vehicle" ON
-				CallbackMessageChannel(40, "");
-			}
-			else if (msg.getData().getInt("Callback") == 41)
-			{
-				// switch "Map follows Vehicle" OFF
-				CallbackMessageChannel(41, "");
-			}
-			else if (msg.getData().getInt("Callback") == 42)
-			{
-				// routing mode "highways"
-				CallbackMessageChannel(42, "");
-			}
-			else if (msg.getData().getInt("Callback") == 43)
-			{
-				// routing mode "normal roads"
-				CallbackMessageChannel(43, "");
-			}
-			else if (msg.getData().getInt("Callback") == 44)
-			{
-				// show duplicates in search results
-				CallbackMessageChannel(44, "");
-			}
-			else if (msg.getData().getInt("Callback") == 45)
-			{
-				// filter duplicates in search results
-				CallbackMessageChannel(45, "");
-			}
-			else if (msg.getData().getInt("Callback") == 46)
-			{
-				// stop searching and show results found until now
-				CallbackMessageChannel(46, "");
-			}
-			else if (msg.getData().getInt("Callback") == 47)
-			{
-				// change maps data dir
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(47, s);
-			}
-			else if (msg.getData().getInt("Callback") == 50)
-			{
-				// we request to stop drawing the map
-				CallbackMessageChannel(50, "");
-			}
-			else if (msg.getData().getInt("Callback") == 51)
-			{
-				// set position to pixel x,y
-				int x = msg.getData().getInt("x");
-				int y = msg.getData().getInt("y");
-				CallbackMessageChannel(51, "" + x + "#" + y);
-			}
-			else if (msg.getData().getInt("Callback") == 52)
-			{
-				// switch to demo vehicle
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(52, s);
-			}
-			else if (msg.getData().getInt("Callback") == 53)
-			{
-				// dont speak streetnames
-				CallbackMessageChannel(53, "");
-			}
-			else if (msg.getData().getInt("Callback") == 54)
-			{
-				// speak streetnames
-				CallbackMessageChannel(54, "");
-			}
-			else if (msg.getData().getInt("Callback") == 55)
-			{
-				// set cache size for (map-)files
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(55, s);
-			}
-			//			else if (msg.getData().getInt("Callback") == 56)
-			//			{
-			//				// draw polylines with/without circles at the end
-			//				String s = msg.getData().getString("s");
-			//				CallbackMessageChannel(56, s); // 0 -> draw circles, 1 -> DO NOT draw circles
-			//			}
-			else if (msg.getData().getInt("Callback") == 57)
-			{
-				// keep drawing streets as if at "order" level xxx
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(57, s);
-			}
-			else if (msg.getData().getInt("Callback") == 58)
-			{
-				// street search radius factor (multiplier)
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(58, s);
-			}
-			else if (msg.getData().getInt("Callback") == 59)
-			{
-				// enable layer "name"
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(59, s);
-			}
-			else if (msg.getData().getInt("Callback") == 60)
-			{
-				// disable layer "name"
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(60, s);
-			}
-			else if (msg.getData().getInt("Callback") == 61)
-			{
-				// zoom to specific zoomlevel at given point as center
-				// pixel-x#pixel-y#zoom-level
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(61, s);
-			}
-			else if (msg.getData().getInt("Callback") == 62)
-			{
-				// disable map drawing
-				CallbackMessageChannel(62, "");
-			}
-			else if (msg.getData().getInt("Callback") == 63)
-			{
-				// enable map drawing
-				CallbackMessageChannel(63, "");
-			}
-			else if (msg.getData().getInt("Callback") == 64)
-			{
-				// draw map
-				CallbackMessageChannel(64, "");
-			}
-			else if (msg.getData().getInt("Callback") == 65)
-			{
-				// draw map async
-				CallbackMessageChannel(65, "");
-			}
-			else if (msg.getData().getInt("Callback") == 66)
-			{
-				// enable "multipolygons"
-				CallbackMessageChannel(66, "");
-			}
-			else if (msg.getData().getInt("Callback") == 67)
-			{
-				// disable "multipolygons"
-				CallbackMessageChannel(67, "");
-			}
-			else if (msg.getData().getInt("Callback") == 68)
-			{
-				// shift "order" by this value (only for drawing objects)
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(68, s);
-			}
-			else if (msg.getData().getInt("Callback") == 69)
-			{
-				// stop drawing map
-				CallbackMessageChannel(69, "");
-			}
-			else if (msg.getData().getInt("Callback") == 70)
-			{
-				// allow drawing map
-				CallbackMessageChannel(70, "");
-			}
-			else if (msg.getData().getInt("Callback") == 71)
-			{
-				// activate/deactivate "route graph" display
-				// 0 -> deactivate
-				// 1 -> activate
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(71, s);
-			}
-			else if (msg.getData().getInt("Callback") == 72)
-			{
-				// update the route path and route graph (e.g. after setting new roadblocks)
-				// does not update destinations!!!
-				CallbackMessageChannel(72, "");
-			}
-			else if (msg.getData().getInt("Callback") == 73)
-			{
-				// update the route path and route graph (e.g. after setting new roadblocks)
-				// this destroys the route graph and calcs everything totally new!
-				CallbackMessageChannel(73, "");
-			}
-
-			else if (msg.getData().getInt("Callback") == 74)
-			{
-				// allow demo vechile to move
-				CallbackMessageChannel(74, "");
-			}
-			else if (msg.getData().getInt("Callback") == 75)
-			{
-				// stop demo vechile
-				CallbackMessageChannel(75, "");
-			}
-			else if (msg.getData().getInt("Callback") == 76)
-			{
-				// show route rectangles
-				CallbackMessageChannel(76, "");
-			}
-			else if (msg.getData().getInt("Callback") == 77)
-			{
-				// do not show route rectangles
-				CallbackMessageChannel(77, "");
-			}
-			else if (msg.getData().getInt("Callback") == 78)
-			{
-				// shift layout "order" values
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(78, s);
-			}
-			else if (msg.getData().getInt("Callback") == 79)
-			{
-				// set traffic light delay/cost
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(79, s);
-			}
-			else if (msg.getData().getInt("Callback") == 80)
-			{
-				// set autozoom flag to 0 or 1
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(80, s);
-			}
-			else if (msg.getData().getInt("Callback") == 81)
-			{
-				// resize layout items by factor
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(81, s);
-			}
-			else if (msg.getData().getInt("Callback") == 82)
-			{
-				// report share dir
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(82, s);
-			}
-			else if (msg.getData().getInt("Callback") == 83)
-			{
-				// spill all the index files to log output
-				CallbackMessageChannel(83, "");
-			}
-			else if (msg.getData().getInt("Callback") == 84)
-			{
-				// report data dir
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(84, s);
-			}
-		}
-	};
 
 	public static native void TimeoutCallback(int del, int id);
 
-	public static native void SizeChangedCallbackReal(int w, int h);
+	public static native void SizeChangedCallbackReal(int w, int h, Bitmap main_map_bitmap);
 
-	public static void SizeChangedCallback(int w, int h)
+	public static void SizeChangedCallback(int w, int h, Bitmap main_map_bitmap)
 	{
-		Navit.cwthr.SizeChangedCallback(w, h);
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+		Navit.cwthr.SizeChangedCallback(w, h, main_map_bitmap);
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	// public native void ButtonCallback(int pressed, int button, int x, int y);
@@ -2807,7 +2579,11 @@ public class NavitGraphics
 
 	public static void MotionCallback(int x1, int y1, int x2, int y2)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		Navit.cwthr.MotionCallback((int) (x1 * Global_dpi_factor), (int) (y1 * Global_dpi_factor), (int) (x2 * Global_dpi_factor), (int) (y2 * Global_dpi_factor));
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	// public native void KeypressCallback(String s);
@@ -2852,12 +2628,18 @@ public class NavitGraphics
 		// **disabled** Navit.N_NavitGraphics = this;
 	}
 
-	protected void draw_polyline(Paint paint, int c[])
+	Paint paint_dr_polyl = new Paint();
+
+	protected void draw_polyline(int c[], int width, int r, int g, int b, int a)
 	{
+		paint_dr_polyl.setARGB(a, r, g, b);
+		paint_dr_polyl.setStrokeWidth(width);
+		paint_dr_polyl.setStyle(Paint.Style.STROKE);
+
 		//	Log.e("NavitGraphics","draw_polyline");
-		paint.setStyle(Paint.Style.STROKE);
-		b_paint_antialias = paint.isAntiAlias();
-		paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		// paint.setStyle(Paint.Style.STROKE);
+		//b_paint_antialias = paint.isAntiAlias();
+		paint_dr_polyl.setAntiAlias(Navit.PREF_use_anti_aliasing);
 		//paint.setStrokeWidth(0);
 		b_paint_path.reset();
 		b_paint_path.moveTo(c[0], c[1]);
@@ -2866,8 +2648,8 @@ public class NavitGraphics
 			b_paint_path.lineTo(c[i], c[i + 1]);
 		}
 		//global_path.close();
-		draw_canvas.drawPath(b_paint_path, paint);
-		paint.setAntiAlias(b_paint_antialias);
+		draw_canvas.drawPath(b_paint_path, paint_dr_polyl);
+		//*paint.setAntiAlias(b_paint_antialias);
 		//paint.setPathEffect(dashed_map_lines__no_dash);
 	}
 
@@ -2949,13 +2731,27 @@ public class NavitGraphics
 		}
 	}
 
-	protected void draw_polyline2(Paint paint, int c[], int order, int oneway)
+	int len_dr_polyl2;
+	double d_x_dr_polyl2;
+	double d_y_dr_polyl2;
+	int bow_move_x;
+	int bow_move_y;
+	int middle_x_dr_polyl2;
+	int middle_y_dr_polyl2;
+	int angle_dr_polyl2;
+	int angle_dr_polyl2_move;
+	double bow_scale_move;
+	Matrix matrix_oneway_arrows2 = new Matrix();
+
+	protected void draw_polyline2(int c[], int order, int oneway)
 	{
 		// Log.e("NavitGraphics", "draw_polyline2 count=" + c.length);
 		if (!Navit.PREF_gui_oneway_arrows)
 		{
 			return;
 		}
+
+		// Paint paint = new Paint();
 
 		// Boolean normal = false;
 		// Matrix matrix = null;
@@ -2964,68 +2760,113 @@ public class NavitGraphics
 		//if (order > DRAW_ONEWAY_ARROWS_AT_ORDER)
 		//{
 
-		// line less than 44px -> dont draw arrow!
-		int len = (c[0] - c[2]) * (c[1] - c[3]);
-		if (len < 0)
+		// line less than 28px -> dont draw arrow!
+		len_dr_polyl2 = (c[0] - c[2]) * (c[1] - c[3]);
+		if (len_dr_polyl2 < 0)
 		{
-			len = -len;
+			len_dr_polyl2 = -len_dr_polyl2;
 		}
 
-		if (len > (1600))
+		if (len_dr_polyl2 > (800))
 		{
-			paint.setStyle(Paint.Style.STROKE);
-			b_paint_antialias = paint.isAntiAlias();
-			paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+			// paint.setStyle(Paint.Style.STROKE);
+			// b_paint_antialias = paint.isAntiAlias();
+			// paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
 
 			// create matrix for the manipulation
-			matrix_oneway_arrows = new Matrix();
+			matrix_oneway_arrows2.reset();
 
 			// calc this in c-code !! will be much faster!!
 			// calc this in c-code !! will be much faster!!
 			// calc this in c-code !! will be much faster!!
-			double d_x = ((c[2] - c[0]));
-			double d_y = ((c[3] - c[1]));
-			int middle_x = c[0] + (int) (d_x / 6);
-			int middle_y = c[1] + (int) (d_y / 6);
-			int angle = (int) (Math.toDegrees(Math.atan2(d_y, d_x)));
+			d_x_dr_polyl2 = ((c[2] - c[0]));
+			d_y_dr_polyl2 = ((c[3] - c[1]));
+			middle_x_dr_polyl2 = c[0] + (int) (d_x_dr_polyl2 / 6);
+			middle_y_dr_polyl2 = c[1] + (int) (d_y_dr_polyl2 / 6);
+			angle_dr_polyl2 = (int) (Math.toDegrees(Math.atan2(d_y_dr_polyl2, d_x_dr_polyl2)));
 			// calc this in c-code !! will be much faster!!
 			// calc this in c-code !! will be much faster!!
 			// calc this in c-code !! will be much faster!!
 
 			// System.out.println("arrow angle=" + angle);
-			matrix_oneway_arrows.postTranslate(-Navit.oneway_arrow.getWidth() / 2, -Navit.oneway_arrow.getHeight() / 2);
+			matrix_oneway_arrows2.postTranslate(-Navit.oneway_arrow.getWidth() / 2, -Navit.oneway_arrow.getHeight() / 2);
 
 			//System.out.println("order=" + order);
 			// resize the Bitmap
 			if (order > 16)
 			{
-				matrix_oneway_arrows.postScale(4.5f, 4.5f);
+				matrix_oneway_arrows2.postScale(4.5f, 4.5f);
 			}
 			else if (order > 14)
 			{
-				matrix_oneway_arrows.postScale(1.5f, 1.5f);
+				matrix_oneway_arrows2.postScale(1.5f, 1.5f);
 			}
 
-			if (oneway == 1)
+			if ((oneway & 1) == 1)
 			{
 				// rotate the Bitmap
-				matrix_oneway_arrows.postRotate(angle);
+				matrix_oneway_arrows2.postRotate(angle_dr_polyl2);
 			}
-			else if (oneway == 2)
+			else if ((oneway & 2) == 2)
 			{
 				// rotate the Bitmap
-				matrix_oneway_arrows.postRotate(angle + 180);
+				matrix_oneway_arrows2.postRotate(angle_dr_polyl2 + 180);
 			}
 
 			if (oneway > 0)
 			{
 				if (c.length == 4)
 				{
-					matrix_oneway_arrows.postTranslate(middle_x, middle_y);
-					draw_canvas.drawBitmap(Navit.oneway_arrow, matrix_oneway_arrows, paint);
+					matrix_oneway_arrows2.postTranslate(middle_x_dr_polyl2, middle_y_dr_polyl2);
+					draw_canvas.drawBitmap(Navit.oneway_arrow, matrix_oneway_arrows2, null);
+
+					if ((oneway & 4) == 4) // bicycle can drive in both directions, so draw green arrow aswell
+					{
+						matrix_oneway_arrows2.reset();
+						matrix_oneway_arrows2.postTranslate(-Navit.oneway_bicycle_arrow.getWidth() / 2, -Navit.oneway_bicycle_arrow.getHeight() / 2);
+
+						if (order > 16)
+						{
+							matrix_oneway_arrows2.postScale(4.5f, 4.5f);
+							bow_scale_move = 4.5;
+						}
+						else if (order > 14)
+						{
+							matrix_oneway_arrows2.postScale(1.5f, 1.5f);
+							bow_scale_move = 1.5;
+						}
+
+						if ((oneway & 1) == 1)
+						{
+							// rotate the Bitmap
+							matrix_oneway_arrows2.postRotate(angle_dr_polyl2 + 180);
+							angle_dr_polyl2_move = angle_dr_polyl2 + 180;
+						}
+						else if ((oneway & 2) == 2)
+						{
+							// rotate the Bitmap
+							matrix_oneway_arrows2.postRotate(angle_dr_polyl2);
+							angle_dr_polyl2_move = angle_dr_polyl2;
+						}
+
+						matrix_oneway_arrows2.postTranslate(middle_x_dr_polyl2, middle_y_dr_polyl2);
+
+						// move it a bit in arrow direction
+						// calc this in c-code !! will be much faster!!
+						// calc this in c-code !! will be much faster!!
+						// calc this in c-code !! will be much faster!!
+						bow_move_x = -(int) (Math.cos(Math.toRadians(angle_dr_polyl2_move)) * (double) (bow_scale_move * (3 + Navit.oneway_bicycle_arrow.getWidth())));
+						bow_move_y = -(int) (Math.sin(Math.toRadians(angle_dr_polyl2_move)) * (double) (bow_scale_move * (3 + Navit.oneway_bicycle_arrow.getWidth())));
+						// calc this in c-code !! will be much faster!!
+						// calc this in c-code !! will be much faster!!
+						// calc this in c-code !! will be much faster!!
+						matrix_oneway_arrows2.postTranslate(bow_move_x, bow_move_y);
+
+						draw_canvas.drawBitmap(Navit.oneway_bicycle_arrow, matrix_oneway_arrows2, null);
+					}
 				}
 
-				paint.setAntiAlias(b_paint_antialias);
+				// paint.setAntiAlias(b_paint_antialias);
 
 			}
 			else
@@ -3271,14 +3112,14 @@ public class NavitGraphics
 								//System.out.println("invalidate 015");
 								view_s.postInvalidate();
 								//view_s.paint_me();
-								try
-								{
-									Thread.sleep(800);
-								}
-								catch (InterruptedException e)
-								{
-									// e.printStackTrace();
-								}
+								//								try
+								//								{
+								//									Thread.sleep(800);
+								//								}
+								//								catch (InterruptedException e)
+								//								{
+								//									// e.printStackTrace();
+								//								}
 								break;
 							}
 						}
@@ -3366,40 +3207,155 @@ public class NavitGraphics
 	// draw normal polylines -> this function gets called the most!! XX-thousand times
 	// draw normal polylines -> this function gets called the most!! XX-thousand times
 	// draw normal polylines -> this function gets called the most!! XX-thousand times
-	protected void draw_polyline3(int c[], int order, int width, int dashes, int r, int g, int b, int a)
+	Paint paint_dr_poly3 = new Paint();
+	int i_dr_poly3;
+
+	Path path_polyline_3_arrow_head = new Path();
+
+	protected void draw_polyline3(int c[], int order, int width, int dashes, int r, int g, int b, int a, int with_end)
 	{
 
-		Paint paint2 = new Paint();
-		paint2.setARGB(a, r, g, b);
-		set_dashes(paint2, dashes, order);
+		paint_dr_poly3.setARGB(a, r, g, b);
+		set_dashes(paint_dr_poly3, dashes, order);
 
 		//Log.e("NavitGraphics","draw_polyline3");
-		paint2.setStyle(Paint.Style.STROKE);
+		paint_dr_poly3.setStyle(Paint.Style.STROKE);
 		//b_paint_antialias = paint.isAntiAlias();
-		paint2.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		paint_dr_poly3.setAntiAlias(Navit.PREF_use_anti_aliasing);
 		//wsave_003 = paint.getStrokeWidth();
-		paint2.setStrokeWidth(width);
+		paint_dr_poly3.setStrokeWidth(width);
 
-		if (order > DRAW_MORE_DETAILS_AT_ORDER)
+		// make lines nicer -----------
+		paint_dr_poly3.setStrokeMiter(1);
+		paint_dr_poly3.setStrokeJoin(Join.ROUND);
+		paint_dr_poly3.setStrokeCap(Cap.BUTT);
+		// make lines nicer -----------
+
+		if ((order > DRAW_MORE_DETAILS_AT_ORDER) && (with_end == 1))
 		{
-			paint2.setStyle(Paint.Style.FILL);
-			paint2.setStrokeWidth(0);
-			draw_canvas.drawCircle(c[0], c[1], (width / 2), paint2);
+			paint_dr_poly3.setStyle(Paint.Style.FILL);
+			paint_dr_poly3.setStrokeWidth(0);
+			draw_canvas.drawCircle(c[0], c[1], (width / 2), paint_dr_poly3);
 		}
-		for (int i = 2; i < c.length; i += 2)
+
+		for (i_dr_poly3 = 2; i_dr_poly3 < c.length; i_dr_poly3 += 2)
 		{
-			if (order > DRAW_MORE_DETAILS_AT_ORDER)
+			if ((order > DRAW_MORE_DETAILS_AT_ORDER) && (with_end == 1))
 			{
 				//if (i < (c.length - 2))
 				//{
-				paint2.setStyle(Paint.Style.FILL);
-				paint2.setStrokeWidth(0);
-				draw_canvas.drawCircle(c[i], c[i + 1], (width / 2), paint2);
+				paint_dr_poly3.setStyle(Paint.Style.FILL);
+				paint_dr_poly3.setStrokeWidth(0);
+				draw_canvas.drawCircle(c[i_dr_poly3], c[i_dr_poly3 + 1], (width / 2), paint_dr_poly3);
 				//}
-				paint2.setStyle(Paint.Style.STROKE);
-				paint2.setStrokeWidth(width);
+				paint_dr_poly3.setStyle(Paint.Style.STROKE);
+				paint_dr_poly3.setStrokeWidth(width);
 			}
-			draw_canvas.drawLine(c[i - 2], c[i - 1], c[i], c[i + 1], paint2);
+			draw_canvas.drawLine(c[i_dr_poly3 - 2], c[i_dr_poly3 - 1], c[i_dr_poly3], c[i_dr_poly3 + 1], paint_dr_poly3);
+		}
+
+		if (with_end == 4) // arrow head at the end
+		{
+			if (c.length > 3)
+			{
+				float x0 = c[c.length - 4];
+				float y0 = c[c.length - 3];
+
+				float x1 = c[c.length - 2];
+				float y1 = c[c.length - 1];
+
+				float dx = x1 - x0;
+				float dy = y1 - y0;
+
+				float[] p = new float[8];
+
+				float l = (float) Math.sqrt(dx * dx + dy * dy);
+
+				//				dx = pnt[i + 1].x - pnt[i].x;
+				//				dy = pnt[i + 1].y - pnt[i].y;
+				//				l = sqrt(dx * dx + dy * dy);
+				//				if (l)
+				//				{
+				//					dx = dx * 65536 / l;
+				//					dy = dy * 65536 / l;
+				//					p = pnt[i];
+				//					p.x += dx * 15 / 65536;
+				//					p.y += dy * 15 / 65536;
+				//					display_draw_arrow(&p, dx, dy, 10, gc, gra);
+				//					p = pnt[i + 1];
+				//					p.x -= dx * 15 / 65536;
+				//					p.y -= dy * 15 / 65536;
+				//					display_draw_arrow(&p, dx, dy, 10, gc, gra);
+				//				}
+
+				//				struct point pnt[3];
+				//				pnt[0] = pnt[1] = pnt[2] = *p;
+				//				pnt[0].x += -dx * l / 65536 + dy * l / 65536;
+				//				pnt[0].y += -dy * l / 65536 - dx * l / 65536;
+				//				pnt[2].x += -dx * l / 65536 - dy * l / 65536;
+				//				pnt[2].y += -dy * l / 65536 + dx * l / 65536;
+				//				gra->meth.draw_lines(gra->priv, gc->priv, pnt, 3);
+
+				if (l != 0)
+				{
+					dx = dx / l;
+					dy = dy / l;
+
+					final float f1 = 38f; // arrow length
+					final float f1a = 38f;
+					final float f1b = 19f;
+					final float f2 = 32f; // arrow width
+					final float f3 = 32f; // arrow width
+
+					x1 = x1 + (dx * f1);
+					y1 = y1 + (dy * f1);
+					p[2] = x1;
+					p[3] = y1;
+
+					p[6] = x1 - (dx * (f1 + f1b));
+					p[7] = y1 - (dy * (f1 + f1b));
+
+					x1 = x1 - (dx * f1a);
+					y1 = y1 - (dy * f1a);
+					p[0] = x1;
+					p[1] = y1;
+					p[4] = x1;
+					p[5] = y1;
+
+					p[0] = p[0] + (-dx * f2 + dy * f3);
+					p[1] = p[1] + (-dy * f3 - dx * f2);
+					p[4] = p[4] + (-dx * f2 - dy * f3);
+					p[5] = p[5] + (-dy * f3 + dx * f2);
+
+					paint_dr_poly3.setStyle(Paint.Style.FILL);
+
+					path_polyline_3_arrow_head.reset();
+					path_polyline_3_arrow_head.setFillType(Path.FillType.EVEN_ODD);
+
+					path_polyline_3_arrow_head.moveTo(p[0], p[1]);
+					path_polyline_3_arrow_head.lineTo(p[2], p[3]);
+					path_polyline_3_arrow_head.lineTo(p[4], p[5]);
+					path_polyline_3_arrow_head.lineTo(p[6], p[7]);
+					path_polyline_3_arrow_head.close();
+
+					draw_canvas.drawPath(path_polyline_3_arrow_head, paint_dr_poly3);
+
+					paint_dr_poly3.setStyle(Paint.Style.STROKE);
+					paint_dr_poly3.setStrokeMiter(1);
+					paint_dr_poly3.setStrokeJoin(Join.ROUND);
+					paint_dr_poly3.setStrokeCap(Cap.ROUND);
+					paint_dr_poly3.setStrokeWidth(9);
+					paint_dr_poly3.setColor(Color.WHITE);
+
+					draw_canvas.drawPath(path_polyline_3_arrow_head, paint_dr_poly3);
+
+					paint_dr_poly3.setStrokeWidth(3);
+					// paint_dr_poly3.setARGB(255, 4, 0xb4, 0xae);
+					paint_dr_poly3.setARGB(a, r, g, b);
+
+					draw_canvas.drawPath(path_polyline_3_arrow_head, paint_dr_poly3);
+				}
+			}
 		}
 		//paint.setAntiAlias(b_paint_antialias);
 		//paint.setStrokeWidth(wsave_003);
@@ -3408,8 +3364,10 @@ public class NavitGraphics
 	// draw normal polylines -> this function gets called the most!! XX-thousand times
 	// draw normal polylines -> this function gets called the most!! XX-thousand times
 	// draw normal polylines -> this function gets called the most!! XX-thousand times
+	Paint paint_dr_poly4 = new Paint();
+	int i_dr_poly4;
 
-	protected void draw_polyline4(int c[], int order, int width, int type, int dashes, int r, int g, int b, int a)
+	protected void draw_polyline4(int c[], int order, int width, int type, int dashes, int r, int g, int b, int a, int with_end)
 	{
 		// type:0 -> normal line
 		// type:1 -> underground (tunnel)
@@ -3444,12 +3402,11 @@ public class NavitGraphics
 			return;
 		}
 
-		Paint paint2 = new Paint();
-		paint2.setARGB(a, r, g, b);
-		set_dashes(paint2, dashes, order);
+		paint_dr_poly4.setARGB(a, r, g, b);
+		set_dashes(paint_dr_poly4, dashes, order);
 
 		//b_paint_antialias = paint.isAntiAlias();
-		paint2.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		paint_dr_poly4.setAntiAlias(Navit.PREF_use_anti_aliasing);
 		//wsave_004 = paint.getStrokeWidth();
 
 		if (order <= DRAW_MORE_DETAILS_TUNNEL_BRIDGES_AT_ORDER)
@@ -3462,17 +3419,17 @@ public class NavitGraphics
 			// bridge
 			//
 			//int csave = paint.getColor();
-			paint2.setAlpha(120); // 0 .. 255   //    255 -> no seethru
-			paint2.setStyle(Paint.Style.STROKE);
-			paint2.setStrokeWidth(width + 2);
+			paint_dr_poly4.setAlpha(120); // 0 .. 255   //    255 -> no seethru
+			paint_dr_poly4.setStyle(Paint.Style.STROKE);
+			paint_dr_poly4.setStrokeWidth(width + 2);
 			// paint.setColor(Color.BLACK);
 			if (order > DRAW_DETAIL_DASHES_AT_ORDER)
 			{
-				paint2.setStrokeWidth(width + 4);
+				paint_dr_poly4.setStrokeWidth(width + 4);
 			}
-			for (int i = 2; i < c.length; i += 2)
+			for (i_dr_poly4 = 2; i_dr_poly4 < c.length; i_dr_poly4 += 2)
 			{
-				draw_canvas.drawLine(c[i - 2], c[i - 1], c[i], c[i + 1], paint2);
+				draw_canvas.drawLine(c[i_dr_poly4 - 2], c[i_dr_poly4 - 1], c[i_dr_poly4], c[i_dr_poly4 + 1], paint_dr_poly4);
 			}
 			//paint.setColor(csave);
 
@@ -3493,34 +3450,34 @@ public class NavitGraphics
 		}
 
 		// ---------------------------------------
-		paint2.setStyle(Paint.Style.STROKE);
-		paint2.setStrokeWidth(width);
+		paint_dr_poly4.setStyle(Paint.Style.STROKE);
+		paint_dr_poly4.setStrokeWidth(width);
 
 		if (type == 1)
 		{
 			// tunnel
 			//paint2.setAlpha(70); // 0 .. 255   //    255 -> no seethru
-			paint2.setAlpha(150); // 0 .. 255   //    255 -> no seethru
+			paint_dr_poly4.setAlpha(150); // 0 .. 255   //    255 -> no seethru
 			if (order > DRAW_DETAIL_DASHES_AT_ORDER)
 			{
-				paint2.setPathEffect(dashed_map_lines__low);
+				paint_dr_poly4.setPathEffect(dashed_map_lines__low);
 			}
 			else
 			{
-				paint2.setPathEffect(dashed_map_lines__high);
+				paint_dr_poly4.setPathEffect(dashed_map_lines__high);
 			}
 		}
 		else if (type == 2)
 		{
 			// bridge
-			paint2.setAlpha(70); // 0 .. 255   //    255 -> no seethru			
+			paint_dr_poly4.setAlpha(70); // 0 .. 255   //    255 -> no seethru			
 		}
 
-		paint2.setStyle(Paint.Style.STROKE);
-		paint2.setStrokeWidth(width);
-		for (int i = 2; i < c.length; i += 2)
+		paint_dr_poly4.setStyle(Paint.Style.STROKE);
+		paint_dr_poly4.setStrokeWidth(width);
+		for (i_dr_poly4 = 2; i_dr_poly4 < c.length; i_dr_poly4 += 2)
 		{
-			draw_canvas.drawLine(c[i - 2], c[i - 1], c[i], c[i + 1], paint2);
+			draw_canvas.drawLine(c[i_dr_poly4 - 2], c[i_dr_poly4 - 1], c[i_dr_poly4], c[i_dr_poly4 + 1], paint_dr_poly4);
 		}
 
 		//paint.setPathEffect(dashed_map_lines__no_dash);
@@ -3743,19 +3700,27 @@ public class NavitGraphics
 		paint.setAntiAlias(b_paint_antialias);
 	}
 
-	protected void draw_polygon(Paint paint, int c[])
+	Paint paint_draw_polygon = new Paint();
+	int dr_poly_i;
+
+	protected void draw_polygon(int c[], int width, int r, int g, int b, int a)
 	{
-		paint.setStyle(Paint.Style.FILL);
-		b_paint_antialias = paint.isAntiAlias();
-		paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		paint_draw_polygon.setARGB(a, r, g, b);
+		paint_draw_polygon.setStrokeWidth(width);
+		paint_draw_polygon.setStyle(Paint.Style.FILL);
+
+		// Log.e("NavitGraphics", "polygon " + r + " " + g + " " + b + " " + a);
+
+		// b_paint_antialias = paint2.isAntiAlias();
+		paint_draw_polygon.setAntiAlias(Navit.PREF_use_anti_aliasing);
 		b_paint_path.reset();
 		b_paint_path.moveTo(c[0], c[1]);
-		for (int i = 2; i < c.length; i += 2)
+		for (dr_poly_i = 2; dr_poly_i < c.length; dr_poly_i += 2)
 		{
-			b_paint_path.lineTo(c[i], c[i + 1]);
+			b_paint_path.lineTo(c[dr_poly_i], c[dr_poly_i + 1]);
 		}
-		draw_canvas.drawPath(b_paint_path, paint);
-		paint.setAntiAlias(b_paint_antialias);
+		draw_canvas.drawPath(b_paint_path, paint_draw_polygon);
+		// paint2.setAntiAlias(b_paint_antialias);
 	}
 
 	protected void draw_polygon2(Paint paint, int c[], int order, int oneway)
@@ -3951,56 +3916,61 @@ public class NavitGraphics
 		}
 	}
 
-	protected void draw_text(Paint paint, int x, int y, String text, int size, int dx, int dy)
+	Paint paint_draw_text = new Paint();
+
+	protected void draw_text(int x, int y, String text, int size, int dx, int dy, int r, int g, int b, int a)
 	{
+
+		paint_draw_text.setARGB(a, r, g, b);
+
 		//		float fx = x;
 		//		float fy = y;
-		//Log.e("NavitGraphics","Text size "+size + " vs " + paint.getTextSize());
+		// Log.e("NavitGraphics", "Text size " + size + " " + r + " " + g + " " + b + " " + a);
 		if (Navit.PREF_map_font_size != 2)
 		{
 			if (Navit.PREF_map_font_size == 3)
 			{
 				// large
-				paint.setTextSize((int) ((size / 15) * 1.4));
+				paint_draw_text.setTextSize((int) ((size / 15) * 1.4));
 			}
 			else if (Navit.PREF_map_font_size == 4)
 			{
 				// extra large
-				paint.setTextSize((int) ((size / 15) * 1.7));
+				paint_draw_text.setTextSize((int) ((size / 15) * 1.7));
 			}
 			else if (Navit.PREF_map_font_size == 5)
 			{
 				// extra large
-				paint.setTextSize((int) ((size / 15) * 2.2));
+				paint_draw_text.setTextSize((int) ((size / 15) * 2.2));
 			}
 			else if (Navit.PREF_map_font_size == 1)
 			{
 				// small
-				paint.setTextSize((int) ((size / 15) * 0.72));
+				paint_draw_text.setTextSize((int) ((size / 15) * 0.72));
 			}
 			else
 			{
 				// other? use normal size
-				paint.setTextSize(size / 15);
+				paint_draw_text.setTextSize(size / 15);
 			}
 		}
 		else
 		{
 			// normal size
-			paint.setTextSize(size / 15);
+			paint_draw_text.setTextSize(size / 15);
 		}
-		paint.setStyle(Paint.Style.FILL);
+		paint_draw_text.setStyle(Paint.Style.FILL);
 		// FONT ------------------
 		// FONT ------------------
 		if (Navit.PREF_use_custom_font == true)
 		{
-			if (paint.getTypeface() == null)
+			if (paint_draw_text.getTypeface() == null)
 			{
 				try
 				{
 					strokeTextPaint.setTypeface(Navit.NavitStreetnameFont);
-					paint.setTypeface(Navit.NavitStreetnameFont);
-					//System.out.println("Calling setTypeface");
+					paint_draw_text.setTypeface(Navit.NavitStreetnameFont);
+					// System.out.println("Calling setTypeface");
 				}
 				catch (Exception e)
 				{
@@ -4010,18 +3980,18 @@ public class NavitGraphics
 		}
 		else
 		{
-			if (paint.getTypeface() != null)
+			if (paint_draw_text.getTypeface() != null)
 			{
 				strokeTextPaint.setTypeface(null);
-				paint.setTypeface(null);
+				paint_draw_text.setTypeface(null);
 			}
 		}
 		// FONT ------------------
 		// FONT ------------------
-		b_paint_antialias = paint.isAntiAlias();
-		paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+		// b_paint_antialias = paint_draw_text.isAntiAlias();
+		paint_draw_text.setAntiAlias(Navit.PREF_use_anti_aliasing);
 
-		if (paint.getTextSize() < 30)
+		if (paint_draw_text.getTextSize() < 30)
 		{
 			strokeTextPaint.setStrokeWidth(s_strokTextSize_min);
 		}
@@ -4030,13 +4000,13 @@ public class NavitGraphics
 			strokeTextPaint.setStrokeWidth(s_strokTextSize);
 		}
 
-		paint.setTextAlign(android.graphics.Paint.Align.LEFT);
+		paint_draw_text.setTextAlign(android.graphics.Paint.Align.LEFT);
 
 		if (dx == 0x10000 && dy == 0)
 		{
-			strokeTextPaint.setTextSize(paint.getTextSize());
+			strokeTextPaint.setTextSize(paint_draw_text.getTextSize());
 			draw_canvas.drawText(text, x, y, strokeTextPaint);
-			draw_canvas.drawText(text, x, y, paint);
+			draw_canvas.drawText(text, x, y, paint_draw_text);
 		}
 		else
 		{
@@ -4044,20 +4014,20 @@ public class NavitGraphics
 			b_paint_path.moveTo(x, y);
 			b_paint_path.rLineTo(dx, dy);
 
-			strokeTextPaint.setTextSize(paint.getTextSize());
+			strokeTextPaint.setTextSize(paint_draw_text.getTextSize());
 			draw_canvas.drawTextOnPath(text, b_paint_path, 0, 0, strokeTextPaint);
-			draw_canvas.drawTextOnPath(text, b_paint_path, 0, 0, paint);
+			draw_canvas.drawTextOnPath(text, b_paint_path, 0, 0, paint_draw_text);
 		}
-		paint.setAntiAlias(b_paint_antialias);
+		// paint.setAntiAlias(b_paint_antialias);
 	}
 
-	protected void draw_image(Paint paint, int x, int y, Bitmap bitmap)
+	protected void draw_image(int x, int y, Bitmap bitmap, int r, int g, int b, int a)
 	{
 		//Log.e("NavitGraphics","draw_image");
 		//		float fx = x;
 		//		float fy = y;
 		//System.out.println("DO__DRAW:draw_image:drawBitmap start");
-		draw_canvas.drawBitmap(bitmap, x, y, paint);
+		draw_canvas.drawBitmap(bitmap, x, y, null);
 		//System.out.println("DO__DRAW:draw_image:drawBitmap end");
 	}
 
@@ -4066,14 +4036,21 @@ public class NavitGraphics
 		// dummy -> do nothing!!
 	}
 
+	float dw__new_len;
+	float dw__scale_x_y;
+	float dw__deltaY;
+	float dw__deltaX;
+	float dw__angle_deg;
+	final int dw__map_tile_x = 256;
+	final int dw__map_tile_y = 256;
+	Bitmap dw__bitmap = null;
+	InputStream dw__infile;
+
 	// ", "(Ljava/lang/String;IIIIIIIII)V
 	protected void draw_warp(String imagepath, int count, int p0x, int p0y, int p1x, int p1y, int p2x, int p2y)
 	{
 		//System.out.println("draw_warp: image=" + imagepath + " count=" + count);
 		//System.out.println("draw_warp: p0x=" + p0x + ", p0y=" + p0y + ", p1x=" + p1x + ", p1y=" + p1y + ", p2x=" + p2x + ", p2y=" + p2y);
-
-		final int map_tile_x = 256;
-		final int map_tile_y = 256;
 
 		// orig map tile size = 256px * 256px
 		// p0(x,y)=position of left lower corner of image!! 
@@ -4090,7 +4067,7 @@ public class NavitGraphics
 
 		try
 		{
-			Bitmap bitmap = null;
+			dw__bitmap = null;
 
 			//if (imagepath.startsWith("6/"))
 			//{
@@ -4100,9 +4077,9 @@ public class NavitGraphics
 			//{
 			try
 			{
-				InputStream infile = Navit.asset_mgr.open(imagepath);
-				bitmap = BitmapFactory.decodeStream(infile);
-				infile.close();
+				dw__infile = Navit.asset_mgr.open(imagepath);
+				dw__bitmap = BitmapFactory.decodeStream(dw__infile);
+				dw__infile.close();
 			}
 			catch (IOException e1)
 			{
@@ -4114,27 +4091,27 @@ public class NavitGraphics
 			{
 				// imlib_render_image_on_drawable_skewed(0, 0, w, h, p[0].x, p[0].y, p[1].x-p[0].x, p[1].y-p[0].y, p[2].x-p[0].x, p[2].y-p[0].y);
 				//matrix.setRotate(90.0f); // Degrees
-				float new_len = (float) (Math.sqrt(((p1x - p0x) * (p1x - p0x)) + ((p1y - p0y) * (p1y - p0y))));
-				float scale_x_y = new_len / map_tile_y;
-				float deltaY = -p1y + p0y;
-				float deltaX = p1x - p0x;
-				float angle_deg = -(float) (Math.atan2(deltaY, deltaX) * 180d / Math.PI);
+				dw__new_len = (float) (Math.sqrt(((p1x - p0x) * (p1x - p0x)) + ((p1y - p0y) * (p1y - p0y))));
+				dw__scale_x_y = dw__new_len / dw__map_tile_y;
+				dw__deltaY = -p1y + p0y;
+				dw__deltaX = p1x - p0x;
+				dw__angle_deg = -(float) (Math.atan2(dw__deltaY, dw__deltaX) * 180d / Math.PI);
 				//System.out.println("_warp: angle=" + angle_deg);
 				matrix_maptile.reset();
-				matrix_maptile.postTranslate(p0x, p0y - (map_tile_y * scale_x_y));
-				matrix_maptile.preScale(scale_x_y, scale_x_y);
-				matrix_maptile.postRotate(angle_deg, p0x, p0y);
+				matrix_maptile.postTranslate(p0x, p0y - (dw__map_tile_y * dw__scale_x_y));
+				matrix_maptile.preScale(dw__scale_x_y, dw__scale_x_y);
+				matrix_maptile.postRotate(dw__angle_deg, p0x, p0y);
 			}
 			else
 			{
-				bitmap.recycle();
-				bitmap = null;
+				dw__bitmap.recycle();
+				dw__bitmap = null;
 				return;
 			}
 
-			draw_canvas.drawBitmap(bitmap, matrix_maptile, paint_maptile);
-			bitmap.recycle();
-			bitmap = null;
+			draw_canvas.drawBitmap(dw__bitmap, matrix_maptile, paint_maptile);
+			dw__bitmap.recycle();
+			dw__bitmap = null;
 		}
 		catch (Exception e)
 		{
@@ -4144,204 +4121,15 @@ public class NavitGraphics
 
 	protected void draw_bigmap(int yaw, int order, float clng, float clat, int x_, int y_, int mcx, int mcy, int px_, int py_, int valid)
 	{
-		Bitmap bigmap_bitmap = null;
-
-		if (bigmap_bitmap != null)
-		{
-			// input: x,y --> screen coords of lat=0,lng=0 point!!
-			/*
-			 * int scx = (int) (draw_canvas.getWidth() / 2);
-			 * int scy = (int) (draw_canvas.getHeight() / 2);
-			 * int px = px_;
-			 * int py = py_;
-			 */
-
-			// calculate the scale
-			float scaleWidth = 1;
-			float scaleHeight = 1;
-
-			/*
-			 * if (order == -1)
-			 * {
-			 * scaleWidth = scaleHeight = 0.8f * (1.5f / draw_factor);
-			 * }
-			 * else if (order == -2)
-			 * {
-			 * scaleWidth = scaleHeight = (float) ((1 / 2f) * 0.8f) * (1.5f / draw_factor);
-			 * }
-			 */
-
-			//System.out.println("bigmap order:" + (long) (order * 100));
-			scaleWidth = scaleHeight = BIGMAP_FACTOR / (float) order * (1.5f / draw_factor);
-			//System.out.println("draw_factor:" + draw_factor);
-
-			if ((scaleWidth == 0) || (scaleHeight == 0))
-			{
-				//System.out.println(" " + scaleWidth + " " + scaleHeight + " " + order);
-				return;
-			}
-
-			if (valid == 1)
-			{
-				//System.out.println(" px " + px + " py " + py);
-			}
-
-			// create a matrix for the manipulation
-			Matrix matrix = new Matrix();
-			int half_x = (int) (bigmap_bitmap.getWidth() / 2);
-			int half_y = (int) (bigmap_bitmap.getHeight() / 2);
-			matrix.setScale(scaleWidth, scaleHeight, half_x, half_y);
-
-			int usedMegs;
-			String usedMegsString;
-			//			int usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
-			//			String usedMegsString = String.format("00 - Memory Used: %d MB", usedMegs);
-			//			System.out.println("" + usedMegsString);
-
-			// recreate the new Bitmap
-			try
-			{
-				bigmap_bitmap_temp = Bitmap.createBitmap(bigmap_bitmap, 0, 0, bigmap_bitmap.getWidth(), bigmap_bitmap.getHeight(), matrix, true);
-			}
-			catch (OutOfMemoryError e)
-			{
-				usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
-				usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
-				System.out.println("" + usedMegsString);
-				System.out.println("@@@@@@@@ out of VM Memory @@@@@@@@");
-				System.gc();
-				usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
-				usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
-				System.out.println("" + usedMegsString);
-
-				try
-				{
-					bigmap_bitmap_temp = Bitmap.createBitmap(bigmap_bitmap, 0, 0, bigmap_bitmap.getWidth(), bigmap_bitmap.getHeight(), matrix, true);
-				}
-				catch (OutOfMemoryError e2)
-				{
-					e2.printStackTrace();
-					return;
-				}
-			}
-
-			if (bigmap_bitmap_temp == null)
-			{
-				return;
-			}
-			else
-			{
-				try
-				{
-					if (bigmap_bitmap_temp.getWidth() <= 0)
-					{
-						return;
-					}
-					else if (bigmap_bitmap_temp.getHeight() <= 0)
-					{
-						return;
-					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					return;
-				}
-			}
-			//			usedMegs = (int) (Debug.getNativeHeapAllocatedSize() / 1048576L);
-			//			usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
-			//			System.out.println("" + usedMegsString);
-
-			float top = 85.2f;
-			//float bottom = -85.2f;
-			float left = -180f;
-			//float right = 180f;
-
-			String left_top_on_screen_string = CallbackGeoCalc(2, top, left);
-			String tmp[] = left_top_on_screen_string.split(":", 2);
-			int pixel_top_left_x = (int) (Integer.parseInt(tmp[0]) / NavitGraphics.Global_dpi_factor);
-			int pixel_top_left_y = (int) (Integer.parseInt(tmp[1]) / NavitGraphics.Global_dpi_factor);
-
-			//float p_karte_pixel_x;
-			//float p_karte_pixel_y;
-
-			// pixel point of 0/0 geo coord
-			/*
-			 * p_karte_pixel_x = bigmap_bitmap_temp.getWidth() / 2;
-			 * p_karte_pixel_y = bigmap_bitmap_temp.getHeight() / 2;
-			 */
-
-			/*
-			 * if (!loc_12_valid)
-			 * {
-			 * // initialize them the first time
-			 * loc_1_x = x_;
-			 * loc_1_y = y_;
-			 * loc_2_x = mcx;
-			 * loc_2_y = mcy;
-			 * loc_12_valid = true;
-			 * }
-			 * 
-			 * if ((loc_1_x == x_) && (loc_1_y == y_))
-			 * {
-			 * p_karte_pixel_x = p_karte_pixel_x - (loc_2_x - mcx);
-			 * p_karte_pixel_y = p_karte_pixel_y - (loc_2_y - mcy);
-			 * // System.out.println("SSSSSSSS SSSSSSSS");
-			 * }
-			 * else
-			 * {
-			 * loc_2_x = mcx;
-			 * loc_2_y = mcy;
-			 * }
-			 * 
-			 * loc_1_x = x_;
-			 * loc_1_y = y_;
-			 */
-
-			//int ssschx = (int) (x_ - p_karte_pixel_x);
-			//int ssschy = (int) (y_ - p_karte_pixel_y);
-
-			// fill canvas with ocean color
-			draw_canvas.drawColor(Color.parseColor("#82C8EA"));
-
-			//int green_dot_x = scx;
-			//int green_dot_y = scy;
-			loc_dot_valid = true;
-
-			//int rotation_point_x = scx;
-			//int rotation_point_y = scy;
-
-			/*
-			 * if (valid == 1)
-			 * {
-			 * green_dot_x = px;
-			 * green_dot_y = py;
-			 * 
-			 * rotation_point_x = px;
-			 * rotation_point_y = py;
-			 * }
-			 */
-			//
-			draw_canvas.save(); // SAVE
-			//
-			// *********** draw_canvas.translate(green_dot_x, green_dot_y);
-			draw_canvas.translate(pixel_top_left_x, pixel_top_left_y);
-			draw_canvas.rotate(yaw, 0, 0);
-
-			draw_canvas.drawBitmap(bigmap_bitmap_temp, 0, 0, null);
-
-			//
-			draw_canvas.restore(); // RESTORE
-			//
-			bigmap_bitmap_temp.recycle();
-			bigmap_bitmap_temp = null;
-		}
+		// not used, but references somewhere. so dont delete!!!
 	}
 
 	public static void send_osd_values(String id, String text1, String text2, String text3, int i1, int i2, int i3, int i4, float f1, float f2, float f3)
 	{
-		//System.out.println("NavitOSDJava:" + id + " " + text1 + " " + text2 + " " + text3 + " " + i1 + " " + i2 + " " + i3 + " " + i4 + " " + f1 + " " + f2 + " " + f3);
-		//System.out.println("NavitOSDJava:" + last_paint_OSD);
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
+		// System.out.println("NavitOSDJava:" + id + " " + text1 + " " + text2 + " " + text3 + " " + i1 + " " + i2 + " " + i3 + " " + i4 + " " + f1 + " " + f2 + " " + f3);
+		// System.out.println("NavitOSDJava:" + last_paint_OSD);
 		Boolean needed_value = false;
 		try
 		{
@@ -4447,7 +4235,7 @@ public class NavitGraphics
 			{
 				if ((text1 != null) && (text1.equals("draw_image1")))
 				{
-					//System.out.println("tttt222:" + text2);
+					// System.out.println("tttt222:" + text2);
 					// text2 = res/drawable/xx.png
 					if ((text2 == null) || (text2.equals("")))
 					{
@@ -4532,6 +4320,7 @@ public class NavitGraphics
 		{
 			// we got values that we dont use
 			//System.out.println("xx paint 0 xx");
+			// if (Navit.METHOD_DEBUG) Navit.my_func_name(2);
 			return;
 		}
 
@@ -4556,15 +4345,14 @@ public class NavitGraphics
 		else
 		{
 			// paint only every 600ms
-			if ((last_paint_OSD + 600) < System.currentTimeMillis())
+			if ((last_paint_OSD + 750) < System.currentTimeMillis())
 			{
 				try
 				{
 					last_paint_OSD = System.currentTimeMillis();
 					//System.out.println("xx paint 2 xx");
-					NavitOSDJava.draw_real_wrapper(true, true);
-					//++NavitAOSDJava_.postInvalidate();
-					//++NavitAOverlay_s.postInvalidate();
+					NavitOSDJava.draw_real_wrapper(true, false);
+					// * works * // NavitOSDJava.draw_real_wrapper(true, true);
 				}
 				catch (Exception r)
 				{
@@ -4572,11 +4360,15 @@ public class NavitGraphics
 				}
 			}
 		}
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	static void copy_map_buffer()
 	{
-		//System.out.println("DO__DRAW:copy_map_buffer:drawBitmap enter");
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
+		// System.out.println("DO__DRAW:copy_map_buffer:drawBitmap enter");
+		// SYN //
 		synchronized (synch_drawing_for_map)
 		{
 			// stop any smooth drawing/moving first!
@@ -4659,14 +4451,16 @@ public class NavitGraphics
 				// if screen is rotated, bitmaps are not valid, and this would crash
 				// find a better solution later!!
 			}
-			//System.out.println("copy_map_buffer: Ready ******");
+			// System.out.println("DO__DRAW:copy_map_buffer:Ready ******");
 
 		}
-
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	static void copy_backwards_map_buffer()
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		// draw_canvas_screen_s.drawColor(Color.parseColor("#FEF9EE")); // fill with yellow-ish bg color
 
 		//if (ZOOM_MODE_ACTIVE)
@@ -4679,10 +4473,14 @@ public class NavitGraphics
 		//{
 		//	draw_canvas_screen_s.restore();
 		//}
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	protected void draw_mode(int mode)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		//Log.e("NavitGraphics", "draw_mode mode=" + mode + " parent_graphics=" + String.valueOf(parent_graphics));
 
 		if (mode == 1 || (mode == 0 && parent_num != 0))
@@ -4704,17 +4502,24 @@ public class NavitGraphics
 		//			draw_canvas.drawLine(0, 0, 50, 50, paint43);
 		//}
 
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	protected void draw_drag(int x, int y)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		// Log.e("NavitGraphics","draw_drag"+pos_x+" "+pos_y+" "+x+" "+y);
 		pos_x = x;
 		pos_y = y;
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	protected void overlay_disable(int disable)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		// UNUSED ------
 
 		//Log.e("NavitGraphics","overlay_disable");
@@ -4728,6 +4533,7 @@ public class NavitGraphics
 		//}
 
 		// overlay_disabled = disable;
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	protected void overlay_resize(int x, int y, int w, int h, int alpha, int wraparond)
@@ -4937,9 +4743,9 @@ public class NavitGraphics
 
 	public static void generate_all_speech_commands()
 	{
-
 		try
 		{
+			NavitGraphics.NavitMsgTv2sc_.setVisibility(View.VISIBLE);
 			NavitGraphics.NavitMsgTv2_.setVisibility(View.VISIBLE);
 			NavitGraphics.NavitMsgTv2_.setEnabled(true);
 		}
@@ -5641,7 +5447,11 @@ public class NavitGraphics
 
 	public static void CallbackMessageChannel(int i, String s)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		Navit.cwthr.CallbackMessageChannel(i, s);
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(2);
 	}
 
 	/**
@@ -5783,101 +5593,222 @@ public class NavitGraphics
 	// call C-function to get value --> not used anymore now!!
 	public static native int CallbackDestinationValid();
 
-	public static Handler callback_handler_s = new Handler()
-	{
-		public void handleMessage(Message msg)
-		{
-			if (msg.getData().getInt("Callback") == 18)
-			{
-				CallbackMessageChannel(18, "");
-			}
-			else if (msg.getData().getInt("Callback") == 47)
-			{
-				// get values
-				String s = msg.getData().getString("s");
-				// set routing target to lat,lon
-				CallbackMessageChannel(47, s);
-			}
-			else if (msg.getData().getInt("Callback") == 55)
-			{
-				// set cache size for (map-)files
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(55, s);
-			}
-			else if (msg.getData().getInt("Callback") == 59)
-			{
-				// enable layer "name"
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(59, s);
-			}
-			else if (msg.getData().getInt("Callback") == 60)
-			{
-				// disable layer "name"
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(60, s);
-			}
-			else if (msg.getData().getInt("Callback") == 78)
-			{
-				// shift layout "order" values
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(78, s);
-			}
-			else if (msg.getData().getInt("Callback") == 79)
-			{
-				// set traffic light delay
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(79, s);
-			}
-			else if (msg.getData().getInt("Callback") == 80)
-			{
-				// set autozoom flag to 0 or 1
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(80, s);
-			}
-			else if (msg.getData().getInt("Callback") == 81)
-			{
-				// resize layout items by factor
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(81, s);
-			}
-			else if (msg.getData().getInt("Callback") == 82)
-			{
-				// report share dir
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(82, s);
-			}
-			else if (msg.getData().getInt("Callback") == 84)
-			{
-				// report data dir
-				String s = msg.getData().getString("s");
-				CallbackMessageChannel(84, s);
-			}
-			else if (msg.getData().getInt("Callback") == 9901)
-			{
-				// if follow mode is on, then dont show freeview streetname
-				//if (!Navit.PREF_follow_gps)
-				//{
-				//	Navit.cwthr.CallbackGeoCalc2(1, 0, mCanvasWidth / 2, mCanvasHeight / 2);
-				//}
-			}
-			else if (msg.getData().getInt("Callback") == 98001)
-			{
-				int id = msg.getData().getInt("id");
-				int i = msg.getData().getInt("i");
-				return_generic_int_real(id, i);
-			}
-			else if (msg.getData().getInt("Callback") == 9001)
-			{
-				busyspinner_.setVisibility(View.INVISIBLE);
-				busyspinnertext_.setVisibility(View.INVISIBLE);
-			}
-			else if (msg.getData().getInt("Callback") == 9002)
-			{
-				busyspinner_.setVisibility(View.VISIBLE);
-				busyspinnertext_.setVisibility(View.VISIBLE);
-			}
-		}
-	};
+	public static Handler callback_handler = Navit.callback_handler_55;
+	public static Handler callback_handler_s = Navit.callback_handler_55;
+
+	//	public static Handler callback_handler_s___OLD = new Handler()
+	//	{
+	//		public void handleMessage(Message msg)
+	//		{
+	//			// handle 2222222
+	//			// if (Navit.METHOD_DEBUG) Navit.my_func_name(0, "" + msg.getData().getInt("Callback"));
+	//
+	//			if (msg.getData().getInt("Callback") == 18)
+	//			{
+	//				CallbackMessageChannel(18, "");
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 47)
+	//			{
+	//				// get values
+	//				String s = msg.getData().getString("s");
+	//				// set routing target to lat,lon
+	//				CallbackMessageChannel(47, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 55)
+	//			{
+	//				System.out.println("CheckPOINT:cb01");
+	//
+	//				// set cache size for (map-)files
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(55, s);
+	//
+	//				System.out.println("CheckPOINT:cb02");
+	//
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 59)
+	//			{
+	//				// enable layer "name"
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(59, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 60)
+	//			{
+	//				// disable layer "name"
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(60, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 78)
+	//			{
+	//				// shift layout "order" values
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(78, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 79)
+	//			{
+	//				// set traffic light delay
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(79, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 80)
+	//			{
+	//				// set autozoom flag to 0 or 1
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(80, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 81)
+	//			{
+	//				// resize layout items by factor
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(81, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 82)
+	//			{
+	//				// report share dir
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(82, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 84)
+	//			{
+	//				// report data dir
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(84, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 85)
+	//			{
+	//				// C linedrawing flag
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(85, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 86)
+	//			{
+	//				// avoid sharp turns flag to 0 or 1
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(86, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 87)
+	//			{
+	//				// // avoid sharp turns minimum angle. if turn is harder than this angle then set penalty
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(87, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 88)
+	//			{
+	//				// avoid sharp turns penalty
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(88, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 89)
+	//			{
+	//				// search radius for housenumbers for streets
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(89, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 90)
+	//			{
+	//				// set vehicleprofile to value of string s ('car','bike')
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(90, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 91)
+	//			{
+	//				// change vehicle profile's roadprofile values 1
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(91, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 92)
+	//			{
+	//				// change vehicle profile's roadprofile values 2
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(92, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 93)
+	//			{
+	//				// change vehicle profile's roadprofile values 3
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(93, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 94)
+	//			{
+	//				// change priority for cycle lanes
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(94, s);
+	//			}
+	//			//else if (msg.getData().getInt("Callback") == 95)
+	//			//{
+	//			//	// change priority for cycle tracks
+	//			//	String s = msg.getData().getString("s");
+	//			//	CallbackMessageChannel(95, s);
+	//			//}
+	//			else if (msg.getData().getInt("Callback") == 96)
+	//			{
+	//				// dump route to GPX file, "s" -> full pathname to output file
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(96, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 97)
+	//			{
+	//				// set positon to lat#lon#name
+	//				String lat = msg.getData().getString("lat");
+	//				String lon = msg.getData().getString("lon");
+	//				String q = msg.getData().getString("q");
+	//				CallbackMessageChannel(97, lat + "#" + lon + "#" + q);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 98)
+	//			{
+	//				// set connected_pref value
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(98, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 99)
+	//			{
+	//				// set angle_pref value
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(99, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 100)
+	//			{
+	//				// dump callbacks to log
+	//				CallbackMessageChannel(100, "");
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 101)
+	//			{
+	//				// set demo vehicle flag for tracking
+	//				CallbackMessageChannel(101, "");
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 102)
+	//			{
+	//				// set gpsfix flag
+	//				String s = msg.getData().getString("s");
+	//				CallbackMessageChannel(102, s);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 9901)
+	//			{
+	//				// if follow mode is on, then dont show freeview streetname
+	//				//if (!Navit.PREF_follow_gps)
+	//				//{
+	//				//	Navit.cwthr.CallbackGeoCalc2(1, 0, mCanvasWidth / 2, mCanvasHeight / 2);
+	//				//}
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 98001)
+	//			{
+	//				int id = msg.getData().getInt("id");
+	//				int i = msg.getData().getInt("i");
+	//				return_generic_int_real(id, i);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 9001)
+	//			{
+	//				busyspinner_.setVisibility(View.INVISIBLE);
+	//				busyspinnertext_.setVisibility(View.INVISIBLE);
+	//			}
+	//			else if (msg.getData().getInt("Callback") == 9002)
+	//			{
+	//				busyspinner_.setVisibility(View.VISIBLE);
+	//				busyspinnertext_.setVisibility(View.VISIBLE);
+	//			}
+	//
+	//			// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+	//		}
+	//	};
 
 	//
 	//
@@ -5889,7 +5820,9 @@ public class NavitGraphics
 
 	public static void send_generic_text(int id, String text)
 	{
-		//System.out.println("send_generic_text");
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
+		//System.out.println("NavitOSDJava:" + id + ":" + text);
 
 		if (id == 1)
 		{
@@ -5899,10 +5832,168 @@ public class NavitGraphics
 				NavitMsgTv2_.append("TEXT:" + text);
 			}
 		}
+		else if (id == 3)
+		{
+			// destination:
+
+			//System.out.println("lane_destination=" + text);
+
+			Navit.lane_destination = text;
+			// NavitOSDJava.draw_real_wrapper(false, true);
+		}
+		else if (id == 4) // next turn
+		{
+
+			// example: "175|180|x250" // "x" mean this is the road we should drive on next, others are angles
+			// 0 -> straight
+			// less than 0 (minus) -> right
+			// more than 0 (plus ) -> left
+
+			//System.out.println("lane_choices0=" + text);
+
+			Navit.lane_choices = text;
+		}
+		else if (id == 5) // next next turn
+		{
+			//System.out.println("lane_choices1=" + text);
+			Navit.lane_choices1 = text;
+		}
+		else if (id == 6) // next next next turn
+		{
+			//System.out.println("lane_choices2=" + text);
+			Navit.lane_choices2 = text;
+		}
+		else if (id == 8)
+		{
+			if (Navit.PREF_lane_assist)
+			{
+
+				// lanes:
+				//
+				// none
+				// through
+				// left
+				// right
+				// slight_left
+				// slight_right
+				// sharp_left
+				// sharp_right
+				// mergeto_left
+				// mergeto_right
+				//
+				// ... others are "unknown" for now
+				//
+
+				// text = "street dir:num of lanes:forward lanes:values|values"
+				// text = "1:3:2:none|through;left"
+
+				//System.out.println("LANES0=" + text);
+
+				try
+				{
+					Navit.lanes_num = Integer.parseInt(text.split(":", 4)[1]);
+				}
+				catch (Exception e)
+				{
+					Navit.lanes_num = 0;
+				}
+
+				try
+				{
+					Navit.lanes_num_forward = Integer.parseInt(text.split(":", 4)[2]);
+				}
+				catch (Exception e)
+				{
+					Navit.lanes_num_forward = 0;
+				}
+
+				try
+				{
+					Navit.lanes_text = text.split(":", 4)[3];
+				}
+				catch (Exception e)
+				{
+					Navit.lanes_text = "";
+				}
+			}
+		}
+		else if (id == 9)
+		{
+			if (Navit.PREF_lane_assist)
+			{
+
+				// next lanes:
+				//
+				// none
+				// through
+				// left
+				// right
+				// slight_left
+				// slight_right
+				// sharp_left
+				// sharp_right
+				// mergeto_left
+				// mergeto_right
+				//
+				// ... others are "unknown" for now
+				//
+
+				// text = "street dir:num of lanes:forward lanes:values|values"
+				// text = "1:3:2:none|through;left"
+
+				//System.out.println("LANES1=" + text);
+
+				try
+				{
+					Navit.lanes_num1 = Integer.parseInt(text.split(":", 4)[1]);
+				}
+				catch (Exception e)
+				{
+					Navit.lanes_num1 = 0;
+				}
+
+				try
+				{
+					Navit.lanes_num_forward1 = Integer.parseInt(text.split(":", 4)[2]);
+				}
+				catch (Exception e)
+				{
+					Navit.lanes_num_forward1 = 0;
+				}
+
+				try
+				{
+					Navit.lanes_text1 = text.split(":", 4)[3];
+				}
+				catch (Exception e)
+				{
+					Navit.lanes_text1 = "";
+				}
+
+				// this is the last element -> so draw only HERE !!
+				//System.out.println("xx paint 3 xx");
+				NavitOSDJava.draw_real_wrapper(false, true);
+
+			}
+		}
+		else if (id == 13) // current segment length (in meters)
+		{
+			// System.out.println("seg_len=" + text);
+
+			Navit.seg_len = Integer.parseInt(text);
+		}
+		else if (id == 20) // speech commads debug info
+		{
+
+		}
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	public static void return_generic_int(int id, int i)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		try
 		{
 			Message msg1 = new Message();
@@ -5916,12 +6007,16 @@ public class NavitGraphics
 		catch (Exception e)
 		{
 		}
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	public static void set_vehicle_values(int x, int y, int angle, int speed)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
 		//System.out.println("DO__DRAW:set_vehicle_values:enter");
-		synchronized (synch_drawing_for_map)
+		// SYN // synchronized (synch_drawing_for_map)
 		{
 			// stop any smooth drawing/moving first!
 			//System.out.println("set vehicle pos...");
@@ -5937,6 +6032,8 @@ public class NavitGraphics
 			Navit.NG__vehicle.vehicle_direction = angle;
 			//System.out.println("DO__DRAW:set_vehicle_values:end");
 		}
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	public static float ddx_last = 0;
@@ -5961,6 +6058,8 @@ public class NavitGraphics
 
 		public void run()
 		{
+			if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:SmoothDriveThread_t_A:-- start --");
+
 			if (DEBUG_SMOOTH_DRIVING)
 			{
 				xxx2 = (int) (Math.random() * 1000f);
@@ -6040,7 +6139,11 @@ public class NavitGraphics
 					//{
 					//}
 					if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:" + (cur_count + 1));
+					// System.out.println("DO__DRAW:Java:postInvalidate 005");
+					// SYN //
 					Navit.NG__map_main.view.postInvalidate();
+					// map_postInvalidate();
+
 					//SurfaceView2 vw = (SurfaceView2) Navit.NG__map_main.view;
 					//vw.paint_me();
 				}
@@ -6050,10 +6153,15 @@ public class NavitGraphics
 		}
 	}
 
-	static SmoothDriveThread_t_B STT_B;
-	static SmoothDriveThread_t_A STT_A;
+	static SmoothDriveThread_t_B STT_B = null;
 
-	static Thread SmoothDriveThread_A = new Thread(new Runnable()
+	static SmoothDriveThread_t_B[] STT_B_list = new SmoothDriveThread_t_B[10];
+	static int STT_B_list_curr = 0;
+	static boolean[] STT_B_list_valid = new boolean[10];
+
+	static SmoothDriveThread_t_A STT_A = null;
+
+	static Thread UNUSED__SmoothDriveThread_A = new Thread(new Runnable()
 	{
 		int cur_count = 0;
 		int xxx2 = 0;
@@ -6119,7 +6227,8 @@ public class NavitGraphics
 					//{
 					//}
 					if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:" + (cur_count + 1));
-					Navit.NG__map_main.view.postInvalidate();
+					System.out.println("DO__DRAW:Java:postInvalidate 006");
+					// SYN // Navit.NG__map_main.view.postInvalidate();
 					//SurfaceView2 vw = (SurfaceView2) Navit.NG__map_main.view;
 					//vw.paint_me();
 				}
@@ -6131,9 +6240,25 @@ public class NavitGraphics
 
 	static class SmoothDriveThread_t_B extends Thread
 	{
+		boolean is_thread_cancel = false;
+
+		public void cancel_previous()
+		{
+			is_thread_cancel = true;
+			// System.out.println("DO__DRAW:Java:cancel_previous");
+		}
+
+		public void reset_cancel_previous()
+		{
+			is_thread_cancel = false;
+			System.out.println("DO__DRAW:Java:reset_cancel_previous");
+		}
+
 		public void run()
 		{
-			//System.out.println("DO__DRAW:Java:refresh map -> run");
+			is_thread_cancel = false;
+
+			// System.out.println("DO__DRAW:Java:refresh map -> run");
 			//							try
 			//							{
 			//								Thread.sleep(Vehicle_delay_real_gps_position);
@@ -6146,6 +6271,12 @@ public class NavitGraphics
 
 			if (!Global_onTouch_fingerdown)
 			{
+				if (is_thread_cancel)
+				{
+					if (DEBUG_SMOOTH_DRIVING) System.out.println("DO__DRAW:Java:is_thread_cancel 000");
+					return;
+				}
+
 				smooth_driving_tmptmp = -(System.currentTimeMillis() - (smooth_driving_ts002a + (Vehicle_smooth_moves_count + 0) * Vehicle_smooth_move_delay_real_used));
 				if (smooth_driving_tmptmp <= 0)
 				{
@@ -6156,7 +6287,15 @@ public class NavitGraphics
 				{
 					if (smooth_driving_tmptmp > 0)
 					{
+						// System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:b corr=" + (smooth_driving_tmptmp));
 						Thread.sleep(smooth_driving_tmptmp);
+
+						if (is_thread_cancel)
+						{
+							// System.out.println("DO__DRAW:Java:is_thread_cancel 001");
+							return;
+						}
+
 						if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:b corr=" + (smooth_driving_tmptmp));
 					}
 					else
@@ -6166,6 +6305,11 @@ public class NavitGraphics
 				}
 				catch (InterruptedException e)
 				{
+					if (is_thread_cancel)
+					{
+						// System.out.println("DO__DRAW:Java:is_thread_cancel 002");
+						return;
+					}
 				}
 
 				// if we are in onDraw right now, give some extra little delay
@@ -6175,7 +6319,7 @@ public class NavitGraphics
 				{
 					try
 					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
 						Thread.sleep(8);
 					}
 					catch (InterruptedException e)
@@ -6187,7 +6331,7 @@ public class NavitGraphics
 				{
 					try
 					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
 						Thread.sleep(8);
 					}
 					catch (InterruptedException e)
@@ -6199,7 +6343,7 @@ public class NavitGraphics
 				{
 					try
 					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
 						Thread.sleep(8);
 					}
 					catch (InterruptedException e)
@@ -6211,8 +6355,44 @@ public class NavitGraphics
 				{
 					try
 					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
-						Thread.sleep(8);
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(28);
+					}
+					catch (InterruptedException e)
+					{
+						// e.printStackTrace();
+					}
+				}
+				if (Global_Map_in_onDraw == true)
+				{
+					try
+					{
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(28);
+					}
+					catch (InterruptedException e)
+					{
+						// e.printStackTrace();
+					}
+				}
+				if (Global_Map_in_onDraw == true)
+				{
+					try
+					{
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(28);
+					}
+					catch (InterruptedException e)
+					{
+						// e.printStackTrace();
+					}
+				}
+				if (Global_Map_in_onDraw == true)
+				{
+					try
+					{
+						// System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(28);
 					}
 					catch (InterruptedException e)
 					{
@@ -6224,43 +6404,7 @@ public class NavitGraphics
 					try
 					{
 						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
-						Thread.sleep(8);
-					}
-					catch (InterruptedException e)
-					{
-						// e.printStackTrace();
-					}
-				}
-				if (Global_Map_in_onDraw == true)
-				{
-					try
-					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
-						Thread.sleep(8);
-					}
-					catch (InterruptedException e)
-					{
-						// e.printStackTrace();
-					}
-				}
-				if (Global_Map_in_onDraw == true)
-				{
-					try
-					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
-						Thread.sleep(8);
-					}
-					catch (InterruptedException e)
-					{
-						// e.printStackTrace();
-					}
-				}
-				if (Global_Map_in_onDraw == true)
-				{
-					try
-					{
-						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
-						Thread.sleep(8);
+						Thread.sleep(28);
 					}
 					catch (InterruptedException e)
 					{
@@ -6270,22 +6414,54 @@ public class NavitGraphics
 				// do not make a while or for loop! keep it hardcoded for speed!!
 
 				if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> draw!");
-				copy_map_buffer();
-				draw_reset_factors = true;
 				if (DEBUG_SMOOTH_DRIVING)
 				{
 					System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:b=" + (System.currentTimeMillis() - smooth_driving_ts002));
 					System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:RR");
 				}
-				smooth_driving_ts003 = System.currentTimeMillis();
-				view_s.postInvalidate();
+
+				if (is_thread_cancel)
+				{
+					// System.out.println("DO__DRAW:Java:is_thread_cancel 003");
+					return;
+				}
+
+				// System.out.println("DO__DRAW:Java:postInvalidate 001:y");
+				// SYN // view_s.postInvalidate();
+				if ((System.currentTimeMillis() - last_map_postInvalidate) < 150)
+				{
+					// too fast -> dont update
+					System.out.println("DEBUG_SMOOTH_DRIVING:too fast");
+
+					//					if (!map_c_drawing)
+					//					{
+					//						copy_map_buffer();
+					//						draw_reset_factors = true;
+					//					}
+					//					smooth_driving_ts003 = System.currentTimeMillis();
+					//
+					//					last_map_postInvalidate = System.currentTimeMillis();
+					//					view_s.postInvalidate();
+				}
+				else
+				{
+					//if (!map_c_drawing)
+					//{
+					copy_map_buffer();
+					draw_reset_factors = true;
+					//}
+					smooth_driving_ts003 = System.currentTimeMillis();
+
+					last_map_postInvalidate = System.currentTimeMillis();
+					view_s.postInvalidate();
+				}
 				//view_s.paint_me();
-				//System.out.println("DO__DRAW:Java:refresh map -> draw ready");
+				// System.out.println("DO__DRAW:Java:refresh map -> draw ready");
 			}
 		}
 	}
 
-	static Thread SmoothDriveThread_B = new Thread(new Runnable()
+	static Thread SmoothDriveThread_SmoothDriveThread_B = new Thread(new Runnable()
 	{
 		public void run()
 		{
@@ -6435,6 +6611,42 @@ public class NavitGraphics
 						// e.printStackTrace();
 					}
 				}
+				if (Global_Map_in_onDraw == true)
+				{
+					try
+					{
+						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(8);
+					}
+					catch (InterruptedException e)
+					{
+						// e.printStackTrace();
+					}
+				}
+				if (Global_Map_in_onDraw == true)
+				{
+					try
+					{
+						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(8);
+					}
+					catch (InterruptedException e)
+					{
+						// e.printStackTrace();
+					}
+				}
+				if (Global_Map_in_onDraw == true)
+				{
+					try
+					{
+						//System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> extra delay");
+						Thread.sleep(8);
+					}
+					catch (InterruptedException e)
+					{
+						// e.printStackTrace();
+					}
+				}
 				// do not make a while or for loop! keep it hardcoded for speed!!
 
 				if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:refresh map -> draw!");
@@ -6446,7 +6658,8 @@ public class NavitGraphics
 					System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:RR");
 				}
 				smooth_driving_ts003 = System.currentTimeMillis();
-				view_s.postInvalidate();
+				System.out.println("DO__DRAW:Java:postInvalidate 002");
+				// SYN // view_s.postInvalidate();
 				//view_s.paint_me();
 				//System.out.println("DO__DRAW:Java:refresh map -> draw ready");
 			}
@@ -6455,6 +6668,10 @@ public class NavitGraphics
 
 	public static void set_vehicle_values_delta(int dx, int dy, int dangle2, int dzoom)
 	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+
+		if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:set_vehicle_values_delta:start");
+
 		// DPI
 		dx = (int) ((float) dx / NavitGraphics.Global_dpi_factor);
 		dy = (int) ((float) dy / NavitGraphics.Global_dpi_factor);
@@ -6490,6 +6707,7 @@ public class NavitGraphics
 		if (!Navit.PREF_use_smooth_drawing)
 		{
 			// disbaled via prefs
+			// if (Navit.METHOD_DEBUG) Navit.my_func_name(2);
 			return;
 		}
 
@@ -6507,65 +6725,77 @@ public class NavitGraphics
 		{
 			if (Navit.PREF_use_more_smooth_drawing)
 			{
-				// really awesome smooth (80 steps / 80 fps)
+				// really awesome smooth (80 steps / 80 fps) +1
 				//Vehicle_smooth_moves_count = 79;
 				//Vehicle_smooth_move_delay = 8;
 				//
-				// really awesome smooth (55 steps / 55 fps)
+				// really awesome smooth (55 steps / 55 fps) +1
 				//Vehicle_smooth_moves_count = 54;
 				//Vehicle_smooth_move_delay = 17;
 				//
-				// really awesome smooth (30 steps / 30 fps)
+				// really awesome smooth (30 steps / 30 fps) +1
 				//Vehicle_smooth_moves_count = 29;
 				//Vehicle_smooth_move_delay = 30;
 				//
-				// really awesome smooth (12 steps)
+				// really awesome smooth (12 steps) +1
 				//Vehicle_smooth_moves_count = 11;
 				//Vehicle_smooth_move_delay = 81;
 				//
-				// really awesome smooth (11 steps)
+				// really awesome smooth (11 steps) +1
 				//Vehicle_smooth_moves_count = 10;
 				//Vehicle_smooth_move_delay = 89;
 				//
-				// really awesome smooth (10 steps)
+				// really awesome smooth (10 steps) +1
 				//Vehicle_smooth_moves_count = 9;
 				//Vehicle_smooth_move_delay = 96;
 				//
-				// really awesome smooth (9 steps)
+				// really awesome smooth (9 steps) +1
 				Vehicle_smooth_moves_count = 8;
 				Vehicle_smooth_move_delay = 100;
 			}
 			else
 			{
-				// normal smooth (5 steps)
+				// normal smooth (6 steps) +1
+				// Vehicle_smooth_moves_count = 5;
+				// Vehicle_smooth_move_delay = 190;
+				// normal smooth (5 steps) +1
 				Vehicle_smooth_moves_count = 4;
 				Vehicle_smooth_move_delay = 205;
+				// (4 steps) +1
+				// Vehicle_smooth_moves_count = 3;
+				// Vehicle_smooth_move_delay = 160;
 			}
 		}
 		else if ((Navit.NG__vehicle.vehicle_speed >= 0) && (Navit.NG__vehicle.vehicle_direction_delta > 0))
 		{
-			// normal smooth (5 steps)
+			// really awesome smooth (9 steps) +1
+			// Vehicle_smooth_moves_count = 8;
+			// Vehicle_smooth_move_delay = 100;
+			// normal smooth (5 steps) +1
 			Vehicle_smooth_moves_count = 4;
 			Vehicle_smooth_move_delay = 205;
-			// (4 steps)
-			//Vehicle_smooth_moves_count = 3;
-			//Vehicle_smooth_move_delay = 160;
+			// (4 steps) +1
+			// Vehicle_smooth_moves_count = 3;
+			// Vehicle_smooth_move_delay = 160;
 		}
 		else
 		{
 			// +++ (on slow speed and no turn) --> no smooth move! +++
+			// if (Navit.METHOD_DEBUG) Navit.my_func_name(3);
 			return;
 		}
 
 		if (System.currentTimeMillis() > last_vehicle_position_timestamp + 1700L)
 		{
 			// last vehicle position was too long ago (1.7 secs ago, or longer)
+			// if (Navit.METHOD_DEBUG) Navit.my_func_name(4);
 			return;
 		}
 
 		if (Global_onTouch_fingerdown)
 		{
 			// dont use smooth moving while user moves the map
+			// if (Navit.METHOD_DEBUG) Navit.my_func_name(5);
 			return;
 		}
 
@@ -6577,6 +6807,7 @@ public class NavitGraphics
 		if ((Math.abs(dangle) < 2) && (Math.abs(dx) < 1) && (Math.abs(dy) < 1))
 		{
 			// the move is very small only
+			// if (Navit.METHOD_DEBUG) Navit.my_func_name(6);
 			return;
 		}
 
@@ -6657,16 +6888,208 @@ public class NavitGraphics
 		STT_A.start();
 		//System.out.println("translate, rotate");		
 		if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:" + xxx + "--set_vehicle_values_delta-- END ++++++++++++");
+
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
+	static void deactivate_nav_wakelock()
+	{
+		try
+		{
+			Navit.is_navigating = false;
+			System.out.println("XXNAV: Navit.is_navigating = false 001");
+
+			Message msg = Navit.Navit_progress_h.obtainMessage();
+			Bundle b = new Bundle();
+			msg.what = 25;
+			msg.setData(b);
+			Navit.Navit_progress_h.sendMessage(msg);
+			System.out.println("XXNAV: Navit.is_navigating = false 002");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	static void deactivate_nav_wakelock_real()
+	{
+		Log.e("Navit", "WakeLock Nav: release 2 deactivate_nav_wakelock_real - enter");
+		try
+		{
+			Log.e("Navit", "WakeLock Nav: release 2 deactivate_nav_wakelock_real 001");
+			if (Navit.wl_navigating != null)
+			{
+				Log.e("Navit", "WakeLock Nav: release 2 deactivate_nav_wakelock_real 002");
+				if (Navit.wl_navigating.isHeld())
+				{
+					Navit.wl_navigating.release();
+					Log.e("Navit", "WakeLock Nav: release 2");
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		if (Navit.is_paused == true)
+		{
+			try
+			{
+				// turn off GPS
+				NavitVehicle.turn_off_all_providers();
+				NavitVehicle.turn_off_sat_status();
+
+				// turn off speech
+				try
+				{
+					Navit.Global_Navit_Object.mTts.stop();
+				}
+				catch (Exception e)
+				{
+				}
+
+				try
+				{
+					Navit.Global_Navit_Object.mTts.shutdown();
+				}
+				catch (Exception e)
+				{
+				}
+			}
+			catch (Exception e)
+			{
+			}
+		}
+	}
+
+	static void activate_nav_wakelock()
+	{
+		try
+		{
+			Navit.is_navigating = true;
+			System.out.println("XXNAV: Navit.is_navigating = TRUE");
+
+			Message msg = Navit.Navit_progress_h.obtainMessage();
+			Bundle b = new Bundle();
+			msg.what = 26;
+			msg.setData(b);
+			Navit.Navit_progress_h.sendMessage(msg);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	static void activate_nav_wakelock_real()
+	{
+		//System.out.println("XXNAV:001");
+		try
+		{
+			if (Navit.wl_navigating != null)
+			{
+				//System.out.println("XXNAV:002");
+				//if (Navit.wl_navigating.isHeld())
+				//{
+				//System.out.println("XXNAV:002.1 isHeld=true");
+				//deactivate_nav_wakelock();
+				//}
+
+				//if (!Navit.wl_navigating.isHeld())
+				//{
+				//System.out.println("XXNAV:005");
+				Navit.wl_navigating.acquire();
+				Log.e("Navit", "WakeLock Nav: aquire 2");
+				//}
+			}
+		}
+		catch (Exception e)
+		{
+			//System.out.println("XXNAV:006");
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressLint("NewApi")
 	public static void return_generic_int_real(int id, int i)
 	{
-		//System.out.println("id=" + id + " i=" + i);
+		// System.out.println("id=" + id + " i=" + i);
 
 		if (id == 1)
 		{
+			int old_status = NavitGraphics.navit_route_status;
+
+			//System.out.println("XXNAV:a002");
+			if ((old_status != 17) && (old_status != 33))
+			{
+				//System.out.println("XXNAV:a003");
+				if ((i == 17) || (i == 33))
+				{
+					//System.out.println("XXNAV:a004");
+					activate_nav_wakelock();
+				}
+			}
+			else
+			{
+				//System.out.println("XXNAV:a005");
+				if ((old_status != 17) && (old_status != 33))
+				{
+					//System.out.println("XXNAV:a006");
+					deactivate_nav_wakelock();
+				}
+			}
+
 			// id=1 -> route_status
 			NavitGraphics.navit_route_status = i;
+			try
+			{
+				if (i != 0)
+				{
+					// activate java line drawing
+					Message msg = new Message();
+					Bundle b = new Bundle();
+					b.putInt("Callback", 85);
+					b.putString("s", "0");
+					msg.setData(b);
+					try
+					{
+						Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+				else
+				{
+					// activate line drawing from prefs setting
+					if (Navit.PREF_c_linedrawing)
+					{
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 85);
+						b.putString("s", "1");
+						msg.setData(b);
+						try
+						{
+							Navit.N_NavitGraphics.callback_handler.sendMessage(msg);
+						}
+						catch (Exception e)
+						{
+						}
+					}
+				}
+
+				Navit.Global_Navit_Object.invalidateOptionsMenu();
+				// create the options menu new
+			}
+			catch (Exception e)
+			{
+			}
+
 			if (i == 0)
 			{
 				ZANaviBusySpinner.active = false;
@@ -6758,6 +7181,7 @@ public class NavitGraphics
 				{
 					//System.out.println("DO__DRAW:Java:remove wait text");
 					//System.out.println("invalidate 020");
+					//System.out.println("xx paint 21 xx");
 					NavitAOverlay_s.postInvalidate();
 				}
 				catch (Exception e)
@@ -6769,6 +7193,8 @@ public class NavitGraphics
 			{
 				// id=2,3 -> mapdraw cancel signal
 				//System.out.println("DO__DRAW:Java:cancel map");
+				map_c_drawing = false;
+
 				// draw_map_one_shot = true;
 				//copy_backwards_map_buffer();
 				//draw_reset_factors = true;
@@ -6782,20 +7208,46 @@ public class NavitGraphics
 				// draw_map_one_shot = true;
 				if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:TMG-DEBUG:map draw ready");
 
+				map_c_drawing = false;
+
 				if ((Navit.PREF_use_smooth_drawing) && (Navit.NG__vehicle.vehicle_speed > 12))
 				{
 					// delay vehicle and map update just a tiny little bit here!!  -- very experimental, also delays gps position !!!
 
+					//System.out.println("DEBUG_SMOOTH_DRIVING:map draw ready -> signal received");
+					if (STT_B_list[0] != null)
+					{
+						STT_B_list[0].cancel_previous();
+					}
+					if (STT_B_list[1] != null)
+					{
+						STT_B_list[1].cancel_previous();
+					}
+					if (STT_B_list[2] != null)
+					{
+						STT_B_list[2].cancel_previous();
+					}
 					STT_B = new SmoothDriveThread_t_B();
+					STT_B_list[2] = STT_B_list[1];
+					STT_B_list[1] = STT_B_list[0];
+					STT_B_list[0] = STT_B;
 					STT_B.start();
 				}
 				else
 				{
 					copy_map_buffer();
 					draw_reset_factors = true;
+					// System.out.println("DO__DRAW:Java:postInvalidate 003");
+					// SYN //
 					view_s.postInvalidate();
+					// map_postInvalidate();
 					//view_s.paint_me();
 				}
+			}
+			else if (i == 77)
+			{
+				//System.out.println("DEBUG_SMOOTH_DRIVING:map draw start -> signal received");
+				map_c_drawing = true;
 			}
 		}
 		else if (id == 3)
@@ -6810,6 +7262,14 @@ public class NavitGraphics
 		{
 			Navit.set_debug_messages1("Destination reached");
 			NavitGraphics.navit_route_status = 0;
+
+			//System.out.println("XXNAV:dd001");
+			deactivate_nav_wakelock();
+
+			if (Navit.PREF_enable_debug_write_gpx)
+			{
+				NavitVehicle.speech_recording_end();
+			}
 		}
 		else if (id == 5)
 		{
@@ -6819,6 +7279,37 @@ public class NavitGraphics
 		{
 			// id=6 -> mean time for drawing map to screen (in 1/1000 of a second)
 			Navit.set_debug_messages4("draw:" + (float) ((float) i / 1000f) + "s");
+		}
+		else if (id == 7)
+		{
+			// is underground
+			Navit.pos_is_underground = i; // can be: 0 or 1
+
+			// System.out.println("pos_is_underground=" + Navit.pos_is_underground);
+
+			if (Navit.want_tunnel_extrapolation())
+			{
+				NavitVehicle.turn_on_tunnel_extrapolation();
+			}
+			else
+			{
+				NavitVehicle.turn_off_tunnel_extrapolation();
+			}
+		}
+		else if (id == 8)
+		{
+			// max speed of current segment in km/h
+			int old_speed = Navit.cur_max_speed;
+			Navit.cur_max_speed = i;
+			if (old_speed != Navit.cur_max_speed)
+			{
+				// reset "beep" flag
+				Navit.toneG_heared = false;
+
+				// System.out.println("MAX SPEED=" + Navit.cur_max_speed);
+				//System.out.println("xx paint 4 xx");
+				NavitOSDJava.draw_real_wrapper(false, true);
+			}
 		}
 	}
 
@@ -6860,7 +7351,7 @@ public class NavitGraphics
 
 	public static ArrayList<route_rect> route_rects = new ArrayList<route_rect>();
 
-	// value are NOT in pixels!! they need to be converted to pixels before drawing
+	// values are NOT in pixels!! they need to be converted to pixels before drawing
 	public static void send_route_rect_to_java(int x1, int y1, int x2, int y2, int order)
 	{
 		//System.out.println("send_route_rect_to_java: " + x1 + "," + y1 + " " + x2 + "," + y2 + " o=" + order);
@@ -6900,4 +7391,6 @@ public class NavitGraphics
 	{
 		return (int) (((float) px * Global_dpi_factor) + 0.5);
 	}
+
+	static long last_map_postInvalidate = -1L;
 }

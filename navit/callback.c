@@ -22,14 +22,91 @@
 #include "item.h"
 #include "debug.h"
 #include "callback.h"
-
+#include "navit.h"
 
 struct callback_list *
-callback_list_new(void)
+callback_list_new(char *name)
 {
 	struct callback_list *ret=g_new0(struct callback_list, 1);
 
+	if (name != NULL)
+	{
+		snprintf(ret->cb_name, 398, "%s", name);
+		ret->cb_name[397] = '\0';
+		ret->cb_name[398] = '\0';
+		ret->cb_name[399] = '\0';
+	}
+	else
+	{
+		snprintf(ret->cb_name, 398, "*unknown*");
+		// ret->cb_name[397] = '\0';
+		// ret->cb_name[398] = '\0';
+		// ret->cb_name[399] = '\0';
+	}
+
+	//dbg(0, "cbl:new:cbl=%p, name=%s, glob=%p\n", ret, name, global_all_cbs);
+	global_all_cbs = g_list_append(global_all_cbs, ret);
+
 	return ret;
+}
+
+void callback_dump_callbacks()
+{
+
+#ifndef NAVIT_DEBUG_BAREMETAL
+
+	struct callback_list *cl1;
+	struct callback *cb;
+	GList *cbi;
+	GList *all_cbl;
+
+	if (!global_all_cbs)
+	{
+		return;
+	}
+
+	all_cbl = global_all_cbs;
+
+	dbg(0,"cbl:=================================================\n");
+	dbg(0,"cbl:=================================================\n");
+
+	while (all_cbl)
+	{
+		if ((all_cbl) && (all_cbl->data))
+		{
+			cl1 = all_cbl->data;
+			dbg(0,"\n");
+			dbg(0,"cbl:%s(%p)\n", cl1->cb_name, cl1);
+
+			if ((cl1) && (cl1->list))
+			{
+				cbi = cl1->list;
+				while (cbi)
+				{
+					if (cbi == NULL)
+					{
+						break;
+					}
+
+					cb = cbi->data;
+					if (cb)
+					{
+						dbg(0,"   cb:%s:%s(%p) [f:%p type=%s]\n", cb->setup_func_name, cb->func_name, cb, cb->func, attr_to_name(cb->type));
+					}
+
+					cbi = g_list_next(cbi);
+				}
+			}
+		}
+
+		all_cbl = g_list_next(all_cbl);
+	}
+
+	dbg(0,"cbl:=================================================\n");
+	dbg(0,"cbl:=================================================\n");
+
+#endif
+
 }
 
 struct callback *
@@ -69,11 +146,11 @@ static void callback_print_names(struct callback *cb, const char *cb_func)
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
 	if (cb == NULL)
 	{
-		dbg(0,"%d CB_f=%s:CB=NULL!\n", cb, cb_func);
+		dbg(0,"%p CB_f=%s:CB=NULL!\n", cb, cb_func);
 	}
 	else
 	{
-		dbg(0,"%d CB_f=%s, parent=%s, func=%s\n", cb, cb_func, cb->setup_func_name, cb->func_name);
+		dbg(0,"%p CB_f=%s, parent=%s, func=%s\n", cb, cb_func, cb->setup_func_name, cb->func_name);
 	}
 #endif
 }
@@ -83,11 +160,11 @@ static void callback_print_names2(struct callback *cb, const char *cb_func, cons
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
 	if (cb == NULL)
 	{
-		dbg(0,"%d CB_f=%s:CB=NULL! file=%s line=%d func=%s\n", cb, cb_func, module, mlen, function);
+		dbg(0,"%p CB_f=%s:CB=NULL! file=%s line=%d func=%s\n", cb, cb_func, module, mlen, function);
 	}
 	else
 	{
-		dbg(0,"%d CB_f=%s, parent=%s, func=%s -- file=%s line=%d func=%s\n", cb, cb_func, cb->setup_func_name, cb->func_name, module, mlen, function);
+		dbg(0,"%p CB_f=%s, parent=%s, func=%s -- file=%s line=%d func=%s\n", cb, cb_func, cb->setup_func_name, cb->func_name, module, mlen, function);
 	}
 #endif
 }
@@ -103,7 +180,7 @@ void callback_add_names(struct callback *cb, const char *parent_name, const char
 	}
 
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-	dbg(0,"%d CB_I=%s, %s\n", cb, parent_name, func_name);
+	dbg(0,"%p CB_I=%s, %s\n", cb, parent_name, func_name);
 #endif
 
 	snprintf(cb->func_name, 398, "%s", func_name);
@@ -126,12 +203,15 @@ callback_new_attr_args(const char *module, const int mlen,const char *function, 
 	va_list ap;
 	va_start(ap, count);
 	for (i = 0 ; i < count ; i++)
+	{
 		p[i]=va_arg(ap, void *);
+	}
+
 	va_end(ap);
 
 	struct callback *ret = callback_new_attr(func, type, count, p);
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-	dbg(0,"%d callback_new_attr_%d -- file=%s line=%d func=%s\n", ret, count, module, mlen, function);
+	dbg(0,"%p callback_new_attr_%d -- file=%s line=%d func=%s type=%s\n", ret, count, module, mlen, function, attr_to_name(type));
 #endif
 	return ret;
 }
@@ -150,13 +230,15 @@ callback_new_args(const char *module, const int mlen,const char *function, void 
 	va_list ap;
 	va_start(ap, count);
 	for (i = 0 ; i < count ; i++)
+	{
 		p[i]=va_arg(ap, void *);
+	}
 	va_end(ap);
 
 	struct callback *ret = callback_new(func, count, p);
 
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-	dbg(0,"%d callback_new_%d -- file=%s line=%d func=%s\n", ret, count, module, mlen, function);
+	dbg(0,"%p callback_new_%d -- file=%s line=%d func=%s\n", ret, count, module, mlen, function);
 #endif
 	return ret;
 }
@@ -167,7 +249,7 @@ callback_destroy_real(const char *module, const int mlen,const char *function, s
 	if (cb == NULL)
 	{
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-		dbg(0,"%d callback_destroy_real:CB=NULL!! -- file=%s line=%d func=%s\n", cb, module, mlen, function);
+		dbg(0,"%p callback_destroy_real:CB=NULL!! -- file=%s line=%d func=%s\n", cb, module, mlen, function);
 #endif
 		return;
 	}
@@ -183,32 +265,92 @@ void
 callback_set_arg(struct callback *cb, int arg, void *p)
 {
 	if (arg < 0 || arg > cb->pcount)
+	{
 		return;
+	}
 	cb->p[arg]=p;
 }
 
-void
-callback_list_add(struct callback_list *l, struct callback *cb)
+void callback_list_add_2(const char *module, const int mlen,const char *function, struct callback_list *l, struct callback *cb)
 {
+	if (cb == NULL)
+	{
+#ifdef NAVIT_CALLBACK_DEBUG_PRINT
+		dbg(0,"callback_list_add_2:CB=NULL!!\n");
+#endif
+		return;
+	}
+
+#ifdef NAVIT_CALLBACK_DEBUG_PRINT
+	dbg(0,"callback_list_add_2:cbl=%p cb=%p file=%s line=%d func=%s\n", l, cb, module, mlen, function);
+#endif
+
 	l->list=g_list_prepend(l->list, cb);
 }
+
+
+void
+callback_list_add_internal(struct callback_list *l, struct callback *cb)
+{
+	if (cb == NULL)
+	{
+#ifdef NAVIT_CALLBACK_DEBUG_PRINT
+		dbg(0,"callback_list_add:CB=NULL!!\n");
+#endif
+		return;
+	}
+
+	l->list=g_list_prepend(l->list, cb);
+}
+
 
 
 struct callback *
 callback_list_add_new(struct callback_list *l, void (*func)(void), int pcount, void **p)
 {
 	struct callback *ret;
-	
+
 	ret=callback_new(func, pcount, p);	
-	callback_list_add(l, ret);
+	callback_list_add_internal(l, ret);
 	return ret;
 }
 
-void
-callback_list_remove(struct callback_list *l, struct callback *cb)
+void callback_list_remove_2(const char *module, const int mlen,const char *function, struct callback_list *l, struct callback *cb)
 {
-	l->list=g_list_remove(l->list, cb);
+	//dbg(0,"callback_list_remove_2:******************************************\n");
+
+	if (l == NULL)
+	{
+#ifdef NAVIT_CALLBACK_DEBUG_PRINT
+		dbg(0,"callback_list_remove_2:CBL=NULL!!\n");
+#endif
+		return;
+	}
+
+	if (cb == NULL)
+	{
+#ifdef NAVIT_CALLBACK_DEBUG_PRINT
+		dbg(0,"callback_list_remove_2:CB=NULL!!\n");
+#endif
+		return;
+	}
+
+#ifdef NAVIT_CALLBACK_DEBUG_PRINT
+	dbg(0,"callback_list_remove_2:cbl=%p cb=%p file=%s line=%d func=%s\n", l, cb, module, mlen, function);
+#endif
+
+	l->list = g_list_remove(l->list, cb);
+
+	//dbg(0,"callback_list_remove_2:******************************************RRRRRRRRRR\n");
 }
+
+
+void
+callback_list_remove_internal(struct callback_list *l, struct callback *cb)
+{
+	l->list = g_list_remove(l->list, cb);
+}
+
 
 void
 callback_list_remove_destroy(struct callback_list *l, struct callback *cb)
@@ -229,10 +371,11 @@ callback_list_remove_destroy(struct callback_list *l, struct callback *cb)
 		return;
 	}
 
-	callback_list_remove(l, cb);
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
 	callback_print_names(cb, "callback_list_remove_destroy");
 #endif
+
+	callback_list_remove_internal(l, cb);
 	g_free(cb);
 }
 
@@ -241,6 +384,8 @@ callback_call(struct callback *cb, int pcount, void **p)
 {
 	int i;
 	void *pf[8];
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	if (! cb)
 	{
@@ -311,11 +456,15 @@ callback_call(struct callback *cb, int pcount, void **p)
 		dbg(0,"too many parameters for callback (%d+%d)\n", cb->pcount, pcount);
 #endif
 	}
+
+#endif
 }
 
 void
 callback_call_args_real(const char *module, const int mlen,const char *function, struct callback *cb, int count, ...)
 {
+
+#ifndef NAVIT_DEBUG_BAREMETAL
 
 	if (cb == NULL)
 	{
@@ -342,12 +491,17 @@ callback_call_args_real(const char *module, const int mlen,const char *function,
 
 	va_end(ap);
 	callback_call(cb, count, p);
+
+#endif
 }
 
 
 void
 callback_list_call_attr(struct callback_list *l, enum attr_type type, int pcount, void **p)
 {
+
+#ifndef NAVIT_DEBUG_BAREMETAL
+
 	GList *cbi;
 	struct callback *cb;
 
@@ -366,58 +520,70 @@ callback_list_call_attr(struct callback_list *l, enum attr_type type, int pcount
 		}
 		cbi=g_list_next(cbi);
 	}
-	
+
+#endif	
 }
 
 void
 callback_list_call_attr_args(const char *module, const int mlen,const char *function, struct callback_list *cbl, enum attr_type type, int count, ...)
 {
+
+#ifndef NAVIT_DEBUG_BAREMETAL
+
 	int i;
 	void **p=g_alloca(sizeof(void*)*count);
 	va_list ap;
 	va_start(ap, count);
+
 	for (i = 0 ; i < count ; i++)
 		p[i]=va_arg(ap, void *);
+
 	va_end(ap);
 
 	if (cbl == NULL)
 	{
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-		dbg(0,"%d callback_list_call_attr_args:CBL=NULL! file=%s line=%d func=%s\n", cbl, module, mlen, function);
+		dbg(0,"%p callback_list_call_attr_args:CBL=NULL! file=%s line=%d func=%s type=%s\n", cbl, module, mlen, function, attr_to_name(type));
 #endif
 		return;
 	}
 	else
 	{
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-		dbg(0,"%d callback_list_call_attr_args:file=%s line=%d func=%s\n", cbl, module, mlen, function);
+		dbg(0,"%p callback_list_call_attr_args:file=%s line=%d func=%s type=%s\n", cbl, module, mlen, function, attr_to_name(type));
 #endif
 	}
 
 	callback_list_call_attr(cbl, type, count, p);
+
+#endif
 }
 
 void
 callback_list_call(struct callback_list *l, int pcount, void **p)
 {
+#ifndef NAVIT_DEBUG_BAREMETAL
 	callback_list_call_attr(l, attr_any, pcount, p);
+#endif
 }
 
 void
 callback_list_call_args(const char *module, const int mlen,const char *function, struct callback_list *cbl, int count, ...)
 {
 
+#ifndef NAVIT_DEBUG_BAREMETAL
+
 	if (cbl == NULL)
 	{
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-		dbg(0,"%d callback_list_call_args:CBL=NULL! file=%s line=%d func=%s\n", cbl, module, mlen, function);
+		dbg(0,"%p callback_list_call_args:CBL=NULL! file=%s line=%d func=%s\n", cbl, module, mlen, function);
 #endif
 		return;
 	}
 	else
 	{
 #ifdef NAVIT_CALLBACK_DEBUG_PRINT
-		dbg(0,"%d callback_list_call_args:file=%s line=%d func=%s\n", cbl, module, mlen, function);
+		dbg(0,"%p callback_list_call_args:file=%s line=%d func=%s\n", cbl, module, mlen, function);
 #endif
 	}
 
@@ -434,6 +600,8 @@ callback_list_call_args(const char *module, const int mlen,const char *function,
 	va_end(ap);
 
 	callback_list_call(cbl, count, p);
+
+#endif
 }
 
 void 
@@ -445,6 +613,9 @@ callback_list_destroy(struct callback_list *l)
 	{
 		return;
 	}
+
+	//dbg(0, "cbl:destroy:cbl=%p, name=%s, glob=%p\n", l, l->cb_name, global_all_cbs);
+	global_all_cbs = g_list_remove(global_all_cbs, l);
 
 	cbi=l->list;
 
@@ -469,6 +640,7 @@ callback_list_destroy(struct callback_list *l)
 	}
 
 	g_list_free(l->list);
+
 	g_free(l);
 
 }

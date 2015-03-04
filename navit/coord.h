@@ -64,7 +64,7 @@ typedef float navit_float;
 #define navit_asin(x) asinf(x)
 #define navit_sqrt(x) sqrtf(x)
 #else
-typedef  double navit_float;
+typedef double navit_float;
 #define navit_sin(x) sin(x)
 #define navit_cos(x) cos(x)
 #define navit_tan(x) tan(x)

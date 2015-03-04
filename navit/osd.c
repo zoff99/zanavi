@@ -69,6 +69,7 @@ osd_new(struct attr *parent, struct attr **attrs)
 		return NULL;
 	}
 
+#ifdef PLUGSSS
 	//dbg(0, "oo 001\n");
 	new = plugin_get_osd_type(type->u.str);
 	//dbg(0, "oo 002\n");
@@ -76,11 +77,78 @@ osd_new(struct attr *parent, struct attr **attrs)
 	{
 		return NULL;
 	}
+#endif
 
 	o=g_new0(struct osd, 1);
-	//dbg(0, "oo 003\n");
+
+	dbg(0, "osd_new:type=%s\n", type->u.str);
+
+#ifdef PLUGSSS
 	o->priv = new(parent->u.navit, &o->meth, attrs);
-	//dbg(0, "oo 004\n");
+#else
+	if (strncmp("compass", type->u.str, 7) == 0)
+	{
+		o->priv = osd_compass_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("navigation_next_turn", type->u.str, 20) == 0)
+	{
+		o->priv = osd_nav_next_turn_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("button", type->u.str, 6) == 0)
+	{
+		o->priv = osd_button_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("toggle_announcer", type->u.str, 16) == 0)
+	{
+		o->priv = osd_nav_toggle_announcer_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("speed_warner", type->u.str, 12) == 0)
+	{
+		o->priv = osd_speed_warner_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("speed_cam", type->u.str, 9) == 0)
+	{
+		o->priv = osd_speed_cam_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("text", type->u.str, 4) == 0)
+	{
+		o->priv = osd_text_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("gps_status", type->u.str, 10) == 0)
+	{
+		o->priv = osd_gps_status_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("volume", type->u.str, 6) == 0)
+	{
+		o->priv = osd_volume_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("scale", type->u.str, 5) == 0)
+	{
+		o->priv = osd_scale_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("image", type->u.str, 5) == 0)
+	{
+		o->priv = osd_image_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("stopwatch", type->u.str, 9) == 0)
+	{
+		o->priv = osd_stopwatch_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("odometer", type->u.str, 8) == 0)
+	{
+		o->priv = osd_odometer_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("auxmap", type->u.str, 6) == 0)
+	{
+		o->priv = osd_auxmap_new(parent->u.navit, &o->meth, attrs);
+	}
+	else if (strncmp("cmd_interface", type->u.str, 13) == 0)
+	{
+		o->priv = osd_cmd_interface_new(parent->u.navit, &o->meth, attrs);
+	}
+#endif
+
+	dbg(0, "osd_new:ready\n");
 
 	attr = attr_search(attrs, NULL, attr_name);
 	if (attr && attr->u.str)
