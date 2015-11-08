@@ -19734,21 +19734,21 @@ fi
 if test "${enable_svg2png_scaling+set}" = set; then :
   enableval=$enable_svg2png_scaling; SVG2PNG_SCALES=$enableval
 else
-  SVG2PNG_SCALES="8 16 32 48 96"
+  SVG2PNG_SCALES="8 16 32 48 96 192 384"
 fi
 
 @%:@ Check whether --enable-svg2png-scaling-flag was given.
 if test "${enable_svg2png_scaling_flag+set}" = set; then :
   enableval=$enable_svg2png_scaling_flag; SVG2PNG_SCALES_FLAG=$enableval
 else
-  SVG2PNG_SCALES_FLAG="8 16 32 48 96"
+  SVG2PNG_SCALES_FLAG="8 16 32 48 96 192 384"
 fi
 
 @%:@ Check whether --enable-svg2png-scaling-nav was given.
 if test "${enable_svg2png_scaling_nav+set}" = set; then :
   enableval=$enable_svg2png_scaling_nav; SVG2PNG_SCALES_NAV=$enableval
 else
-  SVG2PNG_SCALES_NAV="8 16 32 48 96"
+  SVG2PNG_SCALES_NAV="8 16 32 48 96 192 384"
 fi
 
 

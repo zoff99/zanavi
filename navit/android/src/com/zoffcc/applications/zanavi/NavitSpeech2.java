@@ -67,148 +67,174 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 	HashMap<String, String> tts_params = new HashMap<String, String>();
 
 	@SuppressWarnings("deprecation")
-	public void onInit(int status)
+	public void onInit(final int status)
 	{
-		tts_params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "ZANaviUtterID");
-
-		Log.e("NavitSpeech2", "onInit: Status " + status);
-		int result = -1;
-		try
+		if (status == TextToSpeech.SUCCESS)
 		{
-			// set the new locale here -----------------------------------
-			Locale locale2 = want_locale;
-			Locale.setDefault(locale2);
-			Configuration config2 = new Configuration();
-			config2.locale = locale2;
-			// set the new locale here -----------------------------------
-			try
+			new Thread(new Runnable()
 			{
-				result = navit.mTts.setLanguage(locale2);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-
-			try
-			{
-				Log.e("NavitSpeech2", "3.1 want locale=" + locale2.getLanguage());
-				//Log.e("NavitSpeech2", "3 E=" + navit.mTts.getDefaultEngine());
-				//Log.e("NavitSpeech2", "3 def.enf.=" + navit.mTts.areDefaultsEnforced());
-			}
-			catch (NoSuchMethodError e2)
-			{
-				e2.printStackTrace();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-
-			try
-			{
-				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayCountry());
-				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayLanguage());
-				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayName());
-				Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayVariant());
-			}
-			catch (NoSuchMethodError e2)
-			{
-				e2.printStackTrace();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-
-			String want_lang_code = locale2.getISO3Language();
-			Log.e("NavitSpeech2", "want:" + want_lang_code);
-			String will_use_lang_code = navit.mTts.getLanguage().getISO3Language();
-			Log.e("NavitSpeech2", "will use:" + will_use_lang_code);
-			if (want_lang_code.compareToIgnoreCase(will_use_lang_code) != 0)
-			{
-				result = TextToSpeech.LANG_NOT_SUPPORTED;
-			}
-
-			Log.e("NavitSpeech2", "3 ok result=" + result);
-		}
-		catch (Exception e1)
-		{
-			e1.printStackTrace();
-			result = TextToSpeech.LANG_NOT_SUPPORTED;
-		}
-
-		try
-		{
-			navit.mTts.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener()
-			{
-
-				@Override
-				public void onUtteranceCompleted(String utteranceId)
+				public void run()
 				{
+
 					try
 					{
-						if (need_audio_focus == 0)
-						{
-							Navit.NavitAudioManager.abandonAudioFocus(Navit.focusChangeListener);
-						}
+						tts_params.clear();
 					}
-					catch (Exception e44)
+					catch (Exception e)
 					{
 					}
-					//					runOnUiThread(new Runnable()
-					//					{
-					//
-					//						@Override
-					//						public void run()
-					//						{
-					//							//UI changes
-					//						}
-					//					});
+
+					try
+					{
+						tts_params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "ZANaviUtterID");
+					}
+					catch (Exception e)
+					{
+					}
+
+					Log.e("NavitSpeech2", "onInit: Status " + status);
+					int result = -1;
+					try
+					{
+						// set the new locale here -----------------------------------
+						Locale locale2 = want_locale;
+						Locale.setDefault(locale2);
+						Configuration config2 = new Configuration();
+						config2.locale = locale2;
+						// set the new locale here -----------------------------------
+						try
+						{
+							result = navit.mTts.setLanguage(locale2);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+
+						try
+						{
+							Log.e("NavitSpeech2", "3.1 want locale=" + locale2.getLanguage());
+							//Log.e("NavitSpeech2", "3 E=" + navit.mTts.getDefaultEngine());
+							//Log.e("NavitSpeech2", "3 def.enf.=" + navit.mTts.areDefaultsEnforced());
+						}
+						catch (NoSuchMethodError e2)
+						{
+							e2.printStackTrace();
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+
+						try
+						{
+							Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayCountry());
+							Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayLanguage());
+							Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayName());
+							Log.e("NavitSpeech2", "3 lang. Country=" + navit.mTts.getLanguage().getDisplayVariant());
+						}
+						catch (NoSuchMethodError e2)
+						{
+							e2.printStackTrace();
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+
+						String want_lang_code = locale2.getISO3Language();
+						Log.e("NavitSpeech2", "want:" + want_lang_code);
+						String will_use_lang_code = navit.mTts.getLanguage().getISO3Language();
+						Log.e("NavitSpeech2", "will use:" + will_use_lang_code);
+						if (want_lang_code.compareToIgnoreCase(will_use_lang_code) != 0)
+						{
+							result = TextToSpeech.LANG_NOT_SUPPORTED;
+						}
+
+						Log.e("NavitSpeech2", "3 ok result=" + result);
+					}
+					catch (Exception e1)
+					{
+						e1.printStackTrace();
+						result = TextToSpeech.LANG_NOT_SUPPORTED;
+					}
+
+					try
+					{
+						navit.mTts.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener()
+						{
+
+							@Override
+							public void onUtteranceCompleted(String utteranceId)
+							{
+								try
+								{
+									if (need_audio_focus == 0)
+									{
+										Navit.NavitAudioManager.abandonAudioFocus(Navit.focusChangeListener);
+									}
+								}
+								catch (Exception e44)
+								{
+								}
+								//					runOnUiThread(new Runnable()
+								//					{
+								//
+								//						@Override
+								//						public void run()
+								//						{
+								//							//UI changes
+								//						}
+								//					});
+							}
+						});
+					}
+					catch (Exception e77)
+					{
+						e77.printStackTrace();
+					}
+
+					if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)
+					{
+						// Lanuage data is missing or the language is not supported.
+						Log.e("NavitSpeech2", "3 Language is not available.");
+
+						try
+						{
+							// lang for TTS not found, show toast
+							Message msg = Navit.Navit_progress_h.obtainMessage();
+							Bundle b = new Bundle();
+							msg.what = 2;
+							b.putString("text", Navit.get_text("Language is not available for TTS! Using your phone's default settings")); //TRANS
+							msg.setData(b);
+							Navit.Navit_progress_h.sendMessage(msg);
+						}
+						catch (Exception e1)
+						{
+							e1.printStackTrace();
+						}
+					}
+					else
+					{
+						try
+						{
+							// lang for TTS not found, show toast
+							Message msg = Navit.Navit_progress_h.obtainMessage();
+							Bundle b = new Bundle();
+							msg.what = 2;
+							b.putString("text", Navit.get_text("Using Voice for:") + "\n" + navit.mTts.getLanguage().getDisplayName()); //TRANS
+							msg.setData(b);
+							Navit.Navit_progress_h.sendMessage(msg);
+						}
+						catch (Exception e1)
+						{
+							e1.printStackTrace();
+						}
+					}
+
 				}
-			});
-		}
-		catch (Exception e77)
-		{
-			e77.printStackTrace();
-		}
+			}).start();
 
-		if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)
-		{
-			// Lanuage data is missing or the language is not supported.
-			Log.e("NavitSpeech2", "3 Language is not available.");
-
-			try
-			{
-				// lang for TTS not found, show toast
-				Message msg = Navit.Navit_progress_h.obtainMessage();
-				Bundle b = new Bundle();
-				msg.what = 2;
-				b.putString("text", Navit.get_text("Language is not available for TTS! Using your phone's default settings")); //TRANS
-				msg.setData(b);
-				Navit.Navit_progress_h.sendMessage(msg);
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
-			}
-		}
-		else
-		{
-			try
-			{
-				// lang for TTS not found, show toast
-				Message msg = Navit.Navit_progress_h.obtainMessage();
-				Bundle b = new Bundle();
-				msg.what = 2;
-				b.putString("text", Navit.get_text("Using Voice for:") + "\n" + navit.mTts.getLanguage().getDisplayName()); //TRANS
-				msg.setData(b);
-				Navit.Navit_progress_h.sendMessage(msg);
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
-			}
 		}
 	}
 
@@ -294,7 +320,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 	public void say(String what, int lat, int lon)
 	{
 
-		if (Navit.PREF_enable_debug_write_gpx)
+		if (Navit.p.PREF_enable_debug_write_gpx)
 		{
 			// ------- SPEECH DEBUG -------------------------------
 			// ------- SPEECH DEBUG -------------------------------
@@ -342,7 +368,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 				{
 				}
 
-				if (Navit.PREF_speak_filter_special_chars)
+				if (Navit.p.PREF_speak_filter_special_chars)
 				{
 					what = filter_out_special_chars(what);
 				}
@@ -372,7 +398,7 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 					Navit.set_debug_messages_say_wrapper("SAY:" + what + "\n");
 				}
 
-				if (Navit.PREF_show_debug_messages)
+				if (Navit.p.PREF_show_debug_messages)
 				{
 					Navit.set_debug_messages3_wrapper(what);
 				}
@@ -402,6 +428,22 @@ public class NavitSpeech2 implements TextToSpeech.OnInitListener, NavitActivityR
 		out = out.replace("\\n", "");
 		out = out.replace("\\r", "");
 		out = out.replace("\\\\", "");
+		return out;
+	}
+
+	public static String filter_out_special_chars_for_dest_string(String in)
+	{
+		String out = in;
+		out = out.replace(" ", "_");
+		out = out.replace("\\t", "_");
+		out = out.replace("\"", "_");
+		out = out.replace("'", "_");
+		out = out.replace(",", "_");
+		out = out.replace(".", "_");
+		out = out.replace("-", "_");
+		out = out.replace("\\n", "_");
+		out = out.replace("\\r", "_");
+		out = out.replace("\\\\", "_");
 		return out;
 	}
 

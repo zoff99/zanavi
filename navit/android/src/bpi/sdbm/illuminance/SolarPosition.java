@@ -35,7 +35,7 @@ import java.util.TimeZone;
  * pp 431-441. http://dx.doi.org/10.1016/S0038-092X(00)00156-0
  * 
  * According to the paper, "The algorithm allows .. the true solar vector to
- * be determined with an accuracy of 0.5 minutes of arc for the period 1999�2015."
+ * be determined with an accuracy of 0.5 minutes of arc for the period 1999 - 2015."
  * 
  * @author Klaus A. Brunner
  * 

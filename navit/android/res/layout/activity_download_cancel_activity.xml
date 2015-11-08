@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_form_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar2nd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationContentDescription="@string/abc_action_bar_up_description"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="0dp" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="6dp" >
+
+                <TextView
+                    android:id="@+id/addr_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </TextView>
+
+                <Button
+                    android:id="@+id/btnSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </Button>
+
+                <Button
+                    android:id="@+id/btnSearch2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </Button>
+
+                <TextView
+                    android:id="@+id/info_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/addr_view2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_prog_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/custom_progressbar" />
+
+                <TextView
+                    android:id="@+id/mapdownload_speed_text_t001"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="13sp" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_speed_bar_t001"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="50dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+
+                <TextView
+                    android:id="@+id/mapdownload_speed_text_t002"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="13sp" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_speed_bar_t002"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="50dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+
+                <TextView
+                    android:id="@+id/mapdownload_speed_text_t003"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="13sp" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_speed_bar_t003"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="50dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+
+                <TextView
+                    android:id="@+id/mapdownload_speed_text_t004"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="13sp" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_speed_bar_t004"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="50dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+
+                <TextView
+                    android:id="@+id/mapdownload_speed_text_t005"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="13sp" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_speed_bar_t005"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="50dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+
+                <TextView
+                    android:id="@+id/mapdownload_speed_text_t006"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="#88FFFFFF"
+                    android:textSize="13sp" >
+                </TextView>
+
+                <ProgressBar
+                    android:id="@+id/mapdownload_speed_bar_t006"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="50dp"
+                    android:paddingTop="10dp"
+                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

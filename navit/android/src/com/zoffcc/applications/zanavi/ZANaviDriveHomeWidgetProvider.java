@@ -31,6 +31,8 @@ public class ZANaviDriveHomeWidgetProvider extends AppWidgetProvider
 {
 	// SimpleDateFormat df = new SimpleDateFormat("hh:mm:ss");
 
+	static int dummy_number = 1;
+
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
 	{
 		final int N = appWidgetIds.length;
@@ -46,13 +48,20 @@ public class ZANaviDriveHomeWidgetProvider extends AppWidgetProvider
 			Bundle sendBundle = new Bundle();
 			sendBundle.putLong("com.zoffcc.applications.zanavi.ZANAVI_INTENT_type", Navit.NAVIT_START_INTENT_DRIVE_HOME);
 			intent.putExtras(sendBundle);
-			System.out.println("DH:W 001 B=" + sendBundle.describeContents());
-			System.out.println("DH:W 001 B=" + sendBundle.toString());
-			System.out.println("DH:W 002 I=" + intent.toString());
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			// System.out.println("DH:W 001 B=" + sendBundle.describeContents());
+			// System.out.println("DH:W 001 B=" + sendBundle.toString());
+			// System.out.println("DH:W 002 I=" + intent.toString());
 
 			// if ZANavi main activity already running, then only bring to front, otherwise start it //  Intent.FLAG_ACTIVITY_NEW_TASK
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			System.out.println("DH:W 003 I=" + pendingIntent.toString());
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, dummy_number, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			// System.out.println("DH:W 003 I=" + pendingIntent.toString());
+
+			dummy_number++;
+			if (dummy_number > 20000)
+			{
+				dummy_number = 1;
+			}
 
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_home);
 			views.setOnClickPendingIntent(R.id.icon_widget_home, pendingIntent);

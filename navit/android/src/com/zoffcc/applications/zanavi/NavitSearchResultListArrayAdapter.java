@@ -114,7 +114,7 @@ public class NavitSearchResultListArrayAdapter extends BaseExpandableListAdapter
 			convertView = inflater.inflate(R.layout.search_result_item_street, null);
 
 			ImageView icon_view = (ImageView) convertView.findViewById(R.id.icon);
-			if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+			if (Navit.p.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
 			{
 				// leave it as it is
 			}
@@ -138,7 +138,7 @@ public class NavitSearchResultListArrayAdapter extends BaseExpandableListAdapter
 			convertView = inflater.inflate(R.layout.search_result_item_poi, null);
 
 			ImageView icon_view = (ImageView) convertView.findViewById(R.id.icon);
-			if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+			if (Navit.p.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
 			{
 				// leave it as it is
 			}
@@ -161,7 +161,7 @@ public class NavitSearchResultListArrayAdapter extends BaseExpandableListAdapter
 			convertView = inflater.inflate(R.layout.search_result_item_town, null);
 
 			ImageView icon_view = (ImageView) convertView.findViewById(R.id.icon);
-			if (Navit.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
+			if (Navit.p.PREF_current_theme == Navit.DEFAULT_THEME_OLD_LIGHT)
 			{
 				// leave it as it is
 			}

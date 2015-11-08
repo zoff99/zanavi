@@ -20,6 +20,7 @@
 package com.zoffcc.applications.zanavi;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
@@ -30,8 +31,14 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
+import android.support.v7.internal.widget.TintCheckBox;
+import android.support.v7.internal.widget.TintCheckedTextView;
+import android.support.v7.internal.widget.TintEditText;
+import android.support.v7.internal.widget.TintRadioButton;
+import android.support.v7.internal.widget.TintSpinner;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.Toolbar.LayoutParams;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -208,6 +215,46 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 		// dummy for xgettext
 	}
 
+	// thanks to: http://stackoverflow.com/questions/17849193/how-to-add-action-bar-from-support-library-into-preferenceactivity
+	@Override
+	public View onCreateView(String name, Context context, AttributeSet attrs)
+	{
+		// Allow super to try and create a view first
+		final View result = super.onCreateView(name, context, attrs);
+		if (result != null)
+		{
+			return result;
+		}
+
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		{
+			// If we're running pre-L, we need to 'inject' our tint aware Views in place of the
+			// standard framework versions
+			if (name.compareTo("EditText") == 0)
+			{
+				return new TintEditText(this, attrs);
+			}
+			else if (name.compareTo("Spinner") == 0)
+			{
+				return new TintSpinner(this, attrs);
+			}
+			else if (name.compareTo("CheckBox") == 0)
+			{
+				return new TintCheckBox(this, attrs);
+			}
+			else if (name.compareTo("RadioButton") == 0)
+			{
+				return new TintRadioButton(this, attrs);
+			}
+			else if (name.compareTo("CheckedTextView") == 0)
+			{
+				return new TintCheckedTextView(this, attrs);
+			}
+		}
+
+		return null;
+	}
+
 	// thanks to: http://stackoverflow.com/questions/26509180/no-actionbar-in-preferenceactivity-after-upgrade-to-support-library-v21
 	@SuppressLint("NewApi")
 	@Override
@@ -257,7 +304,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
 
@@ -280,7 +327,15 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 		try
 		{
 			EditTextPreference about_text_pref = ((EditTextPreference) findPreference("about_edit_text"));
-			about_text_pref.setSummary("v" + Navit.NavitAppVersion_string + "-" + Navit.VERSION_TEXT_LONG_INC_REV);
+
+			if (Navit.FDBL)
+			{
+				about_text_pref.setSummary("v" + Navit.NavitAppVersion_string + "-" + Navit.VERSION_TEXT_LONG_INC_REV + ":FD");
+			}
+			else
+			{
+				about_text_pref.setSummary("v" + Navit.NavitAppVersion_string + "-" + Navit.VERSION_TEXT_LONG_INC_REV);
+			}
 		}
 		catch (Exception e)
 		{
@@ -310,7 +365,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_001", (68 - 10)) + 10;
 			road_prof_001.setSummary(road_prof_001.getSummary() + " [" + read_value + "]");
 
-			if (!Navit.PREF_enable_debug_functions)
+			if (!Navit.p.PREF_enable_debug_functions)
 			{
 				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
 				cat.removePreference(road_prof_001);
@@ -331,7 +386,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_002", (329 - 10)) + 10;
 			road_prof_002.setSummary(road_prof_002.getSummary() + " [" + read_value + "]");
 
-			if (!Navit.PREF_enable_debug_functions)
+			if (!Navit.p.PREF_enable_debug_functions)
 			{
 				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
 				cat.removePreference(road_prof_002);
@@ -352,7 +407,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_003", (5000 - 10)) + 10;
 			road_prof_003.setSummary(road_prof_003.getSummary() + " [" + read_value + "]");
 
-			if (!Navit.PREF_enable_debug_functions)
+			if (!Navit.p.PREF_enable_debug_functions)
 			{
 				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
 				cat.removePreference(road_prof_003);
@@ -373,7 +428,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("road_priority_004", (5 - 0)) + 0;
 			road_prof_004.setSummary(road_prof_004.getSummary() + " [" + read_value + "]");
 
-			if (!Navit.PREF_enable_debug_functions)
+			if (!Navit.p.PREF_enable_debug_functions)
 			{
 				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
 				cat.removePreference(road_prof_004);
@@ -394,7 +449,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("tracking_connected_pref", (250 - 0)) + 0;
 			a.setSummary(a.getSummary() + " [" + read_value + "]");
 
-			if (!Navit.PREF_enable_debug_functions)
+			if (!Navit.p.PREF_enable_debug_functions)
 			{
 				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
 				cat.removePreference(a);
@@ -415,11 +470,22 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("tracking_angle_pref", (40 - 0)) + 0;
 			a.setSummary(a.getSummary() + " [" + read_value + "]");
 
-			if (!Navit.PREF_enable_debug_functions)
+			if (!Navit.p.PREF_enable_debug_functions)
 			{
 				PreferenceCategory cat = (PreferenceCategory) findPreference("category_tracking");
 				cat.removePreference(a);
 			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference a = findPreference("traffic_speed_factor");
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("traffic_speed_factor", (83 - 20)) + 20;
+			a.setSummary(a.getSummary() + " [" + read_value + "]");
 		}
 		catch (Exception e)
 		{
@@ -693,6 +759,21 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			e.printStackTrace();
 		}
 
+		try
+		{
+			if (key.equals("traffic_speed_factor"))
+			{
+				Preference a = findPreference("traffic_speed_factor");
+				int read_value = sharedPreferences.getInt("traffic_speed_factor", (83 - 20)) + 20;
+				int pos_start = a.getSummary().toString().lastIndexOf("[");
+				a.setSummary(a.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	void disable_pref(String pref_name, boolean large_donate_only, boolean debug_function)
@@ -709,7 +790,7 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 				a.setEnabled(false);
 			}
 
-			if ((debug_function) && (!Navit.PREF_enable_debug_functions))
+			if ((debug_function) && (!Navit.p.PREF_enable_debug_functions))
 			{
 				a.setEnabled(false);
 			}

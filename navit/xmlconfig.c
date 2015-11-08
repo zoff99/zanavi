@@ -177,19 +177,25 @@ static struct attr ** convert_to_attrs(struct xmlstate *state, struct attr_fixme
 	return ret;
 }
 
-static const char * find_attribute(struct xmlstate *state, const char *attribute, int required)
+static const char *find_attribute(struct xmlstate *state, const char *attribute, int required)
 {
 	const gchar **attribute_name = state->attribute_names;
 	const gchar **attribute_value = state->attribute_values;
 	while (*attribute_name)
 	{
 		if (!g_ascii_strcasecmp(attribute, *attribute_name))
+		{
 			return *attribute_value;
+		}
 		attribute_name++;
 		attribute_value++;
 	}
+
 	if (required)
+	{
 		g_set_error(state->error, G_MARKUP_ERROR, G_MARKUP_ERROR_INVALID_CONTENT, "element '%s' is missing attribute '%s'", state->element, attribute);
+	}
+
 	return NULL;
 }
 
@@ -226,21 +232,37 @@ static int xmlconfig_announce(struct xmlstate *state)
 	int level[3];
 	int i;
 	enum item_type itype;
-	char *tok, *type_str, *str;
+	char *tok, *type_str, *str, *unit;
 
 	type = find_attribute(state, "type", 1);
+
 	if (!type)
+	{
 		return 0;
+	}
+
+	unit = find_attribute(state, "unit", 0);
+	if (unit)
+	{
+		// TODO: handle other unit types than "m" , maybe "s" (seconds) in the future
+	}
+
 	for (i = 0; i < 3; i++)
 	{
 		sprintf(key, "level%d", i);
 		value = find_attribute(state, key, 0);
 		if (value)
+		{
 			level[i] = convert_number(value);
+		}
 		else
+		{
 			level[i] = -1;
+		}
 	}
+
 	type_str = g_strdup(type);
+
 	str = type_str;
 	while ((tok = strtok(str, ",")))
 	{
@@ -248,7 +270,9 @@ static int xmlconfig_announce(struct xmlstate *state)
 		navigation_set_announce(state->parent->element_attr.u.data, itype, level);
 		str = NULL;
 	}
+
 	g_free(type_str);
+
 	return 1;
 }
 /**

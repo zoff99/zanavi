@@ -96,7 +96,7 @@ public class NavitDeleteSelectMapActivity extends ListActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
 

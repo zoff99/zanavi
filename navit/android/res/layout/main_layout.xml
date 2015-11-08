@@ -10,15 +10,391 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark"
-        android:minHeight="?attr/actionBarSize"
-        android:elevation="0dp"
-         />
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize" />
+
+    <RelativeLayout
+        android:id="@+id/gui_top_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/gui_top_container_height"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/blueish_bg_color"
+        android:elevation="4dp"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/gui_next_turn_container"
+            android:layout_width="@dimen/gui_next_turn_container_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/transparent"
+            android:orientation="vertical" >
+
+            <com.zoffcc.applications.zanavi.ZANaviOSDNextturn
+                android:id="@+id/osd_nextturn_new"
+                android:layout_width="@dimen/osd_nextturn_new_width"
+                android:layout_height="@dimen/osd_nextturn_new_height"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:background="@android:color/transparent" >
+            </com.zoffcc.applications.zanavi.ZANaviOSDNextturn>
+
+            <com.zoffcc.applications.zanavi.ZANaviOSDDistToNextturn
+                android:id="@+id/osd_timetoturn_new"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@+id/osd_nextturn_new"
+                android:layout_centerInParent="true"
+                android:background="@android:color/transparent" >
+            </com.zoffcc.applications.zanavi.ZANaviOSDDistToNextturn>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/gui_top_cutline"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="7dp"
+            android:layout_toRightOf="@+id/gui_next_turn_container"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:src="@drawable/zanavi_cutline1" >
+        </ImageView>
+
+        <!-- android:background="#eebb0000" -->
+
+        <com.zoffcc.applications.zanavi.ZANaviOSDStreetname
+            android:id="@+id/top_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/gui_top_cutline"
+            android:background="@android:color/transparent" />
+    </RelativeLayout>
+
+    <!-- android:stateListAnimator="@anim/view_srec_elevation" -->
+
+    <View
+        android:id="@+id/view_srec"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/toolbar"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="72dp"
+        android:background="@drawable/view_srec_selector"
+        android:clickable="true"
+        android:elevation="8dp" />
+
+    <com.zoffcc.applications.zanavi.ZANaviOSDLaneAssist
+        android:id="@+id/view_laneassist"
+        android:layout_width="180dp"
+        android:layout_height="55dp"
+        android:layout_below="@+id/gui_top_container"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="0dp"
+        android:clickable="false"
+        android:elevation="8dp" />
+
+    <com.zoffcc.applications.zanavi.ZANaviOSDSpeeding
+        android:id="@+id/view_speeding"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_above="@+id/bottom_bar"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="@dimen/margin_bottom_speeding"
+        android:layout_marginLeft="@dimen/margin_left_speeding"
+        android:elevation="8dp" />
+
+    <com.zoffcc.applications.zanavi.ZANaviOSDCompass
+        android:id="@+id/osd_compass_new"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/toolbar"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="88dp"
+        android:adjustViewBounds="false"
+        android:background="@drawable/round_view_compass"
+        android:elevation="8dp"
+        android:padding="0px"
+        android:scaleType="fitXY"
+        android:src="@drawable/zanavi_compass" />
+
+    <RelativeLayout
+        android:id="@+id/whats_here_container_wrap"
+        android:layout_width="@dimen/whats_here_container_width"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/gui_top_container"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:background="#00000000"
+        android:elevation="9dp"
+        android:visibility="invisible" >
+
+        <RelativeLayout
+            android:id="@+id/whats_here_container_2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#DDFAFAFA"
+            android:elevation="9dp"
+            android:paddingLeft="0sp"
+            android:paddingRight="0sp" >
+
+            <LinearLayout
+                android:id="@+id/whats_here_button_2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/whats_here_button_add_to"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/round_image_button_add_to"
+                    android:contentDescription="" />
+
+                <ImageButton
+                    android:id="@+id/whats_here_button_whats"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/round_image_button_whats"
+                    android:contentDescription="" />
+
+                <ImageButton
+                    android:id="@+id/whats_here_button_drive"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/round_image_button_drive"
+                    android:contentDescription="" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:layout_below="@id/whats_here_button_2"
+                android:layout_marginBottom="0sp"
+                android:layout_marginTop="0sp"
+                android:paddingBottom="0sp"
+                android:paddingTop="0sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/whats_here_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/whats_here_container_2"
+            android:background="#ff505050"
+            android:elevation="9dp"
+            android:paddingLeft="0sp"
+            android:paddingRight="0sp" >
+
+            <View
+                android:id="@+id/whats_here_seperator"
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:layout_marginBottom="0sp"
+                android:layout_marginTop="0sp"
+                android:background="#DD101010"
+                android:paddingBottom="0sp"
+                android:paddingTop="0sp" />
+
+            <TextView
+                android:id="@+id/whats_here_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/whats_here_seperator"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginRight="5sp"
+                android:layout_marginTop="5sp"
+                android:layout_weight="1"
+                android:ellipsize="none"
+                android:gravity="center"
+                android:maxLines="100"
+                android:scrollHorizontally="false"
+                android:text="  loading ...  "
+                android:textColor="#EEEEEE"
+                android:textColorLink="#EEEEEE"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:layout_below="@id/whats_here_text"
+                android:layout_marginBottom="0sp"
+                android:layout_marginTop="0sp"
+                android:paddingBottom="0sp"
+                android:paddingTop="0sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/whats_here_pointer"
+            android:layout_width="fill_parent"
+            android:layout_height="34dp"
+            android:layout_below="@id/whats_here_container"
+            android:elevation="9dp" >
+
+            <ImageView
+                android:id="@+id/whats_here_pointer_image"
+                android:layout_width="34dp"
+                android:layout_height="fill_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="7dp"
+                android:elevation="9dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/whats_here_point" >
+            </ImageView>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_alignParentBottom="true"
+        android:background="#efefef"
+        android:elevation="9dp" />
+
+    <FrameLayout
+        android:id="@+id/bottom_bar_slide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:elevation="9dp" >
+
+        <RelativeLayout
+            android:id="@+id/bottom_bar_container"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:elevation="9dp"
+            android:orientation="vertical" >
+
+            <View
+                android:id="@+id/bottom_slide_view_shadow_compat"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/bottom_slide_view_shadow_compat_height"
+                android:background="@drawable/shadow_horizontal" />
+
+            <!-- <View -->
+            <!-- android:id="@+id/bottom_slide_view" -->
+            <!-- android:layout_width="fill_parent" -->
+            <!-- android:layout_height="96dp" -->
+            <!-- android:layout_below="@+id/bottom_slide_view_shadow_compat" -->
+            <!-- android:background="#efefef" -->
+            <!-- android:elevation="9dp" /> -->
+
+            <LinearLayout
+                android:id="@+id/bottom_slide_view"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/bottom_slide_view_height"
+                android:layout_below="@+id/bottom_slide_view_shadow_compat"
+                android:background="#efefef"
+                android:elevation="9dp"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:id="@+id/bottom_slide_left_side"
+                    android:layout_width="@dimen/bottom_slide_left_side_width"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginTop="7dp"
+                    android:background="@android:color/transparent"
+                    android:elevation="9dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/pin1_up" >
+                </ImageView>
+
+                <ImageView
+                    android:id="@+id/gui_bottom_cutline"
+                    android:layout_width="2dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginTop="7dp"
+                    android:background="@android:color/transparent"
+                    android:elevation="9dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/zanavi_cutline1" >
+                </ImageView>
+
+                <RelativeLayout
+                    android:id="@+id/bottom_slide_right_side"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:elevation="9dp"
+                    android:orientation="vertical" >
+
+                    <com.zoffcc.applications.zanavi.ZANaviOSDTimeToDest
+                        android:id="@+id/osd_timetodest_new"
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/osd_timetodest_new_height" >
+                    </com.zoffcc.applications.zanavi.ZANaviOSDTimeToDest>
+
+                    <LinearLayout
+                        android:id="@+id/bottom_line_container"
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/bottom_line_container_height"
+                        android:layout_below="@+id/osd_timetodest_new"
+                        android:orientation="horizontal" >
+
+                        <!-- left -->
+
+                        <com.zoffcc.applications.zanavi.ZANaviOSDRoadDist
+                            android:id="@+id/osd_roaddistance_new"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="0.5" >
+                        </com.zoffcc.applications.zanavi.ZANaviOSDRoadDist>
+
+                        <!-- right -->
+
+                        <com.zoffcc.applications.zanavi.ZANaviOSDETA
+                            android:id="@+id/osd_eta_new"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="0.5" >
+                        </com.zoffcc.applications.zanavi.ZANaviOSDETA>
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/roadbook_fragment_container"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/bottom_slide_view"
+                android:background="#efefef"
+                android:minHeight="@dimen/roadbook_fragment_container_min_height"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </RelativeLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/v002"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/toolbar" >
+        android:layout_above="@+id/bottom_bar"
+        android:layout_below="@+id/gui_top_container" >
 
         <View
             android:id="@+id/gui_gr_map"
@@ -39,43 +415,93 @@
             android:layout_height="fill_parent" >
         </com.zoffcc.applications.zanavi.NavitAndroidOverlay>
 
-<!--         <TextView -->
-<!--             android:id="@+id/sc" -->
-<!--             android:layout_width="fill_parent" -->
-<!--             android:layout_height="fill_parent" /> -->
+        <!-- <TextView -->
+        <!-- android:id="@+id/sc" -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="fill_parent" /> -->
 
         <TextView
-                android:id="@+id/NavitMsgTv"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" 
-                android:layout_marginLeft="80dp"
-                android:layout_marginTop="100dp"
-                />
-        
+            android:id="@+id/NavitMsgTv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="100dp" />
+
         <ScrollView
             android:id="@+id/NavitMsgTv2"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/NavitMsgTv2cc"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                />
+                android:layout_height="wrap_content" />
         </ScrollView>
+
+        <RelativeLayout
+            android:id="@+id/no_maps_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8sp"
+            android:layout_marginTop="8sp"
+            android:background="#DDFAFAFA"
+            android:elevation="9dp"
+            android:paddingLeft="5sp"
+            android:paddingRight="5sp" >
+
+            <TextView
+                android:id="@+id/no_maps_text"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10sp"
+                android:layout_marginRight="10sp"
+                android:text="\nNo Maps installed\nplease download a map\n\n"
+                android:textColor="#202020"
+                android:textColorLink="#57BDE9"
+                android:textSize="17sp" />
+
+            <Button
+                android:id="@+id/no_maps_button"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_maps_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5sp"
+                android:background="#a0a0a0"
+                android:paddingBottom="5sp"
+                android:paddingTop="5sp"
+                android:text="Ok"
+                android:textColor="#202020"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:layout_below="@id/no_maps_button"
+                android:layout_marginBottom="0sp"
+                android:layout_marginTop="0sp"
+                android:paddingBottom="0sp"
+                android:paddingTop="0sp" />
+        </RelativeLayout>
 
         <View
             android:id="@+id/debug_text"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
-        
 
         <com.zoffcc.applications.zanavi.ZANaviBusySpinner
             android:id="@+id/busyspinner"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
         </com.zoffcc.applications.zanavi.ZANaviBusySpinner>
+
+        <!-- <android.opengl.GLSurfaceView -->
+        <!-- android:id="@+id/glSurfaceView_001" -->
+        <!-- android:layout_width="fill_parent" -->
+        <!-- android:layout_height="fill_parent" -->
+        <!-- android:elevation="9dp" > -->
+        <!-- </android.opengl.GLSurfaceView> -->
 
         <com.zoffcc.applications.zanavi.ZANaviBusyText
             android:id="@+id/busyspinnertext"

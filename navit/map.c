@@ -298,6 +298,17 @@ map_convert_string(struct map *this_, char *str)
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:enter\n");
 #endif
+
+//	if (this_ == NULL)
+//	{
+//		return NULL;
+//	}
+
+//	if (str == NULL)
+//	{
+//		return NULL;
+//	}
+
 	return g_convert(str, -1, "utf-8", this_->meth.charset, NULL, NULL, NULL);
 }
 

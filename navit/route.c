@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2014 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2015 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -246,12 +246,12 @@ static struct route_info * route_find_nearest_street_harder(struct vehicleprofil
 static struct route_graph_point *route_graph_get_point(struct route_graph *this, struct coord *c);
 static void route_graph_update(struct route *this, struct callback *cb, int async);
 static void route_graph_build_done(struct route_graph *rg, int cancel);
-static struct route_path *route_path_new(struct route_graph *this, struct route_path *oldpath, struct route_info *pos, struct route_info *dst, struct vehicleprofile *profile);
+static struct route_path *route_path_new(struct route *rr, struct route_graph *this, struct route_path *oldpath, struct route_info *pos, struct route_info *dst, struct vehicleprofile *profile);
 static void route_process_street_graph(struct route_graph *this, struct item *item, struct vehicleprofile *profile);
 //static void route_graph_destroy(struct route_graph *this);
 void route_path_update(struct route *this, int cancel, int async);
 static int route_time_seg(struct vehicleprofile *profile, struct route_segment_data *over, struct route_traffic_distortion *dist);
-static void route_graph_flood(struct route_graph *this, struct route_info *dst, struct vehicleprofile *profile, struct callback *cb);
+static void route_graph_flood(struct route_graph *this, struct route_info *dst, struct route_info *pos, struct vehicleprofile *profile, struct callback *cb);
 static void route_graph_reset(struct route_graph *this);
 
 
@@ -847,6 +847,7 @@ __F_START__
 __F_END__
 }
 
+
 static struct route_info *
 route_previous_destination(struct route *this)
 {
@@ -891,9 +892,17 @@ __F_START__
 
 	prev_dst = route_previous_destination(this);
 
+	dbg(0, "AAA:001 lp=%d\n", this->link_path);
+
 	if (this->link_path)
 	{
-		this->path2 = route_path_new(this->graph, NULL, prev_dst, this->current_dst, this->vehicleprofile);
+		dbg(0, "AAA:002 lp=%d\n", this->link_path);
+
+		// generate route path from "prev_dst" to "this->current_dst"
+
+		dbg(0, "RPNEW:CALL 001\n");
+
+		this->path2 = route_path_new(this, this->graph, NULL, prev_dst, this->current_dst, this->vehicleprofile);
 		if (this->path2)
 		{
 			this->path2->next = oldpath;
@@ -901,13 +910,20 @@ __F_START__
 	}
 	else
 	{
-		this->path2 = route_path_new(this->graph, oldpath, prev_dst, this->current_dst, this->vehicleprofile);
+		dbg(0, "AAA:003 lp=%d\n", this->link_path);
+
+		dbg(0, "RPNEW:CALL 002\n");
+
+		// generate route path from "prev_dst" to "this->current_dst"
+		this->path2 = route_path_new(this, this->graph, oldpath, prev_dst, this->current_dst, this->vehicleprofile);
 		if (oldpath && this->path2)
 		{
 			this->path2->next = oldpath->next;
 			route_path_destroy(oldpath, 0);
 		}
 	}
+
+	dbg(0, "AAA:004 lp=%d\n", this->link_path);
 
 	if (this->path2)
 	{
@@ -933,12 +949,19 @@ __F_START__
 		this->path2->path_time = path_time;
 		this->path2->path_len = path_len;
 
-		if (prev_dst != this->pos)
+		dbg(0, "AAA:005 lp=%d\n", this->link_path);
+		if (prev_dst != this->pos) // do we have more destinations? (waypoints)
 		{
+			dbg(0, "AAA:006 lp=%d\n", this->link_path);
+
+			dbg(0, "RPNEW:SET PREV DEST -1\n");
+
 			this->link_path = 1;
-			this->current_dst = prev_dst;
+			this->current_dst = prev_dst;	// set current destination back 1 waypoint, to calculate the next part of the route
+											// (actually previous part, since we walk backwards to position)
 			route_graph_reset(this->graph);
-			route_graph_flood(this->graph, this->current_dst, this->vehicleprofile, this->route_graph_flood_done_cb);
+			// generate next route graph (and later route path)
+			route_graph_flood(this->graph, this->current_dst, this->pos, this->vehicleprofile, this->route_graph_flood_done_cb);
 
 			return2;
 		}
@@ -974,6 +997,8 @@ __F_START__
 	}
 	else
 	{
+		dbg(0, "AAA:007 lp=%d\n", this->link_path);
+
 		// dbg(0, "try harder\n");
 		// Try to rebuild the graph with smaller roads
 		if (this->try_harder == 0)
@@ -988,6 +1013,9 @@ __F_START__
 			route_status.u.num = route_status_not_found;
 		}
 	}
+
+	dbg(0, "AAA:099 lp=%d\n", this->link_path);
+
 
 	this->link_path = 0;
 	route_set_attr(this, &route_status);
@@ -1042,7 +1070,7 @@ __F_START__
 		}
 		// we can try to update
 		//dbg(0, "try update\n");
-		route_path_update_done(this, 0);
+		route_path_update_done(this, 0); // calls route_set_attr -> navigation_update !! (first loop)
 	}
 	else
 	{
@@ -1059,7 +1087,7 @@ __F_START__
 			callback_add_names(this->route_graph_flood_done_cb, "route_path_update", "route_path_update_done");
 		}
 		//dbg(0, "route_graph_update\n");
-		route_graph_update(this, this->route_graph_flood_done_cb, async);
+		route_graph_update(this, this->route_graph_flood_done_cb, async); // calls route_set_attr -> navigation_update !! (2nd loop)
 	}
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
@@ -1099,7 +1127,14 @@ __F_START__
 		ri->percent = 50;
 	}
 
-	//dbg(0,"len extra=%d\n", ri->lenextra);
+	dbg(0,"AAA:(1)len extra=%d\n", ri->lenextra);
+
+	if (ri->lenextra < 1)
+	{
+		ri->lenextra = 1; // always set this, to avoid holes in route path display
+	}
+
+	dbg(0,"AAA:(2)len extra=%d\n", ri->lenextra);
 
 __F_END__
 
@@ -1248,7 +1283,7 @@ __F_START__
 	ret->street_direction = tracking_get_street_direction(tracking);
 	sd = tracking_get_street_data(tracking);
 
-	int road_angle = tracking_get_angle(tracking);
+	// int road_angle = tracking_get_angle(tracking);
 	//dbg(0, "ROAD angle=%d\n", road_angle);
 
 	if (sd)
@@ -1405,49 +1440,93 @@ route_calc_selection(struct coord *c, int count, int try_harder)
 	}
 #endif
 
-	if (routing_mode == 0)
+
+	double len_from_start_to_dest = transform_distance(projection_mg, &c[0], &c[count - 1]);
+	dbg(0, "distdist=%f\n", len_from_start_to_dest);
+
+
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))  // ------------ BICYCLE MODE -----------
 	{
-		// normal highway routing
-		// sel=route_rect(4, &r.lu, &r.rl, 25, 0);
-		sel = route_rect(try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0);
-
-		// the route selection rectangle will be extened further, to find all routes (by 25%)
-#ifdef HAVE_API_ANDROID
-		if (global_show_route_rectangles)
+		if (len_from_start_to_dest > 100000)
 		{
-			send_route_rect_to_java(sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y, try_harder ? 6 : 4);
+			sel = route_rect(try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0);
 		}
-#endif
-	}
-	else if (routing_mode == 1)
+		else
+		{
+			sel = route_rect(try_harder ? 18 : 16, &r.lu, &r.rl, 25, 0);
+		}
+
+	}   // ------------ BICYCLE MODE -----------
+
+
+
+	else // ------------ CAR MODE -----------
 	{
-		// normal roads routing (should take longer and use more roads)
-		// sel=route_rect(6, &r.lu, &r.rl, 25, 0);
-		sel = route_rect(try_harder ? 7 : 6, &r.lu, &r.rl, 25, 0);
 
-#ifdef HAVE_API_ANDROID
-		if (global_show_route_rectangles)
+		if (routing_mode == 0)
 		{
-			send_route_rect_to_java(sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y, try_harder ? 7 : 6);
-		}
-#endif
-	}
-	else
-	{
-		// DEFAULT setting
-		// normal highway routing
-		// sel=route_rect(4, &r.lu, &r.rl, 25, 0);
-		sel = route_rect(try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0);
+			// normal highway routing
+			// sel=route_rect(4, &r.lu, &r.rl, 25, 0);
+			if (len_from_start_to_dest > 100000)
+			{
+				sel = route_rect(try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0); // ORIG: try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0
+			}
+			else
+			{
+				sel = route_rect(try_harder ? 8 : 7, &r.lu, &r.rl, 25, 0);
+			}
 
-		// the route selection rectangle will be extened further, to find all routes (by 25%)
-#ifdef HAVE_API_ANDROID
-		if (global_show_route_rectangles)
+			// the route selection rectangle will be extened further, to find all routes (by 25%)
+	#ifdef HAVE_API_ANDROID
+			if (global_show_route_rectangles)
+			{
+				send_route_rect_to_java(sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y, try_harder ? 6 : 4);
+			}
+	#endif
+		}
+		else if (routing_mode == 1)
 		{
-			send_route_rect_to_java(sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y, try_harder ? 6 : 4);
-		}
-#endif
+			// normal roads routing (should take longer and use more roads)
+			// sel=route_rect(6, &r.lu, &r.rl, 25, 0);
+			sel = route_rect(try_harder ? 7 : 6, &r.lu, &r.rl, 25, 0);
 
-	}
+	#ifdef HAVE_API_ANDROID
+			if (global_show_route_rectangles)
+			{
+				send_route_rect_to_java(sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y, try_harder ? 7 : 6);
+			}
+	#endif
+		}
+		else
+		{
+			// DEFAULT setting
+			// normal highway routing
+			// sel=route_rect(4, &r.lu, &r.rl, 25, 0);
+			if (len_from_start_to_dest > 100000)
+			{
+				sel = route_rect(try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0); // ORIG: try_harder ? 6 : 4, &r.lu, &r.rl, 25, 0
+			}
+			else
+			{
+				sel = route_rect(try_harder ? 8 : 7, &r.lu, &r.rl, 25, 0);
+			}
+
+			// the route selection rectangle will be extened further, to find all routes (by 25%)
+	#ifdef HAVE_API_ANDROID
+			if (global_show_route_rectangles)
+			{
+				send_route_rect_to_java(sel->u.c_rect.lu.x, sel->u.c_rect.lu.y, sel->u.c_rect.rl.x, sel->u.c_rect.rl.y, try_harder ? 6 : 4);
+			}
+	#endif
+
+		}
+	}  // ------------ CAR MODE -----------
+
+
+
+
+
+
 
 	ret = sel;
 	for (i = 0; i < count; i++)
@@ -1456,7 +1535,22 @@ route_calc_selection(struct coord *c, int count, int try_harder)
 		// 1 rect small but with high detail (every small street)
 		// 1 rect a bit bigger but with lower detail
 
-		sel->next = route_rect(8, &c[i], &c[i], 0, 40000);
+		if (global_routing_engine != 1) // not OSRM routing
+		{
+			sel->next = route_rect(8, &c[i], &c[i], 0, try_harder ? 40000 : 8500); // DEFAULT = 0, 40000
+		}
+		else
+		{
+			if (i < (count -1))
+			{
+				// sel->next = route_rect(8, &c[i], &c[i + 1], 0, 2);
+				sel->next = route_rect(8, &c[i], &c[i], 0, try_harder ? 140 : 220);
+			}
+			else
+			{
+				sel->next = route_rect(8, &c[i], &c[i], 0, try_harder ? 140 : 220);
+			}
+		}
 		sel = sel->next;
 #ifdef HAVE_API_ANDROID
 		if (global_show_route_rectangles)
@@ -1465,7 +1559,22 @@ route_calc_selection(struct coord *c, int count, int try_harder)
 		}
 #endif
 
-		sel->next = route_rect(18, &c[i], &c[i], 0, 10000);
+		if (global_routing_engine != 1) // not OSRM routing
+		{
+			sel->next = route_rect(18, &c[i], &c[i], 0, try_harder ? 10000 : 2500); // DEFAULT = 0, 10000
+		}
+		else
+		{
+			if (i < (count -1))
+			{
+				// sel->next = route_rect(18, &c[i], &c[i + 1], 0, 2);
+				sel->next = route_rect(18, &c[i], &c[i], 0, try_harder ? 100 : 120);
+			}
+			else
+			{
+				sel->next = route_rect(18, &c[i], &c[i], 0, try_harder ? 100 : 120);
+			}
+		}
 		sel = sel->next;
 #ifdef HAVE_API_ANDROID
 		if (global_show_route_rectangles)
@@ -1578,6 +1687,86 @@ __F_START__
 __F_END__
 }
 
+
+
+
+void route_add_destination_no_calc(struct route *this, struct pcoord *dst, int async)
+{
+__F_START__
+
+	// struct attr route_status;
+	struct route_info *dsti;
+	// route_status.type = attr_route_status;
+
+	dsti = route_find_nearest_street(this->vehicleprofile, this->ms, &dst[0]);
+
+	// try harder
+	if (dsti == NULL)
+	{
+		dsti = route_find_nearest_street_harder(this->vehicleprofile, this->ms, &dst[0], 16000);
+	}
+
+	if (dsti)
+	{
+		//dbg(0, "1: x y: %i %i\n", dst[0].x, dst[0].y);
+		//dbg(0, "2: x y: %i %i\n", dsti->c.x, dsti->c.y);
+		//dbg(0, "3: x y: %i %i\n", dsti->lp.x, dsti->lp.y);
+
+		route_info_distances(dsti, dst->pro);
+		this->destinations = g_list_append(this->destinations, dsti);
+
+	}
+
+	this->try_harder = 0;
+
+__F_END__
+}
+
+
+
+void route_set_destination_no_calc(struct route *this, struct pcoord *dst, int async)
+{
+__F_START__
+
+	// route_set_destinations(this, dst, dst ? 1 : 0, async);
+
+	route_clear_destinations(this);
+	route_add_destination_no_calc(this, dst, async);
+
+__F_END__
+}
+
+
+
+void route_after_destination_start_calc(struct route *this, int async)
+{
+__F_START__
+
+	struct attr route_status;
+	route_status.u.num = route_status_destination_set;
+
+	dbg(0, "zzz3.1\n");
+	//zzz3//
+	// callback_list_call_attr_1(this->cbl2, attr_destination, this);
+	route_set_attr(this, &route_status);
+	//profile(1,"find_nearest_street");
+
+	/* The graph has to be destroyed and set to NULL, otherwise route_path_update() doesn't work */
+	route_graph_destroy(this->graph);
+	this->graph = NULL;
+	this->current_dst = route_get_dst(this);
+	this->try_harder = 0;
+	route_path_update(this, 1, async);
+
+__F_END__
+}
+
+
+
+
+
+
+
 void route_add_destination(struct route *this, struct pcoord *dst, int async)
 {
 __F_START__
@@ -1669,7 +1858,7 @@ __F_START__
 	route_graph_reset(this->graph);
 	this->current_dst = this->destinations->data;
 
-	route_graph_flood(this->graph, this->current_dst, this->vehicleprofile, this->route_graph_flood_done_cb);
+	route_graph_flood(this->graph, this->current_dst, this->pos, this->vehicleprofile, this->route_graph_flood_done_cb);
 
 __F_END__
 
@@ -2246,6 +2435,36 @@ static void route_path_add_line(struct route_path *this, struct coord *start, st
 	route_path_add_segment(this, segment);
 }
 
+
+static void route_path_add_line_as_waypoint(struct route_path *this, struct coord *start, struct coord *end, int len)
+{
+	//dbg(0, "enter\n");
+
+	int ccnt = 2;
+	struct route_path_segment *segment;
+	int seg_size, seg_dat_size;
+
+	//dbg(0, "line from 0x%x,0x%x-0x%x,0x%x\n", start->x, start->y, end->x, end->y);
+
+	seg_size = sizeof(*segment) + sizeof(struct coord) * ccnt;
+	seg_dat_size = sizeof(struct route_segment_data);
+	segment = g_malloc0(seg_size + seg_dat_size);
+	//global_route_memory_size = global_route_memory_size + seg_size + seg_dat_size;
+	//dbg(0,"route mem=%lu\n", global_route_memory_size);
+
+	segment->data = (struct route_segment_data *) ((char *) segment + seg_size);
+	segment->ncoords = ccnt;
+	segment->direction = 0;
+	segment->c[0] = *start;
+	segment->c[1] = *end;
+	segment->data->len = len;
+
+	dbg(0, "RPNEW:WW:add type_street_route_waypoint prev type=%s\n", item_to_name(segment->data->item.type));
+	segment->data->item.type = type_street_route_waypoint; // mark waypoint item
+
+	route_path_add_segment(this, segment);
+}
+
 /**
  * @brief Inserts a new item into the path
  * 
@@ -2512,6 +2731,20 @@ static int route_seg_speed(struct vehicleprofile *profile, struct route_segment_
 		}
 	}
 
+	// -- bicycle mode START --
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+	{
+	}
+	else
+	{
+		if (speed < 150) // in km/h
+		{
+			// to calcuate the time to drive on street, speed should be reduced to <global_road_speed_factor> (~ 85%)
+			speed = (int)((float)speed * global_road_speed_factor);
+		}
+	}
+
+
 	if (over->flags & NAVIT_AF_DANGEROUS_GOODS)
 	{
 		if (profile->dangerous_goods & RSD_DANGEROUS_GOODS(over))
@@ -2543,6 +2776,82 @@ static int route_seg_speed(struct vehicleprofile *profile, struct route_segment_
 
 	return speed;
 }
+
+
+static int route_seg_speed_real(struct vehicleprofile *profile, struct route_segment_data *over, struct route_traffic_distortion *dist)
+{
+	// dbg(0, "enter\n");
+
+	struct roadprofile *roadprofile = vehicleprofile_get_roadprofile(profile, over->item.type);
+	int speed, maxspeed;
+
+	if (!roadprofile || !roadprofile->route_weight)
+	{
+		return 0;
+	}
+
+	/* maxspeed_handling: 0=always, 1 only if maxspeed restricts the speed, 2 never */
+	speed = roadprofile->route_weight;
+
+	if (profile->maxspeed_handling != 2) // "0" or "1"
+	{
+		if (over->flags & NAVIT_AF_SPEED_LIMIT)
+		{
+			maxspeed = RSD_MAXSPEED(over);
+
+			if (!profile->maxspeed_handling) // "0"
+			{
+				speed = maxspeed;
+			}
+		}
+		else
+		{
+			maxspeed = INT_MAX;
+		}
+
+		if (dist && maxspeed > dist->maxspeed)
+		{
+			maxspeed = dist->maxspeed;
+		}
+
+		if (maxspeed != INT_MAX && (profile->maxspeed_handling != 1 || maxspeed < speed))
+		{
+			speed = maxspeed;
+		}
+	}
+
+	if (over->flags & NAVIT_AF_DANGEROUS_GOODS)
+	{
+		if (profile->dangerous_goods & RSD_DANGEROUS_GOODS(over))
+		{
+			return 0;
+		}
+	}
+
+	if (over->flags & NAVIT_AF_SIZE_OR_WEIGHT_LIMIT)
+	{
+		struct size_weight_limit *size_weight = &RSD_SIZE_WEIGHT(over);
+
+		if (size_weight->width != -1 && profile->width != -1 && profile->width > size_weight->width)
+			return 0;
+
+		if (size_weight->height != -1 && profile->height != -1 && profile->height > size_weight->height)
+			return 0;
+
+		if (size_weight->length != -1 && profile->length != -1 && profile->length > size_weight->length)
+			return 0;
+
+		if (size_weight->weight != -1 && profile->weight != -1 && profile->weight > size_weight->weight)
+			return 0;
+
+		if (size_weight->axle_weight != -1 && profile->axle_weight != -1 && profile->axle_weight > size_weight->axle_weight)
+			return 0;
+
+	}
+
+	return speed;
+}
+
 
 /**
  * @brief Returns the time needed to drive len on item
@@ -2616,7 +2925,7 @@ static int route_through_traffic_allowed(struct vehicleprofile *profile, struct 
  * @brief Returns the "costs" of driving from point "from" over segment "over" in direction "dir"
  *
  * @param profile The routing preferences
- * @param from The point where we are starting
+ * @param from The point where we are starting (can be NULL)
  * @param over The segment we are using
  * @param dir The direction of segment which we are driving
  * @return The "costs" needed to drive len on item
@@ -2726,6 +3035,112 @@ static int route_value_seg(struct vehicleprofile *profile, struct route_graph_po
 	return ret;
 }
 
+
+
+static int route_value_seg_r(struct vehicleprofile *profile, struct route_graph_point *from, struct route_graph_segment *over, int dir)
+{
+	//// dbg(0, "enter\n");
+
+	int ret;
+	struct route_traffic_distortion dist, *distp = NULL;
+
+#if 0
+	dbg(0,"flags 0x%x mask 0x%x flags 0x%x\n", over->flags, dir >= 0 ? profile->flags_forward_mask : profile->flags_reverse_mask, profile->flags);
+#endif
+
+	//dbg(0, "over data fl = %x\n", over->data.flags);
+	if ((over->data.flags & (dir >= 0 ? route_get_real_oneway_mask(over->data.flags, profile->flags_forward_mask) : route_get_real_oneway_mask(over->data.flags, profile->flags_reverse_mask))) != profile->flags)
+	{
+		//dbg(0, "one way:001: INT_MAX\n");
+		return INT_MAX;
+	}
+
+	if (dir > 0 && (over->start->flags & RP_TURN_RESTRICTION))
+	{
+		return INT_MAX;
+	}
+
+	if (dir < 0 && (over->end->flags & RP_TURN_RESTRICTION))
+	{
+		return INT_MAX;
+	}
+
+	if (from && from->seg_rev == over)
+	{
+		return INT_MAX;
+	}
+
+	if ((over->start->flags & RP_TRAFFIC_DISTORTION) && (over->end->flags & RP_TRAFFIC_DISTORTION) && route_get_traffic_distortion(over, &dist))
+	{
+		distp = &dist;
+	}
+
+	ret = route_time_seg(profile, &over->data, distp);
+
+
+	// add new "route_prio_weight" attr here ----------------------------------------------------------
+	struct roadprofile *roadprofile = vehicleprofile_get_roadprofile(profile, (&over->data)->item.type);
+
+	if (!roadprofile || !roadprofile->route_prio_weight)
+	{
+	}
+	else
+	{
+		// cycle track is the same as real cycleway, its not on the road!
+		if ((over->data.flags & NAVIT_AF_BICYCLE_TRACK) && ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)))
+		{
+			roadprofile = vehicleprofile_get_roadprofile(profile, type_cycleway);
+			if ((roadprofile) && (roadprofile->route_prio_weight))
+			{
+				ret = (int)( (float)ret * ((float)roadprofile->route_prio_weight / 10.0f ));
+			}
+			else
+			{
+				ret = (int)( (float)ret * ((float)roadprofile->route_prio_weight / 10.0f ));
+			}
+		}
+		else if ((over->data.flags & NAVIT_AF_BICYCLE_LANE) && ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)))
+		{
+			// road with cyclelane is a bit better than normal road!
+			ret = (int)( (float)ret * ((float)(roadprofile->route_prio_weight - global_cycle_lanes_prio) / 10.0f ));
+		}
+		else
+		{
+			//dbg(0, "ret    =%d w=%d\n", ret, roadprofile->route_prio_weight);
+			//int ret2 = ( ret * 100 * (roadprofile->route_prio_weight * 10.0 ) / 10000);
+			//dbg(0, "ret2 new=%d\n", ret2);
+
+			ret = (int)( (float)ret * ((float)roadprofile->route_prio_weight / 10.0f ));
+			//dbg(0, "ret new=%d\n", ret);
+		}
+	}
+	// add new "route_prio_weight" attr here ----------------------------------------------------------
+
+
+
+	if (ret == INT_MAX)
+	{
+		return ret;
+	}
+
+	if (!route_through_traffic_allowed(profile, over) && from && route_through_traffic_allowed(profile, from->seg_rev))
+	{
+		ret += profile->through_traffic_penalty;
+	}
+
+	// calc delay from traffic lights
+	if ((from) && (global_traffic_light_delay > 0))
+	{
+		if (from->flags & RP_TRAFFIC_LIGHT)
+		{
+			// dbg(0, "traffic light delay:%d w/o:%d\n", (ret+global_traffic_light_delay), ret);
+			// in 1/10 of a second !!
+			ret += global_traffic_light_delay;
+		}
+	}
+
+	return ret;
+}
 
 
 
@@ -3131,8 +3546,8 @@ static int route_angle_abs_diff(int a1, int a2, int full)
 
 }
 
-
-int route_road_to_road_angle(struct route_graph_segment *s1, struct route_graph_segment *s2, int dir1)
+// unused, and maybe broken!
+int route_road_to_road_angle____XXXXXXXX(struct route_graph_segment *s1, struct route_graph_segment *s2, int dir1)
 {
 
 	int dir2 = 1;
@@ -3213,6 +3628,11 @@ static int route_real_item_2nd_node(struct route_graph_segment *s, struct coord 
 					{
 						map_rect_destroy(mr33);
 
+						// save into struct -------------
+						s->c_start_plus_1.x = c->x;
+						s->c_start_plus_1.y = c->y;
+						// save into struct -------------
+
 						return 1;
 					}
 				}
@@ -3278,6 +3698,11 @@ static int route_real_item_2nd_last_node(struct route_graph_segment *s, struct c
 
 					map_rect_destroy(mr33);
 
+					// save into struct -------------
+					s->c_end_minus_1.x = c->x;
+					s->c_end_minus_1.y = c->y;
+					// save into struct -------------
+
 					return 1;
 				}
 			}
@@ -3291,8 +3716,22 @@ static int route_real_item_2nd_last_node(struct route_graph_segment *s, struct c
 	return 0;
 }
 
+//
+// return: 1 == seg start is at point, 0 == seg end is at point
+//
+int route_find_seg_dir_at_point(struct route_graph_point *p, struct route_graph_segment *s1)
+{
+	if ((p->c.x == s1->start->c.x) && (p->c.y == s1->start->c.y))
+	{
+		return 1;
+	}
+	else
+	{
+		return -1;
+	}
+}
 
-int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct route_graph_segment *s2, int dir1, struct coord *cc, struct coord *cs, struct coord *ce, int abs)
+int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct route_graph_segment *s2, int dir1, int *dir2, struct coord *cc, struct coord *cs, struct coord *ce, int abs)
 {
 
 	struct coord ci;
@@ -3301,17 +3740,22 @@ int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct rou
 	struct coord z1e;
 	struct coord z2e;
 
+//      dir1 ==  1	(center point is s1->end)
+//		dir1 == -1	(center point is s1->start)
+
+
 //      dir ==  1 --> goes forward on item
 //		dir == -1 --> does backwards on item
 
 
-	int dir2 = 1;
+
+	*dir2 = 1;
 
 	if (dir1 == -1)
 	{
 		if ((s1->start->c.x == s2->start->c.x) && (s1->start->c.y == s2->start->c.y))
 		{
-			dir2 = 1;
+			*dir2 = 1;
 			cc->x = s1->start->c.x; // s2->start
 			cc->y = s1->start->c.y;
 
@@ -3353,7 +3797,7 @@ int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct rou
 		}
 		else
 		{
-			dir2 = -1;
+			*dir2 = -1;
 			cc->x = s1->start->c.x; // s2->end
 			cc->y = s1->start->c.y;
 
@@ -3397,7 +3841,7 @@ int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct rou
 	{
 		if ((s1->end->c.x == s2->start->c.x) && (s1->end->c.y == s2->start->c.y))
 		{
-			dir2 = 1;
+			*dir2 = 1;
 			cc->x = s1->end->c.x; // s2->start
 			cc->y = s1->end->c.y;
 
@@ -3439,7 +3883,7 @@ int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct rou
 		}
 		else
 		{
-			dir2 = -1;
+			*dir2 = -1;
 			cc->x = s1->end->c.x; // s2->end
 			cc->y = s1->end->c.y;
 
@@ -3500,7 +3944,7 @@ int route_road_to_road_angle_get_segs(struct route_graph_segment *s1, struct rou
 	z2e.x = s2->end->c.x;
 	z2e.y = s2->end->c.y;
 */
-	int angle2 = transform_get_angle_delta(&z1e, &z2e, dir2);
+	int angle2 = transform_get_angle_delta(&z1e, &z2e, *dir2);
 
 	// dbg(0, "RR:55:a2=%d\n", angle2);
 
@@ -3544,6 +3988,9 @@ void route_add_to_sharp_turn_list(struct coord *c, struct coord *cs, struct coor
 {
 	global_sharp_turn_list[global_sharp_turn_list_count].dir = dir;
 	global_sharp_turn_list[global_sharp_turn_list_count].angle = turn_angle;
+
+	// dbg(0, "st.angle=%d\n", turn_angle);
+
 	global_sharp_turn_list[global_sharp_turn_list_count].c1.x = c->x;
 	global_sharp_turn_list[global_sharp_turn_list_count].c1.y = c->y;
 
@@ -3604,12 +4051,17 @@ void route_add_to_freetext_list(struct coord *c, const char* txt)
  * 
  * This function uses Dijkstra's algorithm to do the routing. To understand it you should have a look
  * at this algorithm.
+ *
+ * call "cb" at the end
+ *
  */
-static void route_graph_flood(struct route_graph *this, struct route_info *dst, struct vehicleprofile *profile, struct callback *cb)
+static void route_graph_flood(struct route_graph *this, struct route_info *dst, struct route_info *pos, struct vehicleprofile *profile, struct callback *cb)
 {
 __F_START__
 
-	struct route_graph_point *p_min;
+	dbg(0, "RR_TIM:g:001\n");
+
+	struct route_graph_point *p_min = NULL;
 	struct route_graph_segment *s = NULL;
 	int min, new, old, val;
 	int turn_angle;
@@ -3619,34 +4071,50 @@ __F_START__
 
 	// start from "wanted destination" and loop until "start position" is reached
 
+	clock_t s_ = debug_measure_start();
+
+
+#ifndef NAVIT_ROUTE_DIJKSTRA_REVERSE // NAVIT_ROUTE_DIJKSTRA_REVERSE == 0
 
 	// calc segments lengths and values ------------
+	// loop over all segments that connect to the destination street ONLY !!
 	// calc segments lengths and values ------------
 	// -------
-	// this loop seems to just randomly select segments
+	dbg(0, "RR_SEG_DEBUG:001\n");
 	while ((s = route_graph_get_segment(this, dst->street, s)))
 	{
+		dbg(0, "RR_SEG_DEBUG:002:1:s=%p\n", s);
 		val = route_value_seg(profile, NULL, s, -1);
+		dbg(0, "RR_SEG_DEBUG:002:2:val=%d\n", val);
 		if (val != INT_MAX)
 		{
 			val = val * (100 - dst->percent) / 100;
-			s->end->seg = s;
-			s->end->value = val;
+			dbg(0, "RR_SEG_DEBUG:002:P=%p dst->percent=%d val=%d end value=%d\n", s->end, dst->percent, val, s->end->value);
+			s->end->seg = s;		// set segment "s" to be used to drive to dest. at point "s->end"
+			s->end->value = val;	// set value to point "s->end"
 			s->end->el = fh_insertkey(heap, s->end->value, s->end);
 		}
 
 		val = route_value_seg(profile, NULL, s, 1);
+		dbg(0, "RR_SEG_DEBUG:003:3:val=%d\n", val);
 		if (val != INT_MAX)
 		{
 			val = val * dst->percent / 100;
-			s->start->seg = s;
-			s->start->value = val;
+			dbg(0, "RR_SEG_DEBUG:003:P=%p dst->percent=%d val=%d start value=%d\n", s->start, dst->percent, val, s->start->value);
+			s->start->seg = s;		// set segment "s" to be used to drive to dest. at point "s->start"
+			s->start->value = val;	// set value to point "s->start"
 			s->start->el = fh_insertkey(heap, s->start->value, s->start);
 		}
+		dbg(0, "RR_SEG_DEBUG:009:9:val=%d\n", val);
 	}
+	dbg(0, "RR_SEG_DEBUG:090\n");
 	// -------
 	// calc segments lengths and values ------------
 	// calc segments lengths and values ------------
+
+
+	debug_mrp("RR_TIM:g:002", debug_measure_end(s_));
+	// dbg(0, "RR_TIM:g:002 %s\n");
 
 
 
@@ -3657,12 +4125,17 @@ __F_START__
 	struct coord ccc_ss;
 	struct coord ccc_ee;
 
+	int val_sharp_turn = INT_MAX;
+	int dir2 = 1;
+
+	s_ = debug_measure_start();
 
 	// start Dijkstra here ------------
 	// start Dijkstra here ------------
 	for (;;)
 	{
 		p_min = fh_extractmin(heap); /* Starting Dijkstra by selecting the point with the minimum costs on the heap */
+									 // starts with the point that has the least cost to reach the destination!
 
 		if (!p_min) /* There are no more points with temporarily calculated costs, Dijkstra has finished */
 		{
@@ -3677,7 +4150,7 @@ __F_START__
 
 		p_min->el = NULL; /* This point is permanently calculated now, we've taken it out of the heap */
 
-		s = p_min->start;
+		s = p_min->start; // route_graph_point "p_min": "s" = first route_graph_segment in the list of segments that start at point "p_min"
 
 		while (s)
 		{ /* Iterating all the segments leading away from our point to update the points at their ends */
@@ -3685,16 +4158,43 @@ __F_START__
 			if (val != INT_MAX && !item_is_equal(s->data.item, p_min->seg->data.item))
 			{
 
-				if (global_avoid_sharp_turns_flag == 1)
+				if (global_avoid_sharp_turns_flag == 91)
 				{
 					// calc "sharp-turn / turnaround" value
-					turn_angle = route_road_to_road_angle_get_segs(s, p_min->seg, -1, &ccc_cc, &ccc_ss, &ccc_ee, 1);
+					turn_angle = route_road_to_road_angle_get_segs(s, p_min->seg, -1, &dir2, &ccc_cc, &ccc_ss, &ccc_ee, 1);
 					if (turn_angle < global_avoid_sharp_turns_min_angle)
 					{
 						// dbg(0, "set turn angle penalty(1)\n");
-						val = val + global_avoid_sharp_turns_min_penalty;
+						val_sharp_turn = val + (global_avoid_sharp_turns_min_penalty * turn_angle);
+#if 1
+						val = val_sharp_turn;
+#endif
+
+						//if ((s->end->value + (global_avoid_sharp_turns_min_penalty * turn_angle)) < INT_MAX)
+						//{
+						//	s->end->value = s->end->value + (global_avoid_sharp_turns_min_penalty * turn_angle);
+						//}
+
+
+#if 0
+						// kill the prev point
+						if (dir2 == 1)
+						{
+							p_min->seg->start->value = p_min->seg->start->value + (global_avoid_sharp_turns_min_penalty * turn_angle);
+						}
+						else // -1
+						{
+							p_min->seg->end->value = p_min->seg->end->value + (global_avoid_sharp_turns_min_penalty * turn_angle);
+						}
+
+						// now get the seg and value of the next lowest one
+						// this sets p_min->value und p_min->seg new!!
+						route_find_next_lowest_segment_and_pin_it(p_min, s, (val_sharp_turn - 1), (global_avoid_sharp_turns_min_penalty * turn_angle));
+#endif
+
 #ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_1
-						route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle, -1);
+						// route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle, -1);
+						route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, val, -1);
 #endif
 					}
 				}
@@ -3750,16 +4250,64 @@ __F_START__
 			if (val != INT_MAX && !item_is_equal(s->data.item, p_min->seg->data.item))
 			{
 
-				if (global_avoid_sharp_turns_flag == 1)
+				if (global_avoid_sharp_turns_flag == 1) // Pr.Strasse.CASE !!
 				{
 					// calc "sharp-turn / turnaround" value
-					turn_angle = route_road_to_road_angle_get_segs(s, p_min->seg, 1, &ccc_cc, &ccc_ss, &ccc_ee, 1);
+					turn_angle = route_road_to_road_angle_get_segs(s, p_min->seg, 1, &dir2, &ccc_cc, &ccc_ss, &ccc_ee, 1);
 					if (turn_angle < global_avoid_sharp_turns_min_angle)
 					{
 						// dbg(0, "set turn angle penalty(2)\n");
-						val = val + global_avoid_sharp_turns_min_penalty;
+						// val_sharp_turn = val + (global_avoid_sharp_turns_min_penalty * turn_angle * 10);
+						val_sharp_turn = val + 4000;
+#if 1
+						val = val_sharp_turn;
+#endif
+						//if ((s->start->value + (global_avoid_sharp_turns_min_penalty * turn_angle)) < INT_MAX)
+						//{
+						//	s->start->value = s->start->value + (global_avoid_sharp_turns_min_penalty * turn_angle * 10);
+						//}
+
+
+#if 0
+						// kill the prev point
+						if (dir2 == 1)
+						{
+							p_min->seg->end->value = p_min->seg->end->value + (global_avoid_sharp_turns_min_penalty * turn_angle);
+						}
+						else // -1
+						{
+							p_min->seg->start->value = p_min->seg->start->value + (global_avoid_sharp_turns_min_penalty * turn_angle);
+						}
+
+						// now get the seg and value of the next lowest one
+						// this sets p_min->value und p_min->seg new!!
+						route_find_next_lowest_segment_and_pin_it(p_min, s, (val_sharp_turn - 1), (global_avoid_sharp_turns_min_penalty * turn_angle));
+#endif
+
+						struct coord_geo gg4;
+						transform_to_geo(projection_mg, &(s->start->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N1:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+						transform_to_geo(projection_mg, &(s->end->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N2:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+
+						transform_to_geo(projection_mg, &(p_min->seg->start->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N3:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+						transform_to_geo(projection_mg, &(p_min->seg->end->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N4:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+
+						transform_to_geo(projection_mg, &ccc_cc, &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:C9:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+
+						dbg(0, "ROUTExxPOSxx:sharp_turn:S-start:v=%d:%d %d\n", (min + val), s->start->c.x, s->start->c.y);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:S-end:v=%d:%d %d\n", (min + val), s->end->c.x, s->end->c.y);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:A-center:v=%d:%d %d\n", (min + val), ccc_cc.x, ccc_cc.y);
+
+
+						dbg(0, "ROUTExxPOSxx:sharp_turn:xxxxxxxxxxxxxxxxxxxxx\n");
+
 #ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_1
 						route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle, 1);
+						// route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, val, 1);
 #endif
 					}
 				}
@@ -3806,12 +4354,396 @@ __F_START__
 		}
 	}
 
+
+
+
+#else // NAVIT_ROUTE_DIJKSTRA_REVERSE == 1
+
+	p_min = NULL;
+	s = NULL;
+
+	struct route_graph_segment *s_pos = NULL;
+
+	dbg(0, "RR_SEG_DEBUG:001\n");
+	while ((s = route_graph_get_segment(this, pos->street, s)))
+	{
+		dbg(0, "RR_SEG_DEBUG:002:1:s=%p\n", s);
+
+		s_pos = s;
+
+		val = route_value_seg_r(profile, NULL, s, 1);
+		dbg(0, "RR_SEG_DEBUG:002:2:val=%d\n", val);
+		if (val != INT_MAX)
+		{
+			val = val * (100 - pos->percent) / 100;
+			if (val < 1)
+			{
+				val = 1;
+			}
+			dbg(0, "RR_SEG_DEBUG:002:P=%p pos->percent=%d val=%d end value=%d\n", s->end, pos->percent, val, s->end->value);
+			s->end->seg = s;		// set segment "s" to be used to drive to dest. at point "s->end"
+			s->end->seg_rev = s;
+			s->end->value = val;	// set value to point "s->end"
+			s->end->el = fh_insertkey(heap, s->end->value, s->end);
+			dbg(0, "RR_SEG_DEBUG:002:EL:el=%p\n", s->end->el);
+		}
+
+		val = route_value_seg_r(profile, NULL, s, -1);
+		dbg(0, "RR_SEG_DEBUG:003:3:val=%d\n", val);
+		if (val != INT_MAX)
+		{
+			val = val * pos->percent / 100;
+			if (val < 1)
+			{
+				val = 1;
+			}
+			dbg(0, "RR_SEG_DEBUG:003:P=%p pos->percent=%d val=%d start value=%d\n", s->start, pos->percent, val, s->start->value);
+			s->start->seg = s;		// set segment "s" to be used to drive to dest. at point "s->start"
+			s->start->seg_rev = s;
+			s->start->value = val;	// set value to point "s->start"
+			s->start->el = fh_insertkey(heap, s->start->value, s->start);
+			dbg(0, "RR_SEG_DEBUG:003:EL:el=%p\n", s->start->el);
+		}
+		dbg(0, "RR_SEG_DEBUG:009:9:val=%d\n", val);
+	}
+	dbg(0, "RR_SEG_DEBUG:090\n");
+
+
+#ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_1
+	route_clear_sharp_turn_list();
+#endif
+	struct coord ccc_cc;
+	struct coord ccc_ss;
+	struct coord ccc_ee;
+
+	int val_sharp_turn = INT_MAX;
+	int dir2 = 1;
+
+	s_ = debug_measure_start();
+
+	int start_dijkstra_loop = 1;
+
+	// start (REVERSED-)Dijkstra here ------------
+	// start (REVERSED-)Dijkstra here ------------
+	dbg(0, "RR_SEG_DEBUG:R-DIJK-START\n");
+	for (;;)
+	{
+
+		dbg(0, "RR_SEG_DEBUG:LOOP:start\n");
+
+		p_min = fh_extractmin(heap); /* Starting Dijkstra by selecting the point with the minimum costs on the heap */
+									 // starts with the point that has the least cost to reach the destination!
+
+
+		if (!p_min) /* There are no more points with temporarily calculated costs, Dijkstra has finished */
+		{
+			dbg(0, "RR_SEG_DEBUG:BREAK:p_min=%p\n", p_min);
+			break;
+		}
+		else
+		{
+			dbg(0, "RR_SEG_DEBUG:LOOP:p_min=%p v=%d el=%p\n", p_min, p_min->value, p_min->el);
+		}
+
+		// min = p_min->value;
+		if (p_min->seg_rev)
+		{
+			int dir_from_seg = route_find_seg_dir_at_point(p_min, p_min->seg_rev);
+
+			if (dir_from_seg == 1)
+			{
+				min = p_min->seg_rev->end->value;
+			}
+			else
+			{
+				min = p_min->seg_rev->start->value;
+			}
+		}
+		else
+		{
+			min = INT_MAX;
+			dbg(0, "RR_SEG_DEBUG:p_min->seg_rev == NULL !!!\n");
+		}
+
+		if (start_dijkstra_loop == 1)
+		{
+			start_dijkstra_loop = 0;
+			min = 2;
+		}
+
+		dbg(0, "RR_SEG_DEBUG:new min=%d\n", min);
+
+		p_min->el = NULL; /* This point is permanently calculated now, we've taken it out of the heap */
+
+		s = p_min->start; // route_graph_point "p_min": "s" = first route_graph_segment in the list of segments that start at point "p_min"
+
+		while (s)
+		{
+			/* Iterating all the segments leading away from our point to update the points at their ends */
+			val = route_value_seg_r(profile, p_min, s, 1);
+
+			dbg(0, "RR_SEG_DEBUG:LOOP-1:s=%p p_min=%p p_min->seg_rev=%p v=%d\n", s, p_min, p_min->seg_rev, val);
+
+			if (val != INT_MAX && !item_is_equal(s->data.item, p_min->seg_rev->data.item))
+			{
+
+				if (global_avoid_sharp_turns_flag == 1)
+				{
+					// calc "sharp-turn / turnaround" value
+					turn_angle = route_road_to_road_angle_get_segs(s, p_min->seg_rev, -1, &dir2, &ccc_cc, &ccc_ss, &ccc_ee, 1);
+					if (turn_angle < global_avoid_sharp_turns_min_angle)
+					{
+						// dbg(0, "set turn angle penalty(1)\n");
+						dbg(0, "RR_SEG_DEBUG:LOOP-1:turn angle=%d\n", turn_angle);
+
+						val_sharp_turn = val + (global_avoid_sharp_turns_min_penalty * ((global_avoid_sharp_turns_min_angle + 10) - turn_angle));
+#if 1
+						val = val_sharp_turn;
+#endif
+
+
+#ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_1
+						route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle, -1);
+						// route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, val, -1);
+#endif
+					}
+				}
+
+				new = min + val;
+
+				int val_cmp = s->start->value;
+				if (s_pos->start == s->start)
+				{
+					val_cmp = INT_MAX;
+				}
+
+				dbg(0, "RR_SEG_DEBUG:LOOP-1:new=%d min=%d sv=%d val_cmp=%d p_min->el=%d p_min=%p\n", new, min, s->start->value, val_cmp, p_min->el, p_min);
+
+
+				if (new < val_cmp)
+				{
+
+					dbg(0, "RR_SEG_DEBUG:LOOP-1:x001\n");
+					/* We've found a less costly way to reach the end of s, update it */
+					s->start->value = new;
+					dbg(0, "RR_SEG_DEBUG:LOOP-1:x002\n");
+					s->start->seg = s;
+					dbg(0, "RR_SEG_DEBUG:LOOP-1:x003\n");
+					s->end->seg_rev = s;
+					dbg(0, "RR_SEG_DEBUG:LOOP-1:x004 heap=%p\n", heap);
+
+					if (!s->end->el)
+					{
+						dbg(0, "RR_SEG_DEBUG:LOOP-1:x005\n");
+
+						s->end->el = fh_insertkey(heap, new, s->end);
+						dbg(0, "RR_SEG_DEBUG:LOOP-1:insert:s->end->el=%p s->end=%p p_min=%p\n", s->end->el, s->end, p_min);
+					}
+					else
+					{
+						dbg(0, "RR_SEG_DEBUG:LOOP-1:x006:s->end=%p s->end->el=%p heap=%p p_min=%p new=%d\n", s->end, s->end->el, heap, p_min, new);
+
+						fh_replacekey(heap, s->end->el, new);
+						dbg(0, "RR_SEG_DEBUG:LOOP-1:repl:x007\n");
+
+					}
+
+					dbg(0, "RR_SEG_DEBUG:LOOP-1:x008\n");
+	
+				}
+
+				dbg(0, "RR_SEG_DEBUG:LOOP-1:x009\n");
+
+			}
+
+			dbg(0, "RR_SEG_DEBUG:LOOP-1:x010\n");
+
+			s = s->start_next;
+
+			dbg(0, "RR_SEG_DEBUG:LOOP-1:x011\n");
+
+		}
+
+		dbg(0, "RR_SEG_DEBUG:LOOP-1:x012\n");
+
+		s = p_min->end;
+
+		dbg(0, "RR_SEG_DEBUG:LOOP-1:x013\n");
+
+		while (s)
+		{
+			/* Doing the same as above with the segments leading towards our point */
+			val = route_value_seg_r(profile, p_min, s, -1);
+
+			dbg(0, "RR_SEG_DEBUG:LOOP--2:s=%p p_min=%p p_min->seg_rev=%p v=%d\n", s, p_min, p_min->seg_rev, val);
+
+
+			if (val != INT_MAX && !item_is_equal(s->data.item, p_min->seg_rev->data.item))
+			{
+
+				if (global_avoid_sharp_turns_flag == 1) // Pr.Strasse.CASE !!
+				{
+					// calc "sharp-turn / turnaround" value
+					turn_angle = route_road_to_road_angle_get_segs(s, p_min->seg_rev, 1, &dir2, &ccc_cc, &ccc_ss, &ccc_ee, 1);
+					if (turn_angle < global_avoid_sharp_turns_min_angle)
+					{
+
+						dbg(0, "RR_SEG_DEBUG:LOOP--2:turn angle=%d\n", turn_angle);
+						val_sharp_turn = val + (global_avoid_sharp_turns_min_penalty * ((global_avoid_sharp_turns_min_angle + 10) - turn_angle));
+
+						// val_sharp_turn = val + 4000;
+#if 1
+						val = val_sharp_turn;
+#endif
+
+#if 0
+						struct coord_geo gg4;
+						transform_to_geo(projection_mg, &(s->start->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N1:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+						transform_to_geo(projection_mg, &(s->end->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N2:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+
+						transform_to_geo(projection_mg, &(p_min->seg_rev->start->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N3:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+						transform_to_geo(projection_mg, &(p_min->seg_rev->end->c), &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:N4:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+
+						transform_to_geo(projection_mg, &ccc_cc, &gg4);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:C9:http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:blue|label:CC|%4.6f,%4.6f\n", gg4.lat, gg4.lng);
+
+						dbg(0, "ROUTExxPOSxx:sharp_turn:S-start:v=%d:%d %d\n", (min + val), s->start->c.x, s->start->c.y);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:S-end:v=%d:%d %d\n", (min + val), s->end->c.x, s->end->c.y);
+						dbg(0, "ROUTExxPOSxx:sharp_turn:A-center:v=%d:%d %d\n", (min + val), ccc_cc.x, ccc_cc.y);
+
+
+						dbg(0, "ROUTExxPOSxx:sharp_turn:xxxxxxxxxxxxxxxxxxxxx\n");
+#endif
+
+#ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_1
+						route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle, 1);
+						// route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, val, 1);
+#endif
+					}
+				}
+
+				new = min + val;
+
+
+				int val_cmp = s->end->value;
+				if (s_pos->end == s->end)
+				{
+					val_cmp = INT_MAX;
+				}
+
+				dbg(0, "RR_SEG_DEBUG:LOOP--2:new=%d min=%d ev=%d val_cmp=%d p_min->el=%d p_min=%p\n", new, min, s->end->value, val_cmp, p_min->el, p_min);
+
+				if (new < val_cmp)
+				{
+					old = s->end->value;
+					s->end->value = new;
+					s->end->seg = s;
+					s->start->seg_rev = s;
+
+					if (!s->start->el)
+					{
+						s->start->el = fh_insertkey(heap, new, s->start);
+						dbg(0, "RR_SEG_DEBUG:LOOP--2:insert:s->start->el=%p s->start=%p p_min=%p\n", s->start->el, s->start, p_min);
+					}
+					else
+					{
+						dbg(0, "RR_SEG_DEBUG:LOOP--2:x006:s->start->el=%p heap=%p p_min=%p\n", s->start->el, heap, p_min);
+
+						fh_replacekey(heap, s->start->el, new);
+						dbg(0, "RR_SEG_DEBUG:LOOP--2:repl:x007\n");
+					}
+
+
+				}
+
+			}
+
+			s = s->end_next;
+
+		}
+
+
+	}
+
+
+
+#endif
+
+
+
+
+
+
+
+	debug_mrp("RR_TIM:g:003", debug_measure_end(s_));
+
 	fh_deleteheap(heap);
 
+	// CB: calls -> "route_path_update_done" !!
 	callback_call_0(cb);
+
+	dbg(0, "RR_TIM:g:099\n");
+
 
 __F_END__
 }
+
+
+
+
+void route_find_next_lowest_segment_and_pin_it(struct route_graph_point *p, struct route_graph_segment *s, int min_value, int penalty)
+{
+	struct route_graph_segment *tmp = NULL;
+	int cur_min = min_value;
+
+	// -------------------------------------------------------------
+	// p->start ==> a list of all streets that start from this point
+	// -------------------------------------------------------------
+	tmp = p->start;
+	while (tmp)
+	{
+		if (tmp != s)
+		{
+			if (tmp->data.item.type != type_street_turn_restriction_no && tmp->data.item.type != type_street_turn_restriction_only)
+			{
+				if (tmp->end->value <= min_value)
+				{
+					min_value = tmp->end->value;
+					p->value = min_value;
+					p->seg = tmp;
+				}
+			}
+		}
+		tmp = tmp->start_next;
+	}
+
+	// -------------------------------------------------------------
+	// p->end ==> a list of all streets that end at this point
+	// -------------------------------------------------------------
+	tmp = p->end;
+	while (tmp)
+	{
+		if (tmp != s)
+		{
+			if (tmp->data.item.type != type_street_turn_restriction_no && tmp->data.item.type != type_street_turn_restriction_only)
+			{
+				if (tmp->start->value <= min_value)
+				{
+					min_value = tmp->start->value;
+					p->value = min_value;
+					p->seg = tmp;
+				}
+			}
+		}
+		tmp = tmp->end_next;
+	}
+}
+
+
 
 /**
  * @brief Starts an "offroad" path
@@ -3924,7 +4856,7 @@ __F_END__
  * @return The new route path
  */
 static struct route_path *
-route_path_new(struct route_graph *this, struct route_path *oldpath, struct route_info *pos, struct route_info *dst, struct vehicleprofile *profile)
+route_path_new(struct route *rr, struct route_graph *this, struct route_path *oldpath, struct route_info *pos, struct route_info *dst, struct vehicleprofile *profile)
 {
 __F_START__
 
@@ -3936,18 +4868,28 @@ __F_START__
 	int val, val1_new, val2_new;
 	struct route_path *ret;
 
+
+	dbg(0, "RPNEW:ENTER\n");
+
+	dbg(0, "RR_TIM:001\n");
+
 	if (!pos->street || !dst->street)
 	{
 		// dbg(0, "pos or dest not set\n");
+		dbg(0, "RR_TIM:002:return\n");
+
+		dbg(0, "RPNEW:RET001\n");
 		return2 NULL;
 	}
 
 	if (profile->mode == 2 || (profile->mode == 0 && pos->lenextra + dst->lenextra > transform_distance(map_projection(pos->street->item.map), &pos->c, &dst->c)))
 	{
+		dbg(0, "RPNEW:RET002\n");
 		return2 route_path_new_offroad(this, pos, dst);
 	}
 
 	// ------ just calculate the smallest cost to reach destination ----------
+	// only segments connected to my current street position!
 	// ------ just calculate the smallest cost to reach destination ----------
 	while ((s = route_graph_get_segment(this, pos->street, s)))
 	{
@@ -3977,9 +4919,15 @@ __F_START__
 	// ------ just calculate the smallest cost to reach destination ----------
 	// ------ just calculate the smallest cost to reach destination ----------
 
+	dbg(0, "RR_TIM:002\n");
+
+
 	if (val1 == INT_MAX && val2 == INT_MAX)
 	{
 		//dbg(0, "no route found, pos blocked\n");
+		dbg(0, "RR_TIM:003:return\n");
+		dbg(0, "RPNEW:RET003\n");
+
 		return2 NULL;
 	}
 
@@ -3991,13 +4939,13 @@ __F_START__
 
 	if (val1 < val2)
 	{
-		start = s1->start;
-		s = s1;
+		start = s1->start;	// start point
+		s = s1;				// start segment
 	}
 	else
 	{
-		start = s2->end;
-		s = s2;
+		start = s2->end;	// start point
+		s = s2;				// start segment
 	}
 
 	ret=g_new0(struct route_path, 1);
@@ -4007,13 +4955,30 @@ __F_START__
 	if (pos->lenextra)
 	{
 		//dbg(0,"l extra1=%d\n", pos->lenextra);
-		route_path_add_line(ret, &pos->c, &pos->lp, pos->lenextra);
+		if (rr->pos != pos)
+		{
+			dbg(0, "RPNEW:PP:not pos\n");
+			// route_path_add_line_as_waypoint(ret, &pos->c, &pos->lp, pos->lenextra); // mark as waypoint!!
+			route_path_add_line(ret, &pos->c, &pos->lp, pos->lenextra); // ORIG
+		}
+		else
+		{
+			dbg(0, "RPNEW:PP:IS pos\n");
+			route_path_add_line(ret, &pos->c, &pos->lp, pos->lenextra); // ORIG
+		}
 	}
 
 	ret->path_hash = item_hash_new();
 	dstinfo = NULL;
 	posinfo = pos;
-	first = s;
+	first = s; // first segment = start segment
+
+
+	dbg(0, "RR_TIM:004\n");
+
+	clock_t s_;
+	s_ = debug_measure_start();
+
 
 	// ------- build the real route here ------------------------
 	// ------- build the real route here ------------------------
@@ -4035,7 +5000,7 @@ __F_START__
 				ret->updated = 0;
 			}
 
-			start = s->end;
+			start = s->end; // new start point
 		}
 		else
 		{
@@ -4047,21 +5012,50 @@ __F_START__
 			{
 				ret->updated = 0;
 			}
-			start = s->start;
+			start = s->start; // new start point
 		}
+
 		posinfo = NULL;
-		s = start->seg;
+		s = start->seg; // segment to use in direction of destination
+
 	}
 	// ------- build the real route here ------------------------
 	// ------- build the real route here ------------------------
 
+	debug_mrp("RR_TIM:005", debug_measure_end(s_));
+
+#if 0
 	if (dst->lenextra)
 	{
 		//dbg(0,"l extra2=%d\n", dst->lenextra);
 		route_path_add_line(ret, &dst->lp, &dst->c, dst->lenextra);
 	}
+#endif
+
+	if (dst->lenextra)
+	{
+		struct route_info *rr_last = g_list_last(rr->destinations)->data;
+
+		//dbg(0,"l extra1=%d\n", pos->lenextra);
+		if (rr_last != dst)
+		{
+			dbg(0, "RPNEW:PP:not dst\n");
+			route_path_add_line_as_waypoint(ret, &dst->lp, &dst->c, dst->lenextra);
+		}
+		else
+		{
+			dbg(0, "RPNEW:PP:IS dst\n");
+			route_path_add_line(ret, &dst->lp, &dst->c, dst->lenextra);
+		}
+	}
+
 
 	//dbg(1, "%d segments\n", segs);
+
+	dbg(0, "RR_TIM:099:segs=%d\n", segs);
+
+	dbg(0, "RPNEW:LEAVE\n");
+
 	return2 ret;
 
 __F_END__
@@ -4450,8 +5444,8 @@ __F_START__
 #endif
 
 	// int count = 1000; // *ORIG* value
-	int count = 1200; // process 5000 items in one step
-	//int count = 15000; // process 15000 items in one step
+	// int count = 1200; // process 5000 items in one step
+	int count = 4000; // process 15000 items in one step
 	struct item *item;
 
 	while (count > 0)
@@ -4552,6 +5546,8 @@ route_graph_build(struct mapset *ms, struct coord *c, int count, struct callback
 {
 __F_START__
 
+	dbg(0, "RR_TIM:rgb:001\n");
+
 	struct route_graph *ret=g_new0(struct route_graph, 1);
 
 	ret->sel = route_calc_selection(c, count, try_harder);
@@ -4581,6 +5577,8 @@ __F_START__
 		route_graph_build_done(ret, 0);
 	}
 
+	dbg(0, "RR_TIM:rgb:099\n");
+
 	return2 ret;
 
 __F_END__
@@ -4590,7 +5588,11 @@ static void route_graph_update_done(struct route *this, struct callback *cb)
 {
 __F_START__
 
-	route_graph_flood(this->graph, this->current_dst, this->vehicleprofile, cb);
+	dbg(0, "RR_TIM:gud:001\n");
+
+	route_graph_flood(this->graph, this->current_dst, this->pos, this->vehicleprofile, cb);
+
+	dbg(0, "RR_TIM:gud:099\n");
 
 __F_END__
 }
@@ -4606,6 +5608,8 @@ __F_END__
 static void route_graph_update(struct route *this, struct callback *cb, int async)
 {
 __F_START__
+
+	dbg(0, "RR_TIM:gu:001\n");
 
 	struct attr route_status;
 	struct coord *c = g_alloca(sizeof(struct coord) * (1 + g_list_length(this->destinations)));
@@ -4641,6 +5645,8 @@ __F_START__
 			route_graph_build_idle(this->graph, this->vehicleprofile);
 		}
 	}
+
+	dbg(0, "RR_TIM:gu:099\n");
 
 __F_END__
 }
@@ -5116,7 +6122,7 @@ static int rm_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 	struct route_path_segment *seg = mr->seg;
 	struct route *route = mr->mpriv->route;
 
-	if (mr->item.type != type_street_route)
+	if ((mr->item.type != type_street_route) && (mr->item.type != type_street_route_waypoint))
 	{
 		return 0;
 	}
@@ -5181,7 +6187,7 @@ static int rm_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 		case attr_speed:
 			mr->attr_next = attr_none;
 			if (seg)
-				attr->u.num = route_seg_speed(route->vehicleprofile, seg->data, NULL);
+				attr->u.num = route_seg_speed_real(route->vehicleprofile, seg->data, NULL);
 			else
 				return 0;
 			return 1;
@@ -5338,7 +6344,7 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 				// z5z5
 				if (seg)
 				{
-					mr->str = g_strdup_printf("%dl, %dt, %ds", seg->data.len, route_time_seg(route->vehicleprofile, &seg->data, NULL), route_seg_speed(route->vehicleprofile, &seg->data, NULL));
+					mr->str = g_strdup_printf("%dl, %dt, %ds sv=%d ev=%d", seg->data.len, route_time_seg(route->vehicleprofile, &seg->data, NULL), route_seg_speed(route->vehicleprofile, &seg->data, NULL), seg->start->value, seg->end->value);
 				}
 				else
 				{
@@ -5756,9 +6762,48 @@ rm_get_item(struct map_rect_priv *mr)
 {
 	struct route *route = mr->mpriv->route;
 
+	int is_waypoint = 0;
+
+#if 1
+	dbg(0, "NAVR:ROUTE:001.r0:%s ===================================\n", item_to_name(mr->item.type));
+	if (mr->seg_next)
+	{
+		dbg(0, "NAVR:ROUTE:001.r1:%s ===================================\n", item_to_name(mr->seg_next->data->item.type));
+	}
+	if ((mr->seg)&&(mr->seg->next))
+	{
+		dbg(0, "NAVR:ROUTE:001.r2:%s ===================================\n", item_to_name(mr->seg->next->data->item.type));
+	}
+	if (mr->seg)
+	// mr->seg->next
+	// if (mr->seg_next)
+	{
+		if (mr->seg->data)
+		// if (mr->seg_next->data)
+		{
+			dbg(0, "NAVR:ROUTE:001:%s ===================================\n", item_to_name(mr->seg->data->item.type));
+			// dbg(0, "NAVR:ROUTE:001:%s ===================================\n", item_to_name(mr->seg_next->data->item.type));
+			if (mr->seg->data->item.type == type_street_route_waypoint)
+			// if (mr->seg_next->data->item.type == type_street_route_waypoint)
+			{
+				item_dump_coords(&mr->item, route_get_map(route));
+				is_waypoint = 1;
+			}
+		}
+	}
+	// item_dump_coords(&mr->item, route_get_map(route));
+
+#endif
+
 	switch (mr->item.type)
 	{
 		case type_none:
+
+			if (route->pos)
+			{
+				dbg(0, "NAVR:ROUTE:001ppp:route->pos->street_direction=%d route->pos->dir=%d\n", route->pos->street_direction, route->pos->dir);
+			}
+
 			if (route->pos && route->pos->street_direction && route->pos->street_direction != route->pos->dir)
 			{
 				mr->item.type = type_route_start_reverse;
@@ -5776,21 +6821,45 @@ rm_get_item(struct map_rect_priv *mr)
 		default:
 			mr->item.type = type_street_route;
 			mr->seg = mr->seg_next;
+
+#if 0
+			if (mr->seg)
+			{
+				if (mr->seg->data)
+				{
+					dbg(0, "NAVR:ROUTE:001:%s ===================================\n", item_to_name(mr->seg->data->item.type));
+					if (mr->seg->data->item.type == type_street_route_waypoint)
+					{
+						is_waypoint = 1;
+					}
+				}
+			}
+#endif
+
 			if (!mr->seg && mr->path && mr->path->next)
 			{
+				// dbg(0, "NAVR:ROUTE:002:WAYPOINT/DESTINATION---------------------------------------------------------");
+
 				struct route_path *p = NULL;
 				mr->path->in_use--;
 
 				if (!mr->path->in_use)
+				{
 					p = mr->path;
+					// dbg(0, "NAVR:ROUTE:003:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+				}
 
 				mr->path = mr->path->next;
 				mr->path->in_use++;
 				mr->seg = mr->path->path;
 
 				if (p)
+				{
 					g_free(p);
+				}
 
+				// set waypoint type
+				// ?? seems to not be the correct spot for waypoint ?? // mr->item.type = type_street_route_waypoint;
 			}
 
 			if (mr->seg)
@@ -5801,6 +6870,7 @@ rm_get_item(struct map_rect_priv *mr)
 
 			mr->item.type = type_route_end;
 			// dbg(0,"* set route_end *\n");
+
 			if (mr->mpriv->route->destinations)
 			{
 				break;
@@ -5813,6 +6883,12 @@ rm_get_item(struct map_rect_priv *mr)
 	mr->last_coord = 0;
 	mr->item.id_lo++;
 	rm_attr_rewind(mr);
+
+
+	if (is_waypoint == 1)
+	{
+		mr->item.type = type_street_route_waypoint;
+	}
 
 	return &mr->item;
 }
@@ -6029,6 +7105,9 @@ __F_START__
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 			dbg(0, "RS:004:route_status=%s\n", route_status_to_name(attr->u.num));
 #endif
+
+			dbg(0, "NAVR:ROUTE:007r:route_status=%s\n", route_status_to_name(attr->u.num));
+
 			// calls: "navit_redraw_route" and "navigation_update"
 			callback_list_call_attr_2(this_->cbl2, attr->type, this_, attr);
 		}

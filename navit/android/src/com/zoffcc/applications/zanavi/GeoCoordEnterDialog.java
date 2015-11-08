@@ -32,16 +32,27 @@ public class GeoCoordEnterDialog extends ActionBarActivity
 	float lat;
 	float lon;
 
+	static int v_lat1 = 47;
+	static int v_lat2 = 0;
+	static int v_lat3 = 0;
+
+	static int v_lon1 = 13;
+	static int v_lon2 = 0;
+	static int v_lon3 = 0;
+
+	static boolean sel_ns = true;
+	static boolean sel_we = false;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.geocoordenter);
-		
+
 		android.support.v7.widget.Toolbar bar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2vi);
 		bar.setTitle(Navit.get_text("Coord Dialog"));
 		bar.setNavigationOnClickListener(new View.OnClickListener()
@@ -81,6 +92,63 @@ public class GeoCoordEnterDialog extends ActionBarActivity
 				finish();
 			}
 		});
+
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
+		NumberPicker value_lat1 = (NumberPicker) findViewById(R.id.lat1);
+		NumberPicker value_lat2 = (NumberPicker) findViewById(R.id.lat2);
+		NumberPicker value_lat3 = (NumberPicker) findViewById(R.id.lat3);
+
+		NumberPicker value_lon1 = (NumberPicker) findViewById(R.id.lon1);
+		NumberPicker value_lon2 = (NumberPicker) findViewById(R.id.lon2);
+		NumberPicker value_lon3 = (NumberPicker) findViewById(R.id.lon3);
+
+		ToggleButton toggle_NS = (ToggleButton) findViewById(R.id.toggleButtonNS);
+		ToggleButton toggle_WE = (ToggleButton) findViewById(R.id.toggleButtonWE);
+
+		value_lat1.setValue(v_lat1);
+		value_lat2.setValue(v_lat2);
+		value_lat3.setValue(v_lat3);
+
+		value_lon1.setValue(v_lon1);
+		value_lon2.setValue(v_lon2);
+		value_lon3.setValue(v_lon3);
+
+		toggle_NS.setChecked(sel_ns);
+		toggle_WE.setChecked(sel_we);
+	}
+
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+
+		NumberPicker value_lat1 = (NumberPicker) findViewById(R.id.lat1);
+		NumberPicker value_lat2 = (NumberPicker) findViewById(R.id.lat2);
+		NumberPicker value_lat3 = (NumberPicker) findViewById(R.id.lat3);
+
+		NumberPicker value_lon1 = (NumberPicker) findViewById(R.id.lon1);
+		NumberPicker value_lon2 = (NumberPicker) findViewById(R.id.lon2);
+		NumberPicker value_lon3 = (NumberPicker) findViewById(R.id.lon3);
+
+		ToggleButton toggle_NS = (ToggleButton) findViewById(R.id.toggleButtonNS);
+		ToggleButton toggle_WE = (ToggleButton) findViewById(R.id.toggleButtonWE);
+		
+		v_lat1=value_lat1.getValue();
+		v_lat2=value_lat2.getValue();
+		v_lat3=value_lat3.getValue();
+
+		v_lon1=value_lon1.getValue();
+		v_lon2=value_lon2.getValue();
+		v_lon3=value_lon3.getValue();
+		
+		sel_ns=toggle_NS.isChecked();
+		sel_we=toggle_WE.isChecked();
 	}
 
 	private void executeDone(String what)
@@ -96,18 +164,20 @@ public class GeoCoordEnterDialog extends ActionBarActivity
 		final NumberPicker value_lon3 = (NumberPicker) findViewById(R.id.lon3);
 		lon = value_lon1.getValue() + ((float) value_lon2.getValue() / 60) + ((float) value_lon3.getValue() / 3600);
 
-		resultIntent.putExtra("lat", String.valueOf(this.lat));
-		resultIntent.putExtra("lon", String.valueOf(this.lon));
 		final ToggleButton toggle_NS = (ToggleButton) findViewById(R.id.toggleButtonNS);
-		if (!toggle_NS.isSelected())
+		if (!toggle_NS.isChecked())
 		{
 			this.lat = -this.lat;
 		}
 		final ToggleButton toggle_WE = (ToggleButton) findViewById(R.id.toggleButtonWE);
-		if (toggle_WE.isSelected())
+		if (toggle_WE.isChecked())
 		{
 			this.lon = -this.lon;
 		}
+
+		resultIntent.putExtra("lat", String.valueOf(this.lat));
+		resultIntent.putExtra("lon", String.valueOf(this.lon));
+
 		setResult(ActionBarActivity.RESULT_OK, resultIntent);
 		if (what.equals("view"))
 		{

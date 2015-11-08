@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <shape android:shape="oval" >
+            <solid android:color="@color/blueish_bg_color" /> <!-- old = # 50 50 96 -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval" >
+            <solid android:color="@android:color/transparent" />
+
+            <stroke
+                android:width="1dp"
+                android:color="#99a2a2a2" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_action_mic"/>
+
+</layer-list>

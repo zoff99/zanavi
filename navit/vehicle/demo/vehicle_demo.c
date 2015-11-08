@@ -392,12 +392,10 @@ vehicle_demo_new(struct vehicle_methods *meth, struct callback_list *cbl, struct
 		//DBG dbg(0, "position_set %f %f\n", ret->geo.lat, ret->geo.lng);
 	}
 
-	//DBG dbg(0, "vd 4\n");
 	*meth = vehicle_demo_methods;
 	ret->timer_callback = callback_new_1(callback_cast(vehicle_demo_timer), ret);
 	callback_add_names(ret->timer_callback, "vehicle_demo_new", "vehicle_demo_timer");
-	//DBG dbg(0, "vd 5\n");
-	dbg(0, "event_add_timeout %d,%d,%p", ret->interval, 1, ret->timer_callback);
+	// dbg(0, "event_add_timeout %d,%d,%p", ret->interval, 1, ret->timer_callback);
 	ret->timer = event_add_timeout(ret->interval, 1, ret->timer_callback);
 	//DBG dbg(0, "leave\n");
 	return ret;

@@ -3041,6 +3041,12 @@ static int map_binfile_open(struct map_priv *m)
 			if (m->map_version < (int)NEED_MIN_BINFILE_MAPVERSION)
 			{
 				dbg(0, "!!**Warning**!!: This map is too old for your version of ZANavi. You need at least a version %d map\n", (int)NEED_MIN_BINFILE_MAPVERSION);
+
+#ifdef HAVE_API_ANDROID
+				gchar* xy=g_strdup_printf("%d:%d:%s\n", (int)m->map_version, (int)NEED_MIN_BINFILE_MAPVERSION, m->filename);
+				android_send_generic_text(31,xy);
+				g_free(xy);
+#endif
 				return 0;
 			}
 		}
@@ -3081,14 +3087,23 @@ static void map_binfile_destroy(struct map_priv *m)
 static void binfile_check_version(struct map_priv *m)
 {
 	int version = -1;
+
 	if (!m->check_version)
+	{
 		return;
+	}
+
 	if (m->fi)
+	{
 		version = file_version(m->fi, m->check_version);
+	}
+
 	if (version != m->version)
 	{
 		if (m->fi)
+		{
 			map_binfile_close(m);
+		}
 		map_binfile_open(m);
 	}
 }
@@ -3101,8 +3116,11 @@ map_new_binfile(struct map_methods *meth, struct attr **attrs, struct callback_l
 	struct attr *check_version, *map_pass, *flags, *url, *download_enabled;
 	struct file_wordexp *wexp;
 	char **wexp_data;
+
 	if (!data)
+	{
 		return NULL;
+	}
 
 	// wexp = file_wordexp_new(data->u.str);
 	// wexp_data = file_wordexp_get_array(wexp);
@@ -3117,27 +3135,37 @@ map_new_binfile(struct map_methods *meth, struct attr **attrs, struct callback_l
 	check_version = attr_search(attrs, NULL, attr_check_version);
 
 	if (check_version)
+	{
 		m->check_version = check_version->u.num;
+	}
 
 	map_pass = attr_search(attrs, NULL, attr_map_pass);
 
 	if (map_pass)
+	{
 		m->passwd = g_strdup(map_pass->u.str);
+	}
 
 	flags = attr_search(attrs, NULL, attr_flags);
 
 	if (flags)
+	{
 		m->flags = flags->u.num;
+	}
 
 	url = attr_search(attrs, NULL, attr_url);
 
 	if (url)
+	{
 		m->url = g_strdup(url->u.str);
+	}
 
 	download_enabled = attr_search(attrs, NULL, attr_update);
 
 	if (download_enabled)
+	{
 		m->download_enabled = download_enabled->u.num;
+	}
 
 	if (!map_binfile_open(m) && !m->check_version && !m->url)
 	{

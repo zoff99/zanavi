@@ -134,6 +134,7 @@ int coord_rect_overlap(struct coord_rect *r1, struct coord_rect *r2);
 int coord_rect_contains(struct coord_rect *r, struct coord *c);
 void coord_rect_extend(struct coord_rect *r, struct coord *c);
 void coord_format(float lat,float lng, enum coord_format, char * buffer, int size);
+void coord_rect_extend_by_percent(struct coord_rect *r, float percent);
 
 /* prototypes */
 enum coord_format;

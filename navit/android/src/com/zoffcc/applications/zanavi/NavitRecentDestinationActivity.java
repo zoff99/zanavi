@@ -104,14 +104,14 @@ public class NavitRecentDestinationActivity extends ListActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
 		overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
 
 		my = this;
 
-		context_items = new String[] { Navit.get_text("delete Destination"), Navit.get_text("rename Destination"), Navit.get_text("set as Home Location") }; // TRANS
+		context_items = new String[] { Navit.get_text("delete Destination"), Navit.get_text("rename Destination"), Navit.get_text("set as Home Location"), Navit.get_text("show destination on map"), Navit.get_text("Use as destination") }; // TRANS
 
 		listview_items.clear();
 		listview_addons.clear();
@@ -256,10 +256,10 @@ public class NavitRecentDestinationActivity extends ListActivity
 	{
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		int menuItemIndex = item.getItemId();
-		String menuItemName = context_items[menuItemIndex];
+		// String menuItemName = context_items[menuItemIndex];
 		t_position = info.position;
 		t_size = Navit.map_points.size();
-		String listItemName = Navit.map_points.get(t_size - t_position - 1).point_name;
+		// String listItemName = Navit.map_points.get(t_size - t_position - 1).point_name;
 
 		switch (menuItemIndex)
 		{
@@ -294,6 +294,20 @@ public class NavitRecentDestinationActivity extends ListActivity
 
 			);
 			rd.show();
+			break;
+		case 3:
+			// show position on map
+			NavitRecentDestinationActivity.t = Navit.map_points.get(t_size - t_position - 1);
+			// compensate "selected_id" for reverse listing order of items!
+			this.selected_id = t_size - t_position - 1;
+			executeDone(1);
+			break;
+		case 4:
+			// navigate to position
+			NavitRecentDestinationActivity.t = Navit.map_points.get(t_size - t_position - 1);
+			// compensate "selected_id" for reverse listing order of items!
+			this.selected_id = t_size - t_position - 1;
+			executeDone(0);
 			break;
 		case 2:
 			// find old HOME item
@@ -349,13 +363,21 @@ public class NavitRecentDestinationActivity extends ListActivity
 		// compensate "selected_id" for reverse listing order of items!
 		this.selected_id = t_s - t_p - 1;
 		// close this activity
-		executeDone();
+		executeDone(0);
 	}
 
-	private void executeDone()
+	private void executeDone(int mode)
 	{
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra("selected_id", String.valueOf(this.selected_id));
+		if (mode == 1)
+		{
+			resultIntent.putExtra("what", "view");
+		}
+		else
+		{
+			resultIntent.putExtra("what", "navigate");
+		}
 		setResult(Activity.RESULT_OK, resultIntent);
 		finish();
 	}

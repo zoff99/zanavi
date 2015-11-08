@@ -23,36 +23,90 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Paint.Align;
 import android.util.AttributeSet;
 import android.view.View;
 
 public class ZANaviOSDStreetname extends View
 {
-	private Paint paint_bg = new Paint();
-	private Paint paint_bg2 = new Paint();
-	private Paint paint_p1 = new Paint();
+	// private Paint paint_bg = new Paint();
+	// private Paint paint_bg2 = new Paint();
+	// private Paint paint_p1 = new Paint();
 	private Paint paint_p2 = new Paint();
 	private Paint paint_p3 = new Paint();
-	private RectF f;
+	// private int OSD_element_bg_001;
+	private int OSD_element_text_shadow_001;
+	private int OSD_element_text_001;
+
+	int font_size_4 = 20;
+	int nextt_str_start_x = 5;
+	int nextt_str_start_y = 5;
+	int nextt_str_font_size = 0;
+	int nextt_str_w = 0;
+	int nextt_str_h = 0;
+	int nextt_str_wB = 0;
+	int w = 10;
+	int OSD_element_text_shadow_width;
+	int NavitStreetFontLetterWidth = 28;
+	static final int NavitStreetFontLetterWidth_base = 28;
+	int ml4_real = 10;
+
+	float textHeight_p2;
+	float textOffset_p2;
+	float textHeight_p3;
+	float textOffset_p3;
+
+	static int max_letters1 = 10;
+	static int max_letters2 = 15;
+	static int max_letters3 = 20;
+	static int max_letters4 = 30;
+
+	static float letters_f_2 = 0.7f;
+	static float letters_f_3 = 0.55f;
+	static float letters_f_4 = 0.42f;
 
 	public ZANaviOSDStreetname(Context context)
 	{
 		super(context);
-		this.f = new RectF(0, 0, this.getWidth(), this.getHeight());
 	}
 
 	public ZANaviOSDStreetname(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		this.f = new RectF(0, 0, this.getWidth(), this.getHeight());
 	}
 
 	@Override
 	public void onSizeChanged(int w, int h, int oldw, int oldh)
 	{
 		super.onSizeChanged(w, h, oldw, oldh);
-		this.f = new RectF(0, 0, w, h);
+
+		// **OLD** //   Color.argb(255, 80, 80, 150); // bg color
+		// OSD_element_bg_001 = getContext().getResources().getColor(R.color.blueish_bg_color);
+		OSD_element_text_shadow_001 = Color.rgb(0, 0, 0); // text shadow
+		OSD_element_text_001 = Color.argb(255, 255, 255, 255); // text color
+
+		paint_p2.setTextAlign(Align.LEFT);
+		paint_p3.setTextAlign(Align.LEFT);
+
+		this.w = w;
+		nextt_str_start_y = h / 2;
+		nextt_str_font_size = (Navit.find_max_font_size_for_height("jklgqfM", (int) ((float) h * 0.67f), 190, 10)) - 3;
+
+		// System.out.println("fontsize1=" + nextt_str_font_size + " dp2px=" + NavitGraphics.dp_to_px(1));
+		// System.out.println("fontsize2=" + nextt_str_font_size + " dp2px=" + NavitGraphics.dp_to_px(2));
+		// System.out.println("fontsize3=" + nextt_str_font_size + " dp2px=" + NavitGraphics.dp_to_px(3));
+
+		OSD_element_text_shadow_width = NavitGraphics.dp_to_px(3);
+
+		max_letters1 = Navit.find_max_letters_for_width_and_fontsize(null, w, nextt_str_font_size, 5);
+		max_letters2 = Navit.find_max_letters_for_width_and_fontsize(null, w, (int) ((float) nextt_str_font_size * letters_f_2), 4) - 1;
+		max_letters3 = Navit.find_max_letters_for_width_and_fontsize(null, w, (int) ((float) nextt_str_font_size * letters_f_3), 4);
+		max_letters4 = Navit.find_max_letters_for_width_and_fontsize(null, w, (int) ((float) nextt_str_font_size * letters_f_4), 2);
+
+		// System.out.println("aaa2:1:" + max_letters1 + " " + h + " " + w + " " + oldh + " " + oldw);
+		// System.out.println("aaa2:2:" + max_letters2 + " " + h + " " + w + " " + oldh + " " + oldw);
+		// System.out.println("aaa2:3:" + max_letters3 + " " + h + " " + w + " " + oldh + " " + oldw);
+		// System.out.println("aaa2:4:" + max_letters4 + " " + h + " " + w + " " + oldh + " " + oldw);
 	}
 
 	public void onDraw(Canvas c)
@@ -61,106 +115,135 @@ public class ZANaviOSDStreetname extends View
 
 		try
 		{
-			if ((Navit.OSD_nextturn.nextturn_streetname != null) || (Navit.PREF_follow_gps))
+			if (NavitAndroidOverlay.measure_mode)
 			{
-				String my_text = Navit.OSD_nextturn.nextturn_streetname;
-				String my_text_systematic = Navit.OSD_nextturn.nextturn_streetname_systematic;
+				String my_text = "";
 
-				if (NavitGraphics.MAP_DISPLAY_OFF)
+				if (NavitAndroidOverlay.measure_result_meters < 1800)
 				{
-					paint_bg2.setColor(Color.argb(255, 20, 20, 230));
-					paint_bg2.setStyle(Paint.Style.FILL_AND_STROKE);
-					paint_bg2.setStrokeWidth(2);
-					paint_bg2.setAntiAlias(true);
-					c.drawRoundRect(f, 10, 10, paint_bg2);
-					paint_p1.setColor(Color.WHITE);
-					paint_p1.setStrokeWidth(3);
-					paint_p1.setStyle(Paint.Style.FILL);
-					if ((my_text.length() + 1 + my_text_systematic.length()) > (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth))
-					{
-						if ((my_text.length() + 1 + my_text_systematic.length()) > (2 * (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth)))
-						{
-							paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
-						}
-						else
-						{
-							paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
-						}
-					}
-					else
-					{
-						paint_p1.setTextSize(NavitOSDJava.nextt_str_font_size);
-					}
-					paint_p1.setAntiAlias(true);
-					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_ltxB + NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_ltyB + NavitOSDJava.nextt_str_start_y, paint_p1);
+					my_text = "Distanz: " + NavitAndroidOverlay.measure_result_meters + "m";
+				}
+				else if (NavitAndroidOverlay.measure_result_meters < 100000)
+				{
+					my_text = "Distanz: " + String.format("%.2f", ((double) NavitAndroidOverlay.measure_result_meters / (double) 1000.0)) + "km";
 				}
 				else
 				{
-					paint_bg2.setColor(NavitOSDJava.OSD_element_bg_001);
-					paint_bg2.setStyle(Paint.Style.FILL_AND_STROKE);
-					paint_bg2.setStrokeWidth(2);
-					paint_bg2.setAntiAlias(true);
-					c.drawRoundRect(f, 10, 10, paint_bg2);
-					//paint_p1.setColor(Color.BLACK);
-					//paint_p1.setStrokeWidth(3);
-					//paint_p1.setStyle(Paint.Style.FILL);
-					if ((my_text.length() + 1 + my_text_systematic.length()) > (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth))
-					{
-						if ((my_text.length() + 1 + my_text_systematic.length()) > (2 * (NavitOSDJava.nextt_str_wB / NavitOSDJava.NavitStreetFontLetterWidth)))
-						{
-							//paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
-							paint_p2.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
-							paint_p3.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.40));
-						}
-						else
-						{
-							//paint_p1.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
-							paint_p2.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
-							paint_p3.setTextSize((int) (NavitOSDJava.nextt_str_font_size * 0.70));
-						}
-					}
-					else
-					{
-						//paint_p1.setTextSize(NavitOSDJava.nextt_str_font_size);
-						paint_p2.setTextSize(NavitOSDJava.nextt_str_font_size);
-						paint_p3.setTextSize(NavitOSDJava.nextt_str_font_size);
-					}
-
-					//System.out.println("xx=" + my_text + " " + NavitOSDJava.nextt_str_start_x + " " + NavitOSDJava.nextt_str_start_y + " " + NavitOSDJava.nextt_str_font_size);
-
-					paint_p2.setColor(NavitOSDJava.OSD_element_text_shadow_001);
-					paint_p2.setStrokeWidth(NavitOSDJava.OSD_element_text_shadow_width);
-					paint_p2.setStyle(Paint.Style.STROKE);
-					paint_p2.setAntiAlias(true);
-					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_start_y, paint_p2);
-
-					paint_p3.setColor(NavitOSDJava.OSD_element_text_001);
-					paint_p3.setStrokeWidth(3);
-					paint_p3.setStyle(Paint.Style.FILL);
-					paint_p3.setAntiAlias(true);
-					c.drawText(my_text_systematic + " " + my_text, NavitOSDJava.nextt_str_start_x, NavitOSDJava.nextt_str_start_y, paint_p3);
+					my_text = "Distanz: " + (NavitAndroidOverlay.measure_result_meters / 1000) + "km";
 				}
+
+				paint_p2.setTextSize((int) ((float) nextt_str_font_size * letters_f_3));
+				paint_p3.setTextSize((int) ((float) nextt_str_font_size * letters_f_3));
+
+				paint_p2.setColor(OSD_element_text_shadow_001);
+				paint_p2.setStrokeWidth(OSD_element_text_shadow_width);
+				paint_p2.setStyle(Paint.Style.STROKE);
+				paint_p2.setAntiAlias(true);
+
+				paint_p3.setColor(OSD_element_text_001);
+				paint_p3.setStrokeWidth(3);
+				paint_p3.setStyle(Paint.Style.FILL);
+				paint_p3.setAntiAlias(true);
+
+				textHeight_p2 = paint_p2.descent() - paint_p2.ascent();
+				textOffset_p2 = (textHeight_p2 / 2) - paint_p2.descent();
+				textHeight_p3 = paint_p3.descent() - paint_p3.ascent();
+				textOffset_p3 = (textHeight_p3 / 2) - paint_p3.descent();
+
+				c.drawText(my_text, 5, nextt_str_start_y + textOffset_p2, paint_p2);
+				c.drawText(my_text, 5, nextt_str_start_y + textOffset_p3, paint_p3);
+
 			}
 			else
 			{
-				paint_bg.setColor(Color.argb(0, 0, 0, 0));
-				paint_bg.setStyle(Paint.Style.FILL);
-				paint_bg.setStrokeWidth(3);
-				paint_bg.setAntiAlias(false);
-				if (NavitGraphics.MAP_DISPLAY_OFF)
+
+				if ((Navit.OSD_nextturn.nextturn_streetname != null) || (Navit.p.PREF_follow_gps))
 				{
-					c.drawRect(f, paint_bg);
+					String my_text = Navit.OSD_nextturn.nextturn_streetname;
+					String my_text_systematic = Navit.OSD_nextturn.nextturn_streetname_systematic;
+
+					if ((my_text.length() + 1 + my_text_systematic.length()) > (max_letters1))
+					{
+						if ((my_text.length() + 1 + my_text_systematic.length()) > (max_letters2))
+						{
+							ml4_real = Navit.find_max_letters_for_width_and_fontsize(my_text_systematic + " " + my_text, w, (int) ((float) nextt_str_font_size * letters_f_3), 4);
+
+							if ((my_text.length() + 1 + my_text_systematic.length()) > (ml4_real))
+							{
+
+								try
+								{
+									// ok now really calculate it here
+									font_size_4 = Navit.find_max_font_size_for_width("  " + my_text_systematic + " " + my_text, w, 90, 20);
+									paint_p2.setTextSize(font_size_4);
+									paint_p3.setTextSize(font_size_4);
+									// ok now really calculate it here
+
+									//									
+									//									paint_p2.setTextSize((int) ((float) nextt_str_font_size * letters_f_4));
+									//									paint_p3.setTextSize((int) ((float) nextt_str_font_size * letters_f_4));
+									//
+									// ml4_real = Navit.find_max_letters_for_width_and_fontsize(my_text_systematic + " " + my_text, w, (int) ((float) nextt_str_font_size * letters_f_4), 4);
+									ml4_real = Navit.find_max_letters_for_width_and_fontsize(my_text_systematic + " " + my_text, w, font_size_4, 6);
+
+									// System.out.println("ml4_real=" + ml4_real);
+									if ((my_text.length() + 1 + my_text_systematic.length()) > (ml4_real))
+									{
+										my_text = my_text.substring(0, (ml4_real - 4)) + "..";
+										my_text_systematic = "";
+									}
+								}
+								catch (Exception ee44)
+								{
+								}
+							}
+							else
+							{
+								paint_p2.setTextSize((int) ((float) nextt_str_font_size * letters_f_3));
+								paint_p3.setTextSize((int) ((float) nextt_str_font_size * letters_f_3));
+							}
+						}
+						else
+						{
+							paint_p2.setTextSize((int) ((float) nextt_str_font_size * letters_f_2));
+							paint_p3.setTextSize((int) ((float) nextt_str_font_size * letters_f_2));
+						}
+					}
+					else
+					{
+						paint_p2.setTextSize(nextt_str_font_size);
+						paint_p3.setTextSize(nextt_str_font_size);
+					}
+
+					paint_p2.setColor(OSD_element_text_shadow_001);
+					paint_p2.setStrokeWidth(OSD_element_text_shadow_width);
+					paint_p2.setStyle(Paint.Style.STROKE);
+					paint_p2.setAntiAlias(true);
+
+					paint_p3.setColor(OSD_element_text_001);
+					paint_p3.setStrokeWidth(3);
+					paint_p3.setStyle(Paint.Style.FILL);
+					paint_p3.setAntiAlias(true);
+
+					textHeight_p2 = paint_p2.descent() - paint_p2.ascent();
+					textOffset_p2 = (textHeight_p2 / 2) - paint_p2.descent();
+					textHeight_p3 = paint_p3.descent() - paint_p3.ascent();
+					textOffset_p3 = (textHeight_p3 / 2) - paint_p3.descent();
+
+					c.drawText(my_text_systematic + " " + my_text, 5, nextt_str_start_y + textOffset_p2, paint_p2);
+					c.drawText(my_text_systematic + " " + my_text, 5, nextt_str_start_y + textOffset_p3, paint_p3);
 				}
 				else
 				{
-					c.drawRect(f, paint_bg);
+					c.drawColor(Color.TRANSPARENT);
 				}
 			}
 		}
 		catch (Exception e)
 		{
-
 		}
+
+		// System.out.println("onDraw:OSDStreetname");
 	}
 
 }

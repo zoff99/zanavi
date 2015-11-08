@@ -70,6 +70,7 @@
 #define FIVE_KHM	18
 #define TEN_KHM 	36
 #define CORRECT_FOR_ON_ROUTE_SEG_VALUE 1100
+#define CORRECT_BC_FOR_ON_ROUTE_SEG_VALUE 20000 // if this far away from winner segment on route, then dont snap to route
 
 struct tracking_line
 {
@@ -392,7 +393,9 @@ struct street_data *
 tracking_get_street_data(struct tracking *tr)
 {
 	if (tr->curr_line)
+	{
 		return tr->curr_line->street;
+	}
 
 	return NULL;
 }
@@ -949,6 +952,8 @@ void tracking_calc_and_send_possbile_turn_info(struct route_graph_point *rgp, st
 
 	int cur_is_lower_type = navigation_is_low_level_street(s->data.item.type);
 
+	int dummy_int;
+
 	tmp1 = rgp->start;
 	while (tmp1)
 	{
@@ -968,7 +973,7 @@ void tracking_calc_and_send_possbile_turn_info(struct route_graph_point *rgp, st
 				// item_dump_attr_stdout(&tmp1->data.item, tmp1->data.item.map);
 
 				struct coord ccc_cc, ccc_ss, ccc_ee;
-				int turn_angle3 = route_road_to_road_angle_get_segs(s, tmp1, street_dir, &ccc_cc, &ccc_ss, &ccc_ee, 0);
+				int turn_angle3 = route_road_to_road_angle_get_segs(s, tmp1, street_dir, &dummy_int, &ccc_cc, &ccc_ss, &ccc_ee, 0);
 				//dbg(0, "RR:04.22.2:angle (real)=%d\n", turn_angle3);
 #ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_2
 				route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle3, street_dir);
@@ -1022,7 +1027,7 @@ void tracking_calc_and_send_possbile_turn_info(struct route_graph_point *rgp, st
 				// item_dump_attr_stdout(&tmp1->data.item, tmp1->data.item.map);
 
 				struct coord ccc_cc, ccc_ss, ccc_ee;
-				int turn_angle3 = route_road_to_road_angle_get_segs(s, tmp1, street_dir, &ccc_cc, &ccc_ss, &ccc_ee, 0);
+				int turn_angle3 = route_road_to_road_angle_get_segs(s, tmp1, street_dir, &dummy_int, &ccc_cc, &ccc_ss, &ccc_ee, 0);
 				//dbg(0, "RR:04.22.2:angle (real)=%d\n", turn_angle3);
 #ifdef NAVIT_ANGLE_LIST_DEBUG_PRINT_2
 				route_add_to_sharp_turn_list(&ccc_cc, &ccc_ss, &ccc_ee, turn_angle3, street_dir);
@@ -1311,19 +1316,23 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 
 	transform_from_geo(pro, coord_geo.u.coord_geo, &tr->curr_in);
 
-	if ((speed < static_speed.u.num && transform_distance(pro, &tr->last_in, &tr->curr_in) < static_distance.u.num))
-	{
-		//dbg(1,"static speed %f coord 0x%x,0x%x vs 0x%x,0x%x\n",speed,tr->last_in.x,tr->last_in.y, tr->curr_in.x, tr->curr_in.y);
-		tr->valid = attr_position_valid_static;
-		// tr->valid = attr_position_valid_valid;
-		tr->speed = 0;
 
-		too_slow_or_little_movement = 1;
-		//dbg(0, "return 001\n");
-#ifdef NAVIT_ROUTING_DEBUG_PRINT
-		dbg(0, "ROUTExxPOSxx:(too slow or to little movement):return 001 speed=%f movement=%f\n", speed, transform_distance(pro, &tr->last_in, &tr->curr_in));
-#endif
-		// -- dont end here!! -- // return;
+	if ((global_vehicle_profile != 1) && (global_vehicle_profile != 2)) // not bicycle mode
+	{
+		if ((speed < static_speed.u.num && transform_distance(pro, &tr->last_in, &tr->curr_in) < static_distance.u.num))
+		{
+			//dbg(1,"static speed %f coord 0x%x,0x%x vs 0x%x,0x%x\n",speed,tr->last_in.x,tr->last_in.y, tr->curr_in.x, tr->curr_in.y);
+			tr->valid = attr_position_valid_static;
+			// tr->valid = attr_position_valid_valid;
+			tr->speed = 0;
+
+			too_slow_or_little_movement = 1;
+			//dbg(0, "return 001\n");
+	#ifdef NAVIT_ROUTING_DEBUG_PRINT
+			dbg(0, "ROUTExxPOSxx:(too slow or to little movement):return 001 speed=%f movement=%f\n", speed, transform_distance(pro, &tr->last_in, &tr->curr_in));
+	#endif
+			// -- dont end here!! -- // return;
+		}
 	}
 
 	if (vehicle_get_attr(tr->vehicle, attr_lag, &lag, NULL) && lag.u.num > 0)
@@ -1360,7 +1369,7 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	//dbg(0,"curr_IN :20 0x%x,0x%x\n", tr->curr_in.x, tr->curr_in.y);
 	//dbg(0,"curr_out:21 0x%x,0x%x\n", tr->curr_out.x, tr->curr_out.y);
 
-	tr->curr_angle = tr->direction = direction;
+	tr->curr_angle = tr->direction = direction; // ?? int mixed with float ??
 	tr->speed = speed;
 	tr->last_in = tr->curr_in;
 	tr->last_out = tr->curr_out;
@@ -1390,7 +1399,7 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 
 	if (!tr->lines || transform_distance(pro, &tr->last_updated, &tr->curr_in) > TRACKING_MAX_DIST_RELOAD_MAP_DATA_THRESHOLD) // 500 (default)
 	{
-		dbg(0, "**TRACKING:flush**\n");
+		// dbg(0, "**TRACKING:flush**\n");
 		tracking_flush(tr);
 		tracking_doupdate_lines(tr, &tr->curr_in, pro, TRACKING_MAX_DIST_RELOAD_MAP_DATA_LIMIT); // max_dist = 1000 (default)
 		tr->last_updated = tr->curr_in;
@@ -1409,7 +1418,7 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	int angle_delta_save;
 
 
-
+	// dbg(0, "TR_POSANG:002:angle=%d dir=%f\n", tr->curr_angle, tr->direction);
 
 
 	// -------- full route ---------------------------------------------
@@ -1465,6 +1474,8 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	global_debug_seg_route_end.x = 0;
 	global_debug_seg_route_end.y = 0;
 
+	int need_turn_around = 0;
+
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 	int millis_saved = tracking_time_millis();
 	dbg(0,"ROUTExxPOSxx:millis_saved=%d\n", millis_saved);
@@ -1488,11 +1499,16 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 			item2 = map_rect_get_item(mr2);
 		}
 
-		if (item2 && item2->type == type_route_start_reverse) // we need to turn around! --> then disable stick to route-seg
+		if (
+			((global_vehicle_profile != 1) && (global_vehicle_profile != 2)) // not bicycle mode
+			&& 	(item2 && item2->type == type_route_start_reverse) // we need to turn around! --> then disable stick to route-seg
+			)
 		{
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 			dbg(0,"ROUTExxPOSxx:turn around, disable snap to route-seg\n");
 #endif
+			// need_turn_around = 1;
+
 		}
 		else
 		{
@@ -1500,6 +1516,11 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 			if (item2 && item2->type == type_route_start)
 			{
 				item2 = map_rect_get_item(mr2);
+			}
+			else if (item2 && item2->type == type_route_start_reverse)
+			{
+				item2 = map_rect_get_item(mr2);
+				need_turn_around = 1;
 			}
 			//dbg(0,"curr_out:loopR.00:----------------------------------\n");
 
@@ -1594,7 +1615,7 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 								break;
 							}
 							first2 = 1;
-							// we favor route segments nearer to start of route (penalty increases the further we go alone the route)
+							// we favor route segments nearer to start of route (penalty increases the further we go along the route)
 							route_ongoing_penalty = route_ongoing_penalty + 4;
 							continue;
 						}
@@ -1626,7 +1647,7 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 
 							cp_xx.x = tr->curr_in.x;
 							cp_xx.y = tr->curr_in.y;
-							// set "lpnt" coords to the point in the line (from "c1" -> "c2") that is closest to "cp"
+							// set "lpnt" coords to the point in the line (from "c2_prev" -> "c2") that is closest to "cp_xx"
 							value = transform_distance_line_sq(&c2_prev, &c2, &cp_xx, &lpnt);
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
@@ -1642,28 +1663,32 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 #endif
 #endif
 
-							if ((value + route_ongoing_penalty) < min2)
+							if ((temp_hi != 0) && (temp_lo != 0))
 							{
-								min2 = value + route_ongoing_penalty;
-								winner_hi = temp_hi;
-								winner_lo = temp_lo;
-								winner_map = temp_map;
-								winner_offset = temp_offset;
+								if ((value + route_ongoing_penalty) < min2)
+								{
+									min2 = value + route_ongoing_penalty;
+									winner_hi = temp_hi;
+									winner_lo = temp_lo;
+									winner_map = temp_map;
+									winner_offset = temp_offset;
 
-								route_seg_winner_hi = item2->id_hi;
-								route_seg_winner_lo = item2->id_lo;
+									route_seg_winner_hi = item2->id_hi;
+									route_seg_winner_lo = item2->id_lo;
 
-								on_what_route_seg = route_items_checked;
-								// dbg(0, "on_what_route_seg=%d hi=%d lo=%d\n", on_what_route_seg, route_seg_winner_hi, route_seg_winner_lo);
+									on_what_route_seg = route_items_checked;
 
-								global_debug_route_seg_winner_start.x = c2_prev.x;
-								global_debug_route_seg_winner_start.y = c2_prev.y;
-								global_debug_route_seg_winner_end.x = c2.x;
-								global_debug_route_seg_winner_end.y = c2.y;
+									// dbg(0, "TR_POSANG:R00:on_what_route_seg=%d hi=%d lo=%d whi=%d wlo=%d\n", on_what_route_seg, route_seg_winner_hi, route_seg_winner_lo, winner_hi, winner_lo);
 
-								global_debug_route_seg_winner_p_start.x = lpnt.x;
-								global_debug_route_seg_winner_p_start.y = lpnt.y;
+									global_debug_route_seg_winner_start.x = c2_prev.x;
+									global_debug_route_seg_winner_start.y = c2_prev.y;
+									global_debug_route_seg_winner_end.x = c2.x;
+									global_debug_route_seg_winner_end.y = c2.y;
 
+									global_debug_route_seg_winner_p_start.x = lpnt.x;
+									global_debug_route_seg_winner_p_start.y = lpnt.y;
+
+								}
 							}
 						}
 
@@ -1680,17 +1705,35 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 #endif
 				winner_offset--;
 
-				if (min2 < 800)
+				// dbg(0, "TR_POSANG:S00:whi=%d wlo=%d\n", winner_hi, winner_lo);
+
+				int min_dist_max = 800;
+
+				if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
 				{
-					// --> min3 and min2 should be the same, so no need to calculate min3 here
-					//int min3 = transform_distance_sq(&global_debug_route_seg_winner_p_start, &tr->curr_in);
-					//if (min3 < 800)
-					//{
-						// set gps input coord to found "winner" point on route
-						tr->curr_in.x = global_debug_route_seg_winner_p_start.x;
-						tr->curr_in.y = global_debug_route_seg_winner_p_start.y;
-					//}
+					min_dist_max = 1500; // 3500; // HINT: if vehicle is further from route than this distance, then dont stick to route (and re-route!)
 				}
+
+				//if (min2 < min_dist_max)
+				//{
+					// --> min3 and min2 should be the same, so no need to calculate min3 here
+					int min3 = transform_distance_sq(&global_debug_route_seg_winner_p_start, &tr->curr_in);
+					if (min3 >= min_dist_max) // real gps position too far from route!!
+					{
+						// make winner invalid! so it won't be used for current position
+						winner_hi = 0;
+						winner_lo = 0;
+
+						global_debug_route_seg_winner_start.x = 0;
+						global_debug_route_seg_winner_start.y = 0;
+						global_debug_route_seg_winner_end.x = 0;
+						global_debug_route_seg_winner_end.y = 0;
+
+						global_debug_route_seg_winner_p_start.x = 0;
+						global_debug_route_seg_winner_p_start.y = 0;
+
+					}
+				//}
 
 			}
 		}
@@ -1730,6 +1773,9 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 #if 0
 	global_debug_coord_list_items = 0;
 #endif
+
+	int winner_is_route_seg = 0;
+	int is_route_seg = 0;
 
 	while (t)
 	{
@@ -1773,14 +1819,28 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 //						}
 #endif
 
+						// dbg(0, "TR_POSANG:R00w1:i=%d v=%d min=%d id_hi=%d id_lo=%d w_off=%d w_value=%d winner_hi=%d winner_lo=%d\n", i, value, min, item33->id_hi, item33->id_lo, winner_offset, min2, winner_hi, winner_lo);
+
+						is_route_seg = 0;
+
 						if ( ((winner_hi != 0) && (winner_lo != 0)) && (item33) && ((winner_hi == item33->id_hi) && (winner_lo == item33->id_lo)) && (winner_map == item33->map) )
 						{
 							//if (winner_offset == i)
 							//{
+
+								is_route_seg = 1;
+
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 								// dbg(0,"curr_out:loop.02a1:i=%d v=%d min=%d\n", i, value, min);
 #endif
-								value = value - CORRECT_FOR_ON_ROUTE_SEG_VALUE; // default = 2600
+								if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
+								{
+									value = value - CORRECT_BC_FOR_ON_ROUTE_SEG_VALUE;
+								}
+								else
+								{
+									value = value - CORRECT_FOR_ON_ROUTE_SEG_VALUE; // default = 2600
+								}
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 								// dbg(0,"curr_out:loop.02a2:i=%d v=%d min=%d\n", i, value, min);
 #endif
@@ -1843,9 +1903,46 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 							}
 #endif
 
+						// dbg(0, "TR_POSANG:R00:rr2:is_route_seg=%d\n", is_route_seg);
+
+						if (is_route_seg == 1)
+						{
+							int angle_route2 = transform_get_angle_delta(&global_debug_route_seg_winner_start, &global_debug_route_seg_winner_end, 1);
+							int angle_delta_save2 = tracking_angle_abs_diff(angle_route2, t->angle[i], 180);
+							if (angle_delta_save2 > 90)
+							{
+								angle_delta_save2 = 180 - angle_delta_save2;
+							}
+
+#if 0
+							int tt = tracking_angle_abs_diff(0, 180, 180);
+							dbg(0, "NAV_TAANG:002:t:0,180=%d\n", tt);
+							tt = tracking_angle_abs_diff(180, 180, 180);
+							dbg(0, "NAV_TAANG:002:t:180,180=%d\n", tt);
+							tt = tracking_angle_abs_diff(-180, 180, 180);
+							dbg(0, "NAV_TAANG:002:t:-180,180=%d\n", tt);
+							tt = tracking_angle_abs_diff(361, 1, 180);
+							dbg(0, "NAV_TAANG:002:t:361,1=%d\n", tt);
+							tt = tracking_angle_abs_diff(-8, (360-8), 180);
+							dbg(0, "NAV_TAANG:002:t:-8,(360-8)=%d\n", tt);
+#endif
+
+							// dbg(0, "NAV_TAANG:002:angle_delta_save2=%d v=%d\n", angle_delta_save2, value);
+
+							value = value - (50 * (100 - abs(angle_delta_save2)));
+
+							// dbg(0, "NAV_TAANG:002:v new=%d\n", value);
+
+						}
+
 						if (value < min)
 						{
 							//dbg(0,"curr_out:loop.03\n");
+
+							if (is_route_seg == 1)
+							{
+								winner_is_route_seg = 1;
+							}
 
 							struct coord lpnt_tmp;
 							int angle_delta = tracking_angle_abs_diff(tr->curr_angle, t->angle[i], 360);
@@ -1942,13 +2039,73 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 							// ---------------------------------------------------------------------------------
 							// ---------------------------------------------------------------------------------
 							// change the current Vehicle (GPS-)Position to the point on the closest line/street
+
+							if (is_route_seg == 1)
+							{
+								lpnt.x = global_debug_route_seg_winner_p_start.x;
+								lpnt.y = global_debug_route_seg_winner_p_start.y;
+							}
+
 							tr->curr_out.x = lpnt.x;
 							tr->curr_out.y = lpnt.y;
 
 							global_debug_seg_winner_p_start.x = lpnt.x;
 							global_debug_seg_winner_p_start.y = lpnt.y;
 
-							angle_new = t->angle[i]; // also set angle/direction to the angle of the line/street
+							if (is_route_seg == 1)
+							{
+								int angle_route = transform_get_angle_delta(&global_debug_route_seg_winner_start, &global_debug_route_seg_winner_end, 1);
+								int angle_delta_save = tracking_angle_abs_diff(angle_route,t->angle[i], 360);
+								if (angle_delta_save > 180)
+								{
+									angle_delta_save = 360 - angle_delta_save;
+								}
+
+
+
+								dbg(0, "NAV_TAANG:001:winner dir=%d ads=%d road angle=%d\n", angle_route, angle_delta_save, t->angle[i]);
+
+								if (angle_delta_save > 92)
+								{
+									angle_new = (angle_route + 180) % 360;
+									tr->street_direction = -1;
+								}
+								else
+								{
+									angle_new = angle_route;
+									tr->street_direction = 1;
+								}
+
+								if (need_turn_around == 1)
+								{
+#if 1
+									// int angle_delta_route = tracking_angle_abs_diff(tr->curr_angle, angle_route, 360); // delta between route and vehicle direction
+									angle_new = t->angle[i]; // set angle/direction to the angle of the line/street
+
+									if (angle_delta < 70) // 90° - 20°
+									{
+										tr->street_direction = 1;
+									}
+									else if (angle_delta > 110) // 90° + 20°
+									{
+										tr->street_direction = -1;
+									}
+									else
+									{
+										tr->street_direction = 0;
+									}
+#endif
+
+#if 0
+									tr->street_direction = -tr->street_direction;
+#endif
+
+								}
+							}
+							else
+							{
+								angle_new = t->angle[i]; // also set angle/direction to the angle of the line/street
+							}
 							// dbg(0, "ROUTExxPOSxx:coord_geo_valid=0 001\n");
 							tr->coord_geo_valid = 0;
 							//dbg(0,"curr_out:70.2 0x%x,0x%x\n", tr->curr_out.x, tr->curr_out.y);
@@ -1956,20 +2113,25 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 							// ---------------------------------------------------------------------------------
 							// ---------------------------------------------------------------------------------
 
-							angle_delta_save = angle_delta;
-							if (angle_delta < 70) // 90° - 20°
-							{
-								tr->street_direction = 1;
-							}
-							else if (angle_delta > 110) // 90° + 20°
-							{
-								tr->street_direction = -1;
-							}
-							else
-							{
-								tr->street_direction = 0;
-							}
+							// dbg(0, "TR_POSANG:R01:angle_new=%d angle_delta=%d is_route_seg=%d winner_is_route_seg=%d\n", angle_new, angle_delta, is_route_seg, winner_is_route_seg);
 
+							angle_delta_save = angle_delta;
+
+							if (is_route_seg != 1)
+							{
+								if (angle_delta < 70) // 90° - 20°
+								{
+									tr->street_direction = 1;
+								}
+								else if (angle_delta > 110) // 90° + 20°
+								{
+									tr->street_direction = -1;
+								}
+								else
+								{
+									tr->street_direction = 0;
+								}
+							}
 							min = value;
 						}
 					}
@@ -2001,28 +2163,62 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	dbg(0,"curr_out:loop.99:++++++++++++++++++++++++++++++++++ count=%d\n", count_001);
 #endif
 
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
+	{
 
-	if (tr->speed < FIVE_KHM)
-	{
-		tr->street_direction = 0; // less than 5 km/h vehicle can turn freely on map
-	}
-	else if (tr->speed < TEN_KHM)
-	{
-		if (tr->street_direction != 0)
+#if 0
+		if (tr->speed < TEN_KHM)
 		{
-			if (angle_delta_save < 85) // 90° - 5°
+			if (tr->street_direction != 0)
 			{
-				tr->street_direction = 1;
-			}
-			else if (angle_delta_save > 95) // 90° + 5°
-			{
-				tr->street_direction = -1;
-			}
-			else
-			{
-				tr->street_direction = 0; // vehicle can turn freely on map
+				if (angle_delta_save < 85) // 90° - 5°
+				{
+					tr->street_direction = 1;
+				}
+				else if (angle_delta_save > 95) // 90° + 5°
+				{
+					tr->street_direction = -1;
+				}
+				else
+				{
+					tr->street_direction = 0; // vehicle can turn freely on map
+				}
 			}
 		}
+#endif
+
+	}
+	else
+	{
+
+
+#ifndef CAR_STICK_TO_ROUTE_001
+
+		if (tr->speed < FIVE_KHM)
+		{
+			tr->street_direction = 0; // less than 5 km/h vehicle can turn freely on map
+		}
+		else if (tr->speed < TEN_KHM)
+		{
+			if (tr->street_direction != 0)
+			{
+				if (angle_delta_save < 85) // 90° - 5°
+				{
+					tr->street_direction = 1;
+				}
+				else if (angle_delta_save > 95) // 90° + 5°
+				{
+					tr->street_direction = -1;
+				}
+				else
+				{
+					tr->street_direction = 0; // vehicle can turn freely on map
+				}
+			}
+		}
+
+#endif
+
 	}
 
 
@@ -2031,6 +2227,34 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	android_return_generic_int(8, tr->curr_max_speed);
 #endif
 
+	if (winner_is_route_seg == 1)
+	{
+		if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
+		{
+
+#if 0
+			if ((global_debug_route_seg_winner_start.x == global_debug_seg_winner_start.x) && (global_debug_route_seg_winner_start.y == global_debug_seg_winner_start.y))
+			{
+				tr->street_direction = 1;
+			}
+			else
+			{
+				tr->street_direction = -1;
+			}
+#endif
+
+#if 0
+			if (angle_delta_save < 90)
+			{
+				tr->street_direction = 1;
+			}
+			else
+			{
+				tr->street_direction = -1;
+			}
+#endif
+		}
+	}
 
 	// also set angle/direction to the angle of the line/street
 	//dbg(0, "v-angle=%d\n", tr->curr_angle);
@@ -2056,6 +2280,9 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	//dbg(0, "s-angle=%d\n", tr->curr_angle);
 	// tr->coord_geo_valid = 0;
 	// also set angle/direction to the angle of the line/street
+
+
+	// dbg(0, "TR_POSANG:003:angle=%d dir=%f street_dir=%d angle_new=%d\n", tr->curr_angle, tr->direction, tr->street_direction, angle_new);
 
 
 	//dbg(1,"tr->curr_line=%p min=%d\n", tr->curr_line, min);
@@ -2344,7 +2571,11 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 	{
 		tr->valid = attr_position_valid_static;
 		tr->speed = 0;
+
+		// dbg(0, "TR_POSANG:001:too_slow_or_little_movement\n");
 	}
+
+	dbg(0, "TR_POSANG:012:->angle=%d dir=%f str.dir=%d\n", tr->curr_angle, tr->direction, tr->street_direction);
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 	dbg(0, "ROUTExxPOSxx:003 coord_geo_valid=%d\n", tr->coord_geo_valid);

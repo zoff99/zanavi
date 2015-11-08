@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the parent view - provides the gray background -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer_block1"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/roadbook_listview_container_height"
+    android:layout_gravity="center"
+    android:background="@drawable/listview_item_selector_bg"
+    android:gravity="center_vertical"
+    android:padding="1dp" >
+
+    <!-- the innner view - provides the white rectangle -->
+
+    <RelativeLayout
+        android:id="@+id/inner_block1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
+
+        <!-- the icon view -->
+
+        <LinearLayout
+            android:id="@+id/road_book_left_container"
+            android:layout_width="@dimen/bottom_slide_left_side_width"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/ivIcon"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.6"
+                android:padding="1dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/road_book_short_distance_text"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.4"
+                android:gravity="center"
+                android:padding="0dp"
+                android:textColor="#252525"
+                android:textSize="12dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/road_book_seperator_cutline"
+            android:layout_width="2dp"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="7dp"
+            android:layout_toRightOf="@+id/road_book_left_container"
+            android:background="@android:color/transparent"
+            android:elevation="9dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/zanavi_cutline1" >
+        </ImageView>
+
+        <!-- the container view for the title and description -->
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toRightOf="@+id/road_book_seperator_cutline"
+            android:orientation="vertical" >
+
+            <!-- the title view -->
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="#757575" />
+
+            <!-- the description view -->
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@id/tvTitle"
+                android:gravity="left|center"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:textColor="#757575" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

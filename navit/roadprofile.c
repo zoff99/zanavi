@@ -53,7 +53,9 @@ roadprofile_new(struct attr *parent, struct attr **attrs)
 	this_->maxspeed=0;
 
 	for (attr=attrs;*attr; attr++) 
+	{
 		roadprofile_set_attr_do(this_, *attr);
+	}
 
 	return this_;
 }

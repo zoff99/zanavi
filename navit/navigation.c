@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2015 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@
 #include "profile.h"
 #include "navigation.h"
 #include "coord.h"
-#include "item.h"
+
 #include "route.h"
 #include "transform.h"
 #include "mapset.h"
@@ -102,33 +102,6 @@ struct suffix
 	int sex;
 } suffixes[] = { { "weg", NULL, 1 }, { "platz", "pl.", 1 }, { "ring", NULL, 1 }, { "allee", NULL, 2 }, { "gasse", NULL, 2 }, { "straße", "str.", 2 }, { "strasse", NULL, 2 }, };
 
-struct navigation
-{
-	struct route *route;
-	struct map *map;
-	struct item_hash *hash;
-	struct vehicleprofile *vehicleprofile;
-	struct navigation_itm *first;
-	struct navigation_itm *last;
-	struct navigation_command *cmd_first;
-	struct navigation_command *cmd_last;
-	struct callback_list *callback_speech;
-	struct callback_list *callback;
-	struct navit *navit;
-	struct speech *speech;
-	int level_last;
-	struct item item_last;
-	int turn_around;
-	int turn_around_limit;
-	int distance_turn;
-	struct callback *route_cb;
-	int announce[route_item_last - route_item_first + 1][3];
-	int tell_street_name;
-	int delay;
-	int curr_delay;
-	struct navigation_itm *previous;
-	struct navigation_command *cmd_previous;
-};
 
 int distances[] = { 1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, -1 };
 
@@ -226,6 +199,7 @@ struct navigation_command
 	struct navigation_command *next;
 	struct navigation_command *prev;
 	int delta;
+	int delta_real;
 	int roundabout_delta;
 	int length;
 // -- NEW 002 --
@@ -255,55 +229,6 @@ struct street_destination
 	char *destination;
 };
 // -- NEW 002 --
-
-
-/**
- * @brief Holds a way that one could possibly drive from a navigation item
- */
-struct navigation_way
-{
-	struct navigation_way *next; /**< Pointer to a linked-list of all navigation_ways from this navigation item */
-	short dir; /**< The direction -1 or 1 of the way */
-	short angle2; /**< The angle one has to steer to drive from the old item to this street */
-	int flags; /**< The flags of the way */
-	struct item item; /**< The item of the way */
-	char *name1; // = streetname
-	char *name2; // = streetname systematic (road number e.g.: E51)
-
-// -- NEW 002 --
-//	char *name_systematic;			/**< The road number ({@code street_name_systematic} attribute, OSM: {@code ref}) */
-	char *exit_ref;					/**< Exit_ref if found on the first node of the way*/
-	char *exit_label;				/**< Exit_label if found on the first node of the way*/
-	struct street_destination *s_destination;				/**< The destination this way leads to (OSM: {@code destination}) */
-	char *street_dest_text; /* selected destination to display in GUI */
-// -- NEW 002 --
-
-};
-
-struct navigation_itm
-{
-	struct navigation_way way;
-	int angle_end;
-	struct coord start, end;
-	int time;
-	int length;
-	int speed;
-	int dest_time;
-	int dest_length;
-	int told; /**< Indicates if this item's announcement has been told earlier and should not be told again*/
-	int streetname_told; /**< Indicates if this item's streetname has been told in speech navigation*/
-	int dest_count;
-	struct navigation_itm *next;
-	struct navigation_itm *prev;
-};
-
-
-
-
-
-
-
-
 
 
 
@@ -412,7 +337,7 @@ navigation_new(struct attr *parent, struct attr **attrs)
 	ret->callback_speech = callback_list_new("navigation_new:ret->callback_speech");
 	ret->level_last = -2;
 	ret->distance_turn = 50;
-	ret->turn_around_limit = 3;
+	ret->turn_around_limit = 2; // at first occurence of "turn around" -> say so!
 	ret->navit = parent->u.navit;
 	ret->tell_street_name = 1;
 	ret->previous = NULL;
@@ -465,9 +390,9 @@ static int level_static_for_bicycle[3];
 // ------------------------------------
 // returns: "0", "1", "2" or "3"
 // ------------------------------------
-static int navigation_get_announce_level(struct navigation *this_, enum item_type type, int dist)
+static int navigation_get_announce_level(struct navigation *this_, enum item_type type, int dist, float speed_in_ms)
 {
-	int i;
+	int i = 3;
 
 	if (type < route_item_first || type > route_item_last)
 	{
@@ -476,6 +401,7 @@ static int navigation_get_announce_level(struct navigation *this_, enum item_typ
 
 	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 	{
+#if 0
 		for (i = 0; i < 3; i++)
 		{
 			// dbg(0, "loop(a) i=%d type=%s, route_item_first=%x, announce=%d, dist=%d\n", i, item_to_name(type), route_item_first, level_static_for_bicycle[i], dist);
@@ -484,34 +410,269 @@ static int navigation_get_announce_level(struct navigation *this_, enum item_typ
 				//dbg(0, "ret(1a)=%d\n", i);
 				return i;
 			}
-		}		
+		}
+#endif
+
+		for (i = 0; i < 3; i++)
+		{
+			if (speed_in_ms > 19.444f) // > 70 km/h
+			{
+
+				if (i == 0)
+				{
+					if (dist <= (int)(global_b_level0_announcement * global_b_levelx_announcement_factor * speed_in_ms) )
+					{
+						return i;
+					}
+				}
+				else if (i == 1)
+				{
+					if (dist <= (int)(global_b_level1_announcement * global_b_levelx_announcement_factor * speed_in_ms) )
+					{
+						return i;
+					}
+				}
+				else
+				{
+					if (dist <= (int)(global_b_level2_announcement * global_b_levelx_announcement_factor * speed_in_ms) )
+					{
+						return i;
+					}
+				}
+			}
+			else if (speed_in_ms > 0.9f)
+			{
+				if (i == 0)
+				{
+					// always have at least 12 meters to turn for level 0 announcement
+					if (dist <= 12)
+					{
+						return i;
+					}
+
+					if (dist <= (int)(global_b_level0_announcement * speed_in_ms) )
+					{
+						dbg(0, "NCC_:0:%d %f\n", (int)(global_b_level0_announcement * speed_in_ms), speed_in_ms);
+						return i;
+					}
+				}
+				else if (i == 1)
+				{
+					if (dist <= (int)(global_b_level1_announcement * speed_in_ms) )
+					{
+						dbg(0, "NCC_:1:%d %f\n", (int)(global_b_level1_announcement * speed_in_ms), speed_in_ms);
+						return i;
+					}
+				}
+				else
+				{
+					if (dist <= (int)(global_b_level2_announcement * speed_in_ms) )
+					{
+						dbg(0, "NCC_:2:%d %f\n", (int)(global_b_level2_announcement * speed_in_ms), speed_in_ms);
+						return i;
+					}
+				}
+			}
+			else
+			{
+				if (dist <= level_static_for_bicycle[i])
+				{
+					//dbg(0, "ret(1a)=%d\n", i);
+					return i;
+				}
+			}
+
+		}
+
 	}
 	else
 	{
+
 		for (i = 0; i < 3; i++)
 		{
 			//dbg(0, "loop(b) i=%d type=%s, route_item_first=%x, announce=%d, dist=%d\n", i, item_to_name(type), route_item_first, (this_->announce[type - route_item_first][i]), dist);
-			if (dist <= this_->announce[type - route_item_first][i])
+
+
+			if (speed_in_ms > 19.444f) // > 70 km/h
 			{
-				//dbg(0, "ret(1b)=%d\n", i);
-				return i;
+				if (i == 0)
+				{
+					if (dist <= (int)(global_level0_announcement * global_levelx_announcement_factor * speed_in_ms) )
+					{
+						return i;
+					}
+				}
+				else if (i == 1)
+				{
+					if (dist <= (int)(global_level1_announcement * global_levelx_announcement_factor * speed_in_ms) )
+					{
+						return i;
+					}
+				}
+				else
+				{
+					if (dist <= (int)(global_level2_announcement * global_levelx_announcement_factor * speed_in_ms) )
+					{
+						return i;
+					}
+				}
+			}
+			else if (speed_in_ms > 0.9f)
+			{
+				if (i == 0)
+				{
+					// always have at least 12 meters to turn for level 0 announcement
+					if (dist <= 12)
+					{
+						return i;
+					}
+
+					if (dist <= (int)(global_level0_announcement * speed_in_ms) )
+					{
+						dbg(0, "NCC_:0:%d %f\n", (int)(global_level0_announcement * speed_in_ms), speed_in_ms);
+						return i;
+					}
+				}
+				else if (i == 1)
+				{
+					if (dist <= (int)(global_level1_announcement * speed_in_ms) )
+					{
+						dbg(0, "NCC_:1:%d %f\n", (int)(global_level1_announcement * speed_in_ms), speed_in_ms);
+						return i;
+					}
+				}
+				else
+				{
+					if (dist <= (int)(global_level2_announcement * speed_in_ms) )
+					{
+						dbg(0, "NCC_:2:%d %f\n", (int)(global_level2_announcement * speed_in_ms), speed_in_ms);
+						return i;
+					}
+				}
+			}
+			else
+			{
+				if (dist <= this_->announce[type - route_item_first][i])
+				{
+					//dbg(0, "ret(1b)=%d\n", i);
+					return i;
+				}
 			}
 		}
 	}
+
+
 	//dbg(0, "ret(2)=%d\n", i);
+
 	return i;
 }
 
 
+static int navigation_get_announce_dist_for_level_on_item_bicycle(struct navigation *this_, enum item_type type, int level, float speed_in_ms)
+{
+
+	if (speed_in_ms > 19.444f) // > 70 km/h
+	{
+		if (level == 0)
+		{
+			return (int)(global_b_level0_announcement * global_b_levelx_announcement_factor * speed_in_ms);
+		}
+		else if (level == 1)
+		{
+			return (int)(global_b_level1_announcement * global_b_levelx_announcement_factor * speed_in_ms);
+		}
+		else
+		{
+			return (int)(global_b_level2_announcement * global_b_levelx_announcement_factor * speed_in_ms);
+		}
+	}
+	else if (speed_in_ms > 0.9f)
+	{
+		if (level == 0)
+		{
+			// always have at least 12 meters to turn for level 0 announcement
+			if ( (int)(global_b_level0_announcement * speed_in_ms) < 12)
+			{
+				return 12;
+			}
+			else
+			{
+				return (int)(global_b_level0_announcement * speed_in_ms);
+			}
+		}
+		else if (level == 1)
+		{
+			return (int)(global_b_level1_announcement * speed_in_ms);
+		}
+		else
+		{
+			return (int)(global_b_level2_announcement * speed_in_ms);
+		}
+	}
+	else
+	{
+		return level_static_for_bicycle[level];
+	}
+}
+
+
+static int navigation_get_announce_dist_for_level_on_item(struct navigation *this_, enum item_type type, int level, float speed_in_ms)
+{
+
+	if (speed_in_ms > 19.444f) // > 70 km/h
+	{
+		if (level == 0)
+		{
+			return (int)(global_level0_announcement * global_levelx_announcement_factor * speed_in_ms);
+		}
+		else if (level == 1)
+		{
+			return (int)(global_level1_announcement * global_levelx_announcement_factor * speed_in_ms);
+		}
+		else
+		{
+			return (int)(global_level2_announcement * global_levelx_announcement_factor * speed_in_ms);
+		}
+	}
+	else if (speed_in_ms > 0.9f)
+	{
+		if (level == 0)
+		{
+			// always have at least 12 meters to turn for level 0 announcement
+			if ( (int)(global_level0_announcement * speed_in_ms) < 12)
+			{
+				return 12;
+			}
+			else
+			{
+				return (int)(global_level0_announcement * speed_in_ms);
+			}
+		}
+		else if (level == 1)
+		{
+			return (int)(global_level1_announcement * speed_in_ms);
+		}
+		else
+		{
+			return (int)(global_level2_announcement * speed_in_ms);
+		}
+	}
+	else
+	{
+		return this_->announce[type - route_item_first][level];
+	}
+}
+
 static int is_way_allowed(struct navigation *nav, struct navigation_way *way, int mode);
 
-static int navigation_get_announce_level_cmd(struct navigation *this_, struct navigation_itm *itm, struct navigation_command *cmd, int distance)
+static int navigation_get_announce_level_cmd(struct navigation *this_, struct navigation_itm *itm, struct navigation_command *cmd, int distance, float speed_in_ms)
 {
-	int level2, level = navigation_get_announce_level(this_, itm->way.item.type, distance);
+
+	int level2, level = navigation_get_announce_level(this_, itm->way.item.type, distance, speed_in_ms);
 
 	if (this_->cmd_first->itm->prev)
 	{
-		level2 = navigation_get_announce_level(this_, cmd->itm->prev->way.item.type, distance);
+		level2 = navigation_get_announce_level(this_, cmd->itm->prev->way.item.type, distance, speed_in_ms);
 		if (level2 > level)
 		{
 			level = level2;
@@ -522,10 +683,20 @@ static int navigation_get_announce_level_cmd(struct navigation *this_, struct na
 }
 
 /* 0=N,90=E */
+static int road_angle_accurate(struct coord *c1, struct coord *c2, int dir)
+{
+	// COST: 006 acc
+	// dbg(0, "COST:006acc\n");
+
+	int ret = transform_get_angle_delta_accurate(c1, c2, dir);
+	return ret;
+}
+
+
 static int road_angle(struct coord *c1, struct coord *c2, int dir)
 {
 	// COST: 006
-	dbg(0, "COST:006\n");
+	// dbg(0, "COST:006\n");
 
 	int ret = transform_get_angle_delta(c1, c2, dir);
 	// dbg(1, "road_angle(0x%x,0x%x - 0x%x,0x%x)=%d\n", c1->x, c1->y, c2->x, c2->y, ret);
@@ -539,11 +710,11 @@ static char *get_count_str(int n)
 		case 0:
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
-			android_send_generic_text(1,"+*#O:zeroth\n");
+			android_send_generic_text(1,"+*#O:first\n");
 #endif
 #endif
-			// TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
-			return _("zeroth"); // Not sure if this exists, neither if it will ever be needed
+			// TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
+			return _("first"); // Not sure if this exists, neither if it will ever be needed
 		case 1:
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
@@ -628,11 +799,11 @@ static char *get_exit_count_str(int n)
 		case 0:
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
-			android_send_generic_text(1,"+*#O:zeroth exit\n");
+			android_send_generic_text(1,"+*#O:first exit\n");
 #endif
 #endif
-			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
-			return _("zeroth exit"); // Not sure if this exists, neither if it will ever be needed
+			// TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
+			return _("first exit"); // Not sure if this exists, neither if it will ever be needed
 		case 1:
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
@@ -808,7 +979,7 @@ static int vocabulary_last(int vocabulary)
 	return distances[i - 1];
 }
 
-static char *
+char *
 get_distance(struct navigation *nav, int dist, enum attr_type type, int is_length)
 {
 	int imperial = 0;
@@ -1322,6 +1493,7 @@ static void calculate_angle(struct navigation_way *w)
 
 	map_rect_destroy(mr);
 
+	// w->angle2 = road_angle_accurate(&cbuf[1], &cbuf[0], 0);
 	w->angle2 = road_angle(&cbuf[1], &cbuf[0], 0);
 }
 
@@ -1360,6 +1532,54 @@ static int navigation_time(struct navigation_itm *from, struct navigation_itm *t
 
 	return time;
 }
+
+
+
+static int navigation_time_real_speed(struct navigation_itm *from, struct navigation_itm *to, int speed_in_kmh)
+{
+	struct navigation_itm *cur;
+	int time;
+	int first = 1;
+	float speed_in_ms = (float) ((float)speed_in_kmh / 3.6f);
+
+	time = 0;
+	cur = from;
+
+	while (cur)
+	{
+
+		if (first == 1)
+		{
+			first = 0;
+			if (speed_in_kmh < 1)
+			{
+				time += cur->time;
+			}
+			else
+			{
+				time = time + (int)(     ((float)cur->length / speed_in_ms ) * 10.0f    );
+			}
+		}
+		else
+		{
+			time += cur->time;
+		}
+
+		if (cur == to)
+		{
+			break;
+		}
+		cur = cur->next;
+	}
+
+	if (!cur)
+	{
+		return -1;
+	}
+
+	return time;
+}
+
 
 
 
@@ -1565,6 +1785,8 @@ static void navigation_destroy_itms_cmds(struct navigation *this_, struct naviga
 				cmd->next->prev = NULL;
 			}
 			g_free(cmd);
+			// FF: ??
+			// cmd = NULL;
 		}
 
 		map_convert_free(itm->way.name1);
@@ -1837,6 +2059,8 @@ static int navigation_split_string_to_list_2(struct navigation_way *way, char* r
  *         The aim of this function is to find the destination-name entry that has the most hits in the following
  *         command items so that the destination name has a relevance over several announcements. If there is no 'winner'
  *         the entry is selected that is at top of the destination.
+ *
+ *         thanks to jandegr
  */
 static navigation_select_announced_destinations(struct navigation_command *current_command)
 {
@@ -2014,9 +2238,71 @@ navigation_itm_new(struct navigation *this_, struct item *ritem)
 	if (ritem)
 	{
 		ret->streetname_told = 0;
+
+		if (ritem->type == type_street_route_waypoint)
+		{
+			dbg(0, "NAVR:XX:0:make street item\n");
+
+			while (item_coord_get(ritem, &c[i], 1))
+			{
+				if (i < 4)
+				{
+					i++;
+				}
+				else
+				{
+					c[2] = c[3];
+					c[3] = c[4];
+				}
+			}
+
+			i--;
+			ret->start = c[0];
+			ret->end = c[i];
+
+			if (item_attr_get(ritem, attr_direction, &direction))
+			{
+				if (direction.u.num < 0)
+				{
+					ret->way.dir = -99; // mark waypoint type
+				}
+				else
+				{
+					ret->way.dir = 99; // mark waypoint type
+				}
+			}
+			else
+			{
+				ret->way.dir = 99; // mark waypoint type
+			}
+
+			navigation_itm_update(ret, ritem);
+			ret->length = 1;
+			ret->time = 1;
+			ret->speed = 30;
+
+			if (!this_->first)
+			{
+				this_->first = ret;
+			}
+
+			if (this_->last)
+			{
+				this_->last->next = ret;
+				ret->prev = this_->last;
+				//if (graph_map)
+				//{
+				//	navigation_itm_ways_update(ret, graph_map);
+				//}
+			}
+			this_->last = ret;
+
+			return ret;
+		}
+
 		if (!item_attr_get(ritem, attr_street_item, &street_item))
 		{
-			//dbg(1, "no street item\n");
+			dbg(0, "NAVR:XX:1:no street item\n");
 			g_free(ret);
 			ret = NULL;
 			return ret;
@@ -2146,6 +2432,8 @@ navigation_itm_new(struct navigation *this_, struct item *ritem)
 		// -- NEW 002 --
 
 
+		// ret->way.angle2 = road_angle_accurate(&c[0], &c[1], 0);		// angle at start of way
+		// ret->angle_end = road_angle_accurate(&c[i - 1], &c[i], 0);	// angle at end of way
 		ret->way.angle2 = road_angle(&c[0], &c[1], 0);		// angle at start of way
 		ret->angle_end = road_angle(&c[i - 1], &c[i], 0);	// angle at end of way
 
@@ -2170,7 +2458,7 @@ navigation_itm_new(struct navigation *this_, struct item *ritem)
 		 *
 		 */
 
-		if (sitem->type == type_ramp) /* hier motorway_link en trunk_link toevoegen */
+		if (item_is_ramp(*sitem)) /* hier motorway_link en trunk_link toevoegen */
 		{
 			struct map_selection mselexit;
 			struct item *rampitem;
@@ -2371,6 +2659,33 @@ static int count_possible_turns(struct navigation *nav, struct navigation_itm *f
 						if (angle_delta(curr->prev->angle_end, w->angle2) < 0)
 						{
 							count++;
+
+#ifdef NAVIT_DEBUG_COORD_DIE2TE_LIST
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+						if ((global_debug_coord_list_items + 2) > MAX_DEBUG_COORDS)
+						{
+							global_debug_coord_list_items = 0;
+						}
+
+						struct coord c2[5];
+
+						if (navigation_get_real_item_first_coord(w, c2))
+						{
+							global_debug_coord_list[global_debug_coord_list_items].x = c2[0].x;
+							global_debug_coord_list[global_debug_coord_list_items].y = c2[0].y;
+							global_debug_coord_list_items++;
+							global_debug_coord_list[global_debug_coord_list_items].x = c2[1].x;
+							global_debug_coord_list[global_debug_coord_list_items].y = c2[1].y;
+							global_debug_coord_list_items++;
+						}
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+#endif
+
+
 							break;
 						}
 					}
@@ -2379,6 +2694,31 @@ static int count_possible_turns(struct navigation *nav, struct navigation_itm *f
 						if (angle_delta(curr->prev->angle_end, w->angle2) > 0)
 						{
 							count++;
+#ifdef NAVIT_DEBUG_COORD_DIE2TE_LIST
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+						if ((global_debug_coord_list_items + 2) > MAX_DEBUG_COORDS)
+						{
+							global_debug_coord_list_items = 0;
+						}
+
+						struct coord c2[5];
+
+						if (navigation_get_real_item_first_coord(w, c2))
+						{
+							global_debug_coord_list[global_debug_coord_list_items].x = c2[0].x;
+							global_debug_coord_list[global_debug_coord_list_items].y = c2[0].y;
+							global_debug_coord_list_items++;
+							global_debug_coord_list[global_debug_coord_list_items].x = c2[1].x;
+							global_debug_coord_list[global_debug_coord_list_items].y = c2[1].y;
+							global_debug_coord_list_items++;
+						}
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+// ------- DEBUG ---------
+#endif
+
 							break;
 						}
 					}
@@ -2412,8 +2752,11 @@ static int count_possible_turns(struct navigation *nav, struct navigation_itm *f
 static void calculate_dest_distance(struct navigation *this_, int incr)
 {
 	int len = 0, time = 0, count = 0;
-	struct navigation_itm *next, *itm = this_->last;
+	struct navigation_itm *next = NULL;
+	struct navigation_itm *itm = this_->last;
+
 	//dbg(1, "enter this_=%p, incr=%d\n", this_, incr);
+
 	if (incr)
 	{
 		if (itm)
@@ -2446,6 +2789,110 @@ static void calculate_dest_distance(struct navigation *this_, int incr)
 		itm = itm->prev;
 	}
 	//dbg(1, "len %d time %d\n", len, time);
+}
+
+/**
+ *
+ * check it w1 is the same as w2 (duplicate way)
+ *
+ * @param w1 The first way to be checked
+ * @param w2 The second way to be checked
+ * @return 0 -> no, 1 -> yes:it's the same way
+ *
+ */
+static int is_maybe_same_item(struct navigation_way *w1, struct navigation_way *w2, int reverse_match)
+{
+
+	dbg(0, "======================================\n");
+
+	dbg(0, "w1=%p w2=%p\n", w1, w2);
+
+	dbg(0, "w1 type=%s w2 type=%s\n", item_to_name(w1->item.type), item_to_name(w2->item.type));
+	dbg(0, "w1 dir=%d w2 dir=%d\n", w1->dir, w2->dir);
+	dbg(0, "w1 angle2=%d w2 angle2=%d\n", w1->angle2, w2->angle2);
+	dbg(0, "w1 n1=%s w2 n1=%s\n", w1->name1, w2->name1);
+	dbg(0, "w1 n2=%s w2 n2=%s\n", w1->name2, w2->name2);
+
+#ifdef NAVIT_NAVIGATION_REMOVE_DUPL_WAYS
+
+	int dir_reverse = 0;
+
+	if (w1->item.type != w2->item.type)
+	{
+		dbg(0, "x:w1 type=%s w2 type=%s\n", item_to_name(w1->item.type), item_to_name(w2->item.type));
+		return 0;
+	}
+
+#if 0
+	if (w1->dir != w2->dir)
+	{
+		dir_reverse = 1;
+	}
+#endif
+
+	if (reverse_match != 0)
+	{
+		dir_reverse = 1 - dir_reverse; // toggle "dir_reverse"
+	}
+
+	if (dir_reverse == 0)
+	{
+		if ((abs(w1->angle2 - w2->angle2) != 0) && (abs(w1->angle2 - w2->angle2) != 360))
+		{
+			dbg(0, "x:000:w1 angle2=%d w2 angle2=%d\n", w1->angle2, w2->angle2);
+			return 0;
+		}
+	}
+	else
+	{
+		if (abs(w1->angle2 - w2->angle2) != 180)
+		{
+			dbg(0, "x:180:w1 angle2=%d w2 angle2=%d\n", w1->angle2, w2->angle2);
+			return 0;
+		}
+	}
+	
+
+	if ((w1->name1 == NULL) && (w2->name1 == NULL))
+	{
+	}
+	else
+	{
+		if ((w1->name1 == NULL) || (w2->name1 == NULL))
+		{
+			return 0;
+		}
+		else if (strcmp(w1->name1, w2->name1) != 0)
+		{
+			dbg(0, "x:w1 n1=%s w2 n1=%s\n", w1->name1, w2->name1);
+			return 0;
+		}
+	}
+
+	if ((w1->name2 == NULL) && (w2->name2 == NULL))
+	{
+	}
+	else
+	{
+		if ((w1->name2 == NULL) || (w2->name2 == NULL))
+		{
+			return 0;
+		}
+		else if (strcmp(w1->name2, w2->name2) != 0)
+		{
+			dbg(0, "x:w1 n2=%s w2 n2=%s\n", w1->name2, w2->name2);
+			return 0;
+		}
+	}
+
+	return 1;
+
+#else
+
+	return 0;
+
+#endif
+
 }
 
 /**
@@ -2585,10 +3032,13 @@ static int maneuver_category(enum item_type type)
 			case type_street_1_city:
 				return 2;
 			case type_street_2_city:
+			case type_ramp_street_2_city:
 				return 3;
 			case type_street_3_city:
+			case type_ramp_street_3_city:
 				return 4;
 			case type_street_4_city:
+			case type_ramp_street_4_city:
 				return 5;
 			case type_highway_city:
 				return 7;
@@ -2602,10 +3052,116 @@ static int maneuver_category(enum item_type type)
 				return 5;
 			case type_street_n_lanes:
 				return 6;
+			case type_ramp_highway_land:
+				return 6;
 			case type_highway_land:
 				return 7;
-			case type_ramp:
+			//case type_ramp:
+			//	return 0;
+			case type_roundabout:
 				return 0;
+			case type_ferry:
+				return 0;
+			default:
+				return 0;
+		}
+	}
+	else // car mode ---------------
+	{
+		switch (type)
+		{
+			case type_street_0:
+				return 1;
+			case type_street_1_city:
+				return 2;
+			case type_street_2_city:
+			case type_ramp_street_2_city:
+				return 3;
+			case type_street_3_city:
+			case type_ramp_street_3_city:
+				return 4;
+			case type_street_4_city:
+			case type_ramp_street_4_city:
+				return 5;
+			case type_highway_city:
+				return 7;
+			case type_street_1_land:
+				return 2;
+			case type_street_2_land:
+				return 3;
+			case type_street_3_land:
+				return 4;
+			case type_street_4_land:
+				return 5;
+			case type_street_n_lanes:
+				return 6;
+			case type_ramp_highway_land:
+				return 6;
+			case type_highway_land:
+				return 7;
+			//case type_ramp:
+			//	return 0;
+			case type_roundabout:
+				return 0;
+			case type_ferry:
+				return 0;
+			default:
+				return 0;
+		}
+	}
+}
+
+
+
+
+
+static int maneuver_category_calc2(enum item_type type)
+{
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+	{
+		switch (type)
+		{
+			case type_cycleway:
+				return 1;
+			case type_footway:
+				return 1;
+			case type_street_service:
+				return 1;
+			case type_street_parking_lane:
+				return 1;
+			case type_living_street:
+				return 1;
+			case type_street_0:
+				return 1;
+			case type_street_1_city:
+				return 2;
+			case type_street_2_city:
+			case type_ramp_street_2_city:
+				return 3;
+			case type_street_3_city:
+			case type_ramp_street_3_city:
+				return 4;
+			case type_street_4_city:
+			case type_ramp_street_4_city:
+				return 5;
+			case type_highway_city:
+				return 7;
+			case type_street_1_land:
+				return 2;
+			case type_street_2_land:
+				return 3;
+			case type_street_3_land:
+				return 4;
+			case type_street_4_land:
+				return 5;
+			case type_street_n_lanes:
+				return 6;
+			case type_ramp_highway_land:
+				return 6;
+			case type_highway_land:
+				return 7;
+			//case type_ramp:
+			//	return 0;
 			case type_roundabout:
 				return 0;
 			case type_ferry:
@@ -2621,29 +3177,34 @@ static int maneuver_category(enum item_type type)
 			case type_street_0:
 				return 1;
 			case type_street_1_city:
-				return 2;
+				return 1;
 			case type_street_2_city:
-				return 3;
+			case type_ramp_street_2_city:
+				return 4;
 			case type_street_3_city:
+			case type_ramp_street_3_city:
 				return 4;
 			case type_street_4_city:
-				return 5;
+			case type_ramp_street_4_city:
+				return 4;
 			case type_highway_city:
 				return 7;
 			case type_street_1_land:
-				return 2;
+				return 1;
 			case type_street_2_land:
-				return 3;
+				return 4;
 			case type_street_3_land:
 				return 4;
 			case type_street_4_land:
-				return 5;
+				return 4;
 			case type_street_n_lanes:
+				return 6;
+			case type_ramp_highway_land:
 				return 6;
 			case type_highway_land:
 				return 7;
-			case type_ramp:
-				return 0;
+			//case type_ramp: // ramp need to be high enough
+			//	return 4;
 			case type_roundabout:
 				return 0;
 			case type_ferry:
@@ -2653,6 +3214,15 @@ static int maneuver_category(enum item_type type)
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
 
 static int is_way_allowed(struct navigation *nav, struct navigation_way *way, int mode)
 {
@@ -2676,20 +3246,36 @@ static int is_way_allowed(struct navigation *nav, struct navigation_way *way, in
  * @param reason A text string explaining how the return value resulted
  * @return True if navit should guide the user, false otherwise
  */
-static int maneuver_required2(struct navigation *nav, struct navigation_itm *old, struct navigation_itm *new, int *delta, char **reason)
+static int maneuver_required2(struct navigation *nav, struct navigation_itm *old, struct navigation_itm *new, int *delta, int *delta_real, char **reason)
 {
 	int ret = 0, d, dw, dlim;
 	char *r = NULL;
-	struct navigation_way *w;
+	struct navigation_way *w = NULL;
 	int cat, ncat, wcat, maxcat, left = -180, right = 180, is_unambigous = 0, is_same_street;
+	int cat_2 = 0;
+	int ncat_2 = 0;
+	int highest_other_cat = 0;
+	int original_d = 0;
+
+	dbg(0, "STRAI:000:\n");
+	dbg(0, "STRAI:000:======================================\n");
+
+	// ---------------------------
+	//
+	// HINT: angle < 0 --> left
+	//             > 0 --> right
+	//             = 0 --> straight
+	//
+	// ---------------------------
 
 	d = angle_delta(old->angle_end, new->way.angle2);
+	original_d = d;
 
 	//long long wayid_old = navigation_item_get_wayid(&(old->way));
 	//long long wayid_new = navigation_item_get_wayid(&(new->way));
 	//dbg(0, "Enter d=%d old->angle_end=%d new->way.angle2=%d old_way_id=%lld new_way_id=%lld\n", d, old->angle_end, new->way.angle2, wayid_old, wayid_new);
 
-	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
 	{
 		int flags_old = navigation_item_get_flags(&(old->way));
 		int flags_new = navigation_item_get_flags(&(new->way));
@@ -2717,13 +3303,20 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 	// z2z2
 	int have_more_than_one_way_to_turn = 0;
+	int have_more_than_one_way_to_turn_cycleways = 0;
 	struct navigation_way *w22;
 	w22 = new->way.next;
 	int new_angle_abs = 999;
 	int new_angle_abs_min = 999;
+	int new_angle_abs_min_allowed = 999;
+	int new_angle_real = 999;
+	int new_angle_min_allowed = 999;
+	int new_angle_abs_min_ramp_allowed = 999;
 	int old_angle_abs = abs(d);
+	int new_angle_closest_to_cur = 999;
+	int no_correction = 0;
 
-	dbg(0, "STRAI:001:%d\n", old_angle_abs);
+	dbg(0, "STRAI:001:d=%d original_d=%d\n", old_angle_abs, original_d);
 
 	while (w22)
 	{
@@ -2734,7 +3327,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		//{
 		//	// against oneway not allowed
 		//}
-		if (((global_vehicle_profile != 1) && (global_vehicle_profile != 2))
+		if (((global_vehicle_profile != 1) && (global_vehicle_profile != 2)) // NOT bicycle mode
 			&& (navigation_is_low_level_street(old->way.item.type) == 0)
 			&& (navigation_is_low_level_street(new->way.item.type) == 0)
 			&& (navigation_is_low_level_street(w22->item.type) == 1))
@@ -2743,29 +3336,66 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		}
 		else
 		{
-			if (is_way_allowed(nav, w22, 1))
+
+			if ( (is_maybe_same_item(&(new->way), w22, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w22, 1) == 0)   )
 			{
-				have_more_than_one_way_to_turn = 1;
+
+				new_angle_real = angle_delta(old->angle_end, w22->angle2);
+				new_angle_abs = abs(new_angle_real);
+				if (new_angle_abs < new_angle_abs_min)
+				{
+					new_angle_abs_min = new_angle_abs;
+				}
+
+				if (is_way_allowed(nav, w22, 1))
+				{
+					have_more_than_one_way_to_turn = 1;
+
+					if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
+					{
+						if (w22->item.type == type_cycleway)
+						{
+							have_more_than_one_way_to_turn_cycleways = 1;
+						}
+					}
+
+					if (maneuver_category_calc2(w22->item.type) > highest_other_cat)
+					{
+						highest_other_cat = maneuver_category_calc2(w22->item.type);
+					}
+
+					if (item_is_ramp(w22->item))
+					{
+						if (new_angle_abs < new_angle_abs_min_ramp_allowed)
+						{
+							new_angle_abs_min_ramp_allowed = new_angle_abs;
+						}
+					}
+
+					if (abs(new_angle_real - d) < abs(new_angle_closest_to_cur))
+					{
+						new_angle_closest_to_cur = new_angle_real;
+					}
+
+					if (new_angle_abs < new_angle_abs_min_allowed)
+					{
+						new_angle_abs_min_allowed = new_angle_abs;
+						new_angle_min_allowed = new_angle_real;
+					}
+				}
+
+				dbg(0, "STRAI:003:new angle abs=%d min_allowed=%d have_more_than_one_way_to_turn=%d new_angle_closest_to_cur=%d d=%d\n", new_angle_abs, new_angle_abs_min_allowed, have_more_than_one_way_to_turn, new_angle_closest_to_cur, d);
+
 			}
-
-			new_angle_abs = abs(angle_delta(old->angle_end, w22->angle2));
-
-			dbg(0, "STRAI:003:%d have_more_than_one_way_to_turn=%d\n", new_angle_abs, have_more_than_one_way_to_turn);
-
-			if (new_angle_abs < new_angle_abs_min)
-			{
-				new_angle_abs_min = new_angle_abs;
-			}
-
 		}
 		w22 = w22->next;
 	}
 
-	dbg(0, "STRAI:004\n");
+	dbg(0, "STRAI:004 new_angle_abs_min=%d new_angle_abs_min_allowed=%d\n", new_angle_abs_min, new_angle_abs_min_allowed);
 
-	if ((new_angle_abs_min > ROAD_ANGLE_IS_STRAIGHT_ABS) && (old_angle_abs <= ROAD_ANGLE_IS_STRAIGHT_ABS))
+	if ((new_angle_abs_min_allowed > ROAD_ANGLE_IS_STRAIGHT_ABS) && (old_angle_abs <= ROAD_ANGLE_IS_STRAIGHT_ABS))
 	{
-		dbg(0, "STRAI:005 new_abs=%d old_abs=%d\n", new_angle_abs_min, old_angle_abs);
+		dbg(0, "STRAI:005 new_abs=%d old_abs=%d\n", new_angle_abs_min_allowed, old_angle_abs);
 
 		// we want to drive almost straight, set angle to "0"
 		d = 0;
@@ -2779,15 +3409,32 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		{
 			if (new->way.exit_label)
 			{
-				r = "yes: we have a exit-sign to tell the user";
-				ret = 1;
+				// highway to highway, nearest ramp is more than 15° angle turn
+				if ( (cat > 6) && (ncat > 6) && (highest_other_cat <= 6) && (abs(d) < 12) && (new_angle_abs_min_ramp_allowed > 15) )
+				{
+					dbg(0, "STRAI:005a:d=%d\n", d);
+					r = "no: driving almost straight on highway and no other highway possibilities (1)";
+				}
+				else
+				{
+					// r = "yes: we have an exit-sign to tell the user";
+					// ret = 1;
+				}
 			}
 			else if (new->way.s_destination)
 			{
-				r = "yes: we have a road-sign to tell the user";
-				ret = 1;
+				if ( (cat > 6) && (ncat > 6) && (highest_other_cat <= 6) && (abs(d) < 12) && (new_angle_abs_min_ramp_allowed > 15) )
+				{
+					dbg(0, "STRAI:005a:d=%d\n", d);
+					r = "no: driving almost straight on highway and no other highway possibilities (2)";
+				}
+				else
+				{
+					// r = "yes: we have a road-sign to tell the user";
+					// ret = 1;
+				}
 			}
-			else if (old->way.item.type == type_ramp)
+			else if (item_is_ramp(old->way.item))
 			{
 				r = "yes: we are currently on a ramp and have more than 1 road to take";
 				ret = 1;
@@ -2803,13 +3450,13 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 			/* No announcement necessary */
 			r = "no: Only one possibility";
 		}
-		else if (!new->way.next->next && new->way.next->item.type == type_ramp && !is_way_allowed(nav, new->way.next, 1))
+		else if (!new->way.next->next && item_is_ramp(new->way.next->item) && !is_way_allowed(nav, new->way.next, 1))
 		{
 			/* If the other way is only a ramp and it is one-way in the wrong direction, no announcement necessary */
 			r = "no: Only ramp";
 		}
 	}
-	else
+	else // bicycle mode --------------------
 	{
 		if (!r)
 		{
@@ -2845,35 +3492,74 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 #endif
 
 #if 1
-			if (!new->way.next)
+
+			if ((old->way.item.type == type_cycleway) && (new->way.item.type == type_cycleway))
 			{
-				if (abs(d) > ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE)
+				if (have_more_than_one_way_to_turn_cycleways == 0)
 				{
-					r = "yes: delta over ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE in bicycle mode (Only one possibility)";
-					//dbg(0, "%s\n", r);
-					ret = 1;
+					if (abs(d) > ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC)
+					{
+						r = "yes: delta over ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC in bicycle mode (Only one possibility cyc-2-cyc)";
+						//dbg(0, "%s\n", r);
+						ret = 1;
+					}
+					else
+					{
+						r = "no: delta less than ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC in bicycle mode (Only one possibility cyc-2-cyc)";
+						//dbg(0, "%s\n", r);
+						ret = 0;
+					}
 				}
 				else
 				{
-					r = "no: delta less than ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE in bicycle mode (Only one possibility)";
-					//dbg(0, "%s\n", r);
-					ret = 0;
+					if (abs(d) > ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC__2)
+					{
+						r = "yes:  delta over ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC__2 in bicycle mode (cyc-2cyc)";
+						//dbg(0, "%s\n", r);
+						ret = 1;
+					}
+					else
+					{
+						r = "no:  delta less than ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC__2 in bicycle mode (cyc-2cyc)";
+						//dbg(0, "%s\n", r);
+						ret = 0;
+					}
 				}
 			}
 			else
 			{
-				if (abs(d) > ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY)
+
+				if (!new->way.next)
 				{
-					r = "yes:  delta over ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY in bicycle mode";
-					//dbg(0, "%s\n", r);
-					ret = 1;
+					if (abs(d) > ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE)
+					{
+						r = "yes: delta over ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE in bicycle mode (Only one possibility)";
+						//dbg(0, "%s\n", r);
+						ret = 1;
+					}
+					else
+					{
+						r = "no: delta less than ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE in bicycle mode (Only one possibility)";
+						//dbg(0, "%s\n", r);
+						ret = 0;
+					}
 				}
 				else
 				{
-					r = "no:  delta less than ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY in bicycle mode";
-					//dbg(0, "%s\n", r);
-					ret = 0;
+					if (abs(d) > ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY)
+					{
+						r = "yes:  delta over ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY in bicycle mode";
+						//dbg(0, "%s\n", r);
+						ret = 1;
+					}
+					else
+					{
+						r = "no:  delta less than ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY in bicycle mode";
+						//dbg(0, "%s\n", r);
+						ret = 0;
+					}
 				}
+
 			}
 #endif
 
@@ -2907,7 +3593,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 			ret = 1;
 		}
 	}
-	else
+	else // car mode ---------------------
 	{
 		if (!r && abs(d) > 75)
 		{
@@ -2920,6 +3606,10 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	cat = maneuver_category(old->way.item.type);
 	ncat = maneuver_category(new->way.item.type);
 
+	cat_2 = maneuver_category_calc2(old->way.item.type);
+	ncat_2 = maneuver_category_calc2(new->way.item.type);
+
+
 	if (!r)
 	{
 		/* Check whether the street keeps its name */
@@ -2931,41 +3621,45 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		maxcat = -1;
 		while (w)
 		{
-			dw = angle_delta(old->angle_end, w->angle2);
-			dbg(0, "STRAI:011.02 dw=%d l=%d r=%d\n", dw, left, right);
-
-			if (dw < 0)
+			if ( (is_maybe_same_item(&(new->way), w, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w, 1) == 0)   )
 			{
-				if (dw > left)
+				dw = angle_delta(old->angle_end, w->angle2);
+				dbg(0, "STRAI:011.02 dw=%d l=%d r=%d\n", dw, left, right);
+
+				if (dw < 0)
 				{
-					left = dw;
+					if (dw > left)
+					{
+						left = dw;
+					}
 				}
-			}
-			else
-			{
-				if (dw < right)
+				else
 				{
-					right = dw;
+					if (dw < right)
+					{
+						right = dw;
+					}
 				}
-			}
 
-			wcat = maneuver_category(w->item.type);
-			dbg(0, "STRAI:011.03 wcat=%d\n", wcat);
+				wcat = maneuver_category(w->item.type);
+				dbg(0, "STRAI:011.03 wcat=%d\n", wcat);
 
-			/* If any other street has the same name [ removed:"but isn't a highway (a highway might split up temporarily)" ], then
-			 we can't use the same name criterium  */
-			// if (is_same_street && is_same_street2(old->way.name1, old->way.name2, w->name1, w->name2) && (cat != 7 || wcat != 7) && is_way_allowed(nav, w, 2))
-			if (is_same_street && is_same_street2(old->way.name1, old->way.name2, w->name1, w->name2) && is_way_allowed(nav, w, 2))
-			{
-				is_same_street = 0;
-				dbg(0, "STRAI:011.04 is_same_street=%d\n", is_same_street);
-			}
+				/* If any other street has the same name [ removed:"but isn't a highway (a highway might split up temporarily)" ], then
+				 we can't use the same name criterium  */
+				// if (is_same_street && is_same_street2(old->way.name1, old->way.name2, w->name1, w->name2) && (cat != 7 || wcat != 7) && is_way_allowed(nav, w, 2))
+				if (is_same_street && is_same_street2(old->way.name1, old->way.name2, w->name1, w->name2) && is_way_allowed(nav, w, 2))
+				{
+					is_same_street = 0;
+					dbg(0, "STRAI:011.04 is_same_street=%d\n", is_same_street);
+				}
 
-			/* Mark if the street has a higher or the same category */
-			if (wcat > maxcat)
-			{
-				maxcat = wcat;
-				dbg(0, "STRAI:011.06 maxcat=%d wcat=%d\n", maxcat, wcat);
+				/* Mark if the street has a higher or the same category */
+				if (wcat > maxcat)
+				{
+					maxcat = wcat;
+					dbg(0, "STRAI:011.06 maxcat=%d wcat=%d\n", maxcat, wcat);
+				}
+
 			}
 
 			w = w->next;
@@ -2974,7 +3668,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		if (have_more_than_one_way_to_turn == 1) // more than 1 possibility
 		{
 			/* Even if the ramp has the same name, announce it */
-			if (new->way.item.type == type_ramp && old->way.item.type != type_ramp)
+			if (item_is_ramp(new->way.item) && !item_is_ramp(old->way.item))
 			{
 				is_same_street = 0;
 				dbg(0, "STRAI:011.05.xx is_same_street=%d\n", is_same_street);
@@ -3000,14 +3694,14 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 		if ((maxcat == ncat && maxcat == cat) || (ncat == 0 && cat == 0))
 		{
-			dlim = abs(d) * 620 / 256;
+			dlim = abs(d) * (620 / 256); // abs(d) * 2.4
 		}
 		else if (maxcat < ncat && maxcat < cat)
 		{
-			dlim = abs(d) * 128 / 256;
+			dlim = abs(d) * (128 / 256); // abs(d) * 0.5
 		}
 
-		if (left < -dlim && right > dlim)
+		if (left < -dlim && right > dlim) // no other road is between -dlim : dlim angle (no other road is "dlim" close to straight)
 		{
 			is_unambigous = 1;
 		}
@@ -3015,24 +3709,186 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		if (!is_same_street && is_unambigous < 1)
 		{
 			ret = 1;
-			r = "yes: not same street or ambigous";
+			r = "yes: (not same street) or (ambigous [nicht eindeutig])";
 		}
 		else
 		{
-			r = "no: same street and unambigous";
+			r = "no: (same street) and (unambigous [eindeutig])";
 		}
 
-		dbg(0, "STRAI:011.07 is_unambigous=%d ret=%d r=%s\n", is_unambigous, ret, r);
+		if (ret == 0)
+		{
+			// add a new check here:
+			if (have_more_than_one_way_to_turn == 1)
+			{
+
+				dbg(0, "STRAI:11.07:4.0: cat=%d, ncat=%d, highest_other_cat=%d, d=%d, abs(d)=%d new_angle_closest_to_cur=%d original_d=%d\n", cat, ncat, highest_other_cat, d, abs(d), new_angle_closest_to_cur, original_d);
+
+				if ( (cat > 6) && (ncat > 6) && (highest_other_cat <= 6) && (abs(d) < 70) )
+				{
+					r = "no: from highway to highway (no other highway possibilities)";
+					dbg(0, "STRAI:011.07:4 abs(d)=%d cat=%d ncat=%d highest_other_cat=%d\n", abs(d), cat, ncat, highest_other_cat);
+				}
+				else
+				{
+
+					if ((ncat == 6) && (highest_other_cat == 6) && (abs(d) < 50) && (abs(new_angle_closest_to_cur - original_d) < 65))
+					{
+						ret = 1;
+						r = "yes: we are driving onto a ramp and there a other ramps near (<50 degrees) to it";
+						dbg(0, "STRAI:011.07:3.001 ncat=%d highest_other_cat=%d d=%d (new_angle_closest_to_cur=%d - original_d=%d)\n", ncat, highest_other_cat, d, new_angle_closest_to_cur, original_d);
+					}
+
+
+					if ((d == 0) && (new_angle_abs_min_allowed >= 25))
+					{
+						r = "no: driving almost straight, and other ways not very close to straight";
+						dbg(0, "STRAI:011.07:3 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
+					}
+					else
+					{
+
+						if ( (d == 0) && (abs(new_angle_closest_to_cur - original_d) < 16) )
+						{
+							ret = 1;
+							r = "yes: we are going straight and some other way is very close to it";
+							dbg(0, "STRAI:011.07:0 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
+						}
+						else if ( (ncat_2 <= highest_other_cat) && (d == 0) && (abs(new_angle_closest_to_cur - original_d) < 30) )
+						{
+							ret = 1;
+							r = "yes: we are going straight and some other way is very close to it (same or higher cat)";
+							dbg(0, "STRAI:011.07:7 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
+						}
+						else if ((abs(d) > 0) && (new_angle_abs_min_allowed < abs(d)))
+						{
+							ret = 1;
+							r = "yes: some other way is going more straight";
+							dbg(0, "STRAI:011.07:0 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
+
+
+							if (abs(d) < 10)
+							{
+
+							// ----------########### more way left/right of way ? ###########----------
+							int more_ways_to_left_ = 0;
+							int more_ways_to_right_ = 0;
+							w = new->way.next;
+							while (w)
+							{
+								if (is_way_allowed(nav, w, 1))
+								{
+									if ( (is_maybe_same_item(&(new->way), w, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w, 1) == 0)   )
+									{
+										dbg(0, "STRAI:108.02a delta=%d\n", angle_delta(old->angle_end, w->angle2));
+
+										if (is_way_allowed(nav, w, 1))
+										{
+											if (angle_delta(old->angle_end, w->angle2) < d) // other ways are going more to the left?
+											{
+												more_ways_to_left_++;
+											}
+											else if (angle_delta(old->angle_end, w->angle2) > d) // other ways are going more to the right?
+											{
+												more_ways_to_right_++;
+											}
+										}
+									}
+								}
+								w = w->next;
+							}
+
+							dbg(0, "STRAI:108.02 %d %d\n", more_ways_to_left_, more_ways_to_right_);
+
+
+							if ((d < 0) && (more_ways_to_left_ == 0)) // && (more_ways_to_right_ > 0))
+							{
+
+								dbg(0, "STRAI:108.03:left\n");
+								*delta_real = 0;
+								d = -8;
+								no_correction = 1;
+							}
+							else if ((d > 0) && (more_ways_to_left_ > 0)) // && (more_ways_to_right_ == 0))
+							{
+								dbg(0, "STRAI:108.04:right\n");
+								*delta_real = 0;
+								d = 8;
+								no_correction = 1;
+							}
+
+
+
+							// ----------########### more way left/right of way ? ###########----------
+
+							}
+
+
+						}
+						else if ((abs(d) > 0) && (new_angle_abs_min_allowed < 39) && (is_same_street))
+						{
+							if ( (cat == ncat) && (ncat_2 > highest_other_cat) )
+							{
+								r = "no: we need to make a turn, but other possibilites are much lower cat roads";
+								dbg(0, "STRAI:011.07:5iss cat=%d ncat=%d cat_2=%d ncat_2=%d highest_other_cat=%d\n", cat, ncat, cat_2, ncat_2, highest_other_cat);
+							}
+							else
+							{
+								ret = 1;
+								r = "yes: we need to make a turn";
+								dbg(0, "STRAI:011.07:1iss abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
+							}
+						}
+						else if ((abs(d) > 0) && (new_angle_abs_min_allowed < 52) && (!is_same_street))
+						{
+							if ( (cat == ncat) && (ncat_2 > highest_other_cat) )
+							{
+								r = "no: we need to make a turn, but other possibilites are much lower cat roads";
+								dbg(0, "STRAI:011.07:5nss cat=%d ncat=%d cat_2=%d ncat_2=%d highest_other_cat=%d\n", cat, ncat, cat_2, ncat_2, highest_other_cat);
+							}
+							else
+							{
+								ret = 1;
+								r = "yes: we need to make a turn";
+								dbg(0, "STRAI:011.07:1nss abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
+							}
+						}
+						else
+						{
+							dbg(0, "STRAI:011.07:6 abs(d)=%d new_angle_abs_min_allowed=%d cat=%d ncat=%d cat_2=%d ncat_2=%d highest_other_cat=%d new_angle_closest_to_cur=%d original_d=%d\n", abs(d), new_angle_abs_min_allowed, cat, ncat, cat_2, ncat_2, highest_other_cat, new_angle_closest_to_cur, original_d);
+						}
+					}
+				}
+			}
+		}
+
+		dbg(0, "STRAI:011.07 is_unambigous[eindeutig]=%d ret=%d r=%s\n", is_unambigous, ret, r);
 
 #ifdef DEBUG
 		// r=g_strdup_printf("yes: d %d left %d right %d dlim=%d cat old:%d new:%d max:%d unambigous=%d same_street=%d", d, left, right, dlim, cat, ncat, maxcat, is_unambigous, is_same_street);
 #endif
 	}
 
+
+
+
+
+
+		dbg(0, "STRAI:007.00aa:d=%d ******************++++++++++++\n", d);
+
+
+
+
+
 	// correct "delta" (turn angle) here !! ---------------------------
 	// correct "delta" (turn angle) here !! ---------------------------
 
-	if (ret == 1)
+	if (no_correction == 0)
+	{
+		*delta_real = d;
+	}
+
+	if ((ret == 1) && (have_more_than_one_way_to_turn == 1) && (no_correction == 0))
 	{
 		w = new->way.next;
 		//int d2 = angle_delta(old->angle_end, new->way.angle2);
@@ -3044,16 +3900,22 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 		int correct_direction = 1;
 
-		dbg(0, "STRAI:007.01:%d\n", d);
+		dbg(0, "STRAI:007.01:d=%d d2=%d\n", d, d2);
 
 		if (d2 < 0) // left
 		{
 			while (w)
 			{
-				if (angle_delta(old->angle_end, w->angle2) > d2) // other ways are going more to the right?
+				if (is_way_allowed(nav, w, 1))
 				{
-					correct_direction = 0;
-					break;
+					if ( (is_maybe_same_item(&(new->way), w, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w, 1) == 0)   )
+					{
+						if (angle_delta(old->angle_end, w->angle2) > d2) // other ways are going more to the right?
+						{
+							correct_direction = 0;
+							break;
+						}
+					}
 				}
 				w = w->next;
 			}
@@ -3070,10 +3932,16 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		{
 			while (w)
 			{
-				if (angle_delta(old->angle_end, w->angle2) < d2) // other ways are going more to the left?
+				if (is_way_allowed(nav, w, 1))
 				{
-					correct_direction = 0;
-					break;
+					if ( (is_maybe_same_item(&(new->way), w, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w, 1) == 0)   )
+					{
+						if (angle_delta(old->angle_end, w->angle2) < d2) // other ways are going more to the left?
+						{
+							correct_direction = 0;
+							break;
+						}
+					}
 				}
 				w = w->next;
 			}
@@ -3089,51 +3957,72 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		else // (d2 == 0) // straight
 		{
 
-			dbg(0, "STRAI:008.01:%d (%d < %d)\n", d2, new_angle_abs_min, ROAD_ANGLE_DISTANCE_FOR_STRAIGHT);
+			dbg(0, "STRAI:008.01:%d (%d < %d) new_angle_abs_min_allowed=%d\n", d2, new_angle_abs_min, ROAD_ANGLE_DISTANCE_FOR_STRAIGHT, new_angle_abs_min_allowed);
 
 			int more_ways_to_left = 0;
 			int more_ways_to_right = 0;
 
-			if (new_angle_abs_min < ROAD_ANGLE_DISTANCE_FOR_STRAIGHT) // if other angles are far different from straight, than let it still be straight! otherwise correct direction
+			if (new_angle_abs_min_allowed < ROAD_ANGLE_DISTANCE_FOR_STRAIGHT) // if other angles are far different from straight, than let it still be straight! otherwise correct direction
 			{
 				dbg(0, "STRAI:008.02\n");
 
-				while (w)
-				{
-					dbg(0, "STRAI:008.02a delta=%d\n", angle_delta(old->angle_end, w->angle2));
 
-					if (angle_delta(old->angle_end, w->angle2) < d2) // other ways are going more to the left?
-					{
-						more_ways_to_left++;
-					}
-					else if (angle_delta(old->angle_end, w->angle2) > d2) // other ways are going more to the right?
-					{
-						more_ways_to_right++;
-					}
-					w = w->next;
-				}
-
-				dbg(0, "STRAI:008.02 %d %d\n", more_ways_to_left, more_ways_to_right);
-
-				if ((more_ways_to_left == 0) && (more_ways_to_right > 0))
+				if ((abs(new_angle_closest_to_cur - original_d) <= 25) || (abs(original_d) >= 10))
+				// if (1 == 1)
 				{
 
-					dbg(0, "STRAI:008.03:left\n");
+					while (w)
+					{
+						if (is_way_allowed(nav, w, 1))
+						{
+							if ( (is_maybe_same_item(&(new->way), w, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w, 1) == 0)   )
+							{
+								dbg(0, "STRAI:008.02a delta=%d\n", angle_delta(old->angle_end, w->angle2));
+
+								if (is_way_allowed(nav, w, 1))
+								{
+									if (angle_delta(old->angle_end, w->angle2) < d2) // other ways are going more to the left?
+									{
+										more_ways_to_left++;
+									}
+									else if (angle_delta(old->angle_end, w->angle2) > d2) // other ways are going more to the right?
+									{
+										more_ways_to_right++;
+									}
+								}
+							}
+						}
+						w = w->next;
+					}
+
+					dbg(0, "STRAI:008.02 %d %d\n", more_ways_to_left, more_ways_to_right);
+
+					if ((more_ways_to_left == 0) && (more_ways_to_right > 0))
+					{
+
+						dbg(0, "STRAI:008.03:left\n");
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
-					dbg(0, "MAV:003:correct to left\n");
+						dbg(0, "MAV:003:correct to left\n");
 #endif
-					d = -8;
-				}
-				else if ((more_ways_to_left > 0) && (more_ways_to_right == 0))
-				{
-					dbg(0, "STRAI:008.04:right\n");
+						d = -8;
+					}
+					else if ((more_ways_to_left > 0) && (more_ways_to_right == 0))
+					{
+						dbg(0, "STRAI:008.04:right\n");
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
-					dbg(0, "MAV:003:correct to right\n");
+						dbg(0, "MAV:003:correct to right\n");
 #endif
-					d = 8;
+						d = 8;
+					}
+
 				}
+				else
+				{
+					dbg(0, "STRAI:008.02f street almost straight and nearest other street at least 25 away: closest=%d orig_d=%d\n", new_angle_closest_to_cur, original_d);
+				}
+
 			}
 
 		}
@@ -3143,7 +4032,15 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	// correct "delta" (turn angle) here !! ---------------------------
 	// correct "delta" (turn angle) here !! ---------------------------
 
-	dbg(0, "STRAI:099:ret=%d r=%s d=%d\n", ret, r, d);
+
+
+
+
+
+
+
+	dbg(0, "STRAI:099:ret=%d r=%s d=%d d_real=%d\n", ret, r, d, *delta_real);
+	dbg(0, "STRAI:099:======================================\n");
 
 	*delta = d;
 	if (reason)
@@ -3154,12 +4051,13 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	return ret;
 }
 
-static struct navigation_command *command_new(struct navigation *this_, struct navigation_itm *itm, int delta)
+static struct navigation_command *command_new(struct navigation *this_, struct navigation_itm *itm, int delta, int delta_real)
 {
 	struct navigation_command *ret=g_new0(struct navigation_command, 1);
 
 	//dbg(1, "enter this_=%p itm=%p delta=%d\n", this_, itm, delta);
 	ret->delta = delta;
+	ret->delta_real = delta_real;
 	ret->itm = itm;
 
 	if (itm && itm->prev && itm->way.next && itm->prev->way.next && !(itm->way.flags & NAVIT_AF_ROUNDABOUT) && (itm->prev->way.flags & NAVIT_AF_ROUNDABOUT))
@@ -3220,6 +4118,7 @@ __F_START__
 
 	struct navigation_itm *itm, *last = NULL, *last_itm = NULL;
 	int delta;
+	int delta_real;
 	itm = this_->first;
 	this_->cmd_last = NULL;
 	this_->cmd_first = NULL;
@@ -3227,10 +4126,10 @@ __F_START__
 	{
 		if (last)
 		{
-			if (maneuver_required2(this_, last_itm, itm, &delta, NULL))
+			if (maneuver_required2(this_, last_itm, itm, &delta, &delta_real, NULL))
 			{
 				//dbg(0, "maneuver_required2 = true\n");
-				command_new(this_, itm, delta);
+				command_new(this_, itm, delta, delta_real);
 			}
 		}
 		else
@@ -3240,7 +4139,7 @@ __F_START__
 		last_itm = itm;
 		itm = itm->next;
 	}
-	command_new(this_, last_itm, 0);
+	command_new(this_, last_itm, 0, 0);
 
 __F_END__
 }
@@ -3253,9 +4152,15 @@ __F_END__
 static int contains_suffix(char *name, char *suffix)
 {
 	if (!suffix)
+	{
 		return 0;
+	}
+
 	if (strlen(name) < strlen(suffix))
+	{
 		return 0;
+	}
+
 	return !g_strcasecmp(name + strlen(name) - strlen(suffix), suffix);
 }
 
@@ -3264,8 +4169,10 @@ replace_suffix(char *name, char *search, char *replace)
 {
 	int len = strlen(name) - strlen(search);
 	char *ret = g_malloc(len + strlen(replace) + 1);
+
 	strncpy(ret, name, len);
 	strcpy(ret + len, replace);
+
 	if (isupper(name[len]))
 	{
 		ret[len] = toupper(ret[len]);
@@ -3285,13 +4192,19 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm, 
 	struct attr attr;
 
 	if (!prefix)
+	{
 		prefix = "";
+	}
 
 	if (nav->speech && speech_get_attr(nav->speech, attr_vocabulary_name, &attr, NULL))
+	{
 		vocabulary1 = attr.u.num;
+	}
 
 	if (nav->speech && speech_get_attr(nav->speech, attr_vocabulary_name_systematic, &attr, NULL))
+	{
 		vocabulary2 = attr.u.num;
+	}
 
 	n1 = itm->way.name1;
 	n2 = itm->way.name2;
@@ -3302,7 +4215,7 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm, 
 	if (!vocabulary2)
 		n2 = NULL;
 
-	if (!n1 && !n2 && (itm->way.item.type == type_ramp) && vocabulary2)
+	if (!n1 && !n2 && (item_is_ramp(itm->way.item)) && vocabulary2)
 	{
 		//dbg(1,">> Next is ramp %lx current is %lx \n", itm->way.item.type, next->way.item.type);
 
@@ -3406,6 +4319,8 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm, 
 			if (contains_suffix(n1, suffixes[i].abbrev))
 			{
 				sex = suffixes[i].sex;
+
+				// TODO: replacing strings here maybe not so good?!?
 				name1 = replace_suffix(n1, suffixes[i].abbrev, suffixes[i].fullname);
 				break;
 			}
@@ -3550,8 +4465,14 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm, 
 	return ret;
 }
 
+
+
+
+#define DONT_KNOW_LEVEL -997
+
+
 static char *
-show_maneuver_bicycle(struct navigation *nav, struct navigation_itm *itm, struct navigation_command *cmd, enum attr_type type, int connect, int level3)
+show_maneuver_bicycle(struct navigation *nav, struct navigation_itm *itm, struct navigation_command *cmd, enum attr_type type, int connect, int want_this_level)
 {
 __F_START__
 
@@ -3561,14 +4482,34 @@ __F_START__
 	int distance = itm->dest_length - cmd->itm->dest_length;
 	char *d, *ret = NULL;
 	int delta = cmd->delta;
+	int delta_real = cmd->delta_real;
 	int level;
 	int level_now = 99;
+	int level3;
 	int strength_needed;
 	int skip_roads;
 	int count_roundabout;
 	struct navigation_itm *cur;
 	struct navigation_way *w;
 	int against_oneway = 0;
+	int keep_dir = 0;
+	int old_dir = 0;
+
+	if (want_this_level == DONT_KNOW_LEVEL)
+	{
+		level3 = 1;
+	}
+	else
+	{
+		level3 = want_this_level;
+	}
+
+
+	int cur_vehicle_speed = 0;
+	if ((global_navit) && (global_navit->vehicle))
+	{
+		cur_vehicle_speed = global_navit->vehicle->speed; // in km/h
+	}
 
 	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 	{
@@ -3606,17 +4547,17 @@ __F_START__
 	}
 
 	//dbg(0, "d=%d d3=%d\n", distance, (distance - cmd->length));
-	level_now = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length);
+	level_now = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length, 0);
 	//dbg(0, "level_now=%d\n", level_now);
 
 	w = itm->next->way.next;
 	strength_needed = 0;
 
-	if (angle_delta(itm->next->way.angle2, itm->angle_end) < 0)
+	if (angle_delta(itm->next->way.angle2, itm->angle_end) < 0) // left
 	{
 		while (w)
 		{
-			if (angle_delta(w->angle2, itm->angle_end) < 0)
+			if (angle_delta(w->angle2, itm->angle_end) < 0) // other ways are going left
 			{
 				strength_needed = 1;
 				break;
@@ -3624,11 +4565,11 @@ __F_START__
 			w = w->next;
 		}
 	}
-	else
+	else // right
 	{
 		while (w)
 		{
-			if (angle_delta(w->angle2, itm->angle_end) > 0)
+			if (angle_delta(w->angle2, itm->angle_end) > 0) // other ways are going right
 			{
 				strength_needed = 1;
 				break;
@@ -3637,6 +4578,11 @@ __F_START__
 		}
 	}
 
+
+	if ((strength_needed == 0) && (delta < 9)) // for corrected turn (delta will be 8), use strength ("slight")
+	{
+		strength_needed = 1;
+	}
 
 	//dbg(0, "cmd->delta=%d\n", delta);
 
@@ -3645,7 +4591,24 @@ __F_START__
 		// TRANSLATORS: left, as in 'Turn left'
 		dir = _("left");
 		delta = -delta;
+
+		old_dir = -1; // left
 	}
+	else if (delta > 0)
+	{
+
+		old_dir = 1; // right
+
+		// dir = right
+	}
+	else // delta == 0 // go straight
+	{
+		dir = _("straight");
+		strength_needed = 0;
+	}
+
+
+	keep_dir = 0;
 
 	if (strength_needed)
 	{
@@ -3653,7 +4616,22 @@ __F_START__
 		{
 			// TRANSLATORS: Don't forget the ending space
 			// TRANSLATORS: EXAMPLE: turn slight right
+			strength = _("slighty ");
+			// TRANSLATORS: Don't forget the ending space
+			// TRANSLATORS: EXAMPLE: turn slight right
 			strength = _("slight ");
+
+			if (delta_real == 0) // keep left/right
+			{
+				if (old_dir == -1)
+				{
+					keep_dir = -1;
+				}
+				else
+				{
+					keep_dir = 1;
+				}
+			}
 		}
 		else if (delta < 105)
 		{
@@ -3690,9 +4668,34 @@ __F_START__
 
 	if (type == attr_navigation_speech)
 	{
+		dbg(0, "NAV_TURNAROUND:003 ta=%d talimit=%d\n", nav->turn_around, nav->turn_around_limit);
+
 		if (nav->turn_around && nav->turn_around == nav->turn_around_limit)
 		{
+			dbg(0, "NAV_TURNAROUND:004\n");
+
 			return2 g_strdup(_("When possible, please turn around"));
+		}
+
+		if (!connect)
+		{
+			if (want_this_level == DONT_KNOW_LEVEL)
+			{
+				level3 = navigation_get_announce_level_cmd(nav, itm, cmd, distance - cmd->length, ((float)cur_vehicle_speed / 3.6f) );
+			}
+			else
+			{
+				level3 = want_this_level;
+			}
+		}
+
+		if (want_this_level == DONT_KNOW_LEVEL)
+		{
+			level_now = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length, ((float)cur_vehicle_speed / 3.6f) );
+		}
+		else
+		{
+			level_now = want_this_level;
 		}
 	}
 
@@ -3768,6 +4771,7 @@ __F_START__
 			{
 				if (against_oneway == 1)
 				{
+#if 1
 					if (delta < 10)
 					{
 						ret = g_strdup_printf("%s", _("oncoming traffic!")); // just say "attention oneway street!"
@@ -3776,9 +4780,12 @@ __F_START__
 					{
 						ret = g_strdup_printf("%s, %s", dir, _("oncoming traffic!")); // just say "left" or "right" at the turn + "attention oneway street!"
 					}
+#endif
+
 				}
 				else
 				{
+#if 1
 					if (delta >= 10)
 					{
 						ret = g_strdup(dir); // just say "left" or "right" at the turn
@@ -3787,6 +4794,42 @@ __F_START__
 					{
 						ret = g_strdup("");
 					}
+#endif
+
+#if 0
+					if (delta == 0)
+					{
+						ret = g_strdup(dir); // just say "left" or "right" or "straight" at the turn
+					}
+					else
+					{
+						if (keep_dir != 0)
+						{
+							if (keep_dir == -1)
+							{
+								// TRANSLATORS: The argument is the distance. Example: 'keep left in 100 meters'
+								ret = g_strdup_printf(_("keep left %s"), "");
+							}
+							else
+							{
+								// TRANSLATORS: The argument is the distance. Example: 'keep right in 100 meters'
+								ret = g_strdup_printf(_("keep right %s"), "");
+							}
+						}
+						else
+						{
+							if (delta >= 10)
+							{
+								ret = g_strdup(dir); // just say "left" or "right" at the turn
+							}
+							else
+							{
+								ret = g_strdup("");
+							}
+						}
+					}
+#endif
+
 				}
 			}
 			else // if (level3 == 1)
@@ -3934,8 +4977,10 @@ int navigation_is_low_level_street(enum item_type t)
 	return 0;
 }
 
+
+
 static char *
-show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigation_command *cmd, enum attr_type type, int connect)
+show_maneuver_at_level(struct navigation *nav, struct navigation_itm *itm, struct navigation_command *cmd, enum attr_type type, int connect, int want_this_level, int override_tellstreetname)
 {
 __F_START__
 
@@ -3945,14 +4990,17 @@ __F_START__
 	int distance = itm->dest_length - cmd->itm->dest_length;
 	char *d, *ret = NULL;
 	int delta = cmd->delta;
+	int delta_real = cmd->delta_real;
 	int level;
 	int level_now = 99;
 	int strength_needed;
 	int skip_roads;
-	int count_roundabout;
+	int count_roundabout; // car mode ----
 	struct navigation_itm *cur;
 	struct navigation_way *w;
 	int against_oneway = 0;
+	int keep_dir = 0; // car mode ----
+	int old_dir = 0;
 
 	if (connect)
 	{
@@ -3960,8 +5008,22 @@ __F_START__
 	}
 	else
 	{
-		level = 1;
+		if (want_this_level == DONT_KNOW_LEVEL)
+		{
+			level = 1;
+		}
+		else
+		{
+			level = want_this_level;
+		}
 	}
+
+	int cur_vehicle_speed = 0;
+	if ((global_navit) && (global_navit->vehicle))
+	{
+		cur_vehicle_speed = global_navit->vehicle->speed; // in km/h
+	}
+
 
 	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 	{
@@ -4016,10 +5078,12 @@ __F_START__
 		}
 	}
 
-	if ((strength_needed == 0) && (delta < 9)) // for corrected turn (delta will be 8), use strenght ("slight")
+	if ((strength_needed == 0) && (delta < 9)) // for corrected turn (delta will be 8), use strength ("slight")
 	{
 		strength_needed = 1;
 	}
+
+	// dbg(0, "STRAI:K001:strength_needed=%d delta=%d delta_real=%d\n", strength_needed, delta, delta_real);
 
 	//dbg(0, "cmd->delta=%d\n", delta);
 
@@ -4033,9 +5097,15 @@ __F_START__
 		// TRANSLATORS: left, as in 'Turn left'
 		dir = _("left");
 		delta = -delta;
+
+		old_dir = -1; // left
+
 	}
 	else if (delta > 0)
 	{
+
+		old_dir = 1; // right
+
 		// dir = right
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
@@ -4050,6 +5120,10 @@ __F_START__
 		// dbg(0, "STRENGTH:004:strength_needed = %d\n", strength_needed);
 	}
 
+	dbg(0, "STRAI:K002:*:strength_needed=%d delta=%d delta_real=%d\n", strength_needed, delta, delta_real);
+
+
+	keep_dir = 0;
 
 	if (strength_needed)
 	{
@@ -4065,9 +5139,24 @@ __F_START__
 #endif
 			// TRANSLATORS: Don't forget the ending space
 			// TRANSLATORS: EXAMPLE: turn slight right
+			strength = _("slighty ");
+			// TRANSLATORS: Don't forget the ending space
+			// TRANSLATORS: EXAMPLE: turn slight right
 			strength = _("slight ");
 
-			// dbg(0, "STRENGTH:006:strength_needed = %s\n", strength);
+			if (delta_real == 0) // keep left/right
+			{
+				if (old_dir == -1)
+				{
+					keep_dir = -1;
+				}
+				else
+				{
+					keep_dir = 1;
+				}
+			}
+
+			dbg(0, "STRENGTH:006:strength_needed = %s\n", strength);
 
 		}
 		else if (delta < 105)
@@ -4113,8 +5202,13 @@ __F_START__
 
 	if (type == attr_navigation_speech)
 	{
+		dbg(0, "NAV_TURNAROUND:001 ta=%d talimit=%d\n", nav->turn_around, nav->turn_around_limit);
+
 		if (nav->turn_around && nav->turn_around == nav->turn_around_limit)
 		{
+
+			dbg(0, "NAV_TURNAROUND:002:*******\n");
+
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
 			android_send_generic_text(1,"+*#O:When possible, please turn around\n");
@@ -4125,17 +5219,162 @@ __F_START__
 
 		if (!connect)
 		{
-			level = navigation_get_announce_level_cmd(nav, itm, cmd, distance - cmd->length);
-			//dbg(0, "distance=%d level=%d type=%s\n", distance, level, item_to_name(itm->way.item.type));
+			if (want_this_level == DONT_KNOW_LEVEL)
+			{
+				level = navigation_get_announce_level_cmd(nav, itm, cmd, distance - cmd->length, ((float)cur_vehicle_speed / 3.6f) );
+			}
+			else
+			{
+				level = want_this_level;
+			}
 		}
 
-		level_now = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length);
+		if (want_this_level == DONT_KNOW_LEVEL)
+		{
+			level_now = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length, ((float)cur_vehicle_speed / 3.6f) );
+		}
+		else
+		{
+			level_now = want_this_level;
+		}
+
 	}
 
-#if 0
+#ifdef NAVIT_DEBUG_COORD_LIST
 	int need_clear = 1;
 #endif
 
+
+#if 1
+// ------------------- jandegr -------------------
+
+	struct navigation_way *candidate_way;
+
+	if (cmd->itm->prev->way.flags & NAVIT_AF_ROUNDABOUT)
+	{
+		cur = cmd->itm->prev;
+		count_roundabout = 0;
+
+		// ----- fix -----
+		struct navigation_itm *cur_orig = cur->next;
+
+		enum item_type cur_street_type = 0;
+		int exit_is_lover_street_type = 0;
+		cur_street_type = cur_orig->way.item.type;
+		// dbg(0, "curr item type=%s\n", item_to_name(cur_orig->way.item.type));
+		exit_is_lover_street_type = navigation_is_low_level_street(cur_street_type);
+
+		int next_exit_is_lower_street_type = 0;
+		// ----- fix -----
+
+
+		dbg(0, "ROUNDABT:001:enter\n");
+
+		while (cur && (cur->way.flags & NAVIT_AF_ROUNDABOUT))
+		{
+
+			// dbg(0, "ROUNDABT:002:loop-1:w\n");
+
+			candidate_way=cur->next->way.next;
+			while (candidate_way)
+			{
+
+				dbg(0, "ROUNDABT:002:loop-2:w2 type=%s\n", item_to_name(candidate_way->item.type));
+
+				// If the next segment has no exit or the exit isn't allowed, don't count it
+				if (candidate_way && is_way_allowed(nav, candidate_way, 3))
+				{
+
+					dbg(0, "ROUNDABT:003:is_allowed type=%s\n", item_to_name(candidate_way->item.type));
+
+					// only count street_service (and lesser streets) if we also exit on street_service (or any lesser street)
+					if (cur->next)
+					{
+						next_exit_is_lower_street_type =  navigation_is_low_level_street(candidate_way->item.type);
+
+						dbg(0, "ROUNDABT:004:next_exit_is_lower_street_type=%d type=%s\n", next_exit_is_lower_street_type, item_to_name(candidate_way->item.type));
+					}
+
+					if ((exit_is_lover_street_type == 1) || (next_exit_is_lower_street_type == 0))
+					{
+						count_roundabout++;
+
+						dbg(0, "ROUNDABT:005:found:count_roundabout=%d\n", count_roundabout);
+
+						/* As soon as we have an allowed one on this node,
+						 * stop further counting for this node.
+						 */
+						candidate_way = candidate_way->next;
+						break;
+					}
+				}
+				candidate_way=candidate_way->next;
+			}
+			cur = cur->prev;
+		}
+		
+		/*try to figure out if the entry node has a usable exit as well
+		*
+		* this will fail for left-hand driving areas
+		*/
+		if (cur && cur->next)
+		{
+			dbg(0, "ROUNDABT:007:entry-check\n");
+
+			candidate_way = cur->next->way.next;
+			while (candidate_way)
+			{
+				dbg(0, "ROUNDABT:008:loop-3:w3 type=%s\n", item_to_name(candidate_way->item.type));
+
+				if (candidate_way && is_way_allowed(nav,candidate_way,3)
+					&& (cur->angle_end < candidate_way->angle2) && ( candidate_way->angle2 > cur->next->way.angle2 ))
+					/*for the entry node only count exits to the right ?*/
+				{
+					count_roundabout++;
+
+					dbg(0, "ROUNDABT:009:entry:found:count_roundabout=%d\n", count_roundabout);
+					/* As soon as we have an allowed one on this node,
+					* stop further counting for this node.
+					*/
+					break;
+				}
+				candidate_way = candidate_way->next;
+			}
+		}
+		
+		switch (level)
+		{
+#if 0
+			case 3:
+				d=get_distance(nav, distance, type, 1);
+				return g_strdup_printf(_("Follow the road for the next %s"), d);
+#endif
+			case 2:
+				return2 g_strdup(_("Enter the roundabout soon"));
+			case 1:
+				// TRANSLATORS: EXAMPLE: Leave the roundabout at the second exit
+				return2 g_strdup_printf(_("Leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+			case -2:
+				// TRANSLATORS: EXAMPLE: ... then leave the roundabout at the second exit
+				return2 g_strdup_printf(_("then leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+			case 0:
+				// TRANSLATORS: EXAMPLE: Leave the roundabout at the second exit
+				return2 g_strdup_printf(_("Leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+		}
+	}
+
+
+// ------------------- jandegr -------------------
+#endif
+
+
+
+
+
+
+
+#if 0
+// -------------------  zoff   -------------------
 
 	if (cmd->itm->prev->way.flags & NAVIT_AF_ROUNDABOUT)
 	{
@@ -4168,7 +5407,7 @@ __F_START__
 				{
 					count_roundabout++;
 
-#if 0
+#ifdef NAVIT_DEBUG_COORD_LIST
 					if (need_clear == 1)
 					{
 						need_clear = 0;
@@ -4289,6 +5528,17 @@ __F_START__
 		}
 	}
 
+// -------------------  zoff   -------------------
+#endif
+
+
+
+
+
+
+
+
+
 	// -- NEW 002 --
 	if (cmd->itm)
 	{
@@ -4297,7 +5547,6 @@ __F_START__
 		// string is in cmd->itm->way.street_dest_text
 	}
 	// -- NEW 002 --
-
 
 
 
@@ -4360,12 +5609,17 @@ __F_START__
 			d = get_distance(nav, distance, attr_navigation_short, 0);
 			break;
 		case 0:
-			// zz33
 			skip_roads = count_possible_turns(nav, cmd->prev ? cmd->prev->itm : nav->first, cmd->itm, cmd->delta);
+
+			dbg(0, "count_possible_turns:1:%d", skip_roads);
+
 			if ((skip_roads > 0) && ((global_vehicle_profile != 1) && (global_vehicle_profile != 2)))
 			{
 				if (get_count_str(skip_roads + 1))
 				{
+
+// marker -1- //
+
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:Take the %1$s road to the %2$s\n");
@@ -4408,12 +5662,18 @@ __F_START__
 
 		case -2:
 			skip_roads = count_possible_turns(nav, cmd->prev->itm, cmd->itm, cmd->delta);
+
+			dbg(0, "count_possible_turns:2:%d", skip_roads);
+
 			if ((skip_roads > 0) && ((global_vehicle_profile != 1) && (global_vehicle_profile != 2)))
 			{
 				// TRANSLATORS: First argument is the how manieth street to take, second the direction
 				// TRANSLATORS: EXAMPLE: ... then take the second road to the right
 				if (get_count_str(skip_roads + 1))
 				{
+
+// marker -2- //
+
 #ifdef HAVE_API_ANDROID
 #ifdef NAVIT_SAY_DEBUG_PRINT
 					android_send_generic_text(1,"+*#O:then take the %1$s road to the %2$s\n");
@@ -4456,6 +5716,8 @@ __F_START__
 			d = g_strdup(_("error"));
 	}
 
+
+
 	if (cmd->itm->next)
 	{
 		// dbg(0, "SPK:000a\n");
@@ -4464,13 +5726,10 @@ __F_START__
 		char *destination = NULL;
 
 		if (type == attr_navigation_speech)
-		{ // In voice mode
-			// In Voice Mode only tell the street name in level 1 or in level 0 if level 1
-			// was skipped
-
+		{
 			if (level == 1)
-			{ // we are close to the intersection
-				cmd->itm->streetname_told = 1; // remember to be checked when we turn
+			{
+				cmd->itm->streetname_told = 1;
 				tellstreetname = 1; // Ok so we tell the name of the street 
 			}
 
@@ -4498,25 +5757,32 @@ __F_START__
 			tellstreetname = 0;
 		}
 
-#ifdef NAVIT_ROUTING_DEBUG_PRINT
-		dbg(0, "SPK:level=%d street_dest_text=%p tellstreetname=%d\n", level, cmd->itm->way.street_dest_text, tellstreetname);
-#endif
-		if (nav->tell_street_name && tellstreetname)
+
+
+		if (override_tellstreetname != -1)
 		{
-			destination = navigation_item_destination(nav, cmd->itm, itm, " ");
+
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
-			dbg(0, "SPK:levelX=%d dest=%s\n", level, destination);
+			dbg(0, "SPK:level=%d street_dest_text=%p tellstreetname=%d\n", level, cmd->itm->way.street_dest_text, tellstreetname);
 #endif
-		}
-		else if ((global_speak_streetnames == 1) && (cmd->itm->way.street_dest_text))
-		{
-			destination = navigation_item_destination(nav, cmd->itm, itm, " ");
+			if (nav->tell_street_name && tellstreetname)
+			{
+				destination = navigation_item_destination(nav, cmd->itm, itm, " ");
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
-			dbg(0, "SPK:levely=%d dest=%s d=%s\n", level, destination, cmd->itm->way.street_dest_text);
+				dbg(0, "SPK:levelX=%d dest=%s\n", level, destination);
+#endif
+			}
+			else if ((global_speak_streetnames == 1) && (cmd->itm->way.street_dest_text))
+			{
+				destination = navigation_item_destination(nav, cmd->itm, itm, " ");
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
+				dbg(0, "SPK:levely=%d dest=%s d=%s\n", level, destination, cmd->itm->way.street_dest_text);
 #endif
 
-			cmd->itm->streetname_told = 0;
+				cmd->itm->streetname_told = 0;
+			}
 		}
+
 
 		// dbg(0, "SPK:001\n");
 
@@ -4543,7 +5809,7 @@ __F_START__
 #endif
 #endif
 
-			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
 			{
 				//dbg(0, "level=%5$d level_now=%6$d str=%1$s%2$s %3$s%4$s\n", strength, dir, d, destination ? destination : "", level, level_now);
 
@@ -4586,7 +5852,7 @@ __F_START__
 					}
 				}
 			}
-			else
+			else // car mode
 			{
 				if (delta == 0)
 				{
@@ -4595,12 +5861,40 @@ __F_START__
 				}
 				else
 				{
-					// TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
-					ret = g_strdup_printf_4_str(_("Turn %1$s%2$s %3$s%4$s"), strength, dir, d, destination ? destination : "");
+					if (keep_dir != 0)
+					{
+						if (keep_dir == -1)
+						{
+							// TRANSLATORS: The argument is the distance. Example: 'keep left in 100 meters'
+							ret = g_strdup_printf(_("keep left %s"), d);
+
+							// dirty hack, so we don't need new translations
+							char *ret2 = g_strdup_printf("%s%s", ret, destination ? destination : "");
+							g_free(ret);
+							ret = ret2;
+							// ret2 = NULL;
+						}
+						else
+						{
+							// TRANSLATORS: The argument is the distance. Example: 'keep right in 100 meters'
+							ret = g_strdup_printf(_("keep right %s"), d);
+
+							// dirty hack, so we don't need new translations
+							char *ret2 = g_strdup_printf("%s%s", ret, destination ? destination : "");
+							g_free(ret);
+							ret = ret2;
+							// ret2 = NULL;
+						}
+					}
+					else
+					{
+						// TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
+						ret = g_strdup_printf_4_str(_("Turn %1$s%2$s %3$s%4$s"), strength, dir, d, destination ? destination : "");
+					}
 				}
 			}
 		}
-		else // (level == 2)
+		else // (level == -2)
 		{
 
 			//dbg(0, "SPK:007\n");
@@ -4623,7 +5917,7 @@ __F_START__
 			g_free(xy);
 #endif
 #endif
-			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
 			{
 				if ((against_oneway == 1) && (delta < 8))
 				{
@@ -4643,7 +5937,7 @@ __F_START__
 					}
 				}
 			}
-			else
+			else // car mode
 			{
 				if (delta == 0)
 				{
@@ -4652,8 +5946,23 @@ __F_START__
 				}
 				else
 				{
-					// TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
-					ret = g_strdup_printf_4_str(_("then turn %1$s%2$s %3$s%4$s"), strength, dir, d, destination ? destination : "");
+					if (keep_dir != 0)
+					{
+						if (keep_dir == -1)
+						{
+							ret = g_strdup_printf("%s", _("then keep left"));
+						}
+						else
+						{
+							ret = g_strdup_printf("%s", _("then keep right"));
+						}
+					}
+					else
+					{
+						// TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+						ret = g_strdup_printf_4_str(_("then turn %1$s%2$s %3$s%4$s"), strength, dir, d, ""); // dont speak destination when maneuvers are connected!
+						// ret = g_strdup_printf_4_str(_("then turn %1$s%2$s %3$s%4$s"), strength, dir, d, destination ? destination : "");
+					}
 				}
 			}
 		}
@@ -4691,6 +6000,17 @@ __F_START__
 __F_END__
 }
 
+
+
+static char *
+show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigation_command *cmd, enum attr_type type, int connect)
+{
+	return show_maneuver_at_level(nav, itm, cmd, type, connect, DONT_KNOW_LEVEL, 0);
+}
+
+
+
+
 /**
  * @brief Creates announcements for maneuvers, plus maneuvers immediately following the next maneuver
  *
@@ -4712,6 +6032,7 @@ __F_START__
 	int level, dist, i, time, level2;
 	int speech_time, time2nav;
 	char *ret, *old, *buf, *next;
+	char *ret22;
 
 	char *temp_txt = NULL;
 
@@ -4720,14 +6041,33 @@ __F_START__
 
 	if (type != attr_navigation_speech)
 	{
-		return2 show_maneuver(nav, itm, cmd, type, 0); // We accumulate maneuvers only in speech navigation
+		if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+		{
+			return2 show_maneuver_bicycle(nav, itm, cmd, type, 0, DONT_KNOW_LEVEL); // not for speech, so just return the real values
+		}
+		else
+		{
+			return2 show_maneuver(nav, itm, cmd, type, 0); // not for speech, so just return the real values
+		}
 	}
 
 
-	// -- bicycle mode START --
+	int cur_vehicle_speed = 0;
+	if ((global_navit) && (global_navit->vehicle))
+	{
+		cur_vehicle_speed = global_navit->vehicle->speed; // in km/h
+	}
+
+
+	dbg(0, "SPEECH:[-0v-] current speed=%d\n", cur_vehicle_speed);
+
+
+	// -- bicycle mode START -------------------------------------
+	// -- bicycle mode START -------------------------------------
+	// -- bicycle mode START -------------------------------------
 	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 	{
-		level = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length);
+		level = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length, 0);
 
 		//dbg(0, "level = %d\n", level);
 		//dbg(0, "(nn)itm->way.flags=%x\n", itm->way.flags);
@@ -4774,7 +6114,7 @@ __F_START__
 		if (cur && cur->itm) // we have a next command
 		{
 			dist = prev->itm->dest_length - cur->itm->dest_length;
-			level2 = navigation_get_announce_level(nav, itm->next->way.item.type, dist);
+			level2 = navigation_get_announce_level(nav, itm->next->way.item.type, dist, 0);
 			//dbg(0, "(next)level2 = %d\n", level2);
 			//dbg(0, "(next)dist=%d\n", dist);
 
@@ -4796,7 +6136,9 @@ __F_START__
 			}
 		}
 	}
-	// -- bicycle mode END --
+	// -- bicycle mode END   -------------------------------------
+	// -- bicycle mode END   -------------------------------------
+	// -- bicycle mode END   -------------------------------------
 	else
 	{
 
@@ -4805,11 +6147,12 @@ __F_START__
 		// -------------------------------------------------
 		// -------------------------------------------------
 		// -- ******************************************* --
+		//                   CAR MODE
 		// -- ******************************************* --
 		// -------------------------------------------------
 		// -------------------------------------------------
 
-		level = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length);
+		level = navigation_get_announce_level(nav, itm->way.item.type, distance - cmd->length, ((float)cur_vehicle_speed / 3.6f));
 		//dbg(0, "level = %d\n", level);
 		//dbg(0, "(nn)itm->way.flags=%x\n", itm->way.flags);
 		//dbg(0, "(nn)itm->next->way.flags=%x\n", itm->next->way.flags);
@@ -4821,7 +6164,7 @@ __F_START__
 			temp_ts = 99999999;
 		}
 
-		int time2nav_2 = navigation_time(itm, cmd->itm->prev);
+		int time2nav_2 = navigation_time_real_speed(itm, cmd->itm->prev, cur_vehicle_speed);
 
 		dbg(0, "SPEECH:[-00-] last spoken ago=%f\n", (float)((temp_ts - global_last_spoken) / 1000.0f));
 		dbg(0, "SPEECH:[-01-] meters to next maneuver=%d\n", (distance - cmd->length));
@@ -4842,6 +6185,300 @@ __F_START__
 #endif
 
 		dbg(0, "SPEECH:[-03-] time2nav secs=%f\n", ((float)time2nav_2 / 10.0f));
+
+		int dist_to_next_spoken_command = -1;
+		float secs_to_next_spoken_command = -1;
+		if (level > 0)
+		{
+			dist_to_next_spoken_command = (distance - cmd->length) - (navigation_get_announce_dist_for_level_on_item(nav, itm->way.item.type, (level - 1), ((float)cur_vehicle_speed / 3.6f)   )  );
+
+			if (cur_vehicle_speed > 0)
+			{
+				secs_to_next_spoken_command = ((float)dist_to_next_spoken_command / ((float)cur_vehicle_speed / 3.6f));
+			}
+			else
+			{
+				secs_to_next_spoken_command = ((float)dist_to_next_spoken_command / ((float)itm->speed / 3.6f));
+			}
+		}
+
+
+		// current maneuver -------
+		ret22 = show_maneuver_at_level(nav, itm, cmd, type, 0, level, 0);
+		// current maneuver -------
+
+		if (nav->speech)
+		{
+			speech_time = speech_estimate_duration(nav->speech, ret22);
+			dbg(0, "SPEECH:[-CUR-] secs=%f text=%s\n", ((float)speech_time)/10.0f, ret22);
+		}
+		else
+		{
+			speech_time = -1;
+			dbg(0, "SPEECH:[-CUR-] secs=-1 text=%s\n", ret22);
+		}
+
+
+		dbg(0, "SPEECH:[-03-] meters to next announcement=%d secs to next announcement=%f\n", dist_to_next_spoken_command, secs_to_next_spoken_command);
+
+		if (level == 3)
+		{
+
+// ===========----------- LEVEL 3 -----------===========
+
+#if 0
+			if (((float)((temp_ts - global_last_spoken) / 1000.0f)) < 3.0f)
+			{
+				dbg(0, "SPEECH:[-NOOP-] 004: already spoken in the last 3 secs.\n");
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+			if (secs_to_next_spoken_command < 7 )
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+#ifdef _DEBUG_BUILD_
+				// speak debug ----
+				navit_say(global_navit, "level 3a wieder in 7 sekunden");
+				// speak debug ----
+#endif
+
+				dbg(0, "SPEECH:[-NOOP-] 006b: want to speak again in less than %d secs. level=%d\n", 7, level);
+				return2 g_strdup(""); // dont speak this command now!
+			}
+
+			if (secs_to_next_spoken_command < (((float)speech_time/10.0f) + 3) )
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+#ifdef _DEBUG_BUILD_
+				// speak debug ----
+				temp_txt = g_strdup_printf("level 3b wieder in %d sekunden", (int)(((float)speech_time/10.0f) + 3));
+				navit_say(global_navit, temp_txt);
+				g_free(temp_txt);
+				// speak debug ----
+#endif
+
+				dbg(0, "SPEECH:[-NOOP-] 006: want to speak again in less than %d secs. level=%d\n", (((float)speech_time/10.0f) + 3), level );
+				return2 g_strdup(""); // dont speak this command now!
+			}
+// ===========----------- LEVEL 3 -----------===========
+
+
+		}
+		else if (level == 2)
+		{
+
+// ===========----------- LEVEL 2 -----------===========
+
+
+#if 0
+			if (secs_to_next_spoken_command < 3 )
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+#ifdef _DEBUG_BUILD_
+				// speak debug ----
+				navit_say(global_navit, "level 2a wieder in 3 sekunden");
+				// speak debug ----
+#endif
+
+				dbg(0, "SPEECH:[-NOOP-] 007b: want to speak again in less than %d secs. level=%d\n", 3, level);
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+#if 1
+			if (secs_to_next_spoken_command < (((float)speech_time/10.0f) + 1) )
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+#ifdef _DEBUG_BUILD_
+				// speak debug ----
+				temp_txt = g_strdup_printf("level 2b wieder in %d sekunden", (int)(((float)speech_time/10.0f) + 1));
+				navit_say(global_navit, temp_txt);
+				// speak debug ----
+#endif
+
+				dbg(0, "SPEECH:[-NOOP-] 007: want to speak again in less than %d secs. level=%d\n", (int)(((float)speech_time/10.0f) + 1), level);
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+#if 0
+			if (((float)((temp_ts - global_last_spoken) / 1000.0f)) < 5.0f)
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+#ifdef _DEBUG_BUILD_
+				// speak debug ----
+				navit_say(global_navit, "level 2c schon vor 5 sekunden");
+				// speak debug ----
+#endif
+
+				dbg(0, "SPEECH:[-NOOP-] 005: already spoken in the last 5 secs. level=%d\n", level);
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+// ===========----------- LEVEL 2 -----------===========
+
+
+		}
+		else if (level == 1)
+		{
+
+// ===========----------- LEVEL 1 -----------===========
+
+
+#if 0
+			if (((float)time2nav_2 / 10.0f) < 5.0f)
+			{
+				dbg(0, "SPEECH:[-NOOP-] 001: less than 5 secs. to maneuver\n");
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+#if 0
+			if ((distance - cmd->length) < 50)
+			{
+				dbg(0, "SPEECH:[-NOOP-] 003: less than 50 meters to maneuver\n");
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+
+			if (dist_to_next_spoken_command < 18)
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+#ifdef _DEBUG_BUILD_
+				// speak debug ----
+				temp_txt = g_strdup_printf("level 1a wieder in %d sekunden", 18);
+				navit_say(global_navit, temp_txt);
+				g_free(temp_txt);
+				// speak debug ----
+#endif
+
+
+				dbg(0, "SPEECH:[-NOOP-] 011: less than 18 meters to next announcement\n");
+				return2 g_strdup(""); // dont speak this command now!
+			}
+
+#if 0
+			if (((float)((temp_ts - global_last_spoken) / 1000.0f)) < 4.0f)
+			{
+				if (ret22)
+				{
+					g_free(ret22);
+					ret22 = NULL;
+				}
+
+				dbg(0, "SPEECH:[-NOOP-] 002: already spoken in the last 4 secs. level=%d\n", level);
+				return2 g_strdup(""); // dont speak this command now!
+			}
+#endif
+
+			if (secs_to_next_spoken_command < (((float)speech_time/10.0f) + 1) )
+			{
+				if (secs_to_next_spoken_command < 3.0f)
+				{
+					if (ret22)
+					{
+						g_free(ret22);
+						ret22 = NULL;
+					}
+
+#ifdef _DEBUG_BUILD_
+					// speak debug ----
+					temp_txt = g_strdup_printf("level 1b wieder in %d sekunden", 3);
+					navit_say(global_navit, temp_txt);
+					g_free(temp_txt);
+					// speak debug ----
+#endif
+
+
+					dbg(0, "SPEECH:[-NOOP-] 008: want to speak again in less than %d secs. level=%d\n", (((float)speech_time/10.0f) + 1), level);
+					return2 g_strdup(""); // dont speak this command now!
+				}
+				else
+				{
+					// if we have at least 3 seconds left, still say level 1 announcement (without the streetname/destination name)
+					dbg(0, "SPEECH:[-NOOP-] 008lo: use level=%d announcement without destination name\n", level);
+					if (ret22)
+					{
+						g_free(ret22);
+						ret22 = NULL;
+					}
+					ret22 = show_maneuver_at_level(nav, itm, cmd, type, 0, level, -1);
+					if (nav->speech)
+					{
+						speech_time = speech_estimate_duration(nav->speech, ret22);
+						dbg(0, "SPEECH:[-CUR-] :lo: secs=%f text=%s\n", ((float)speech_time)/10.0f, ret22);
+					}
+					else
+					{
+						speech_time = -1;
+						dbg(0, "SPEECH:[-CUR-] :lo: secs=-1 text=%s\n", next);
+					}
+
+					if (secs_to_next_spoken_command < (((float)speech_time/10.0f) + 0) )
+					{
+						if (ret22)
+						{
+							g_free(ret22);
+							ret22 = NULL;
+						}
+
+#ifdef _DEBUG_BUILD_
+						// speak debug ----
+						temp_txt = g_strdup_printf("level 1c wieder in %d sekunden", (int)(((float)speech_time/10.0f) + 0));
+						navit_say(global_navit, temp_txt);
+						g_free(temp_txt);
+						// speak debug ----
+#endif
+
+
+						dbg(0, "SPEECH:[-NOOP-] 008loEE: giving up on this announcement\n");
+						return2 g_strdup(""); // dont speak this command now!
+					}
+				}
+			}
+
+// ===========----------- LEVEL 1 -----------===========
+
+		}
+
+
+
+
+
+
 #ifdef HAVE_API_ANDROID
 		temp_txt = g_strdup_printf("SPEECH:[-03-] time2nav secs=%f\n", ((float)time2nav_2 / 10.0f));
 		android_send_generic_text(20, temp_txt);
@@ -4851,7 +6488,7 @@ __F_START__
 		if (level > 1)
 		{
 			dbg(0, "SPEECH:[-R1-]\n");
-			return2 show_maneuver(nav, itm, cmd, type, 0); // We accumulate maneuvers only if they are close
+			return2 ret22; // We accumulate maneuvers only if they are close (level-0 and level-1)
 		}
 
 		if (cmd->itm->told)
@@ -4867,13 +6504,37 @@ __F_START__
 			android_send_generic_text(20, temp_txt);
 			g_free(temp_txt);
 #endif
+			if (ret22)
+			{
+				g_free(ret22);
+				ret22 = NULL;
+			}
+
 
 			return2 g_strdup("");
 		}
 
+
 		// current maneuver -------
-		ret = show_maneuver(nav, itm, cmd, type, 0);
-		time2nav = navigation_time(itm, cmd->itm->prev);
+		ret = ret22;
+		time2nav = navigation_time_real_speed(itm, cmd->itm->prev, cur_vehicle_speed);
+		// current maneuver -------
+
+
+#if 0
+		if (nav->speech)
+		{
+			speech_time = speech_estimate_duration(nav->speech, ret);
+			dbg(0, "SPEECH:[-CUR-] secs=%f text=%s\n", ((float)speech_time)/10.0f, ret);
+		}
+		else
+		{
+			speech_time = -1;
+			dbg(0, "SPEECH:[-CUR-] secs=-1 text=%s\n", next);
+		}
+#endif
+
+
 		old = NULL;
 
 		dbg(0, "SPEECH:[-04-] time2nav secs=%f\n", ((float)time2nav / 10.0f));
@@ -4883,10 +6544,14 @@ __F_START__
 		g_free(temp_txt);
 #endif
 
-		// current maneuver -------
 
+
+
+		// next maneuver -------
 		cur = cmd->next;
 		prev = cmd;
+		// next maneuver -------
+
 
 		i = 0;
 		int max_announcements = 3;
@@ -4895,10 +6560,17 @@ __F_START__
 			max_announcements = 2;
 		}
 
-		while (cur && cur->itm)
+		while (cur && cur->itm) // only accumulate at "level 0" or "level 1"
 		{
 			// We don't merge more than "max_announcements" announcements...
 			if (i > (max_announcements - 2))
+			{
+				break;
+			}
+
+			dist = prev->itm->dest_length - cur->itm->dest_length; // distance between next 2 maneuvers in meters
+
+			if (dist > 420) // too far apart, bail out
 			{
 				break;
 			}
@@ -4907,25 +6579,33 @@ __F_START__
 			if (nav->speech)
 			{
 				speech_time = speech_estimate_duration(nav->speech, next);
-				dbg(0, "SPEECH: secs=%f text=%s\n", ((float)speech_time)/10.0f, next);
+				dbg(0, "SPEECH:[-NXT-] secs=%f text=%s\n", ((float)speech_time)/10.0f, next);
 			}
 			else
 			{
 				speech_time = -1;
-				dbg(0, "SPEECH: secs=-1 text=%s\n", next);
+				dbg(0, "SPEECH:[-NXT-] secs=-1 text=%s\n", next);
 			}
 			g_free(next);
 
 			if (speech_time == -1)
 			{
 				// user didn't set cps
-				speech_time = 20; // assume 2 seconds
-				dbg(0, "SPEECH:(2) secs=%f\n", ((float)speech_time)/10.0f);
+				speech_time = 25; // assume 2.5 seconds
+				dbg(0, "SPEECH:[-NXT-](2) secs=%f\n", ((float)speech_time)/10.0f);
 			}
 
-			dist = prev->itm->dest_length - cur->itm->dest_length;
+			//if (cur_vehicle_speed > 0)
+			//{
+			//	time = ((float)dist / ((float)cur_vehicle_speed / 3.6f)) * 10;
+			//}
+			//else
+			//{
+			//	time = navigation_time_real_speed(prev->itm, cur->itm->prev, cur_vehicle_speed);
 			time = navigation_time(prev->itm, cur->itm->prev);
-			dbg(0, "SPEECH:[-05-] dist meters=%d time secs=%f speech_time=%f\n", dist, ((float)time)/10.0f, ((float)speech_time)/10.0f);
+			//}
+
+			dbg(0, "SPEECH:[-NXT-][-05-] dist meters=%d time secs=%f speech_time=%f\n", dist, ((float)time)/10.0f, ((float)speech_time)/10.0f);
 #ifdef HAVE_API_ANDROID
 			temp_txt = g_strdup_printf("SPEECH:[-05-] dist meters=%d time secs=%f speech_time=%f\n", dist, ((float)time)/10.0f, ((float)speech_time)/10.0f);
 			android_send_generic_text(20, temp_txt);
@@ -4935,13 +6615,34 @@ __F_START__
 
 			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 			{
+				// !! should never get here !!
 			}
 			else
 			{
-				dbg(0, "SPEECH: time secs=%f speech_time secs=%f [if (time >= (speech_time + 30))]\n", ((float)time)/10.0f, ((float)speech_time)/10.0f);
-				if (time >= (speech_time + 30)) // in 1/10th of seconds
-				{ // 0 seconds for understanding what has been said
-					break;
+				dbg(0, "SPEECH: time secs=%f speech_time secs=%f [if (time >= (speech_time + 35))]\n", ((float)time)/10.0f, ((float)speech_time)/10.0f);
+
+				if (i == 0)
+				{
+					if (dist < 170) // distance between maneuvers less than 170m --> always merge maneuvers
+					{
+					}
+					else
+					{
+						// **OLD** // if (time >= (speech_time + 35)) // (time to turn) >= (time to speak command + 3.5 secs.)
+						if (time > ((global_level1_announcement * 10.0f) - 3) ) // more than "global_level1_announcement" seconds to next maneuver -> don't merge it
+						{
+							dbg(0, "SPEECH:*break first*\n");
+							break;
+						}
+					}
+				}
+				else
+				{
+					if (time > (global_level0_announcement * 10.0f)) // more than "global_level0_announcement" seconds to next maneuver -> don't merge it
+					{
+						dbg(0, "SPEECH:*break next*\n");
+						break;
+					}
 				}
 			}
 
@@ -4951,23 +6652,26 @@ __F_START__
 			g_free(buf);
 
 			dbg(0, "SPEECH: speech_est_dur secs=%f time2nav secs=%f\n", (float)(speech_estimate_duration(nav->speech, ret))/10.0f, (float)time2nav/10.0f);
-			if (nav->speech && speech_estimate_duration(nav->speech, ret) > time2nav)
-			{
-				g_free(ret);
-				ret = old;
-				i = (max_announcements - 1); // This will terminate the loop
-			}
-			else
-			{
+			// if (nav->speech && speech_estimate_duration(nav->speech, ret) > time2nav)
+			// {
+			// 	g_free(ret);
+			// 	ret = old;
+			// 	i = (max_announcements - 1); // This will terminate the loop
+			// 	dbg(0, "SPEECH:*terminate loop*\n");
+			// }
+			// else
+			// {
 				g_free(old);
-			}
+			// }
 
 
 			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 			{
+				// !! should never get here !!
 			}
 			else
 			{
+#if 0
 				dbg(0, "SPEECH: time secs=%f speech_time secs=%f [if (time <= speech_time)]\n", ((float)time)/10.0f, ((float)speech_time)/10.0f);
 				// If the two maneuvers are *really* close, we shouldn't tell the second one again, because TTS won't be fast enough
 				if (time <= speech_time)
@@ -4980,6 +6684,7 @@ __F_START__
 					//dbg(0, "cancel speak:%s\n", ret);
 					cur->itm->told = 1;
 				}
+#endif
 			}
 
 			prev = cur;
@@ -4990,13 +6695,10 @@ __F_START__
 		// -------------------------------------------------
 		// -------------------------------------------------
 		// -- ******************************************* --
+		//                   CAR MODE
 		// -- ******************************************* --
 		// -------------------------------------------------
 		// -------------------------------------------------
-
-
-
-
 
 	}
 
@@ -5019,6 +6721,10 @@ __F_END__
 
 // ----- global var, BAD!! -------
 int global_spoke_last_position_update = 0;
+int previous_dest_length = -1;
+int previous_dest_length_save = -1;
+struct navigation_command *last_first_cmd_save = NULL;
+int global_turn_around_spoken = 0;
 // ----- global var, BAD!! -------
 
 static void navigation_call_callbacks(struct navigation *this_, int force_speech)
@@ -5029,6 +6735,8 @@ __F_START__
 	int level_cur;
 	int distance_orig;
 	void *p = this_;
+	int dont_speak_yet = 0;
+	int level_last_save = 99;
 
 	if (!this_->cmd_first)
 	{
@@ -5037,7 +6745,8 @@ __F_START__
 		return2;
 	}
 
-	callback_list_call(this_->callback, 1, &p);
+	// EMPTY: calls nothing!!
+	// ****** // callback_list_call(this_->callback, 1, &p);
 
 	//if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 	//{
@@ -5050,9 +6759,23 @@ __F_START__
 	//dbg(0, "fdl=%d cmdidl=%d\n", this_->first->dest_length, this_->cmd_first->itm->dest_length);
 	distance_orig = distance;
 	distance = round_distance(distance);
+
+	int cur_vehicle_speed = 0;
+	if ((global_navit) && (global_navit->vehicle))
+	{
+		cur_vehicle_speed = global_navit->vehicle->speed;
+	}
+
+	dbg(0, "NCC_:distance_orig=%d distance=%d curr vehicle speed=%d force_speech=%d\n", distance_orig, distance, global_navit->vehicle->speed, force_speech);
+
+
 	if (this_->turn_around_limit && this_->turn_around == this_->turn_around_limit)
 	{
+
+		dbg(0, "NAV_TURNAROUND:005 ta=%d talimit=%d\n", this_->turn_around, this_->turn_around_limit);
+
 		//dbg(0, "xx 001 d=%d rd=%d dt=%d\n", distance_orig, distance_orig, this_->distance_turn);
+#if 0
 		while (distance > this_->distance_turn)
 		{
 			this_->level_last = 4;
@@ -5067,13 +6790,58 @@ __F_START__
 			{
 				this_->distance_turn = 500;
 			}
+#endif
 
-			//dbg(0, "xx loop 001 d=%d dt=%d\n", distance, this_->distance_turn);
+			// we need to force a maneuver for "turn around" ------------------
+			this_->level_last = 4;
+			level = 4;
+			force_speech = 2;
+			// this_->distance_turn *= 100;
+
+#if 1
+			global_driven_away_from_route = 0;
+			global_spoke_last_position_update = 0;
+			global_last_spoken = -1;
+			previous_dest_length = -1;
+			previous_dest_length_save = -1;
+			last_first_cmd_save = NULL;
+#endif
+
+			this_->level_last = 99;
+
+
+			this_->level_last = level;
+			this_->curr_delay = 0;
+
+			dbg(0, "NCC_:force_speech=%d distance=%d level=%d global_spoke_last_position_update=%d\n", force_speech, distance, level, global_spoke_last_position_update);
+			dbg(0, "NCC_:========= END ==========\n");
+
+			global_spoke_last_position_update = 1;
+
+			// ----------------------------------
+			// ----------------------------------
+			// calls -> calls navit_speak
+			//
+			callback_list_call(this_->callback_speech, 1, &p);
+			// ----------------------------------
+			// ----------------------------------
+
+
+			return2;
+
+			// we need to force a maneuver for "turn around" ------------------
+
+#if 0
+			dbg(0, "NCC_:loop 001 d=%d dt=%d force_speech=%d\n", distance, this_->distance_turn, force_speech);
 		}
+#endif
+
 	}
-	else if (!this_->turn_around_limit || this_->turn_around == -this_->turn_around_limit + 1)
+	else if (!this_->turn_around_limit || this_->turn_around != this_->turn_around_limit)
 	{
 		this_->distance_turn = 50;
+
+		global_turn_around_spoken = 0; // reset turn around speak flag
 
 		//dbg(0, "lcur=%d lprev=%d lnext=%d\n", this_->cmd_first->itm->length, this_->cmd_first->itm->prev->length, this_->cmd_first->itm->next->length);
 		//dbg(0, "xx 002a d=%d d2=%d diff=%d\n", distance, (distance - this_->cmd_first->length), (this_->cmd_first->itm->length - distance_orig));
@@ -5081,8 +6849,60 @@ __F_START__
 		//dbg(0, "xx 002a ll001=%d\n", (this_->cmd_first->itm->prev->dest_length - this_->cmd_first->itm->dest_length));
 
 		distance -= this_->cmd_first->length;
-		level = navigation_get_announce_level_cmd(this_, this_->first, this_->cmd_first, distance_orig);
-		level_cur = navigation_get_announce_level(this_, this_->first->way.item.type, distance_orig);
+
+
+		level = navigation_get_announce_level_cmd(this_, this_->first, this_->cmd_first, distance_orig, ((float)cur_vehicle_speed / 3.6f) );
+		level_cur = navigation_get_announce_level(this_, this_->first->way.item.type, distance_orig, ((float)cur_vehicle_speed / 3.6f));
+
+
+
+		if (last_first_cmd_save != this_->cmd_first)
+		{
+			last_first_cmd_save = this_->cmd_first;
+			previous_dest_length = previous_dest_length_save;
+		}
+		previous_dest_length_save = this_->cmd_first->itm->dest_length;
+		// level_last_save = this_->level_last;
+
+		//dbg(0, "NCC_:\n");
+		//dbg(0, "NCC_:0---passed item?---\n");
+		// dbg(0, "NCC_:level=%d level_cur=%d this_->level_last=%d distance_orig=%d distance=%d\n", level, level_cur, this_->level_last, distance_orig, distance);
+
+#if 1
+		if (previous_dest_length == -1)
+		{
+			dbg(0, "NCC_:no prev nav command\n");
+		}
+		else
+		{
+			if (distance_orig > 40)
+			{
+				if ((distance_orig + 25) >= (previous_dest_length - this_->cmd_first->itm->dest_length))
+				{
+					// we are still within 25 meters of the previous navigation command item
+					dont_speak_yet = 1;
+					dbg(0, "NCC_:too close to last command, speak later level=%d level_cur=%d back-distance=%d\n", level, level_cur, (previous_dest_length - this_->cmd_first->itm->dest_length));
+				}
+			}
+#if 1
+			else if (distance_orig > 20)
+			{
+				if ((distance_orig) > (previous_dest_length - this_->cmd_first->itm->dest_length))
+				{
+					// we are still at the position of the previous navigation command item
+					dont_speak_yet = 1;
+					dbg(0, "NCC_:too close to last command, speak later level=%d level_cur=%d back-distance=%d\n", level, level_cur, (previous_dest_length - this_->cmd_first->itm->dest_length));
+				}
+			}
+#endif
+		}
+#endif
+
+		//dbg(0, "NCC_:1---passed item?---\n");
+		//dbg(0, "NCC_:\n");
+		
+
+
 
 		//dbg(0, "xx 002 d=%d rd=%d dt=%d l=%d lcur=%d ll=%d\n", distance_orig, distance, this_->distance_turn, level, level_cur, this_->level_last);
 
@@ -5090,6 +6910,9 @@ __F_START__
 		{
 			/* only tell if the level is valid for more than 3 seconds */
 			int speed_distance = this_->first->speed * 30 / 36;
+
+			dbg(0, "NCC_:speed_distance=%d\n", speed_distance);
+
 
 			//dbg(0, "xx 003 speed_distance=%d this_->first->speed=%d globalslp=%d\n", speed_distance, this_->first->speed, global_spoke_last_position_update);
 
@@ -5101,22 +6924,24 @@ __F_START__
 				if ((level_cur > 0) && (global_spoke_last_position_update > 0))
 				{
 					// skip this time, speak command on the next update
-					//dbg(0, "SKIP[1] this update, speak next update (%d)!\n", global_spoke_last_position_update);
+					dbg(0, "NCC_:SKIP[1] this update, speak next update (%d)! level=%d level_cur=%d\n", global_spoke_last_position_update, level, level_cur);
 				}
 				else
 				{
 					this_->level_last = level_cur;
 					force_speech = 3;
+					dbg(0, "NCC_:force_speech(2)=%d\n", force_speech);
 				}
 			}
 			else
 			{
-				if (distance < speed_distance || navigation_get_announce_level_cmd(this_, this_->first, this_->cmd_first, distance - speed_distance) == level)
+				if (distance < speed_distance || navigation_get_announce_level_cmd(this_, this_->first, this_->cmd_first, distance - speed_distance, ((float)cur_vehicle_speed / 3.6f) ) == level)
 				{
 					//dbg(0, "distance %d speed_distance %d\n", distance, speed_distance);
 					//dbg(0, "level %d < %d\n", level, this_->level_last);
 					this_->level_last = level;
 					force_speech = 3;
+					dbg(0, "NCC_:force_speech(3)=%d\n", force_speech);
 					//dbg(0, "xx 004\n");
 				}
 			}
@@ -5130,21 +6955,24 @@ __F_START__
 			this_->item_last = this_->cmd_first->itm->way.item;
 			this_->level_last = 99; // new item, reset command level
 
+			dbg(0, "NCC_:Ni---new navigation command item!!---\n");
+
 			if (this_->delay)
 			{
 				this_->curr_delay = this_->delay;
 			}
 			else
 			{
-				if ((level_cur > 0) && (global_spoke_last_position_update > 0) && (distance_orig > 50))
-				{
-					// skip this time, speak command on the next update
-					//dbg(0, "SKIP[2] speech this update, speak at next update (%d)!\n", global_spoke_last_position_update);
-				}
-				else
-				{
+//				if ((level_cur > 0) && (global_spoke_last_position_update > 0) && (distance_orig > 50))
+//				{
+//					// skip this time, speak command on the next update
+//					dbg(0, "NCC_:SKIP[2] speech this update, speak at next update (%d)!\n", global_spoke_last_position_update);
+//				}
+//				else
+//				{
 					force_speech = 5;
-				}
+					dbg(0, "NCC_:force_speech(4)=%d\n", force_speech);
+//				}
 			}
 		}
 		else
@@ -5158,6 +6986,7 @@ __F_START__
 				if (!this_->curr_delay)
 				{
 					force_speech = 4;
+					dbg(0, "NCC_:force_speech(5)=%d\n", force_speech);
 				}
 			}
 		}
@@ -5170,19 +6999,21 @@ __F_START__
 		//dbg(0,"globalslp(2)=%d\n", global_spoke_last_position_update);
 	}
 
+
+#if 0
 	//dbg(0,"XA 000\n");
-	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
+	if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) // bicycle mode
 	{
 		if ((this_->previous) && (!item_is_equal(this_->cmd_first->itm->way.item, this_->previous->way.item)))
 		{
 			// item has changed, check if we missed a spoken level 0 command
 			if (this_->previous->told == 0)
 			{
-				dbg(0, "MISSED a level 0 spoken command!\n");
+				dbg(0, "NCC_:MISSED a level 0 spoken command!\n");
 
 				char *dir2 = _("right");
 				int delta2 = this_->cmd_previous->delta;
-				dbg(0, "missed delta = %d\n", delta2);
+				dbg(0, "NCC_:missed delta = %d\n", delta2);
 				if (delta2 < 0)
 				{
 					// TRANSLATORS: left, as in 'Turn left'
@@ -5192,26 +7023,60 @@ __F_START__
 
 				if (delta2 > 20)
 				{
-					dbg(0,"XA 002a\n");
+					dbg(0,"NCC_:XA 002a\n");
 					navit_say(this_->navit, dir2);
 					this_->previous->told = 1;
 				}
 			}
 		}
 	}
+#endif
+
 
 	this_->previous = this_->cmd_first->itm;
 	this_->cmd_previous = this_->cmd_first;
 
-	if (force_speech)
+#if 1
+	if ((dont_speak_yet == 1) && (force_speech))
 	{
-		this_->level_last = level;
-		this_->curr_delay = 0;
-		global_spoke_last_position_update = 1;
-		//dbg(0, "xx 017 force_speech! globalslp(f1)=%d\n", global_spoke_last_position_update);
+		dbg(0,"NCC_:this_->level_last = 99\n");
+		this_->level_last = 99;
+	}
+#endif
 
-		//dbg(0, "force_speech=%d distance=%d level=%d\n", force_speech, distance, level);
-		callback_list_call(this_->callback_speech, 1, &p);
+	if (global_driven_away_from_route == 1)
+	{
+		dbg(0,"NCC_:** NEW PATH **\n");
+		global_driven_away_from_route = 0;
+		global_spoke_last_position_update = 0;
+		global_last_spoken = -1;
+		previous_dest_length = -1;
+		previous_dest_length_save = -1;
+		last_first_cmd_save = NULL;
+
+		this_->level_last = 99;
+	}
+
+	if ( (dont_speak_yet == 0) || ((global_vehicle_profile == 1) || (global_vehicle_profile == 2)) )
+	{
+		if (force_speech)
+		{
+			this_->level_last = level;
+			this_->curr_delay = 0;
+
+			dbg(0, "NCC_:force_speech=%d distance=%d level=%d global_spoke_last_position_update=%d\n", force_speech, distance, level, global_spoke_last_position_update);
+			dbg(0, "NCC_:========= END ==========\n");
+
+			global_spoke_last_position_update = 1;
+
+			// ----------------------------------
+			// ----------------------------------
+			// calls -> calls navit_speak
+			//
+			callback_list_call(this_->callback_speech, 1, &p);
+			// ----------------------------------
+			// ----------------------------------
+		}
 	}
 
 __F_END__
@@ -5246,21 +7111,36 @@ __F_START__
 	dbg(0, "RS:001:route_status=%s\n", route_status_to_name(attr->u.num));
 #endif
 
+
+	dbg(0, "NCC_:NU:RRRRSSSSSS::route_status=%s\n", route_status_to_name(attr->u.num));
+
+	if (attr->u.num == route_status_path_done_new)
+	{
+		// route calculated new, you drove a different path?
+		global_driven_away_from_route = 1;
+	}
+
+
 	//dbg(1, "enter %d\n", mode);
 	if (attr->u.num == route_status_no_destination || attr->u.num == route_status_not_found || attr->u.num == route_status_path_done_new)
 	{
+		dbg(0, "NCC_:NU:navigation_flush\n");
 		navigation_flush(this_);
 	}
 
 	if (attr->u.num != route_status_path_done_new && attr->u.num != route_status_path_done_incremental)
 	{
 		//dbg(0, "return 002\n");
+		dbg(0, "NCC_:NU:ret 001\n");
+
 		return2;
 	}
 
 	if (!this_->route)
 	{
 		//dbg(0, "return 003\n");
+		dbg(0, "NCC_:NU:ret 002\n");
+
 		return2;
 	}
 
@@ -5290,8 +7170,17 @@ __F_START__
 
 	//dbg(1,"enter\n");
 
+	dbg(0, "NCC_:NU:------ LOOP START ------\n");
+
+	int first_item = 1;
+	this_->turn_around = 0;
+
 	while ((ritem = map_rect_get_item(mr)))
 	{
+
+		dbg(0, "NAVR:001:%s\n", item_to_name(ritem->type));
+
+#if 0
 		if (ritem->type == type_route_start && this_->turn_around > -this_->turn_around_limit + 1)
 		{
 			this_->turn_around--;
@@ -5300,12 +7189,37 @@ __F_START__
 		if (ritem->type == type_route_start_reverse && this_->turn_around < this_->turn_around_limit)
 		{
 			this_->turn_around++;
+			dbg(0, "NAVR:001.1:** TURN AROUND **\n");
 		}
+#endif
 
-		if (ritem->type != type_street_route)
+#if 1
+		if (first_item == 1)
 		{
+			first_item = 0;
+			if (ritem->type == type_route_start_reverse)
+			{
+				this_->turn_around = this_->turn_around_limit;
+
+				dbg(0, "NAV_TURNAROUND:006 ta=%d talimit=%d\n", this_->turn_around, this_->turn_around_limit);
+
+				dbg(0, "NAVR:001.1:T_A:** TURN AROUND **:%s\n", item_to_name(ritem->type));
+			}
+			else
+			{
+				dbg(0, "NAVR:001.1:T_A:first item=%s\n", item_to_name(ritem->type));
+			}
+		}
+#endif
+
+
+		dbg(0, "NAVR:001:X1:%s\n", item_to_name(ritem->type));
+		if ((ritem->type != type_street_route) && (ritem->type != type_street_route_waypoint))
+		{
+			dbg(0, "NAVR:001:X2R:%s\n", item_to_name(ritem->type));
 			continue;
 		}
+		dbg(0, "NAVR:001:X3:%s\n", item_to_name(ritem->type));
 
 		if (first && item_attr_get(ritem, attr_street_item, &street_item))
 		{
@@ -5323,20 +7237,33 @@ __F_START__
 			if (itm && itm->way.dir != street_direction.u.num)
 			{
 				//dbg(2,"wrong direction\n");
+				dbg(0, "NAVR:001.2:*+ WRONG DIRECTION +*\n");
 				itm = NULL;
 			}
 
+			dbg(0, "NCC_:NU:navigation_destroy_itms_cmds\n");
 			navigation_destroy_itms_cmds(this_, itm);
 
 			if (itm)
 			{
+				dbg(0, "NCC_:NU:navigation_itm_update\n");
+
 				navigation_itm_update(itm, ritem);
 				break;
 			}
 			//dbg(1,"not on track\n");
 		}
+
+		dbg(0, "NAVR:001:X4:%s\n", item_to_name(ritem->type));
+		dbg(0, "NCC_:NU:navigation_itm_new\n");
 		navigation_itm_new(this_, ritem);
+		dbg(0, "NAVR:001:X5:%s\n", item_to_name(ritem->type));
+
 	}
+
+
+	dbg(0, "NCC_:NU:------ LOOP END ------\n");
+
 
 	//dbg(2, "turn_around=%d\n", this_->turn_around);
 
@@ -5348,17 +7275,24 @@ __F_START__
 		route_clear_freetext_list();
 #endif
 
+		dbg(0, "NCC_:NU:navigation_destroy_itms_cmds[first]\n");
+
 		navigation_destroy_itms_cmds(this_, NULL);
 	}
 	else
 	{
 		if (!ritem)
 		{
+			dbg(0, "NCC_:NU:navigation_itm_new[!ritem]\n");
 			navigation_itm_new(this_, NULL);
 			//dbg(0, "Enter: make_maneuvers\n");
+			dbg(0, "NAVR:001.2:*= MAKE MANEUVERS =*\n");
+			dbg(0, "NCC_:NU:make_maneuvers[!ritem]\n");
 			make_maneuvers(this_, this_->route);
 			//dbg(0, "end  : make_maneuvers\n");
 		}
+
+		dbg(0, "NCC_:NU:calculate_dest_distance\n");
 		calculate_dest_distance(this_, incr);
 
 		// calls navit_speak later !! ----------
@@ -5443,8 +7377,12 @@ navigation_get_map(struct navigation *this_)
 	attrs[2] = &data;
 	attrs[3] = &description;
 	attrs[4] = NULL;
+
 	if (!this_->map)
+	{
 		this_->map = map_new(NULL, attrs);
+	}
+
 	return this_->map;
 }
 
@@ -5476,9 +7414,30 @@ static int navigation_map_item_coord_get(void *priv_data, struct coord *c, int c
 	struct map_rect_priv *this = priv_data;
 
 	if (this->ccount || !count)
+	{
+		// dbg(0, "NAVICG:return 001 %d %d\n", this->ccount, count);
 		return 0;
+	}
 
-	*c = this->itm->start;
+	if (this->item.type == type_nav_waypoint)
+	{
+		if (this->itm->way.dir == 99)
+		{
+			dbg(0, "NAVICG:waypoint:END of seg\n");
+			*c = this->itm->end;
+		}
+		else
+		{
+			dbg(0, "NAVICG:waypoint:start of seg\n");
+			*c = this->itm->start;
+		}
+	}
+	else
+	{
+		// dbg(0, "NAVICG:normal type=%s cc=%d\n", item_to_name(this->item.type), this->ccount);
+		*c = this->itm->start;
+	}
+
 	this->ccount = 1;
 
 	return 1;
@@ -5544,6 +7503,19 @@ static int navigation_map_item_attr_get(void *priv_data, enum attr_type attr_typ
 				this_->str = attr->u.str = show_next_maneuvers(this_->nav, this_->cmd_itm, this_->cmd, attr_type);
 				//dbg(0, "back : attr_navigation_speech\n");
 				return 1;
+			}
+			else if (this_->nav->turn_around_limit && this_->nav->turn_around == this_->nav->turn_around_limit)
+			{
+				if (global_turn_around_spoken == 0)
+				{
+					this_->str = attr->u.str = g_strdup(_("When possible, please turn around"));
+					global_turn_around_spoken = 1;
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
 			}
 			return 0;
 		case attr_length:
@@ -5656,8 +7628,9 @@ static int navigation_map_item_attr_get(void *priv_data, enum attr_type attr_typ
 					if (prev)
 					{
 						int delta = 0;
+						int delta_real = 0;
 						char *reason = NULL;
-						maneuver_required2(this_->nav, prev, itm, &delta, &reason);
+						maneuver_required2(this_->nav, prev, itm, &delta, &delta_real, &reason);
 						this_->str = attr->u.str = g_strdup_printf("reason:%s", reason);
 						return 1;
 					}
@@ -5718,28 +7691,164 @@ static void navigation_map_rect_destroy(struct map_rect_priv *priv)
 	g_free(priv);
 }
 
+
+
+void navigation_dump_items(struct navigation *this_)
+{
+	if (this_->first)
+	{
+		dbg(0, "NAVR:dump:=================++++++++++++================\n");
+		struct navigation_itm *i;
+		int count = 0;
+
+		i = this_->first;
+		while (i)
+		{
+			count++;
+			i = i->next;
+		}
+
+		i = this_->first;
+		while (i)
+		{
+			count--;
+			dbg(0, "NAVR:dump:count=%d %p %d\n", count, i, i->way.dir);
+			i = i->next;
+		}
+		dbg(0, "NAVR:dump:=================++++++++++++================\n");
+	}
+}
+
+
+// -----------------------------------
+static int save_last_dest_count = -1;
+// -----------------------------------
+
 static struct item *
 navigation_map_get_item(struct map_rect_priv *priv)
 {
 	struct item *ret = &priv->item;
 	int delta;
 
+	int fake_dir1;
+	int fake_dir2;
+
+	dbg(0, "NAVR:ROUTE:Enter:\n");
+	dbg(0, "NAVR:ROUTE:Enter:------------------------\n");
+
 	if (!priv->itm_next)
 	{
+		dbg(0, "NAVR:ROUTE:006:0000\n");
 		return NULL;
 	}
 
-	priv->itm = priv->itm_next;
+	int stepped_to_waypoint = 0;
+
+	// now check if we missed a waypoint, if so -> move back to waypoint -------------------------
+	if (priv->itm)
+	{
+		if (save_last_dest_count != -1)
+		{
+			int count_back = (save_last_dest_count - priv->itm->dest_count - 1);
+			int count_forw = count_back;
+			dbg(0, "NAVR:ROUTE:006:cback:%d = (%d - %d - 1)\n", count_back, save_last_dest_count, priv->itm->dest_count);
+
+			struct navigation_itm *i = priv->itm;
+
+			// go to first item to check
+			while (count_back > 0)
+			{
+				count_back--;
+				if (i->prev)
+				{
+					i = i->prev;
+					dbg(0, "NAVR:ROUTE:006:cback:stepping back to item #%d dir=%d\n", i->dest_count, i->way.dir);
+				}
+			}
+
+			// now step forward until waypoint found, or just skip the whole thing if we dont find any waypoint
+			while (count_forw > 0)
+			{
+				if (i)
+				{
+					dbg(0, "NAVR:ROUTE:006:cback:stepping forw to item #%d dir=%d\n", i->dest_count, i->way.dir);
+
+					if ((i->way.dir == 99) || (i->way.dir == -99))
+					{
+						// found a waypoint
+						priv->itm = i;
+						stepped_to_waypoint = 1;
+
+						dbg(0, "NAVR:ROUTE:006:cback:stepping found waypoint item #%d dir=%d itm=%p\n", priv->itm->dest_count, priv->itm->way.dir, priv->itm);
+
+						break;
+					}
+
+					count_forw--;
+					if (i->next)
+					{
+						i = i->next;
+					}
+				}
+			}
+
+		}
+	}
+	// now check if we missed a waypoint, if so -> move back to waypoint -------------------------
+
+
+	if (priv->itm)
+	{
+		dbg(0, "NAVR:ROUTE:006:8888:1: %p dir=%d DST_COUNT(1)=%d\n", priv->itm, priv->itm->way.dir, priv->itm->dest_count);
+		fake_dir1 = priv->itm->way.dir;
+		save_last_dest_count = priv->itm->dest_count;
+	}
+	else
+	{
+		dbg(0, "NAVR:ROUTE:006:8888:1: NULL\n");
+		fake_dir1 = 0;
+		save_last_dest_count = -1;
+	}
+
+	if (stepped_to_waypoint != 1)
+	{
+		priv->itm = priv->itm_next;
+	}
+
+
+	fake_dir2 = priv->itm->way.dir;
+	dbg(0, "NAVR:ROUTE:006:8888:2: %p dir=%d DST_COUNT(2)=%d\n", priv->itm, priv->itm->way.dir, priv->itm->dest_count);
 	priv->cmd = priv->cmd_next;
 	priv->cmd_itm = priv->cmd_itm_next;
 
+	if ((priv->itm->way.dir == 99) || (priv->itm->way.dir == -99))
+	{
+		// return fake waypoint item!! ---------
+		ret->type = type_nav_waypoint;
+		ret->id_lo = priv->itm->dest_count;
+		priv->ccount = 0;
+
+		priv->itm_next = priv->itm->next;
+
+		dbg(0, "NAVR:ROUTE:006:fake:%s dir=%d ,,,,,\n", item_to_name(ret->type), priv->itm->way.dir);
+
+		return ret;
+	}
+
+
+
+	// navigation_dump_items(priv->nav);
+
 	if (!priv->cmd)
 	{
+		dbg(0, "NAVR:ROUTE:006:1111\n");
 		return NULL;
 	}
 
+
 	if (!priv->show_all && priv->itm->prev != NULL)
 	{
+		dbg(0, "NAVR:ROUTE:006:112a\n");
 		priv->itm = priv->cmd->itm;
 	}
 
@@ -5754,8 +7863,14 @@ navigation_map_get_item(struct map_rect_priv *priv)
 		ret->type = type_nav_position;
 	}
 
+	dbg(0, "NAVR:ROUTE:006:2222 %p dir=%d\n", priv->itm, priv->itm->way.dir);
+
 	if (priv->cmd->itm == priv->itm)
 	{
+
+		dbg(0, "NAVR:ROUTE:006:3333 %p dir=%d %p\n", priv->itm, priv->itm->way.dir, route_get_map(global_navit->route));
+		// item_dump_coords(priv->itm, route_get_map(global_navit->route));
+
 		priv->cmd_itm_next = priv->cmd->itm;
 		priv->cmd_next = priv->cmd->next;
 
@@ -5855,6 +7970,19 @@ navigation_map_get_item(struct map_rect_priv *priv)
 
 	ret->id_lo = priv->itm->dest_count;
 
+	// dbg(0, "NAVR:ROUTE:006:%s ,,,,, ta=%d talim=%d\n", item_to_name(ret->type), priv->nav->turn_around, priv->nav->turn_around_limit);
+
+
+	// check for "turn around" and return "type_nav_turnaround" !! ---------------
+	if ((priv->nav->turn_around && priv->nav->turn_around == priv->nav->turn_around_limit) && (ret->type == type_nav_position))
+	{
+		// dbg(0, "priv->itm->dest_count=%d\n", priv->itm->dest_count);
+		ret->type = type_nav_turnaround_right;
+	}
+	// check for "turn around" and return "type_nav_turnaround" !! ---------------
+
+	// dbg(0, "NAVR:ROUTE:007a:%s ,,,,, priv->itm->dest_count=%d\n", item_to_name(ret->type), priv->itm->dest_count);
+
 	return ret;
 }
 
@@ -5890,7 +8018,7 @@ navigation_map_new(struct map_methods *meth, struct attr **attrs, struct callbac
 	*meth = navigation_map_meth;
 	ret->navigation = navigation_attr->u.navigation;
 
-	level_static_for_bicycle[0] = 18; // in meters
+	level_static_for_bicycle[0] = 22; // in meters
 	level_static_for_bicycle[1] = 100; // in meters
 	level_static_for_bicycle[2] = -1; // dont announce
 

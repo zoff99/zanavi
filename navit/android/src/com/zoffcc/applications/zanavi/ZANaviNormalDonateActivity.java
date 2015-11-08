@@ -38,9 +38,10 @@ public class ZANaviNormalDonateActivity extends ActionBarActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_normal_donate);
 
 		android.support.v7.widget.Toolbar bar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar2nd);
@@ -54,11 +55,25 @@ public class ZANaviNormalDonateActivity extends ActionBarActivity
 			}
 		});
 
-		((Button) findViewById(R.id.b1_donate_001)).setText(Navit.get_text("buy Donate Version"));
+		if (Navit.FDBL)
+		{
+			((Button) findViewById(R.id.b1_donate_001)).setText(Navit.get_text("buy UDonate Version"));
+		}
+		else
+		{
+			((Button) findViewById(R.id.b1_donate_001)).setText(Navit.get_text("buy Donate Version"));
+		}
 		((Button) findViewById(R.id.b1_donate_002)).setText(Navit.get_text("buy large-map Donate Version"));
 		((Button) findViewById(R.id.b1_donate_003)).setText(Navit.get_text("Donate with the offcial Donate App"));
 
-		((TextView) findViewById(R.id.t1_donate_001)).setText(Navit.get_text("_long_text_donate_version_"));
+		if (Navit.FDBL)
+		{
+			((TextView) findViewById(R.id.t1_donate_001)).setText(Navit.get_text("_long_text_large_map_donate_version_"));
+		}
+		else
+		{
+			((TextView) findViewById(R.id.t1_donate_001)).setText(Navit.get_text("_long_text_donate_version_"));
+		}
 		((TextView) findViewById(R.id.t1_donate_002)).setText(Navit.get_text("_long_text_large_map_donate_version_"));
 		((TextView) findViewById(R.id.t1_donate_003)).setText(Navit.get_text("_long_text_donate_app_"));
 
@@ -67,14 +82,63 @@ public class ZANaviNormalDonateActivity extends ActionBarActivity
 			findViewById(R.id.b1_donate_003).setVisibility(View.INVISIBLE);
 			findViewById(R.id.t1_donate_003).setVisibility(View.INVISIBLE);
 		}
+
+		if (Navit.FDBL)
+		{
+			findViewById(R.id.b1_donate_002).setVisibility(View.INVISIBLE);
+			findViewById(R.id.t1_donate_002).setVisibility(View.INVISIBLE);
+
+			findViewById(R.id.b1_donate_003).setVisibility(View.INVISIBLE);
+			findViewById(R.id.t1_donate_003).setVisibility(View.INVISIBLE);
+		}
+
 	}
 
 	public void on_buy_donate_version(View arg0)
 	{
 		try
 		{
-			try
+
+			if (Navit.FDBL)
 			{
+				PackageInfo pkgInfo;
+
+				try
+				{
+					// is the u-donate version installed?
+					pkgInfo = getPackageManager().getPackageInfo("com.zoffcc.applications.zanavi_udonate", 0);
+					// System.out.println("pkginfo donate=" + pkgInfo);
+					if (pkgInfo.versionCode > 0)
+					{
+						System.out.println("## udonate version installed ##");
+						Toast.makeText(this, Navit.get_text("ZANavi UDonate Version already installed"), Toast.LENGTH_LONG).show();
+						return;
+					}
+				}
+				catch (NameNotFoundException e1)
+				{
+					e1.printStackTrace();
+				}
+				catch (Exception e2)
+				{
+					e2.printStackTrace();
+				}
+
+				try
+				{
+					String url_to_udonate_app = "http://more.zanavi.cc/donate/";
+					Intent i = new Intent(Intent.ACTION_VIEW);
+					i.setData(Uri.parse(url_to_udonate_app));
+					startActivity(i);
+				}
+				catch (Exception e3)
+				{
+				}
+
+			}
+			else
+			{
+
 				PackageInfo pkgInfo;
 				String url_to_donate_app = "https://play.google.com/store/apps/details?id=com.zoffcc.applications.zanavi_donate";
 				if (on_amazon_device)
@@ -112,9 +176,6 @@ public class ZANaviNormalDonateActivity extends ActionBarActivity
 				catch (Exception e3)
 				{
 				}
-			}
-			catch (Exception e)
-			{
 			}
 		}
 		catch (Exception e)

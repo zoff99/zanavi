@@ -139,9 +139,11 @@ speech_estimate_duration(struct speech *this_, char *str)
 	if (!speech_get_attr(this_, attr_cps, &cps_attr, NULL))
 	{
 		// just assume 15 char/sec spoken speed
+		// dbg(0 , "SP_CPS:(default)%d\n", 15);
 		return (count * 10) / 15;		
 	}
 	
+	// dbg(0 , "SP_CPS:%d\n", cps_attr.u.num);
 	return (count * 10) / cps_attr.u.num;
 }
 

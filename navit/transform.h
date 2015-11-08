@@ -26,6 +26,8 @@ extern "C" {
 #include "coord.h"
 #include "point.h"
 
+#include "trans_lat_lon_geo.h"
+
 /* prototypes */
 enum attr_type;
 enum item_type;
@@ -141,6 +143,7 @@ int transform_douglas_peucker(struct coord *in, int count, int dist_sq, struct c
 int transform_douglas_peucker_float(struct coord *in, int count, navit_float dist_sq, struct coord *out);
 void transform_print_deg(double deg);
 int transform_get_angle_delta(struct coord *c1, struct coord *c2, int dir);
+int transform_get_angle_delta_accurate(struct coord *c1, struct coord *c2, int dir);
 int transform_within_border(struct transformation *this_, struct point *p, int border);
 int transform_within_dist_point(struct coord *ref, struct coord *c, int dist);
 int transform_within_dist_line(struct coord *ref, struct coord *c0, struct coord *c1, int dist);

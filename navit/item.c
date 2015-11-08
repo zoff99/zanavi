@@ -61,7 +61,8 @@ struct default_flags
 
 struct item busy_item;
 
-struct default_flags default_flags2[] = { { type_street_nopass, NAVIT_AF_PBH }, { type_street_0, NAVIT_AF_ALL }, { type_street_1_city, NAVIT_AF_ALL }, { type_street_2_city, NAVIT_AF_ALL }, { type_street_3_city, NAVIT_AF_ALL }, { type_street_4_city, NAVIT_AF_ALL }, { type_highway_city, NAVIT_AF_MOTORIZED_FAST }, { type_street_1_land, NAVIT_AF_ALL }, { type_street_2_land, NAVIT_AF_ALL }, { type_street_3_land, NAVIT_AF_ALL }, { type_street_4_land, NAVIT_AF_ALL }, { type_street_n_lanes, NAVIT_AF_MOTORIZED_FAST }, { type_highway_land, NAVIT_AF_MOTORIZED_FAST }, { type_ramp, NAVIT_AF_MOTORIZED_FAST }, { type_roundabout, NAVIT_AF_ALL }, { type_ferry, NAVIT_AF_ALL }, { type_cycleway, NAVIT_AF_PBH }, { type_track_paved, NAVIT_AF_ALL }, { type_track_gravelled, NAVIT_AF_ALL }, { type_track_unpaved, NAVIT_AF_ALL }, { type_track_ground, NAVIT_AF_ALL }, { type_track_grass, NAVIT_AF_ALL }, { type_footway, NAVIT_AF_PBH }, { type_living_street, NAVIT_AF_ALL }, { type_street_service, NAVIT_AF_ALL }, { type_street_parking_lane, NAVIT_AF_ALL }, { type_bridleway, NAVIT_AF_PBH }, { type_path, NAVIT_AF_PBH }, { type_steps, NAVIT_AF_PBH }, { type_street_pedestrian, NAVIT_AF_PBH }, };
+struct default_flags default_flags2[] = { { type_street_nopass, NAVIT_AF_PBH }, { type_street_0, NAVIT_AF_ALL }, { type_street_1_city, NAVIT_AF_ALL }, { type_street_2_city, NAVIT_AF_ALL }, { type_street_3_city, NAVIT_AF_ALL }, { type_street_4_city, NAVIT_AF_ALL }, { type_highway_city, NAVIT_AF_MOTORIZED_FAST }, { type_street_1_land, NAVIT_AF_ALL }, { type_street_2_land, NAVIT_AF_ALL }, { type_street_3_land, NAVIT_AF_ALL }, { type_street_4_land, NAVIT_AF_ALL }, { type_street_n_lanes, NAVIT_AF_MOTORIZED_FAST }, { type_highway_land, NAVIT_AF_MOTORIZED_FAST }, { type_roundabout, NAVIT_AF_ALL }, { type_ferry, NAVIT_AF_ALL }, { type_cycleway, NAVIT_AF_PBH }, { type_track_paved, NAVIT_AF_ALL }, { type_track_gravelled, NAVIT_AF_ALL }, { type_track_unpaved, NAVIT_AF_ALL }, { type_track_ground, NAVIT_AF_ALL }, { type_track_grass, NAVIT_AF_ALL }, { type_footway, NAVIT_AF_PBH }, { type_living_street, NAVIT_AF_ALL }, { type_street_service, NAVIT_AF_ALL }, { type_street_parking_lane, NAVIT_AF_ALL }, { type_bridleway, NAVIT_AF_PBH }, { type_path, NAVIT_AF_PBH }, { type_steps, NAVIT_AF_PBH }, { type_ramp_highway_land, NAVIT_AF_MOTORIZED_FAST }, { type_ramp_street_4_city, NAVIT_AF_ALL }, { type_ramp_street_3_city, NAVIT_AF_ALL }, { type_ramp_street_2_city, NAVIT_AF_ALL }, { type_street_pedestrian, NAVIT_AF_PBH }, };
+
 
 struct item_name item_names[] = {
 #define ITEM2(x,y) ITEM(y)
@@ -1605,6 +1606,41 @@ void item_dump_attr(struct item *item, struct map *map, FILE *out)
 	}
 }
 
+void item_dump_coords(struct item *item, struct map *map)
+{
+
+	int i, count, max = 16384;
+	struct coord *ca = g_alloca(sizeof(struct coord) * max);
+	struct coord_geo geo;
+
+	count = item_coord_get(item, ca, item->type < type_line ? 1 : max);
+	if (item->type < type_line)
+	{
+		dbg(0, "mg:0x%x 0x%x ", ca[0].x, ca[0].y);
+
+		transform_to_geo(projection_mg, &(ca[0]), &geo);
+		dbg(0, "http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:red|label:AA|%4.6f,%4.6f\n", geo.lat, geo.lng);
+
+	}
+
+	item_dump_attr_stdout(item, map);
+
+	dbg(0, "\n");
+
+	if (item->type >= type_line)
+	{
+		for (i = 0; i < count; i++)
+		{
+			dbg(0, "mg:0x%x 0x%x\n", ca[i].x, ca[i].y);
+
+			transform_to_geo(projection_mg, &(ca[i]), &geo);
+			dbg(0, "http://maps.google.com/maps/api/staticmap?size=512x512&markers=color:red|label:AA|%4.6f,%4.6f\n", geo.lat, geo.lng);
+
+		}
+	}
+}
+
+
 void item_dump_filedesc(struct item *item, struct map *map, FILE *out)
 {
 
@@ -1620,3 +1656,5 @@ void item_dump_filedesc(struct item *item, struct map *map, FILE *out)
 		for (i = 0; i < count; i++)
 			fprintf(out, "mg:0x%x 0x%x\n", ca[i].x, ca[i].y);
 }
+
+

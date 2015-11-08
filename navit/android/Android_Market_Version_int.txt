@@ -5,4 +5,6 @@
 # only "zoff" should edit this file!
 #
 #
-v_int:240
+v_int:250
+v_name:2.0.50
+

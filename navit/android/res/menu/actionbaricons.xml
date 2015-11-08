@@ -130,6 +130,11 @@
                 yourapp:showAsAction="always|withText"
                 android:title=""/>
             <item
+                android:id="@+id/overflow_yaml_tests"
+                android:orderInCategory="213"
+                yourapp:showAsAction="always|withText"
+                android:title=""/>
+            <item
                 android:id="@+id/overflow_speech_texts"
                 android:orderInCategory="220"
                 yourapp:showAsAction="always|withText"

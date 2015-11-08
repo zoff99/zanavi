@@ -710,9 +710,9 @@ street_get(struct map_rect_priv *mr, struct street_priv *street, struct item *it
 			else
 				item->type=type_street_3_land;
 			break;
-		case 0x6:
-			item->type=type_ramp;
-			break;
+//		case 0x6:
+//			item->type=type_ramp;
+//			break;
 		case 0x5:
 			item->type=type_street_4_land;
 			break;

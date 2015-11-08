@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_form_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar2nd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationContentDescription="@string/abc_action_bar_up_description"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="0dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="6dp" >
+
+            <RelativeLayout
+                android:id="@+id/index_light_container"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:orientation="horizontal"
+                android:padding="0dp" >
+
+                <ImageView
+                    android:id="@+id/index_light_img"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:layout_toRightOf="@+id/index_light_text"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    android:src="@drawable/round_light_red" >
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/index_light_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:text="Index"
+                    android:textSize="14sp" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/index_light_noindex_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/index_light_img"
+                    android:text=""
+                    android:textSize="14sp" >
+                </TextView>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/enter_dest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:text=""
+                android:textSize="20sp" >
+            </TextView>
+
+            <com.zoffcc.applications.zanavi.ZANaviAutoCompleteTextViewSearchLocation
+                android:id="@+id/et_address_string"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/house_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="20sp" >
+            </TextView>
+
+            <EditText
+                android:id="@+id/et_house_number_string"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="20sp" />
+
+            <CheckBox
+                android:id="@+id/cb_partial_match"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:padding="8dp"
+                android:text=""
+                android:textSize="20sp" >
+            </CheckBox>
+
+            <LinearLayout
+                android:id="@+id/hide_dup_and_count_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:padding="0dp" >
+
+                <CheckBox
+                    android:id="@+id/cb_hide_dup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text=""
+                    android:textSize="20sp" >
+                </CheckBox>
+
+                <TextView
+                    android:id="@+id/result_count_number"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="right"
+                    android:gravity="right"
+                    android:paddingRight="10dp"
+                    android:text=""
+                    android:textSize="19sp" >
+                </TextView>
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/cb_full_file"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:padding="8dp"
+                android:text=""
+                android:textSize="20sp" >
+            </CheckBox>
+
+            <Button
+                android:id="@+id/bt_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:padding="18dp"
+                android:text=""
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/bt_country_select"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:padding="18dp"
+                android:text=""
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/search_realtime_result_container"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:fastScrollEnabled="true" >
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>

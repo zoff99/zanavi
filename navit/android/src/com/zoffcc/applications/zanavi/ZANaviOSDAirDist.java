@@ -38,7 +38,7 @@ public class ZANaviOSDAirDist extends View
 	int nt_text_start_y = 0;
 	int nt_font_size = 10;
 	float draw_factor = 1;
-	int OSD_element_bg_001 = Color.argb(255, 80, 80, 150); // Color.argb(255, 190, 190, 190); // Color.argb(140, 136, 136, 136);
+	int OSD_element_bg_001 = Navit.OSD_blueish_bg_color; // Color.argb(255, 190, 190, 190); // Color.argb(140, 136, 136, 136);
 	String my_text = "";
 	int w2;
 	int h2;
@@ -97,9 +97,15 @@ public class ZANaviOSDAirDist extends View
 		nt_font_size = (int) (24 * real_factor);
 	}
 
-	public void onDraw(Canvas c)
+	public void onDraw2222222(Canvas c)
 	{
-		super.onDraw(c);
+		if (1 == 2 + 2)
+		{
+			// System.out.println("xxxxxxxxxxxxx");
+			return;
+		}
+
+		// super.onDraw(c);
 		int dest_valid = NavitGraphics.CallbackDestinationValid2();
 
 		try

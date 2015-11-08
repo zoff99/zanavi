@@ -67,7 +67,7 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 	NavitSearchResultListArrayAdapter adapter_ = null;
 	private int selected_id = -1;
 	private int selected_id_passthru = -1;
-	private Boolean is_empty = true;
+	// private Boolean is_empty = true;
 	// public ArrayList<HashMap<Integer, search_result_entry>> result_list;
 	public Map<Integer, List<search_result_entry>> result_list;
 
@@ -121,7 +121,7 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
 
@@ -215,7 +215,7 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 
 		setListAdapter(adapter_);
 		// this.getListView().setFastScrollEnabled(true);
-		is_empty = true;
+		// ** // is_empty = true;
 
 		// this.getExpandableListView().setBackgroundColor(Color.rgb(0, 0, 0));
 
@@ -332,6 +332,10 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		if (what.equals("view"))
 		{
 			resultIntent.putExtra("what", "view");
+		}
+		else if (what.equals("set"))
+		{
+			resultIntent.putExtra("what", "set");
 		}
 		else
 		{

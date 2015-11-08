@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/roadbook_fr"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="#0000ff"
+    android:orientation="vertical" >
+
+    <!-- UNUSED now !!!!! -->
+    <!-- UNUSED now !!!!! -->
+    <!-- UNUSED now !!!!! -->
+    <!-- UNUSED now !!!!! -->
+    <!-- UNUSED now !!!!! -->
+    <!-- UNUSED now !!!!! -->
+    
+    <View
+        android:id="@+id/road_book_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </View>
+
+    <!-- <TextView -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_gravity="center_horizontal" -->
+    <!-- android:text="iejtio ejoitrj4io jrio4jio\ntotertojtio\ntotertojtio\ntotertojtio\ntotertojtio\ntotertojtio\ntotertojtio\n" /> -->
+
+</LinearLayout>

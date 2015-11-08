@@ -142,6 +142,11 @@ int vehicleprofile_set_attr(struct vehicleprofile *this_, struct attr *attr)
 	return 1;
 }
 
+void vehicleprofile_change_roadprofile_attr(struct vehicleprofile *this_, struct roadprofile *rp, enum item_type type)
+{
+	g_hash_table_insert(this_->roadprofile_hash, (void *) (long) (type), rp);
+}
+
 int vehicleprofile_add_attr(struct vehicleprofile *this_, struct attr *attr)
 {
 	struct attr item_types_attr;
@@ -182,3 +187,4 @@ vehicleprofile_get_name(struct vehicleprofile *this_)
 {
 	return this_->name;
 }
+

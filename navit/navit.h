@@ -76,7 +76,7 @@ typedef struct _GList GList;
 // --------------------------------------------
 // --
 // minimum binfile map version needed for this version of ZANavi to work
-#define NEED_MIN_BINFILE_MAPVERSION 2
+#define NEED_MIN_BINFILE_MAPVERSION 4
 // --
 // --------------------------------------------
 
@@ -87,8 +87,10 @@ typedef struct _GList GList;
 // --
 // if the turn angle is greater than this (in degrees) in bicycle mode, then speak a turn command
 #define ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE 65
-
 #define ROAD_ANGLE_MIN__FOR_TURN_BICYCLEMODE_ONLY_1_POSSIBILITY 25
+
+#define ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC 65
+#define ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE_CYC_2_CYC__2 25
 // --
 // --------------------------------------------
 
@@ -124,6 +126,8 @@ extern int global_have_dpi_value;
 extern float global_dpi_factor;
 extern int global_order_level_for_fast_draw;
 extern int global_show_english_labels;
+extern int global_routing_engine;
+extern float global_overspill_factor;
 
 extern long long draw_lines_count_2;
 extern long long draw_lines_count_3;
@@ -160,6 +164,22 @@ extern int global_demo_vehicle;
 extern int global_demo_vehicle_short_switch;
 extern long global_last_spoken;
 extern long global_last_spoken_base;
+extern float global_road_speed_factor;
+
+extern float global_level0_announcement;
+extern float global_level1_announcement;
+extern float global_level2_announcement;
+extern float global_levelx_announcement_factor;
+extern float global_b_level0_announcement;
+extern float global_b_level1_announcement;
+extern float global_b_level2_announcement;
+extern float global_b_levelx_announcement_factor;
+
+extern int global_driven_away_from_route;
+
+extern int global_enhance_cycleway;
+extern int global_tracking_show_real_gps_pos;
+extern int global_show_maps_debug_view;
 
 
 #define MAX_DEBUG_COORDS 100
@@ -217,9 +237,11 @@ extern struct global_freetext *global_freetext_list;
 
 
 
-
+// #ifndef MAPTOOL
 extern GHashTable *global_transform_hash;
 extern GHashTable *global_transform_hash2;
+// #endif
+
 
 /* prototypes */
 enum attr_type;
@@ -282,6 +304,7 @@ void navit_predraw(struct navit *this_);
 void navit_init(struct navit *this_);
 void navit_zoom_to_rect(struct navit *this_, struct coord_rect *r);
 void navit_zoom_to_route(struct navit *this_, int orientation);
+void navit_set_center_no_draw(struct navit *this_, struct pcoord *center, int set_timeout);
 void navit_set_center(struct navit *this_, struct pcoord *center, int set_timeout);
 void navit_set_center_cursor(struct navit *this_, int autozoom, int keep_orientation);
 void navit_set_center_screen(struct navit *this_, struct point *p, int set_timeout);
@@ -306,6 +329,9 @@ void navit_motion(void *data, struct point *p);
 void displaylist_shift_order_in_map_layers(struct navit *this_, int shift_value);
 void displaylist_shift_for_dpi_value_in_layers(struct navit *this_, double factor);
 int navit_is_demo_vehicle();
+void navit_zoom_to_scale_no_draw(struct navit *this_, int new_scale);
+void navit_zoom_to_scale(struct navit *this_, int new_scale);
+
 
 void navit_set_cursors(struct navit *this_);
 
@@ -326,9 +352,12 @@ int navit_get_cur_pnt(struct navit *this_, struct point *p);
 #include "item.h"
 #include "attr.h"
 
-struct coord global_vehicle_pos_onscreen;
-struct coord_geo global_last_vehicle_pos_geo;
-// struct coord_geo global_cur_vehicle_pos_geo;
+extern struct coord global_vehicle_pos_onscreen;
+extern struct coord_geo global_last_vehicle_pos_geo;
+// extern struct coord_geo global_cur_vehicle_pos_geo;
+extern double ggggg_lat;
+extern double ggggg_lon;
+
 
 //! The navit_vehicule
 struct navit_vehicle

@@ -38,7 +38,7 @@ enum item_type {
 // ------- dont forget to update these if you add street types for navigation !! -------
 // ------- dont forget to update these if you add street types for navigation !! -------
 #define route_item_first type_street_0
-#define route_item_last type_footway_and_piste_nordic
+#define route_item_last type_ramp_street_2_city
 extern int default_flags[];
 // ------- dont forget to update these if you add street types for navigation !! -------
 // ------- dont forget to update these if you add street types for navigation !! -------
@@ -62,9 +62,21 @@ extern int default_flags[];
 #define item_is_poly_place(item) ((item).type >= type_poly_place1 && (item).type <= type_poly_place6)
 #define item_is_point(item) ((item).type < type_line) 
 #define item_is_custom_poi(item) ((item).type >= type_poi_custom0 && (item).type < type_line)
-#define item_is_street(item) (((item).type >= type_street_0 && (item).type < type_street_1_land) \
+#define item_is_street(item) (((item).type >= type_street_0 && (item).type <= type_highway_land) \
+                               ||  (item).type == type_street_service \
+                               ||  (item).type == type_street_parking_lane \
+                               ||  (item).type == type_ramp_highway_land \
+                               ||  (item).type == type_ramp_street_4_city \
+                               ||  (item).type == type_ramp_street_3_city \
+                               ||  (item).type == type_ramp_street_2_city \
                                ||  (item).type == type_street_pedestrian \
                                ||  (item).type == type_living_street)
+
+#define item_is_ramp(item) (       (item).type == type_ramp_highway_land \
+                               ||  (item).type == type_ramp_street_4_city \
+                               ||  (item).type == type_ramp_street_3_city \
+                               ||  (item).type == type_ramp_street_2_city)
+
 
 #define item_is_equal_id(a,b) ((a).id_hi == (b).id_hi && (a).id_lo == (b).id_lo)
 #define item_is_equal(a,b) (item_is_equal_id(a,b) && (a).map == (b).map)
@@ -155,6 +167,7 @@ int item_is_poi(enum item_type i_type);
 int item_is_district_label(enum item_type i_type);
 int item_is_town_label_no_major(enum item_type i_type);
 int item_is_town_label_major(enum item_type i_type);
+void item_dump_coords(struct item *item, struct map *map);
 
 void item_dump_attr_stdout(struct item *item, struct map *map);
 

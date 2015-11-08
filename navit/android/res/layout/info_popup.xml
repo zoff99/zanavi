@@ -22,9 +22,7 @@
             android:id="@+id/text_i1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:autoLink="email"
-            android:linksClickable="true"
-            android:text="We need betatesters for our bicycle navigation.\nPlease contact us at:\nhelp@zanavi.cc\n\nWir suchen Betatester für unsere Fahrradnavigation\nKontaktiere uns unter:\nhelp@zanavi.cc\n"
+            android:text=""
             android:textColor="#fafafa"
             android:textColorLink="#57BDE9"
             android:textSize="16sp" />

@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2013 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2013 - 2015 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,154 +20,82 @@
 package com.zoffcc.applications.zanavi;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.View;
+import android.widget.ImageView;
 
-public class ZANaviOSDCompass extends View
+public class ZANaviOSDCompass extends ImageView
 {
-
-	private Paint paint = new Paint();
-	private RectF f;
-	int end_x;
-	int end_y;
-	float draw_factor = 1;
-	int radius = 0;
-	int compass_center_x = 0;
-	int compass_center_y = 0;
+	int w = 10;
+	int h = 10;
+	float w2 = w / 2;
+	float h2 = h / 2;
+	Bitmap bitmap_measure = null;
+	Paint paint_2 = new Paint();
+	Paint paint_3 = new Paint();
+	int cx = 0;
+	int cy = 0;
 
 	public ZANaviOSDCompass(Context context)
 	{
 		super(context);
-		f = new RectF(0 + 3, 0 + 3, NavitOSDJava.compass_w - 3, NavitOSDJava.compass_h - 3);
+
+		Resources res = getResources();
+		bitmap_measure = BitmapFactory.decodeResource(res, R.drawable.zanavi_measure);
+		paint_2.setDither(true);
+		paint_2.setAntiAlias(true);
+
+		paint_3.setColor(0xffcc0000);
+		paint_3.setStyle(Paint.Style.FILL);
+		// paint_3.setStrokeWidth(4);
 	}
 
 	public ZANaviOSDCompass(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		f = new RectF(0 + 3, 0 + 3, NavitOSDJava.compass_w - 3, NavitOSDJava.compass_h - 3);
+
+		Resources res = getResources();
+		bitmap_measure = BitmapFactory.decodeResource(res, R.drawable.zanavi_measure);
+		paint_2.setDither(true);
+		paint_2.setAntiAlias(true);
+
+		paint_3.setColor(0xffcc0000);
+		paint_3.setStyle(Paint.Style.FILL);
+		// paint_3.setStrokeWidth(4);
 	}
 
 	@Override
-	public void onSizeChanged(int w, int h, int oldw, int oldh)
+	public void onSizeChanged(int w1, int h1, int oldw, int oldh)
 	{
-		super.onSizeChanged(w, h, oldw, oldh);
-		f = new RectF(0 + 12 * draw_factor, 0 + 12 * draw_factor, w - 12 * draw_factor, h - 12 * draw_factor);
+		super.onSizeChanged(w1, h1, oldw, oldh);
+		this.w = w1;
+		this.h = h1;
+		this.w2 = w / 2;
+		this.h2 = h / 2;
 
-		radius = (int) ((w / 2) - (13 * draw_factor));
-		compass_center_x = w / 2;
-		compass_center_y = h / 2;
-
-		draw_factor = 1.0f;
-		if (Navit.my_display_density.compareTo("mdpi") == 0)
-		{
-			draw_factor = 1.0f;
-		}
-		else if (Navit.my_display_density.compareTo("ldpi") == 0)
-		{
-			draw_factor = 0.7f;
-		}
-		else if (Navit.my_display_density.compareTo("hdpi") == 0)
-		{
-			draw_factor = 1.5f;
-		}
-
-		// correct for ultra high DPI
-		if (Navit.metrics.densityDpi >= 320) //&& (Navit.PREF_shrink_on_high_dpi))
-		{
-			draw_factor = 1.8f * Navit.metrics.densityDpi / NavitGraphics.Global_want_dpi_other;
-		}
-
-		float real_factor = draw_factor / 1.5f;
+		cx = (w - bitmap_measure.getWidth()) / 2;
+		cy = (h - bitmap_measure.getHeight()) / 2;
 	}
-
-	//	private void resizeView(View view, int newWidth, int newHeight)
-	//	{
-	//		try
-	//		{
-	//			Constructor<? extends LayoutParams> ctor = view.getLayoutParams().getClass().getDeclaredConstructor(int.class, int.class);
-	//			view.setLayoutParams(ctor.newInstance(newWidth, newHeight));
-	//		}
-	//		catch (Exception e)
-	//		{
-	//			e.printStackTrace();
-	//		}
-	//	}
 
 	public void onDraw(Canvas c)
 	{
-		super.onDraw(c);
-		int dest_valid = NavitGraphics.CallbackDestinationValid2();
-
-		boolean did_draw_circle = false;
-		if (!NavitGraphics.MAP_DISPLAY_OFF)
+		if (NavitAndroidOverlay.measure_mode)
 		{
-			if ((Navit.OSD_compass.angle_north_valid) || ((Navit.OSD_compass.angle_target_valid) && (dest_valid > 0)))
-			{
-				// compass_c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-				paint.setStyle(Paint.Style.FILL_AND_STROKE);
-				paint.setStrokeWidth(2);
-				paint.setAntiAlias(true);
-				paint.setColor(NavitOSDJava.OSD_element_bg_001_compass);
-				// c.drawRoundRect(f, 10, 10, paint);
-				// c.drawCircle(compass_center_x, compass_center_y, radius, paint);
-				c.drawOval(f, paint);
-			}
-
-			if (Navit.OSD_compass.angle_north_valid)
-			{
-				paint.setColor(Color.BLACK);
-				paint.setStyle(Paint.Style.STROKE);
-				paint.setStrokeWidth(3 * draw_factor);
-				paint.setAntiAlias(true);
-				//c.drawCircle(compass_center_x, compass_center_y, radius, paint);
-				c.drawOval(f, paint);
-				did_draw_circle = true;
-				end_x = (int) ((float) Math.sin((float) Math.toRadians(Navit.OSD_compass.angle_north)) * radius);
-				end_y = (int) ((float) Math.cos((float) Math.toRadians(Navit.OSD_compass.angle_north)) * radius);
-				// System.out.println("x " + end_x + " y " + end_y);
-				paint.setStrokeWidth(3 * draw_factor);
-				if (Navit.metrics.densityDpi >= 320)
-				{
-					paint.setStrokeWidth(3 * draw_factor);
-				}
-				c.drawLine(compass_center_x - end_x, compass_center_y + end_y, compass_center_x, compass_center_y, paint);
-				paint.setColor(Color.RED);
-				paint.setStrokeWidth(3 * draw_factor);
-				if (Navit.metrics.densityDpi >= 320)
-				{
-					paint.setStrokeWidth(3 * draw_factor);
-				}
-				c.drawLine(compass_center_x + end_x, compass_center_y - end_y, compass_center_x, compass_center_y, paint);
-			}
-
-			if ((Navit.OSD_compass.angle_target_valid) && (dest_valid > 0))
-			{
-				paint.setColor(Color.BLACK);
-				paint.setStyle(Paint.Style.STROKE);
-				paint.setStrokeWidth(2 * draw_factor);
-				paint.setAntiAlias(true);
-				if (!did_draw_circle)
-				{
-					// c.drawCircle(compass_center_x, compass_center_y, radius, paint);
-					c.drawOval(f, paint);
-					did_draw_circle = true;
-				}
-				end_x = (int) ((float) Math.sin((float) Math.toRadians(Navit.OSD_compass.angle_target)) * radius);
-				end_y = (int) ((float) Math.cos((float) Math.toRadians(Navit.OSD_compass.angle_target)) * radius);
-				// System.out.println("x " + end_x + " y " + end_y);
-				paint.setStrokeWidth(3 * draw_factor);
-				if (Navit.metrics.densityDpi >= 320)
-				{
-					paint.setStrokeWidth(3 * draw_factor);
-				}
-				paint.setColor(Color.GREEN);
-				c.drawLine(compass_center_x, compass_center_y, compass_center_x + end_x, compass_center_y - end_y, paint);
-			}
+			super.onDraw(c);
+			// c.drawColor(0xFFAAAAAA, PorterDuff.Mode.CLEAR);
+			c.drawCircle(w2, h2, w2, paint_3);
+			c.drawBitmap(bitmap_measure, cx, cy, paint_2);
+		}
+		else
+		{
+			c.rotate(Navit.OSD_compass.angle_north, w2, h2);
+			super.onDraw(c);
 		}
 
+		// System.out.println("onDraw:OSDCompass");
 	}
 }

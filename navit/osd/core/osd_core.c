@@ -2792,6 +2792,18 @@ osd_text_draw(struct osd_text *this, struct navit *navit, struct vehicle *v)
 					id_string = g_strdup_printf("navigation:%s:%s", item_to_name(item->type), attr_to_name(oti->attr_typ));
 
 
+#ifdef HAVE_API_ANDROID
+					// -- now dirty hardcoded send time to target in seconds to JAVA --
+					if (oti->attr_typ == attr_destination_time)
+					{
+						// ??? // if (!format || (strcmp(format,"arrival") && strcmp(format,"remaining")))
+						char *value2 = g_strdup_printf("%d", (int)(attr.u.num / 10)); // time to target in [secs]
+						send_osd_values("osd_text_draw","draw_text","navigation:nav_position:destination_secs_time",value2 ? value2 : "",  0,0,0,0,  0.0,0.0,0.0);
+						g_free(value2);
+					}
+#endif
+
+
 #if 0
 
 

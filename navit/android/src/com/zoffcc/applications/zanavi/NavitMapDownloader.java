@@ -58,20 +58,27 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 public class NavitMapDownloader
 {
@@ -79,8 +86,8 @@ public class NavitMapDownloader
 
 	// ------- RELEASE SETTINGS --------
 	// ------- RELEASE SETTINGS --------
-	static final String ZANAVI_MAPS_BASE_URL = "http://dl.zanavi.cc/data/";
-	static final String ZANAVI_MAPS_SEVERTEXT_URL = "http://dl.zanavi.cc/server.txt";
+	static String ZANAVI_MAPS_BASE_URL = "http://dl.zanavi.cc/data/";
+	static String ZANAVI_MAPS_SEVERTEXT_URL = "http://dl.zanavi.cc/server.txt";
 	static final String ZANAVI_MAPS_BASE_URL_PROTO = "http://";
 	static final String ZANAVI_MAPS_BASE_URL_WO_SERVERNAME = "/data/";
 	// ------- RELEASE SETTINGS --------
@@ -296,13 +303,13 @@ public class NavitMapDownloader
 	private static Boolean already_inited = false;
 
 	public Boolean stop_me = false;
-	static final int SOCKET_CONNECT_TIMEOUT = 22000; // 22 secs.
-	static final int SOCKET_READ_TIMEOUT = 18000; // 18 secs.
+	static final int SOCKET_CONNECT_TIMEOUT = 6000; // 22000; // 22 secs.
+	static final int SOCKET_READ_TIMEOUT = 9000; // 18000; // 18 secs.
 	// static final int MAP_WRITE_FILE_BUFFER = 1024 * 8;
 	static final int MAP_WRITE_MEM_BUFFER = 1024 * 64;
 	static final int MAP_READ_FILE_BUFFER = 1024 * 64;
 	static final int UPDATE_PROGRESS_EVERY_CYCLE = 256; // 12; // 8 -> is nicer, but maybe to fast for some devices
-	static final int RETRIES = 75; // this many retries on map download
+	static final int RETRIES = 9000; // 75; // this many retries on map download
 	static final int MD5_CALC_BUFFER_KB = 128;
 
 	static final long MAX_SINGLE_BINFILE_SIZE = 3 * 512 * 1024 * 1024; // split map at this size into pieces [1.5GB] [1.610.612.736 Bytes]	
@@ -313,6 +320,7 @@ public class NavitMapDownloader
 	static final String MD5_DOWNLOAD_TEMPFILE = "navitmap_tmp.md5";
 	static final String CAT_FILE = "maps_cat.txt";
 	public static List<String> map_catalogue = new ArrayList<String>();
+	public static List<String> map_catalogue_date = new ArrayList<String>();
 	public static List<String> map_servers_used = new ArrayList<String>();
 	static final String MAP_CAT_HEADER = "# ZANavi maps -- do not edit by hand --";
 	public static final String MAP_URL_NAME_UNKNOWN = "* unknown map *";
@@ -327,6 +335,7 @@ public class NavitMapDownloader
 
 	static long[] mapdownload_already_read = null;
 	static float[] mapdownload_byte_per_second_overall = null;
+	static float[] mapdownload_byte_per_second_now = null;
 	static int mapdownload_error_code = 0;
 	static Boolean mapdownload_stop_all_threads = false;
 
@@ -485,6 +494,7 @@ public class NavitMapDownloader
 		String this_server_name = null;
 		String up_map = null;
 		long start_byte = 0L;
+		long start_byte_count_now = 0L;
 		long end_byte = 0L;
 
 		MultiStreamDownloaderThread(int num_threads, Handler h, zanavi_osm_map_values map_values, int map_num2, int c, String p, String p2, String fn, String ffn, String sn, String upmap, long start_byte, long end_byte)
@@ -522,6 +532,21 @@ public class NavitMapDownloader
 		public void run()
 		{
 			running = true;
+
+			try
+			{
+				// update srv text
+				Message msg_prog88 = new Message();
+				Bundle b_prog88 = new Bundle();
+				b_prog88.putString("srv", this.this_server_name);
+				b_prog88.putInt("threadnum", (this.my_num - 1));
+				msg_prog88.what = 4;
+				msg_prog88.setData(b_prog88);
+				ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog88);
+			}
+			catch (Exception e_srv)
+			{
+			}
 
 			// System.out.println("DEBUG_MAP_DOWNLOAD::MultiStreamDownloaderThread " + this.my_num + " run");
 			while (running)
@@ -589,9 +614,11 @@ public class NavitMapDownloader
 
 				String kbytes_per_second = "";
 				long start_timestamp = System.currentTimeMillis();
+				long start_timestamp_count_now = System.currentTimeMillis();
 				NumberFormat formatter = new DecimalFormat("00000.0");
 				String eta_string = "";
 				float per_second_overall = 0f;
+				float per_second_now = 0f;
 				long bytes_remaining = 0;
 				int eta_seconds = 0;
 
@@ -702,6 +729,10 @@ public class NavitMapDownloader
 
 							// len1 -> number of bytes actually read
 							//while (((len1 = bif.read(buffer)) != -1) && (already_read <= this.end_byte))
+
+							Message msg_prog = null;
+							Bundle b_prog = null;
+
 							while ((len1 = bif.read(buffer)) != -1)
 							{
 								// System.out.println("DEBUG_MAP_DOWNLOAD::" + this.my_num + " buf avail2=" + bif.available() + " len1=" + len1);
@@ -729,7 +760,7 @@ public class NavitMapDownloader
 
 										count_read_per_interval++;
 
-										if (count_read_per_interval == 10)
+										if (count_read_per_interval == 15)
 										{
 											//											int rate = (int) ((float) read_per_interval / ((float) progress_update_intervall * 10f / 1000f * 1024f));
 											//											if (rate < 1)
@@ -761,10 +792,23 @@ public class NavitMapDownloader
 
 										b.putInt("dialog_num", my_dialog_num);
 										b.putString("title", Navit.get_text("Mapdownload")); //TRANS
-										per_second_overall = (float) (already_read - this.start_byte) / (float) ((System.currentTimeMillis() - start_timestamp) / 1000);
+										// per_second_overall = (float) (already_read - this.start_byte) / (float) ((System.currentTimeMillis() - start_timestamp) / 1000);
+										per_second_now = (int) (already_read - this.start_byte_count_now) / (((float) (System.currentTimeMillis() - start_timestamp_count_now)) / 1000.0f);
+										// System.out.println("DL:TH=" + (this.my_num - 1) + " psn=" + per_second_now + " " + already_read + " " + this.start_byte_count_now + " " + System.currentTimeMillis() + " " + start_timestamp_count_now + " :" + ((long) (System.currentTimeMillis() - start_timestamp_count_now)));
+										this.start_byte_count_now = already_read;
+										start_timestamp_count_now = System.currentTimeMillis();
 
 										mapdownload_already_read[this.my_num - 1] = already_read - this.start_byte;
-										mapdownload_byte_per_second_overall[this.my_num - 1] = per_second_overall;
+										// mapdownload_byte_per_second_overall[this.my_num - 1] = per_second_overall;
+
+										if (Math.abs(mapdownload_byte_per_second_now[this.my_num - 1] - per_second_now) > 600000)
+										{
+											mapdownload_byte_per_second_now[this.my_num - 1] = per_second_now;
+										}
+										else
+										{
+											mapdownload_byte_per_second_now[this.my_num - 1] = per_second_now + ((mapdownload_byte_per_second_now[this.my_num - 1] - per_second_now) / 2.0f);
+										}
 
 										//b.putInt("max", (int) (this.end_byte / 1024));
 										//b.putInt("cur", (int) ((already_read - this.start_byte) / 1024));
@@ -774,10 +818,30 @@ public class NavitMapDownloader
 										for (k = 0; k < mapdownload_already_read.length; k++)
 										{
 											l1 = l1 + mapdownload_already_read[k];
-											f1 = f1 + mapdownload_byte_per_second_overall[k];
+											// *long time* // f1 = f1 + mapdownload_byte_per_second_overall[k];
+											//
+											// *now*
+											f1 = f1 + mapdownload_byte_per_second_now[k];
 										}
 										b.putInt("max", (int) (map_values.est_size_bytes / 1024));
 										b.putInt("cur", (int) (l1 / 1024));
+
+										// update progressbar
+										msg_prog = new Message();
+										b_prog = new Bundle();
+										b_prog.putInt("pg", (int) (((l1 / 1024.0f) / (map_values.est_size_bytes / 1024.0f)) * 100.0f));
+										msg_prog.what = 2;
+										msg_prog.setData(b_prog);
+										ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+
+										// update speedbar
+										msg_prog = new Message();
+										b_prog = new Bundle();
+										b_prog.putInt("speed_kb_per_sec", (int) (mapdownload_byte_per_second_now[this.my_num - 1] / 1024.0f));
+										b_prog.putInt("threadnum", (this.my_num - 1));
+										msg_prog.what = 3;
+										msg_prog.setData(b_prog);
+										ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
 
 										kbytes_per_second = formatter.format((f1 / 1024f));
 										// kbytes_per_second = formatter.format((per_second_overall / 1024f));
@@ -888,6 +952,16 @@ public class NavitMapDownloader
 							bif.close();
 							d_url_disconnect(c);
 
+							mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+							// update speedbar
+							Message msg_prog77 = new Message();
+							Bundle b_prog77 = new Bundle();
+							b_prog77.putInt("speed_kb_per_sec", 0);
+							b_prog77.putInt("threadnum", (this.my_num - 1));
+							msg_prog77.what = 3;
+							msg_prog77.setData(b_prog77);
+							ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+
 							// delete an already final filename, first
 							//**final_outputFile.delete();
 							// rename file to final name
@@ -922,6 +996,16 @@ public class NavitMapDownloader
 						}
 						catch (IOException e)
 						{
+							mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+							// update speedbar
+							Message msg_prog77 = new Message();
+							Bundle b_prog77 = new Bundle();
+							b_prog77.putInt("speed_kb_per_sec", 0);
+							b_prog77.putInt("threadnum", (this.my_num - 1));
+							msg_prog77.what = 3;
+							msg_prog77.setData(b_prog77);
+							ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+
 							msg = handler.obtainMessage();
 							b = new Bundle();
 							msg.what = 2;
@@ -946,6 +1030,17 @@ public class NavitMapDownloader
 						}
 						catch (Exception e)
 						{
+
+							mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+							// update speedbar
+							Message msg_prog77 = new Message();
+							Bundle b_prog77 = new Bundle();
+							b_prog77.putInt("speed_kb_per_sec", 0);
+							b_prog77.putInt("threadnum", (this.my_num - 1));
+							msg_prog77.what = 3;
+							msg_prog77.setData(b_prog77);
+							ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+
 							try
 							{
 								bif.close();
@@ -972,6 +1067,16 @@ public class NavitMapDownloader
 					else
 					// bif == null
 					{
+						mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+						// update speedbar
+						Message msg_prog77 = new Message();
+						Bundle b_prog77 = new Bundle();
+						b_prog77.putInt("speed_kb_per_sec", 0);
+						b_prog77.putInt("threadnum", (this.my_num - 1));
+						msg_prog77.what = 3;
+						msg_prog77.setData(b_prog77);
+						ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+
 						d_url_disconnect(c);
 						try
 						{
@@ -987,6 +1092,16 @@ public class NavitMapDownloader
 
 					if (!download_success)
 					{
+						mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+						// update speedbar
+						Message msg_prog77 = new Message();
+						Bundle b_prog77 = new Bundle();
+						b_prog77.putInt("speed_kb_per_sec", 0);
+						b_prog77.putInt("threadnum", (this.my_num - 1));
+						msg_prog77.what = 3;
+						msg_prog77.setData(b_prog77);
+						ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+
 						try
 						{
 							// sleep for 2 second (also here)
@@ -1009,6 +1124,17 @@ public class NavitMapDownloader
 					e.printStackTrace();
 				}
 			}
+
+			mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+			// update speedbar
+			Message msg_prog77 = new Message();
+			Bundle b_prog77 = new Bundle();
+			b_prog77.putInt("speed_kb_per_sec", 0);
+			b_prog77.putInt("threadnum", (this.my_num - 1));
+			msg_prog77.what = 3;
+			msg_prog77.setData(b_prog77);
+			ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+
 			System.out.println("MultiStreamDownloaderThread " + this.my_num + " finished");
 		}
 	}
@@ -1018,6 +1144,12 @@ public class NavitMapDownloader
 	public NavitMapDownloader(Navit main)
 	{
 		//this.navit_jmain = main;
+
+		if (Navit.FDBL)
+		{
+			ZANAVI_MAPS_BASE_URL = "http://dlfd.zanavi.cc/data/";
+			ZANAVI_MAPS_SEVERTEXT_URL = "http://dlfd.zanavi.cc/server.txt";
+		}
 	}
 
 	public static void init_maps_without_donate_largemaps()
@@ -1058,6 +1190,10 @@ public class NavitMapDownloader
 		}
 		// compare it with directory contents
 		File map_dir = new File(Navit.MAP_FILENAME_PATH);
+		File map_file_absolute_path = null;
+		String dateInUTC = "";
+		SimpleDateFormat lv_formatter = new SimpleDateFormat("yyyyMMddHHmm", Locale.US);
+		lv_formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		if (map_dir.isDirectory())
 		{
 			String[] files_in_mapdir = map_dir.list();
@@ -1065,6 +1201,7 @@ public class NavitMapDownloader
 			{
 				for (int i = 0; i < files_in_mapdir.length; i++)
 				{
+					dateInUTC = "";
 					System.out.println("found file in mapdir: " + files_in_mapdir[i]);
 					// ignore filename with ":" in them
 					if (!files_in_mapdir[i].contains(":"))
@@ -1090,9 +1227,18 @@ public class NavitMapDownloader
 											found_in_maplist = true;
 											bits[t] = true;
 											System.out.println("found map: t=" + t + " map: " + files_in_mapdir[i]);
+
+											map_file_absolute_path = new File(map_dir + "/" + files_in_mapdir[i]);
+											if (map_file_absolute_path.exists())
+											{
+												Date lastModified = new Date(map_file_absolute_path.lastModified());
+												dateInUTC = lv_formatter.format(lastModified);
+												System.out.println("found map: st=" + st + " modified=" + dateInUTC);
+											}
 										}
 										t++;
 									}
+
 									if (!found_in_maplist)
 									{
 										// if file is on sdcard but not in maplist
@@ -1145,6 +1291,105 @@ public class NavitMapDownloader
 		write_cat_file();
 	}
 
+	public static int cat_file_maps_have_installed_any()
+	{
+		Iterator<String> k = map_catalogue.listIterator();
+		int ret = 0;
+		while (k.hasNext())
+		{
+			String m = k.next();
+
+			if (!m.equals("borders.bin:borders.bin"))
+			{
+				// System.out.println("MMMM=" + m);
+				ret++;
+			}
+		}
+
+		return ret;
+	}
+
+	public static void init_cat_file_maps_timestamps()
+	{
+		map_catalogue_date.clear();
+		// make a copy of current map_catalogue
+		List<String> temp_list = new ArrayList<String>();
+		temp_list.clear();
+		Iterator<String> k = map_catalogue.listIterator();
+		while (k.hasNext())
+		{
+			temp_list.add(k.next());
+		}
+		int temp_list_prev_size = temp_list.size();
+		Boolean[] bits = new Boolean[temp_list_prev_size];
+		for (int h = 0; h < temp_list_prev_size; h++)
+		{
+			bits[h] = false;
+		}
+		// compare it with directory contents
+		File map_dir = new File(Navit.MAP_FILENAME_PATH);
+		File map_file_absolute_path = null;
+		String dateInUTC = "";
+		SimpleDateFormat lv_formatter = new SimpleDateFormat("yyyyMMddHHmm", Locale.US);
+		lv_formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+		if (map_dir.isDirectory())
+		{
+			String[] files_in_mapdir = map_dir.list();
+			if (files_in_mapdir != null)
+			{
+				for (int i = 0; i < files_in_mapdir.length; i++)
+				{
+					dateInUTC = "";
+					System.out.println("found file in mapdir: " + files_in_mapdir[i]);
+					// ignore filename with ":" in them
+					if (!files_in_mapdir[i].contains(":"))
+					{
+						// use only files with ending ".bin"
+						if (files_in_mapdir[i].endsWith(".bin"))
+						{
+							// ignore cat. file itself
+							if (!files_in_mapdir[i].equals(CAT_FILE))
+							{
+								// ignore tmp download file
+								if (!files_in_mapdir[i].equals(DOWNLOAD_FILENAME))
+								{
+									// ignore borders.bin
+									if (!files_in_mapdir[i].equals("borders.bin"))
+									{
+										System.out.println("checking file in mapdir: " + files_in_mapdir[i]);
+										Boolean found_in_maplist = false;
+										Iterator<String> j = temp_list.listIterator();
+										int t = 0;
+										while (j.hasNext())
+										{
+											String st = j.next();
+											if (st.split(":", 2)[0].equals(files_in_mapdir[i]))
+											{
+												found_in_maplist = true;
+												bits[t] = true;
+												System.out.println("found map: t=" + t + " map: " + files_in_mapdir[i]);
+
+												map_file_absolute_path = new File(map_dir + "/" + files_in_mapdir[i]);
+												if (map_file_absolute_path.exists())
+												{
+													Date lastModified = new Date(map_file_absolute_path.lastModified());
+													dateInUTC = lv_formatter.format(lastModified);
+													System.out.println("found map: st=" + st + " modified=" + dateInUTC);
+													map_catalogue_date.add(dateInUTC + ":" + st.split(":", 2)[1]);
+												}
+											}
+											t++;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public static void read_cat_file()
 	{
 		//Get the text file
@@ -1179,8 +1424,11 @@ public class NavitMapDownloader
 		catch (IOException e)
 		{
 		}
+
+		Navit.send_installed_maps_to_plugin();
 	}
 
+	@SuppressLint("NewApi")
 	public static void write_cat_file()
 	{
 		//Get the text file
@@ -1206,6 +1454,46 @@ public class NavitMapDownloader
 		catch (Exception e)
 		{
 			e.printStackTrace(System.err);
+		}
+
+		Navit.send_installed_maps_to_plugin();
+
+		try
+		{
+			if (!Navit.have_maps_installed())
+			{
+				// System.out.println("MMMM=no maps installed");
+				// show semi transparent box "no maps installed" ------------------
+				// show semi transparent box "no maps installed" ------------------
+				NavitGraphics.no_maps_container.setVisibility(View.VISIBLE);
+				try
+				{
+					NavitGraphics.no_maps_container.setActivated(true);
+				}
+				catch (NoSuchMethodError e)
+				{
+				}
+
+				Navit.Global_Navit_Object.show_case_001();
+
+				// show semi transparent box "no maps installed" ------------------
+				// show semi transparent box "no maps installed" ------------------
+			}
+			else
+			{
+				NavitGraphics.no_maps_container.setVisibility(View.INVISIBLE);
+				try
+				{
+					NavitGraphics.no_maps_container.setActivated(false);
+				}
+				catch (NoSuchMethodError e)
+				{
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 
@@ -1542,7 +1830,7 @@ public class NavitMapDownloader
 				// try again
 				try
 				{
-					Thread.sleep(110);
+					Thread.sleep(90);
 				}
 				catch (InterruptedException e)
 				{
@@ -1651,23 +1939,50 @@ public class NavitMapDownloader
 			e.printStackTrace();
 		}
 
-		String this_server_name = d_get_servername(true, map_values);
-		if (this_server_name == null)
-		{
-			msg = handler.obtainMessage();
-			b = new Bundle();
-			msg.what = 2;
-			b.putInt("dialog_num", my_dialog_num);
-			b.putString("text", Navit.get_text("Error downloading map!")); //TRANS
-			msg.setData(b);
-			handler.sendMessage(msg);
+		String this_server_name = null;
+		String md5_server = null;
 
-			return 1;
+		int server_err = 0;
+		int server_retries = 0;
+		int server_max_retries = 8;
+
+		while (server_retries < server_max_retries)
+		{
+			Log.d("NavitMapDownloader", "init:try #" + server_retries);
+
+			this_server_name = d_get_servername(true, map_values);
+			if (this_server_name == null)
+			{
+				Log.d("NavitMapDownloader", "init:try #" + server_retries + " srvname=null");
+
+				server_err = 1;
+				server_retries++;
+				continue;
+			}
+
+			md5_server = d_get_md5_from_server(map_values, this_server_name, map_num3);
+			if (md5_server == null)
+			{
+				Log.d("NavitMapDownloader", "init:try #" + server_retries + " md5=null" + " srvname=" + this_server_name);
+
+				server_err = 1;
+				server_retries++;
+				continue;
+			}
+			else
+			{
+				Log.d("NavitMapDownloader", "init:try #" + server_retries + " md5=" + md5_server + " srvname=" + this_server_name);
+
+				server_err = 0;
+				break;
+			}
+
 		}
 
-		String md5_server = d_get_md5_from_server(map_values, this_server_name, map_num3);
-		if (md5_server == null)
+		if (server_err == 1)
 		{
+			//if (this_server_name == null)
+			//{
 			msg = handler.obtainMessage();
 			b = new Bundle();
 			msg.what = 2;
@@ -1677,6 +1992,7 @@ public class NavitMapDownloader
 			handler.sendMessage(msg);
 
 			return 1;
+			//}
 		}
 
 		// on disk md5 can be "null" , when downloading new map
@@ -1853,10 +2169,26 @@ public class NavitMapDownloader
 		mapdownload_error_code_clear();
 		mapdownload_already_read = new long[num_threads];
 		mapdownload_byte_per_second_overall = new float[num_threads];
+		mapdownload_byte_per_second_now = new float[num_threads];
 		for (k = 0; k < num_threads; k++)
 		{
 			mapdownload_already_read[k] = 0;
 			mapdownload_byte_per_second_overall[k] = 0;
+			mapdownload_byte_per_second_now[k] = 0;
+		}
+
+		for (k = 0; k < num_threads; k++)
+		{
+			// enale speedbar(s)
+			// System.out.println("SPB:enable:#" + k);
+
+			Message msg_prog = new Message();
+			Bundle b_prog = new Bundle();
+			b_prog.putInt("speed_kb_per_sec", -2);
+			b_prog.putInt("threadnum", k);
+			msg_prog.what = 3;
+			msg_prog.setData(b_prog);
+			ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
 		}
 
 		// start downloader threads here --------------------------
@@ -1907,6 +2239,26 @@ public class NavitMapDownloader
 		// calc md5sum on device on print it to STDOUT
 		//if (!split_mapfile)
 		//{
+
+		// set progressbar to 100%
+		Message msg_prog1 = new Message();
+		Bundle b_prog1 = new Bundle();
+		b_prog1.putInt("pg", 100);
+		msg_prog1.what = 2;
+		msg_prog1.setData(b_prog1);
+		ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog1);
+
+		for (k = 0; k < num_threads; k++)
+		{
+			// update speedbar
+			Message msg_prog = new Message();
+			Bundle b_prog = new Bundle();
+			b_prog.putInt("speed_kb_per_sec", 0);
+			b_prog.putInt("threadnum", k);
+			msg_prog.what = 3;
+			msg_prog.setData(b_prog);
+			ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+		}
 
 		try
 		{
@@ -2088,10 +2440,12 @@ public class NavitMapDownloader
 				mapdownload_error_code_clear();
 				mapdownload_already_read = new long[num_threads];
 				mapdownload_byte_per_second_overall = new float[num_threads];
+				mapdownload_byte_per_second_now = new float[num_threads];
 				for (k_idx = 0; k_idx < num_threads; k_idx++)
 				{
 					mapdownload_already_read[k_idx] = 0;
 					mapdownload_byte_per_second_overall[k_idx] = 0;
+					mapdownload_byte_per_second_now[k_idx] = 0;
 				}
 
 				// start downloader threads here --------------------------
@@ -2133,6 +2487,26 @@ public class NavitMapDownloader
 				}
 				else
 				{
+					// set progressbar to 100%
+					Message msg_prog2 = new Message();
+					Bundle b_prog2 = new Bundle();
+					b_prog2.putInt("pg", 100);
+					msg_prog2.what = 2;
+					msg_prog2.setData(b_prog2);
+					ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog2);
+
+					for (k_idx = 0; k_idx < num_threads; k_idx++)
+					{
+						// update speedbar
+						Message msg_prog = new Message();
+						Bundle b_prog = new Bundle();
+						b_prog.putInt("speed_kb_per_sec", 0);
+						b_prog.putInt("threadnum", k_idx);
+						msg_prog.what = 3;
+						msg_prog.setData(b_prog);
+						ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+					}
+
 					// delete an already there idx file, first
 					//System.out.println("idx 001:" + Navit.MAP_FILENAME_PATH + final_fileName + ".idx");
 					File idx_final_filename = new File(Navit.MAP_FILENAME_PATH + final_fileName + ".idx");
@@ -2176,11 +2550,23 @@ public class NavitMapDownloader
 		return exit_code;
 	}
 
-	private void trust_Every_ssl_cert()
+	static void default_ssl_cert()
+	{
+		HttpsURLConnection.setDefaultHostnameVerifier(hnv_default);
+		HttpsURLConnection.setDefaultSSLSocketFactory(sslf_default);
+	}
+
+	static HostnameVerifier hnv_default = null;
+	static SSLSocketFactory sslf_default = null;
+
+	static void trust_Every_ssl_cert()
 	{
 		// NEVER enable this on a production release!!!!!!!!!!
 		try
 		{
+			hnv_default = HttpsURLConnection.getDefaultHostnameVerifier();
+			sslf_default = HttpsURLConnection.getDefaultSSLSocketFactory();
+
 			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
 			{
 				public boolean verify(String hostname, SSLSession session)
@@ -2226,8 +2612,6 @@ public class NavitMapDownloader
 		// NEVER enable this on a production release!!!!!!!!!!
 		// NEVER enable this on a production release!!!!!!!!!!
 
-		System.out.println("XXX 001");
-
 		String servername = null;
 		try
 		{
@@ -2255,32 +2639,17 @@ public class NavitMapDownloader
 			c.addRequestProperty("User-Agent", ua_);
 			c.addRequestProperty("Pragma", "no-cache");
 
-			System.out.println("XXX 002");
-
 			c.setRequestMethod("GET");
 			c.setDoOutput(true);
 			c.setReadTimeout(SOCKET_READ_TIMEOUT);
 			c.setConnectTimeout(SOCKET_CONNECT_TIMEOUT);
 
-			System.out.println("XXX 003");
-
 			try
 			{
-
-				System.out.println("XXX 004");
-
 				c.connect();
-
-				System.out.println("XXX 005");
-
 				BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()), 4096);
-
-				System.out.println("XXX 006");
-
 				String str;
 				str = in.readLine();
-
-				System.out.println("XXX 007");
 
 				if (str != null)
 				{
@@ -2302,8 +2671,6 @@ public class NavitMapDownloader
 		{
 			e.printStackTrace();
 		}
-
-		System.out.println("XXX 099");
 
 		return servername;
 	}

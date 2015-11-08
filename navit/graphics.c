@@ -2567,7 +2567,7 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 						}
 					}
 					// change color of route if in bicycle-route-mode and we want to drive against the oneway street
-					else if ((dc->type == type_street_route) && (global_vehicle_profile == 1) && ((di->col_int_value >> 26) & 3))
+					else if ((dc->type == type_street_route || dc->type == type_street_route_waypoint) && (global_vehicle_profile == 1) && ((di->col_int_value >> 26) & 3))
 					{
 						// if oneway and route goes against it
 						if (  ((di->col_int_value >> 24) & 2) && ((di->col_int_value >> 26) & 1)  )
@@ -3235,63 +3235,80 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 	// dirty hack to draw "waypoint(s)" ---------------------------
 	if (strncmp("Internal", lay->name, 8) == 0)
 	{
-		if (global_navit->route)
+		// if (global_routing_engine != 1)
 		{
-			if (global_navit->destination_valid == 1)
+			if (global_navit->route)
 			{
-				int count_ = 0;
-				int curr_ = 0;
-				count_ = g_list_length(global_navit->route->destinations);
-				if (count_ > 1)
+				if (global_navit->destination_valid == 1)
 				{
-					if (!global_img_waypoint)
+					int count_ = 0;
+					int curr_ = 0;
+					count_ = g_list_length(global_navit->route->destinations);
+					if (count_ > 1)
 					{
-						char *path2;
-						path2 = graphics_icon_path("nav_waypoint_bk_center.png");
-						global_img_waypoint = graphics_image_new_scaled_rotated(gra, path2, 59, 59, 0);
-
-						// compensate for streched images on high dpi devices
-						global_img_waypoint->hot.x = (int)((float)global_img_waypoint->width / 2.0f / (float)global_dpi_factor);
-						global_img_waypoint->hot.y = (int)((float)global_img_waypoint->height / 2.0f / (float)global_dpi_factor);
-
-						//dbg(0, "img_factor=%f\n", (float)global_dpi_factor);
-						//dbg(0, "img_h=%d\n", global_img_waypoint->height);
-						//dbg(0, "img_w=%d\n", global_img_waypoint->width);
-						//dbg(0, "img_hotx=%d\n", global_img_waypoint->hot.x);
-						//dbg(0, "img_hoty=%d\n", global_img_waypoint->hot.y);
-
-						g_free(path2);
-					}
-
-					struct point p2;
-					struct coord pc77;
-					GList *ldest = global_navit->route->destinations;
-					while (ldest)
-					{
-						curr_++;
-						if (curr_ < count_)
+						if (!global_img_waypoint)
 						{
-							struct route_info *dst = ldest->data;
-							pc77.x = dst->c.x;
-							pc77.y = dst->c.y;
-							//// dbg(0, "draw1 curr=%d x y: %d %d\n", curr_, dst->c.x, dst->c.y);
-							enum projection pro = transform_get_projection(global_navit->trans_cursor);
-							transform(global_navit->trans, pro, &pc77, &p2, 1, 0, 0, NULL);
-							// transform(global_navit->trans, projection_mg, &pc77, &p2, 1, 0, 0, NULL);
-							p2.x = p2.x - global_img_waypoint->hot.x; // hot = 29
-							p2.y = p2.y - global_img_waypoint->hot.y; // hot = 29
-							gra->meth.draw_image(gra->priv, gra->gc[0]->priv, &p2, global_img_waypoint->priv);
+							char *path2;
+							path2 = graphics_icon_path("nav_waypoint_bk_center.png");
+							global_img_waypoint = graphics_image_new_scaled_rotated(gra, path2, 59, 59, 0);
+
+							// compensate for streched images on high dpi devices
+							global_img_waypoint->hot.x = (int)((float)global_img_waypoint->width / 2.0f / (float)global_dpi_factor);
+							global_img_waypoint->hot.y = (int)((float)global_img_waypoint->height / 2.0f / (float)global_dpi_factor);
+
+							//dbg(0, "img_factor=%f\n", (float)global_dpi_factor);
+							//dbg(0, "img_h=%d\n", global_img_waypoint->height);
+							//dbg(0, "img_w=%d\n", global_img_waypoint->width);
+							//dbg(0, "img_hotx=%d\n", global_img_waypoint->hot.x);
+							//dbg(0, "img_hoty=%d\n", global_img_waypoint->hot.y);
+
+							g_free(path2);
 						}
-						// next dest. / waypoint
-						ldest = g_list_next(ldest);
+
+						struct point p2;
+						struct coord pc77;
+						GList *ldest = global_navit->route->destinations;
+						while (ldest)
+						{
+							curr_++;
+							if (curr_ < count_)
+							{
+								struct route_info *dst = ldest->data;
+								pc77.x = dst->c.x;
+								pc77.y = dst->c.y;
+								//// dbg(0, "draw1 curr=%d x y: %d %d\n", curr_, dst->c.x, dst->c.y);
+								enum projection pro = transform_get_projection(global_navit->trans_cursor);
+								transform(global_navit->trans, pro, &pc77, &p2, 1, 0, 0, NULL);
+								// transform(global_navit->trans, projection_mg, &pc77, &p2, 1, 0, 0, NULL);
+								p2.x = p2.x - global_img_waypoint->hot.x; // hot = 29
+								p2.y = p2.y - global_img_waypoint->hot.y; // hot = 29
+								gra->meth.draw_image(gra->priv, gra->gc[0]->priv, &p2, global_img_waypoint->priv);
+							}
+							// next dest. / waypoint
+							ldest = g_list_next(ldest);
+						}
 					}
 				}
 			}
 		}
 
 
-
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
+		enum projection pro3 = transform_get_projection(global_navit->trans_cursor);
+		struct point *p_temp = g_alloca(sizeof(struct point) * (2 + 1));
+#else
+#ifdef NAVIT_DEBUG_COORD_LIST
+		enum projection pro3 = transform_get_projection(global_navit->trans_cursor);
+		struct point *p_temp = g_alloca(sizeof(struct point) * (2 + 1));
+#endif
+#endif
+
+
+#ifdef NAVIT_TRACKING_SHOW_REAL_GPS_POS
+
+				if (global_tracking_show_real_gps_pos == 1)
+				{
+
 				// -------- DEBUG -------- draw real GPS position ---------
 				// -------- DEBUG -------- draw real GPS position ---------
 				// -------- DEBUG -------- draw real GPS position ---------
@@ -3342,6 +3359,64 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp3, 2, 15, 14, 0, &debug_red2, global_clinedrawing_active, 1);
 
 
+#if 0
+				// WINNER Segment on route segment --------------
+				struct point *p_temp_win_3 = g_alloca(sizeof(struct point) * (2 + 1));
+				struct color debug_win_blue2 = { 0x0000,0x0000,0xfafa,0xffff }; // RR GG BB AA
+				struct point p_win2;
+
+				transform(global_navit->trans, pro, &global_debug_route_seg_winner_p_start, &p_win2, 1, 0, 0, NULL);
+				p_temp_win_3[0].x = p_win2.x - 140;
+				p_temp_win_3[0].y = p_win2.y;
+
+				p_temp_win_3[1].x = p_win2.x + 140;
+				p_temp_win_3[1].y = p_win2.y;
+
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp_win_3, 2, 15, 4, 0, &debug_win_blue2, global_clinedrawing_active, 1);
+
+				p_temp_win_3[0].x = p_win2.x;
+				p_temp_win_3[0].y = p_win2.y - 140;
+
+				p_temp_win_3[1].x = p_win2.x;
+				p_temp_win_3[1].y = p_win2.y + 140;
+
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp_win_3, 2, 15, 4, 0, &debug_win_blue2, global_clinedrawing_active, 1);
+
+				// WINNER Segment on route segment --------------
+#endif
+
+#if 0
+				// WINNER route segment direction --------------
+
+				struct color debug_win_green2 = { 0x0000,0xfafa,0x0000,0xffff }; // RR GG BB AA
+
+				transform(global_navit->trans, pro, &global_debug_route_seg_winner_start, &p_win2, 1, 0, 0, NULL);
+
+				p_temp_win_3[0].x = p_win2.x - 90;
+				p_temp_win_3[0].y = p_win2.y;
+
+				p_temp_win_3[1].x = p_win2.x + 90;
+				p_temp_win_3[1].y = p_win2.y;
+
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp_win_3, 2, 15, 12, 0, &debug_win_green2, global_clinedrawing_active, 1);
+
+
+
+				p_temp_win_3[0].x = p_win2.x;
+				p_temp_win_3[0].y = p_win2.y;
+
+				transform(global_navit->trans, pro, &global_debug_route_seg_winner_end, &p_win2, 1, 0, 0, NULL);
+
+				p_temp_win_3[1].x = p_win2.x;
+				p_temp_win_3[1].y = p_win2.y;
+
+				gra->meth.draw_lines3(gra->priv, gra->gc[0]->priv, p_temp_win_3, 2, 15, 42, 0, &debug_win_green2, global_clinedrawing_active, 1);
+
+				// WINNER route segment direction --------------
+#endif
+
+
+
 				// ------ text -------
 				graphics_gc_set_foreground(gra->gc[0], &debug_red2);
 				graphics_gc_set_linewidth(gra->gc[0], 8);
@@ -3363,13 +3438,16 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 				// -------- DEBUG -------- draw real GPS position ---------
 				// -------- DEBUG -------- draw real GPS position ---------
 
+				}
+
+#endif
+
+#ifdef NAVIT_ROUTING_DEBUG_PRINT
 
 				// -------- DEBUG -------- draw winner track segment ---------
 				// -------- DEBUG -------- draw winner track segment ---------
 				// -------- DEBUG -------- draw winner track segment ---------
 				struct color debug_orange = { 0xffff,0x4040,0x0000,0xffff }; // RR GG BB AA
-				struct point *p_temp = g_alloca(sizeof(struct point) * (2 + 1));
-				enum projection pro3 = transform_get_projection(global_navit->trans_cursor);
 
 				if (global_navit->route)
 				{
@@ -3416,16 +3494,16 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 					}
 				}
 
-
-
-
-
+				// -------- DEBUG -------- draw winner track segment ---------
+				// -------- DEBUG -------- draw winner track segment ---------
+				// -------- DEBUG -------- draw winner track segment ---------
+#endif
 
 
 // ============================== debug lines ==============================
 // ============================== debug lines ==============================
 // ============================== debug lines ==============================
-#if 0
+#ifdef NAVIT_DEBUG_COORD_LIST
 				struct color debug_purple = { 0xffff,0x0000,0xffff,0xffff }; // RR GG BB AA
 				transform(global_navit->trans, pro3, &global_debug_trlast_start, &p_temp[0], 1, 0, 0, NULL);
 				transform(global_navit->trans, pro3, &global_debug_trlast_end, &p_temp[1], 1, 0, 0, NULL);
@@ -3440,7 +3518,7 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 				int ii2;
 				int jj;
 
-				//dbg(0,"global_debug_coord_list:LOOP:num=%d\n", global_debug_coord_list_items);
+				// dbg(0,"global_debug_coord_list:LOOP:num=%d\n", global_debug_coord_list_items);
 
 				for (ii2 = 0; ii2 < global_debug_coord_list_items; ii2++)
 				{
@@ -3498,15 +3576,6 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 // ============================== debug lines ==============================
 // ============================== debug lines ==============================
 
-
-
-
-
-
-				// -------- DEBUG -------- draw winner track segment ---------
-				// -------- DEBUG -------- draw winner track segment ---------
-				// -------- DEBUG -------- draw winner track segment ---------
-#endif
 
 
 	}
@@ -3850,18 +3919,21 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 					// graphics_gc_set_foreground(gra->gc[0], &debug_red2);
 					// graphics_gc_set_linewidth(gra->gc[0], 8);
 					struct point p7;
-					struct graphics_font *font8 = get_font(gra, 21);
+					struct graphics_font *font8 = get_font(gra, 24);
 					char *dir_label=g_strdup_printf("%d", global_sharp_turn_list[ij1].angle);
+					// dbg(0, "st.angle(2)=%d\n", global_sharp_turn_list[ij1].angle);
 
 					if (global_sharp_turn_list[ij1].angle > 0)
 					{
 						p7.x = p_temp13->x + 25;  // move text label a bit to the right, so it does not overlap the circle
-						p7.y = p_temp13->y + 25 + (int)((float)global_sharp_turn_list[ij1].angle / 2.0f);  // move label a bit down (y-axis)
+						p7.y = p_temp13->y + 25;
+						// p7.y = p_temp13->y + 25 + (int)((float)global_sharp_turn_list[ij1].angle / 2.0f);  // move label a bit down (y-axis)
 					}
 					else
 					{
 						p7.x = p_temp13->x + 25;  // move text label a bit to the right, so it does not overlap the circle
-						p7.y = p_temp13->y + 0 + (int)((float)global_sharp_turn_list[ij1].angle / 2.0f);  // move label a bit down (y-axis)
+						p7.y = p_temp13->y + 0;
+						// p7.y = p_temp13->y + 0 + (int)((float)global_sharp_turn_list[ij1].angle / 2.0f);  // move label a bit down (y-axis)
 					}
 					gra->meth.draw_text(gra->priv, gra->gc[0]->priv, NULL, font8->priv, dir_label, &p7, 0x10000, 0);
 					g_free(dir_label);
@@ -4185,6 +4257,12 @@ __F_START__
 		{
 			draw_tile_map = 0;
 		}
+	}
+
+	if (global_show_maps_debug_view)
+	{
+		draw_vector_map = 1;
+		draw_tile_map = 0;
 	}
 
 	displaylist->order = order_corrected;
@@ -4616,7 +4694,7 @@ __F_START__
 
 
 					struct attr attr_88;
-					if (item->type == type_street_route)
+					if ((item->type == type_street_route) || (item->type == type_street_route_waypoint))
 					{
 						if (item_attr_get(item, attr_direction, &attr_88))
 						{

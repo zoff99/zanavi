@@ -23,7 +23,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -31,31 +30,35 @@ public class ZANaviOSDRoadDist extends View
 {
 
 	private Paint paint = new Paint();
-	private RectF f;
 	int end_x;
 	int end_y;
 	int nt_text_start_x = 0;
 	int nt_text_start_y = 0;
 	int nt_font_size = 10;
 	float draw_factor = 1;
-	int OSD_element_bg_001 = Color.argb(255, 80, 80, 150); // Color.argb(255, 190, 190, 190); // Color.argb(140, 136, 136, 136);
+	int OSD_element_bg_001 = Navit.OSD_blueish_bg_color; // Color.argb(255, 190, 190, 190); // Color.argb(140, 136, 136, 136);
+	int OSD_element_text_shadow_001 = Color.rgb(255, 255, 255); // text shadow
+	int OSD_element_text_001 = Color.rgb(117, 117, 117); // = #757575
+	int OSD_element_text_shadow_width = 1;
 	String my_text = "";
 	int w2;
 	int h2;
+	int h3;
 	int w;
 	int h;
+	int font_size = 10;
+	float textHeight = 0;
+	float textOffset = 0;
 
 	public ZANaviOSDRoadDist(Context context)
 	{
 		super(context);
-		f = new RectF(0, 0, 1, 1);
 		paint.setTextAlign(Paint.Align.CENTER);
 	}
 
 	public ZANaviOSDRoadDist(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		f = new RectF(0, 0, 1, 1);
 		paint.setTextAlign(Paint.Align.CENTER);
 	}
 
@@ -67,34 +70,19 @@ public class ZANaviOSDRoadDist extends View
 		this.h2 = h / 2;
 		this.w = w;
 		this.h = h;
+		this.h3 = (int) (h + (paint.ascent() / 2));
 
-		draw_factor = 1.0f;
-		if (Navit.my_display_density.compareTo("mdpi") == 0)
-		{
-			draw_factor = 1.0f;
-		}
-		else if (Navit.my_display_density.compareTo("ldpi") == 0)
-		{
-			draw_factor = 0.7f;
-		}
-		else if (Navit.my_display_density.compareTo("hdpi") == 0)
-		{
-			draw_factor = 1.5f;
-		}
+		OSD_element_text_shadow_width = NavitGraphics.dp_to_px(2);
 
-		// correct for ultra high DPI
-		if (Navit.metrics.densityDpi >= 320) //&& (Navit.PREF_shrink_on_high_dpi))
-		{
-			draw_factor = 1.8f * Navit.metrics.densityDpi / NavitGraphics.Global_want_dpi_other;
-		}
+		font_size = Navit.find_max_font_size_for_height("7,544 km", h, 93, 9);
 
-		float real_factor = draw_factor / 1.5f;
+		// System.out.println("aAA:1:" + font_size + " " + w + " " + h);
 
-		f = new RectF(0 + 6, 0 + 6, w - 6, h - 6);
+		paint.setTextSize(font_size);
+		paint.setAntiAlias(true);
 
-		nt_text_start_x = (int) (20 * real_factor);
-		nt_text_start_y = (int) (30 * real_factor);
-		nt_font_size = (int) (24 * real_factor);
+		textHeight = paint.descent() - paint.ascent();
+		textOffset = (textHeight / 2) - paint.descent();
 	}
 
 	public void onDraw(Canvas c)
@@ -108,43 +96,19 @@ public class ZANaviOSDRoadDist extends View
 			{
 				my_text = Navit.OSD_route_001.driving_distance_to_target;
 
-				if (NavitGraphics.MAP_DISPLAY_OFF)
-				{
-					paint.setColor(Color.argb(255, 20, 20, 230));
-					paint.setStyle(Paint.Style.FILL_AND_STROKE);
-					paint.setStrokeWidth(2);
-					paint.setAntiAlias(true);
-					c.drawRoundRect(f, 10, 10, paint);
+				paint.setColor(OSD_element_text_shadow_001);
+				paint.setStrokeWidth(OSD_element_text_shadow_width);
+				paint.setStyle(Paint.Style.STROKE);
+				c.drawText(my_text, w2, h2 + textOffset, paint);
 
-					paint.setColor(Color.WHITE);
-					paint.setStrokeWidth(3);
-					paint.setStyle(Paint.Style.FILL);
-					paint.setTextSize(nt_font_size);
-					paint.setAntiAlias(true);
-					c.drawText(my_text, nt_text_start_x, nt_text_start_y, paint);
-				}
-				else
-				{
-					paint.setColor(OSD_element_bg_001);
-					paint.setStyle(Paint.Style.FILL_AND_STROKE);
-					paint.setStrokeWidth(2);
-					paint.setAntiAlias(true);
-					c.drawRoundRect(f, 10, 10, paint);
-
-					paint.setColor(NavitOSDJava.OSD_element_text_shadow_001);
-					paint.setStrokeWidth(NavitOSDJava.OSD_element_text_shadow_width);
-					paint.setStyle(Paint.Style.STROKE);
-					paint.setTextSize(nt_font_size);
-					paint.setAntiAlias(true);
-					c.drawText(my_text, w2, h + (paint.ascent() / 2), paint);
-
-					paint.setColor(NavitOSDJava.OSD_element_text_001);
-					paint.setStrokeWidth(3);
-					paint.setStyle(Paint.Style.FILL);
-					paint.setTextSize(nt_font_size);
-					paint.setAntiAlias(true);
-					c.drawText(my_text, w2, h + (paint.ascent() / 2), paint);
-				}
+				paint.setColor(OSD_element_text_001);
+				paint.setStrokeWidth(3);
+				paint.setStyle(Paint.Style.FILL);
+				c.drawText(my_text, w2, h2 + textOffset, paint);
+			}
+			else
+			{
+				c.drawColor(Color.TRANSPARENT);
 			}
 		}
 		catch (Exception e)
@@ -152,5 +116,6 @@ public class ZANaviOSDRoadDist extends View
 			//e.printStackTrace();
 		}
 
+		// System.out.println("onDraw:OSDRoadDist");
 	}
 }

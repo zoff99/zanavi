@@ -207,13 +207,45 @@ coord_rect_extend(struct coord_rect *r, struct coord *c)
 {
 	if (c->x < r->lu.x)
 		r->lu.x=c->x;
+
 	if (c->x > r->rl.x)
 		r->rl.x=c->x;
+
 	if (c->y < r->rl.y)
 		r->rl.y=c->y;
+
 	if (c->y > r->lu.y)
 		r->lu.y=c->y;
+
 }
+
+/*
+ *
+ * extend rect by "percent" (e.g.: 0.2f) --> means: add left 10% and add right 10% and so on ...
+ *
+ */
+void coord_rect_extend_by_percent(struct coord_rect *r, float percent)
+{
+	// extend rectangle by factor
+	//
+	// x
+	int dx = abs(r->rl.x - r->lu.x);
+	float dx2 = ((float)dx * percent)/2.0f;
+	// dbg(0, "EXTEND_RECT:01a:dx=%d dx2=%f lu.x=%d rl.x=%d\n", dx, dx2, r->lu.x, r->rl.x);
+	r->rl.x = (int)((float)r->rl.x + dx2);
+	r->lu.x = (int)((float)r->lu.x - dx2);
+	// dbg(0, "EXTEND_RECT:01b:dx=%d dx2=%f lu.x=%d rl.x=%d\n", dx, dx2, r->lu.x, r->rl.x);
+
+	//
+	// y
+	int dy = abs(r->rl.y - r->lu.y);
+	float dy2 = ((float)dy * percent)/2.0f;
+	// dbg(0, "EXTEND_RECT:02a:dy=%d dy2=%f rl.y=%d lu.y=%d\n", dy, dy2, r->rl.y, r->lu.y);
+	r->rl.y = (int)((float)r->rl.y - dy2);
+	r->lu.y = (int)((float)r->lu.y + dy2);
+	// dbg(0, "EXTEND_RECT:02b:dy=%d dy2=%f rl.y=%d lu.y=%d\n", dy, dy2, r->rl.y, r->lu.y);
+}
+
 
 /**
  * Parses \c char \a *c_str and writes back the coordinates to \c coord \a *c_ret. Uses \c projection \a pro if no projection is given in \c char \a *c_str.
@@ -468,4 +500,8 @@ coord_equal(const void *a, const void *b)
 	}
 	return FALSE;
 }
+
+
 /** @} */
+
+

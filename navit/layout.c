@@ -273,10 +273,12 @@ struct layer * layer_new(struct attr *parent, struct attr **attrs)
 
 	l = g_new0(struct layer, 1);
 	l->active = 1;
+
 	for (; *attrs; attrs++)
 	{
 		layer_set_attr_do(l, *attrs, 1);
 	}
+
 	return l;
 }
 
@@ -339,6 +341,7 @@ struct itemgra * itemgra_new(struct attr *parent, struct attr **attrs)
 	sequence_range = attr_search(attrs, NULL, attr_sequence_range);
 	defrange.min = 0;
 	defrange.max = 32767;
+
 	if (order)
 		itm->order = order->u.range;
 	else
@@ -355,9 +358,11 @@ struct itemgra * itemgra_new(struct attr *parent, struct attr **attrs)
 		itm->sequence_range = sequence_range->u.range;
 	else
 		itm->sequence_range = defrange;
+
 	if (item_types)
 	{
 		type = item_types->u.item_types;
+
 		while (type && *type != type_none)
 		{
 			itm->type = g_list_append(itm->type, GINT_TO_POINTER(*type));
@@ -369,6 +374,7 @@ struct itemgra * itemgra_new(struct attr *parent, struct attr **attrs)
 
 	return itm;
 }
+
 int itemgra_add_attr(struct itemgra *itemgra, struct attr *attr)
 {
 	switch (attr->type)
@@ -383,6 +389,7 @@ int itemgra_add_attr(struct itemgra *itemgra, struct attr *attr)
 		case attr_arrows:
 			itemgra->elements = g_list_append(itemgra->elements, attr->u.element);
 			return 1;
+
 		default:
 			dbg(0, "unknown: %s\n", attr_to_name(attr->type));
 			return 0;

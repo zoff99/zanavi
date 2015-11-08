@@ -75,61 +75,10 @@ public class NavitMapPreviewActivity extends ActionBarActivity
 
 	public static MapPreviewConfig[] mapconf = new MapPreviewConfig[MaxConfigs];
 
-	//	@Override
-	//	protected void onPostCreate(Bundle savedInstanceState)
-	//	{
-	//		super.onPostCreate(savedInstanceState);
-	//		Toolbar bar;
-	//
-	//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-	//		{
-	//			ViewGroup root_view = (ViewGroup) ll;
-	//			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
-	//			bar.setTitle(Navit.get_text("Map Preview"));
-	//			root_view.addView(bar, 0); // insert at top
-	//		}
-	//		else
-	//		{
-	//			ViewGroup root_view = (ViewGroup) ll;
-	//			// ListView content = (ListView) root_view.getChildAt(0);
-	//			ViewGroup content = ll;
-	//
-	//			root_view.removeAllViews();
-	//
-	//			bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root_view, false);
-	//			bar.setTitle(Navit.get_text("Map Preview"));
-	//			root_view.addView(bar);
-	//
-	//			int height;
-	//			TypedValue tv = new TypedValue();
-	//			if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true))
-	//			{
-	//				height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-	//			}
-	//			else
-	//			{
-	//				height = bar.getHeight();
-	//			}
-	//
-	//			content.setPadding(0, height, 0, 0);
-	//
-	//			root_view.addView(content);
-	//		}
-	//
-	//		bar.setNavigationOnClickListener(new View.OnClickListener()
-	//		{
-	//			@Override
-	//			public void onClick(View v)
-	//			{
-	//				finish();
-	//			}
-	//		});
-	//	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		this.selected_id = -1;
 
@@ -504,7 +453,7 @@ public class NavitMapPreviewActivity extends ActionBarActivity
 			paint.setTextSize(size / 15);
 			paint.setColor(Color.parseColor("#0A0A0A"));
 			paint.setStyle(Paint.Style.FILL);
-			paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+			paint.setAntiAlias(Navit.p.PREF_use_anti_aliasing);
 			if (dx == 0x10000 && dy == 0)
 			{
 				view_canvas_upper.drawText(text, x, y, paint);
@@ -528,7 +477,7 @@ public class NavitMapPreviewActivity extends ActionBarActivity
 			//System.out.println("draw target x=" + x + " y=" + y);
 			// Paint paint = new Paint();
 			paint.setStrokeWidth(0);
-			paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+			paint.setAntiAlias(Navit.p.PREF_use_anti_aliasing);
 			paint.setStyle(Paint.Style.FILL);
 			paint.setColor(Color.parseColor("#FF0303"));
 			view_canvas.drawCircle(x, y, 10, paint);
@@ -544,7 +493,7 @@ public class NavitMapPreviewActivity extends ActionBarActivity
 		{
 			// Paint paint = new Paint();
 			paint.setStyle(Paint.Style.STROKE);
-			paint.setAntiAlias(Navit.PREF_use_anti_aliasing);
+			paint.setAntiAlias(Navit.p.PREF_use_anti_aliasing);
 			paint.setStrokeWidth(mapconf[mp_overview].my_strokewidth[type]);
 			paint.setColor(Color.parseColor(mapconf[mp_overview].my_color[type]));
 			Path path = new Path();

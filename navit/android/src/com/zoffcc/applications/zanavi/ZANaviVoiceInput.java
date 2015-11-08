@@ -53,17 +53,19 @@ public class ZANaviVoiceInput extends ActionBarActivity
 	private double rr_lon = 0;
 	private boolean do_location_search = false;
 
+	private boolean start_up = false;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Navit.applySharedTheme(this, Navit.PREF_current_theme);
+		Navit.applySharedTheme(this, Navit.p.PREF_current_theme);
 
 		super.onCreate(savedInstanceState);
 
 		// Override how this activity is animated into view
 		// The new activity is pulled in from the left and the current activity is kept still
 		// This has to be called before onCreate
-		overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
+		overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
 
 		setContentView(R.layout.voice_recog);
 
@@ -77,7 +79,7 @@ public class ZANaviVoiceInput extends ActionBarActivity
 				finish();
 			}
 		});
-		
+
 		do_location_search = false;
 
 		speakButton = (Button) findViewById(R.id.speakButton);
@@ -104,6 +106,8 @@ public class ZANaviVoiceInput extends ActionBarActivity
 			speakButton.setText(Navit.get_text("Google Speechrecognition not found")); // TRANS
 			Toast.makeText(getApplicationContext(), Navit.get_text("Google Speechrecognition not found"), Toast.LENGTH_LONG).show(); //TRANS
 		}
+
+		start_up = true;
 	}
 
 	@Override
@@ -121,6 +125,16 @@ public class ZANaviVoiceInput extends ActionBarActivity
 			do_location_search = false;
 			start_location_search();
 		}
+		else
+		{
+			if (start_up)
+			{
+				// start at once!
+				speakButtonClicked((View) null);
+			}
+		}
+
+		start_up = false;
 	}
 
 	@Override
@@ -129,7 +143,7 @@ public class ZANaviVoiceInput extends ActionBarActivity
 		// Whenever this activity is paused (i.e. looses focus because another activity is started etc)
 		// Override how this activity is animated out of view
 		// The new activity is kept still and this activity is pushed out to the left
-		overridePendingTransition(R.anim.hold, R.anim.push_out_to_left);
+		overridePendingTransition(R.anim.hold, R.anim.push_out_to_right);
 		super.onPause();
 	}
 

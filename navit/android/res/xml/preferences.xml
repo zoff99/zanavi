@@ -28,7 +28,7 @@
             android:summary="show vehicle in screen center, instead of the lower half of the screen"
             android:title="Vehicle in center" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="show_sat_status"
             android:summary="show Satellite status"
             android:title="Sat Status" />
@@ -87,11 +87,11 @@
             android:key="use_route_highways"
             android:summary="prefer Highways for routing"
             android:title="prefer Highways" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="use_index_search"
-            android:summary="use faster and better index search [donate version]"
-            android:title="index search" />
+<!--         <CheckBoxPreference -->
+<!--             android:defaultValue="true" -->
+<!--             android:key="use_index_search" -->
+<!--             android:summary="use faster and better index search [donate version]" -->
+<!--             android:title="index search" /> -->
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -99,12 +99,34 @@
             android:summary="Warns when driving to fast [donate version]"
             android:title="Roadspeed warning" />
 
+        <ListPreference
+            android:defaultValue="20"
+            android:entries="@array/roadspeed_warning_marginArray"
+            android:entryValues="@array/roadspeed_warning_marginValues"
+            android:key="roadspeed_warning_margin"
+            android:summary="Margin for speed warning"
+            android:title="Roadspeed warning margin" />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="lane_assist"
             android:summary="Shows which lanes you need to drive on [donate version]"
             android:title="Lane assistance" />
 
+        
+<!--        
+  		<fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="20"
+            android:dialogMessage="10:street_1_city"
+            android:key="road_prio_weight_street_1_city"
+            android:max="60"
+            android:summary=""
+            android:text=""
+            android:title="street_1_city" />        
+ -->        
+        
+        
+        
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/trafficlights_delayArray"
@@ -119,9 +141,16 @@
             android:key="routing_profile"
             android:summary="set the profile for routing"
             android:title="Routing Profile" />
-
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/routing_engineArray"
+            android:entryValues="@array/routing_engineValues"
+            android:key="routing_engine"
+            android:summary="set the routing engine"
+            android:title="Routing Engine" />
+        
         <fr.atcm.carpooling.views.utils.SeekBarPreference
-            android:defaultValue="68"
+            android:defaultValue="58"
             android:dialogMessage="10:road priority 1"
             android:key="road_priority_001"
             android:max="200"
@@ -130,7 +159,7 @@
             android:title="Street priority 1" />
 
         <fr.atcm.carpooling.views.utils.SeekBarPreference
-            android:defaultValue="329"
+            android:defaultValue="319"
             android:dialogMessage="10:road priority 2"
             android:key="road_priority_002"
             android:max="500"
@@ -139,7 +168,7 @@
             android:title="Street priority 2" />
 
          <fr.atcm.carpooling.views.utils.SeekBarPreference
-            android:defaultValue="5000"
+            android:defaultValue="4990"
             android:dialogMessage="10:road priority 3"
             android:key="road_priority_003"
             android:max="5000"
@@ -156,12 +185,24 @@
             android:text=""
             android:title="Cycle lanes priority" />
 
+         
+         <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="63"
+            android:dialogMessage="20:Traffic Factor"
+            android:key="traffic_speed_factor"
+            android:max="100"
+            android:summary="how much will traffic slow down your speed"
+            android:text=""
+            android:title="Traffic Factor" />
+         
+<!--         
          <CheckBoxPreference
             android:defaultValue="false"
             android:key="avoid_sharp_turns"
             android:summary="try to avoid sharp turns, and rather go a longer way around [BETA]"
             android:title="Avoid sharp turns" />
-        <CheckBoxPreference
+-->
+         <CheckBoxPreference
             android:defaultValue="true"
             android:key="speak_street_names"
             android:summary="Say Streetnames when navigating. on foreign languages streetnames may sound strange!"
@@ -182,6 +223,11 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="GUI" >
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_poi_on_map"
+            android:summary="show POI on map"
+            android:title="show POI" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_status_bar"
             android:summary="always show top status bar"
@@ -191,11 +237,11 @@
             android:key="show_3d_map"
             android:summary="show map in 3D [BETA]"
             android:title="3D" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="show_2d3d_toggle"
-            android:summary="show 2D/3D toggle instead of Map off/on toggle"
-            android:title="2D/3D toggle" />
+<!--         <CheckBoxPreference -->
+<!--             android:defaultValue="true" -->
+<!--             android:key="show_2d3d_toggle" -->
+<!--             android:summary="show 2D/3D toggle instead of Map off/on toggle" -->
+<!--             android:title="2D/3D toggle" /> -->
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="save_zoomlevel"
@@ -244,11 +290,11 @@
             android:key="show_multipolygons"
             android:summary="draw lines and areas from multipolygons"
             android:title="Multipolygons" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="show_vehicle_3d"
-            android:summary="show vehicle correctly in 3D mode"
-            android:title="Vehicle 3D" />
+<!--         <CheckBoxPreference -->
+<!--             android:defaultValue="true" -->
+<!--             android:key="show_vehicle_3d" -->
+<!--             android:summary="show vehicle correctly in 3D mode" -->
+<!--             android:title="Vehicle 3D" /> -->
 
         <ListPreference
             android:defaultValue="0"
@@ -258,7 +304,7 @@
             android:summary="Select Application Theme"
             android:title="Theme" />
         <ListPreference
-            android:defaultValue="2"
+            android:defaultValue="3"
             android:entries="@array/mapfontsizeArray"
             android:entryValues="@array/mapfontsizeValues"
             android:key="map_font_size"
@@ -328,9 +374,19 @@
             android:title="Write route" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="enable_debug_enable_comm"
-            android:summary="Enable ZANavi COMM Channel [DEBUG]"
-            android:title="Enable COMM channel" />
+            android:key="show_real_gps_pos"
+            android:summary="Show real GPS pos [DEBUG]"
+            android:title="Show real GPS position and angle on map" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_maps_debug_view"
+            android:summary="Show maps debug view [DEBUG]"
+            android:title="Show maps on lower zoom levels" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_turn_restrictions"
+            android:summary="Show Turnrestrictions [DEBUG]"
+            android:title="Show Turnrestrictions" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="item_dump"

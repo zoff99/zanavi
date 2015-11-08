@@ -35,8 +35,8 @@ public class ZANaviMapDownloaderService extends Service
 {
 	private static NotificationManager nm;
 	private static Notification notification;
-	public static final int NOTIFICATION_ID__DUMMY = 1;
-	public static final int NOTIFICATION_ID__DUMMY2 = 2;
+	public static int NOTIFICATION_ID__DUMMY = 1;
+	public static int NOTIFICATION_ID__DUMMY2 = 2;
 	public static String Notification_header = "";
 	public static String Notification_text = "";
 	private static Context con = null;

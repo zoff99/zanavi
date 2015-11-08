@@ -116,7 +116,7 @@ struct route_info
 	int lenpos; /**< Distance between lp and the end of the street */
 	int lenneg; /**< Distance between lp and the start of the street */
 	int lenextra; /**< Distance between lp and c */
-	int percent; /**< ratio of lenneg to lenght of whole street in percent */
+	int percent; /**< ratio of lenneg to length of whole street in percent */
 	struct street_data *street; /**< The street lp is on */
 	int street_direction; /**< Direction of vehicle on street -1 = Negative direction, 1 = Positive direction, 0 = Unknown */
 	int dir; /**< Direction to take when following the route -1 = Negative direction, 1 = Positive direction */
@@ -170,6 +170,8 @@ struct route_graph_point
 	int value; /**< The cost at which one can reach the destination from this point on */
 	struct coord c; /**< Coordinates of this point */
 	int flags; /**< Flags for this point (eg traffic distortion) */
+
+	struct route_graph_segment *seg_rev;
 
 	/*
        Dijkstra values:
@@ -264,6 +266,10 @@ void route_graph_destroy(struct route_graph *this);
 void route_path_update(struct route *this, int cancel, int async);
 int route_get_real_oneway_mask(int road_flag, int mask);
 struct route_graph_segment *route_graph_get_segment(struct route_graph *graph, struct street_data *sd, struct route_graph_segment *last);
+void route_after_destination_start_calc(struct route *this, int async);
+void route_set_destination_no_calc(struct route *this, struct pcoord *dst, int async);
+void route_add_destination_no_calc(struct route *this, struct pcoord *dst, int async);
+void route_find_next_lowest_segment_and_pin_it(struct route_graph_point *p, struct route_graph_segment *s, int min_value, int penalty);
 
 /* end of prototypes */
 #ifdef __cplusplus

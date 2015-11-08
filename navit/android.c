@@ -626,6 +626,59 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitMain(JNIEnv* env, jobject thiz, j
 	 dummy_997 = NULL;
 	 */
 
+
+
+#if 0
+
+	double lat = 48.6936931;
+	double lon = 16.0135909;
+	float latf = 48.6936931;
+	float lonf = 16.0135909;
+
+
+	//transform_to_geo_lat(transform_from_geo_lat(lat));
+	//transform_to_geo_lon(transform_from_geo_lon(lon));
+
+
+	long long j=0;
+	double ddd;
+	int in_y=12278278;
+
+	clock_t s_;
+	clock_t diff_time;
+
+	s_ = clock();
+	for(j=0;j<10000000L;j++)
+	{
+		ddd = atan(exp((in_y/2.00) / 6378137.0)) / M_PI * 360 - 90;
+	}
+	diff_time = clock() - s_;
+	dbg(0, "1:%fs\n", (double) ((double) diff_time / (double) CLOCKS_PER_SEC));
+
+	s_ = clock();
+	for(j=0;j<10000000L;j++)
+	{
+		ddd = TO_GEO_LAT_(in_y);
+		// fprintf(stderr, "lon=%.17f\n", ddd);
+	}
+	diff_time = clock() - s_;
+	dbg(0, "2:%fs\n", (double) ((double) diff_time / (double) CLOCKS_PER_SEC));
+
+	s_ = clock();
+	for(j=0;j<10000000L;j++)
+	{
+		ddd = TO_GEO_LAT_FAST_(in_y);
+	}
+	diff_time = clock() - s_;
+	dbg(0, "3:%fs\n", (double) ((double) diff_time / (double) CLOCKS_PER_SEC));
+
+
+#endif
+
+
+
+
+
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:leave\n");
 #endif
@@ -677,6 +730,22 @@ Java_com_zoffcc_applications_zanavi_Navit_NavitActivity(JNIEnv* env, jobject thi
 	{
 		// in onCreate at startup
 		char *strings[] = { "/data/data/com.zoffcc.applications.zanavi/bin/navit", NULL };
+
+		// ------------ send initial values for GEO calcs to Java ---------------
+		// ------------ send initial values for GEO calcs to Java ---------------
+		char *temp_t = NULL;
+
+		temp_t = g_strdup_printf("%.17f\n", (double)__EARTH_RADIUS__);
+		android_send_generic_text(21, temp_t);
+		g_free(temp_t);
+
+		temp_t = g_strdup_printf("%.17f\n", (double)__GEO_ACCURACY_FACTOR__);
+		android_send_generic_text(22, temp_t);
+		g_free(temp_t);
+
+		temp_t = NULL;
+		// ------------ send initial values for GEO calcs to Java ---------------
+		// ------------ send initial values for GEO calcs to Java ---------------
 
 		// dbg(0,"before main_real call\n");
 		main_real(1, strings);
@@ -1622,6 +1691,53 @@ void android_DrawMapPreview_polyline(struct point *p, int count, int type)
 	(*jnienv2)->DeleteLocalRef(jnienv2, points);
 }
 
+
+JNIEXPORT jobjectArray JNICALL 
+Java_com_zoffcc_applications_zanavi_NavitGraphics_GetRoadBookItems(JNIEnv *env, jobject thiz, int result_id)
+{
+    jobjectArray ret;
+    int i;
+	jclass *string_class = (*env)->FindClass(env, "java/lang/String");
+
+	// get roadbook
+	GList *result = navit_route_export_to_java_string(global_navit, result_id);
+
+	if (result == NULL)
+	{
+		return NULL;
+	}
+
+    ret = (jobjectArray)(*env)->NewObjectArray(env, g_list_length(result), string_class, (*env)->NewStringUTF(env, ""));
+
+	GList *result2 = result;
+	i = 0;
+	while (result2)
+	{
+		char *str = result2->data;
+
+		if (str != NULL)
+		{
+			(*env)->SetObjectArrayElement(env, ret, i, (*env)->NewStringUTF(env, str));
+			g_free(str);
+		}
+		else
+		{
+			(*env)->SetObjectArrayElement(env, ret, i, (*env)->NewStringUTF(env, ""));
+		}
+		i++;
+
+		result2 = g_list_next(result2);
+	}
+
+	g_list_free(result);
+
+    return(ret);
+ }
+
+
+
+
+
 JNIEXPORT jstring JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, jobject thiz, int i, float a, float b)
 {
@@ -1635,7 +1751,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 	// dbg(0, "THREAD ID=%d\n", thread_id);
 
 	// const char *result;
-	gchar *result;
+	gchar *result = NULL;
 
 #ifndef NAVIT_DEBUG_BAREMETAL
 
@@ -1815,6 +1931,11 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 		transform(global_navit->trans, projection_mg, &c99, &pnt, 1, 0, 0, NULL);
 		result = g_strdup_printf("%d:%d", pnt.x, pnt.y);
 	}
+//	else if (i == 13)
+//	{
+//		// get roadbook
+//		result = navit_route_export_to_java_string(global_navit, NULL, (int)a);
+//	}
 	else if (i == 12)
 	{
 		// calculate next position in interpolation on route
@@ -1979,6 +2100,40 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 			result = g_strdup("*ERROR*");
 		}
 	}
+	else if (i == 14)
+	{
+		// return current position
+		// dbg(0, "PPPOS:2:%f %f", ggggg_lat, ggggg_lon);
+		result = g_strdup_printf("%f:%f", (float)ggggg_lat, (float)ggggg_lon);
+	}
+	else if (i == 15)
+	{
+		// show lat,lng position on screen center, without map redraw!
+		struct coord c99;
+		struct pcoord pc99;
+		struct coord_geo g99;
+		g99.lat = a;
+		g99.lng = b;
+		////DBG // dbg(0,"zzzzz %f, %f\n",a, b);
+		////DBG // dbg(0,"yyyyy %f, %f\n",g99.lat, g99.lng);
+		transform_from_geo(projection_mg, &g99, &c99);
+		////DBG // dbg(0,"%d %d %f %f\n",c99.x, c99.y, g99.lat, g99.lng);
+
+		//enum projection pro=transform_get_projection(global_navit->trans_cursor);
+		//struct point pnt;
+		//transform(global_navit->trans, pro, &c99, &pnt, 1, 0, 0, NULL);
+		////DBG // dbg(0,"x=%d\n",pnt.x);
+		////DBG // dbg(0,"y=%d\n",pnt.y);
+		pc99.x = c99.x;
+		pc99.y = c99.y;
+		pc99.pro = projection_mg;
+
+		navit_set_center_no_draw(global_navit, &pc99, 0);
+
+		result = g_strdup("1:1");
+	}
+
+
 
 #else
 	result = g_strdup("*ERROR*");
@@ -1986,7 +2141,11 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackGeoCalc(JNIEnv* env, j
 
 	// // dbg(0, "result=%s\n", result);
 	jstring js = (*env)->NewStringUTF(env, result);
-	g_free(result);
+
+	if (result)
+	{
+		g_free(result);
+	}
 
 #ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
 	dbg(0,"+#+:leave\n");
@@ -2073,7 +2232,139 @@ __F_START__
 			// zoom out
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
+		}
+		else if (i == 112)
+		{
+			// show maps debug view
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_show_maps_debug_view = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 111)
+		{
+			// show real gps position on map
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_tracking_show_real_gps_pos = atoi(s);
+			// dbg(0, "show_real_gps_pos=%d\n", global_tracking_show_real_gps_pos);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 110)
+		{
+			// generic int option CallBack [<option name>:<option value "int">]
+			s = (*env)->GetStringUTFChars(env, str, NULL);
 
+			char *str_copy = strdup(s);
+			char *option_name = NULL;
+			char *option_value = NULL;
+
+			option_name = strsep(&str_copy, ":");
+			option_value = strsep(&str_copy, ":");
+
+			// dbg(0, "a=%s b=%s\n", option_name, option_value);
+
+/*
+street_0,living_street" speed="20" route_weight="20" route_prio_weight="30">
+street_1_city" speed="35" route_weight="35" route_prio_weight="30">
+track_paved" speed="35" route_weight="35" route_prio_weight="30">
+street_2_city,ramp_street_2_city" speed="50" route_weight="50" route_prio_weight="30">
+street_3_city,ramp_street_3_city" speed="50" route_weight="50" route_prio_weight="20">
+ramp_street_4_city" speed="49" route_weight="49" route_prio_weight="12">
+street_4_city" speed="50" route_weight="50" route_prio_weight="11">
+highway_city" speed="80" route_weight="80" route_prio_weight="9">
+street_1_land" speed="35" route_weight="35" route_prio_weight="30">
+street_2_land" speed="50" route_weight="50" route_prio_weight="11">
+street_3_land" speed="50" route_weight="50" route_prio_weight="11">
+street_4_land" speed="80" route_weight="80" route_prio_weight="11">
+street_n_lanes" speed="120" route_weight="120" route_prio_weight="9">
+ramp_highway_land" speed="119" route_weight="119" route_prio_weight="10">
+highway_land" speed="120" route_weight="120" route_prio_weight="9">
+*/
+
+			struct roadprofile *roadprofile = NULL;
+			int value_ = 0;
+
+			if (strcmp(option_name, "street_1_city#route_prio_weight") == 0)
+			{
+				roadprofile = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_1_city);
+				if (roadprofile)
+				{
+					value_ = roadprofile->route_prio_weight;
+					dbg(0, "VPR:old=%d\n", value_);
+					roadprofile->route_prio_weight = atoi(option_value);
+					dbg(0, "VPR:new=%d\n", roadprofile->route_prio_weight);
+					vehicleprofile_change_roadprofile_attr(global_navit->vehicleprofile, roadprofile, type_street_1_city, roadprofile->route_prio_weight);
+				}
+
+
+				roadprofile = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_street_1_city);
+				if (roadprofile)
+				{
+					value_ = roadprofile->route_prio_weight;
+					dbg(0, "VPR:new2=%d\n", value_);
+				}
+			}
+
+			// global_level2_announcement = atoi(option_value);
+
+			g_free(str_copy);
+
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 109)
+		{
+			// level 2 announcement seconds
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_level2_announcement = (float)atoi(s) / 10.0f;
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 108)
+		{
+			// level 1 announcement seconds
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_level1_announcement = (float)atoi(s) / 10.0f;
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 107)
+		{
+			// level 0 announcement seconds
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_level0_announcement = (float)atoi(s) / 10.0f;
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 106)
+		{
+			// factor for routing/road speed
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_road_speed_factor = (float)atoi(s) / 100.0f;
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 105)
+		{
+			// zoom to specific zoomlevel without redrawing the map!
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			int zoom_level = atoi(s);
+			navit_zoom_to_scale_no_draw(global_navit, zoom_level);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 104)
+		{
+			// send OVERSPILL_FACTOR to C-code
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			int value = atoi(s);
+
+			global_overspill_factor = (float)((float)value / 100.0f);
+
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 103)
+		{
+			// draw location of self (car) x% lower than screen center
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			int value = atoi(s);
+
+			global_navit->radius = value;
+
+			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 102)
 		{
@@ -2301,11 +2592,11 @@ __F_START__
 					rp->route_prio_weight = atoi(s);
 				}
 
-				rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_ramp);
-				if (rp)
-				{
-					rp->route_prio_weight = atoi(s);
-				}
+				//rp = vehicleprofile_get_roadprofile(global_navit->vehicleprofile, type_ramp);
+				//if (rp)
+				//{
+				//	rp->route_prio_weight = atoi(s);
+				//}
 
 				// calc route new!
 				if (rp)
@@ -2395,22 +2686,47 @@ __F_START__
 				if (!strcmp(s, "car"))
 				{
 					global_vehicle_profile = 0; // car
+
+					if (global_enhance_cycleway == 1)
+					{
+						navit_reset_cycleway(global_navit);
+					}
 				}
 				else if (!strcmp(s, "bike-normal"))
 				{
 					global_vehicle_profile = 1; // bicycle
+
+					if (global_enhance_cycleway == 0)
+					{
+						navit_enhance_cycleway(global_navit);
+					}
 				}
 				else if (!strcmp(s, "bike-avoid-roads"))
 				{
 					global_vehicle_profile = 1; // bicycle
+
+					if (global_enhance_cycleway == 0)
+					{
+						navit_enhance_cycleway(global_navit);
+					}
 				}
 				else if (!strcmp(s, "bike-no-oneway"))
 				{
 					global_vehicle_profile = 2; // bicycle no one-way!
+
+					if (global_enhance_cycleway == 0)
+					{
+						navit_enhance_cycleway(global_navit);
+					}
 				}
 				else
 				{
 					global_vehicle_profile = 0; // car
+
+					if (global_enhance_cycleway == 1)
+					{
+						navit_reset_cycleway(global_navit);
+					}
 				}
 				// dbg(0, "global_vehicle_profile=%d\n", global_vehicle_profile);
 			}
@@ -2725,8 +3041,8 @@ __F_START__
 
 			if ((global_vehicle_profile == 1) || (global_vehicle_profile == 2))
 			{
-				// for bicycle it's always 17 km/h
-				speed.u.num = 17;
+				// for bicycle it's always 27 km/h
+				speed.u.num = 27;
 			}
 			else
 			{
@@ -3113,6 +3429,67 @@ __F_START__
 			// start navigation asynchronous
 			navit_set_destination(global_navit, &pc, parse_str, 1);
 		}
+		else if (i == 55548)
+		{
+			// append waypoint at lat, lng
+
+			char *name;
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			char parse_str[strlen(s) + 1];
+			strcpy(parse_str, s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+
+			// waypoint (lat#lon#title)
+			struct coord_geo g;
+			char *p;
+			char *stopstring;
+
+			// lat
+			p = strtok(parse_str, "#");
+			g.lat = strtof(p, &stopstring);
+			// lon
+			p = strtok(NULL, "#");
+			g.lng = strtof(p, &stopstring);
+			// description
+			name = strtok(NULL, "#");
+
+			////DBG // dbg(0,"lat=%f\n",g.lat);
+			////DBG // dbg(0,"lng=%f\n",g.lng);
+			////DBG // dbg(0,"str1=%s\n",name);
+
+			struct coord c;
+			transform_from_geo(projection_mg, &g, &c);
+
+			struct pcoord pc;
+			pc.x = c.x;
+			pc.y = c.y;
+			pc.pro = projection_mg;
+
+			if (global_navit->destination_valid == 1)
+			{
+				route_add_destination_no_calc(global_navit->route, &pc, 1);
+
+				global_navit->destination = pc;
+				global_navit->destination_valid = 1;
+			}
+			else
+			{
+				route_set_destination_no_calc(global_navit->route, &pc, 1);
+			}
+		}
+		else if (i == 55598)
+		{
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			int value = atoi(s);
+
+			global_routing_engine = value;
+
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
+		else if (i == 55599)
+		{
+			route_after_destination_start_calc(global_navit->route, 1);
+		}
 		else if (i == 48)
 		{
 			// append waypoint at lat, lng
@@ -3151,6 +3528,52 @@ __F_START__
 
 			// append new waypoint to navigation
 			navit_add_waypoint_to_route(global_navit, &pc, name, 1);
+		}
+		else if (i == 55503)
+		{
+
+			// set destination to lat, lng
+
+			char *name;
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			char parse_str[strlen(s) + 1];
+			strcpy(parse_str, s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+			////DBG // dbg(0,"*****string=%s\n",s);
+
+			// set destination to (lat#lon#title)
+			struct coord_geo g;
+			char *p;
+			char *stopstring;
+
+			// lat
+			p = strtok(parse_str, "#");
+			g.lat = strtof(p, &stopstring);
+			// lon
+			p = strtok(NULL, "#");
+			g.lng = strtof(p, &stopstring);
+			// description
+			name = strtok(NULL, "#");
+
+			////DBG // dbg(0,"lat=%f\n",g.lat);
+			////DBG // dbg(0,"lng=%f\n",g.lng);
+			////DBG // dbg(0,"str1=%s\n",name);
+
+			struct coord c;
+			transform_from_geo(projection_mg, &g, &c);
+
+			struct pcoord pc;
+			pc.x = c.x;
+			pc.y = c.y;
+			pc.pro = projection_mg;
+
+			global_navit->destination = pc;
+			global_navit->destination_valid = 1;
+
+			if (global_navit->route)
+			{
+				route_set_destination_no_calc(global_navit->route, &pc, 1);
+			}
 		}
 		else if (i == 3)
 		{
@@ -3311,7 +3734,7 @@ void set_vehicle_values_to_java(int x, int y, int angle, int speed)
 	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values2, x, y, angle, speed);
 }
 
-void set_vehicle_values_to_java_delta(int dx, int dy, int dangle, int dzoom)
+void set_vehicle_values_to_java_delta(int dx, int dy, int dangle, int dzoom, int l_old, int l_new)
 {
 	JNIEnv *jnienv2;
 	jnienv2 = jni_getenv();
@@ -3330,13 +3753,13 @@ void set_vehicle_values_to_java_delta(int dx, int dy, int dangle, int dzoom)
 
 	if (NavitGraphics_set_vehicle_values3 == NULL)
 	{
-		if (!android_find_static_method(NavitGraphicsClass2, "set_vehicle_values_delta", "(IIII)V", &NavitGraphics_set_vehicle_values3))
+		if (!android_find_static_method(NavitGraphicsClass2, "set_vehicle_values_delta", "(IIIIII)V", &NavitGraphics_set_vehicle_values3))
 		{
 			return;
 		}
 	}
 
-	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values3, dx, dy, dangle, dzoom);
+	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, NavitGraphics_set_vehicle_values3, dx, dy, dangle, dzoom, l_old, l_new);
 }
 
 void send_route_rect_to_java(int x1, int y1, int x2, int y2, int order)

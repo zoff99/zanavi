@@ -60,12 +60,22 @@
 // #define NAVIT_ANGLE_LIST_DEBUG_PRINT_2 1
 // #define NAVIT_ANGLE_LIST_DEBUG_PRINT_1 1
 // #define NAVIT_DEBUG_BAREMETAL 1
+// #define NAVIT_DEBUG_COORD_LIST 1
+// #define NAVIT_DEBUG_COORD_DIE2TE_LIST 1
+//
 #define NAVIT_DEBUG_SPEECH_POSITION 1
 //
+#define NAVIT_TRACKING_SHOW_REAL_GPS_POS 1
+#define NAVIT_NAVIGATION_REMOVE_DUPL_WAYS 1
 #define NAVIT_SHOW_ROUTE_ARROWS 1
 #define NAVIT_CALC_ALLOWED_NEXT_WAYS 1
 #define NAVIT_CALC_LANES 1
 #define NAVIT_TRACKING_STICK_TO_ROUTE 1
+//
+//
+#define CAR_STICK_TO_ROUTE_001 1 // stick to route harder in car mode
+//
+// #define NAVIT_ROUTE_DIJKSTRA_REVERSE 1
 //
 // #define DEBUG_GLIB_MALLOC 1 // <-- does not work yet!
 // #define DEBUG_GLIB_FREE 1
@@ -105,23 +115,46 @@ extern "C"
 typedef enum {
 /** Internal use only, do not use for logging. */
 lvl_unset=-1,
+
 /** Informational message. Should make sense to non-programmers. */
 lvl_info, // = 0
+
 /** Error: something did not work. */
 lvl_error, // = 1
+
 /** Warning: something may not have worked. */
 lvl_warning, // = 2
+
 /** Debug output: (almost) anything goes. */
 lvl_debug // = 3
+
 } dbg_level; 
 
+
 extern int debug_level;
+
+
+#ifdef _DEBUG_BUILD_
+
 #define dbg_str2(x) #x
 #define dbg_str1(x) dbg_str2(x)
 #define dbg_module dbg_str1(MODULE)
 #define dbg(level,...) { if (debug_level >= level) debug_printf(level,dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),1,__VA_ARGS__); }
 #define dbg_func(level,indent,...) { if (debug_level >= level) debug_printf_func(level,indent,dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),1,__VA_ARGS__); }
 #define dbg_assert(expr) ((expr) ? (void) 0 : debug_assert_fail(dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),__FILE__,__LINE__,dbg_str1(expr)))
+
+#else
+
+#define dbg_str2(x) #x
+#define dbg_str1(x) #x
+#define dbg_module dbg_str1(MODULE)
+#define dbg(level,...) #level
+#define dbg_func(level,indent,...) #level
+#define dbg_assert(expr) ((expr) ? (void) 0 : (void) 0)
+
+#endif
+
+
 
 //#ifdef DEBUG_MALLOC
 // ----------------
@@ -285,11 +318,17 @@ int rpl_asprintf(char **, const char *, ...);
 
 #else
 
+#ifndef XXMAPTOOL
 #include <glib.h>
-
 gchar* g_strdup_printf_custom(const gchar *format, ...);
 gchar* g_strdup_vprintf_custom(const gchar *format, va_list args);
 gint g_vasprintf_custom(gchar **string, gchar const *format, va_list args);
+#else
+#define g_strdup_printf_custom g_strdup_printf
+#define g_strdup_vprintf_custom g_strdup_vprintf
+#define g_vasprintf_custom g_vasprintf
+#endif
+
 
 #endif
 

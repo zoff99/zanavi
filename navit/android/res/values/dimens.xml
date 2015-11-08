@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="gui_top_container_height">80dp</dimen>
+    <!-- xx -->
+    <dimen name="gui_next_turn_container_width">85dp</dimen>
+    <dimen name="osd_nextturn_new_height">55dp</dimen>
+    <dimen name="osd_nextturn_new_width">55dp</dimen>
+    <!-- xx -->
+    <dimen name="bottom_slide_left_side_width">60dp</dimen>
+    <!-- xx -->
+    <dimen name="bottom_bar_height">74dp</dimen>
+    <!-- bottom_slide_view_shadow_compat_height + bottom_slide_view_height = bottom_bar_height -->
+    <dimen name="bottom_slide_view_shadow_compat_height">4dp</dimen>
+    <dimen name="bottom_slide_view_height">70dp</dimen>
+    <!-- xx -->
+    <!-- osd_timetodest_new_height + bottom_line_container_height = bottom_slide_view_height -->
+    <dimen name="osd_timetodest_new_height">36dp</dimen>
+    <dimen name="bottom_line_container_height">34dp</dimen>
+    <!-- xx -->
+    <dimen name="roadbook_fragment_container_min_height">2500dp</dimen>
+    <dimen name="roadbook_listview_container_height">90dp</dimen>
+    <!-- xx -->
+    <dimen name="whats_here_container_width">200dp</dimen>
+    
+    <!-- x============x -->
+    <dimen name="min_map_height_in_dp">400dp</dimen>
+    <!-- x============x -->
+    <dimen name="margin_bottom_speeding">18dp</dimen>
+    <dimen name="margin_left_speeding">18dp</dimen>
+
+</resources>

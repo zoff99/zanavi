@@ -79,47 +79,62 @@ Navigation</text></img>
 		<tracking cdf_histsize="0"/>
 
 		<vehicleprofile name="car" flags="0x4000000" flags_forward_mask="0x4000002" flags_reverse_mask="0x4000001" maxspeed_handling="0" route_mode="0" static_speed="5" static_distance="25">
-			<roadprofile item_types="street_service,street_parking_lane,track_ground,track_grass,track_gravelled,track_unpaved" speed="3" route_weight="3" route_prio_weight="300">
+			<roadprofile item_types="street_service,street_parking_lane,track_ground,track_grass,track_gravelled,track_unpaved" speed="10" route_weight="10" route_prio_weight="300">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_0,street_1_city,living_street" speed="10" route_weight="10" route_prio_weight="30">
+			<roadprofile item_types="street_0,living_street" speed="20" route_weight="20" route_prio_weight="30">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_2_city,track_paved" speed="30" route_weight="30" route_prio_weight="30">
+			<roadprofile item_types="street_1_city" speed="35" route_weight="35" route_prio_weight="23">
+					<announcement level="0" distance_metric="25"/>
+					<announcement level="1" distance_metric="100"/>
+					<announcement level="2" distance_metric="200"/>
+			</roadprofile>
+			<roadprofile item_types="track_paved" speed="35" route_weight="35" route_prio_weight="30">
 					<announcement level="0" distance_metric="50"/>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city" speed="40" route_weight="50" route_prio_weight="20">
+			<roadprofile item_types="street_2_city,ramp_street_2_city" speed="50" route_weight="50" route_prio_weight="21">
 					<announcement level="0" distance_metric="50"/>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="street_4_city" speed="50" route_weight="80" route_prio_weight="11">
+			<roadprofile item_types="street_3_city,ramp_street_3_city" speed="50" route_weight="50" route_prio_weight="18">
 					<announcement level="0" distance_metric="50"/>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="highway_city" speed="80" route_weight="90" route_prio_weight="9">
+			<roadprofile item_types="ramp_street_4_city" speed="49" route_weight="49" route_prio_weight="12">
+					<announcement level="0" distance_metric="50"/>
+					<announcement level="1" distance_metric="200"/>
+					<announcement level="2" distance_metric="500"/>
+			</roadprofile>
+			<roadprofile item_types="street_4_city" speed="50" route_weight="50" route_prio_weight="11">
+					<announcement level="0" distance_metric="50"/>
+					<announcement level="1" distance_metric="200"/>
+					<announcement level="2" distance_metric="500"/>
+			</roadprofile>
+			<roadprofile item_types="highway_city" speed="80" route_weight="80" route_prio_weight="9">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_1_land" speed="60" route_weight="50" route_prio_weight="20">
+			<roadprofile item_types="street_1_land" speed="35" route_weight="35" route_prio_weight="23">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_2_land" speed="65" route_weight="65" route_prio_weight="11">
+			<roadprofile item_types="street_2_land" speed="50" route_weight="50" route_prio_weight="11">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_land" speed="70" route_weight="70" route_prio_weight="11">
+			<roadprofile item_types="street_3_land" speed="50" route_weight="50" route_prio_weight="11">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
@@ -129,12 +144,17 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_n_lanes" speed="120" route_weight="125" route_prio_weight="9">
+			<roadprofile item_types="street_n_lanes" speed="120" route_weight="120" route_prio_weight="9">
 					<announcement level="0" distance_metric="300"/>
 					<announcement level="1" distance_metric="1000"/>
 					<announcement level="2" distance_metric="2000"/>
 			</roadprofile>
-			<roadprofile item_types="highway_land" speed="120" route_weight="125" route_prio_weight="9">
+			<roadprofile item_types="ramp_highway_land" speed="75" route_weight="75" route_prio_weight="10">
+					<announcement level="0" distance_metric="300"/>
+					<announcement level="1" distance_metric="1000"/>
+					<announcement level="2" distance_metric="2000"/>
+			</roadprofile>
+			<roadprofile item_types="highway_land" speed="120" route_weight="120" route_prio_weight="9">
 					<announcement level="0" distance_metric="300"/>
 					<announcement level="1" distance_metric="1000"/>
 					<announcement level="2" distance_metric="2000"/>
@@ -144,7 +164,7 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="roundabout" speed="10" route_weight="10" route_prio_weight="11"/>
+			<roadprofile item_types="roundabout" speed="35" route_weight="35" route_prio_weight="11"/>
 			<roadprofile item_types="ferry" speed="40" route_weight="40" route_prio_weight="1000"/>
 		</vehicleprofile>
 
@@ -154,47 +174,62 @@ Navigation</text></img>
 
 
 		<vehicleprofile name="car-no-highways" flags="0x4000000" flags_forward_mask="0x4000002" flags_reverse_mask="0x4000001" maxspeed_handling="0" route_mode="0" static_speed="5" static_distance="25">
-			<roadprofile item_types="street_service,street_parking_lane,track_ground,track_grass,track_gravelled,track_unpaved" speed="3" route_weight="3" route_prio_weight="300">
+			<roadprofile item_types="street_service,street_parking_lane,track_ground,track_grass,track_gravelled,track_unpaved" speed="10" route_weight="10" route_prio_weight="300">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_0,street_1_city,living_street" speed="10" route_weight="10" route_prio_weight="30">
+			<roadprofile item_types="street_0,living_street" speed="20" route_weight="20" route_prio_weight="30">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_2_city,track_paved" speed="30" route_weight="30" route_prio_weight="30">
+			<roadprofile item_types="street_1_city" speed="35" route_weight="35" route_prio_weight="30">
+					<announcement level="0" distance_metric="25"/>
+					<announcement level="1" distance_metric="100"/>
+					<announcement level="2" distance_metric="200"/>
+			</roadprofile>
+			<roadprofile item_types="track_paved" speed="35" route_weight="35" route_prio_weight="30">
 					<announcement level="0" distance_metric="50"/>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city" speed="40" route_weight="50" route_prio_weight="20">
+			<roadprofile item_types="street_2_city,ramp_street_2_city" speed="50" route_weight="50" route_prio_weight="30">
 					<announcement level="0" distance_metric="50"/>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="street_4_city" speed="50" route_weight="80" route_prio_weight="11">
+			<roadprofile item_types="street_3_city,ramp_street_3_city" speed="50" route_weight="50" route_prio_weight="18">
 					<announcement level="0" distance_metric="50"/>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="highway_city" speed="80" route_weight="90" route_prio_weight="9">
+			<roadprofile item_types="ramp_street_4_city" speed="49" route_weight="49" route_prio_weight="12">
+					<announcement level="0" distance_metric="50"/>
+					<announcement level="1" distance_metric="200"/>
+					<announcement level="2" distance_metric="500"/>
+			</roadprofile>
+			<roadprofile item_types="street_4_city" speed="50" route_weight="50" route_prio_weight="11">
+					<announcement level="0" distance_metric="50"/>
+					<announcement level="1" distance_metric="200"/>
+					<announcement level="2" distance_metric="500"/>
+			</roadprofile>
+			<roadprofile item_types="highway_city" speed="80" route_weight="80" route_prio_weight="9">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_1_land" speed="60" route_weight="50" route_prio_weight="20">
+			<roadprofile item_types="street_1_land" speed="35" route_weight="35" route_prio_weight="30">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_2_land" speed="65" route_weight="65" route_prio_weight="11">
+			<roadprofile item_types="street_2_land" speed="50" route_weight="50" route_prio_weight="11">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_land" speed="70" route_weight="70" route_prio_weight="11">
+			<roadprofile item_types="street_3_land" speed="50" route_weight="50" route_prio_weight="11">
 					<announcement level="0" distance_metric="100"/>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
@@ -204,13 +239,18 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="400"/>
 					<announcement level="2" distance_metric="1000"/>
 			</roadprofile>
-			<roadprofile item_types="street_n_lanes" speed="120" route_weight="125" route_prio_weight="9">
+			<roadprofile item_types="street_n_lanes" speed="120" route_weight="120" route_prio_weight="9">
 					<announcement level="0" distance_metric="300"/>
 					<announcement level="1" distance_metric="1000"/>
 					<announcement level="2" distance_metric="2000"/>
 			</roadprofile>
 <!--
-			<roadprofile item_types="highway_land" speed="120" route_weight="125" route_prio_weight="9">
+			<roadprofile item_types="ramp_highway_land" speed="119" route_weight="119" route_prio_weight="10">
+					<announcement level="0" distance_metric="300"/>
+					<announcement level="1" distance_metric="1000"/>
+					<announcement level="2" distance_metric="2000"/>
+			</roadprofile>
+			<roadprofile item_types="highway_land" speed="120" route_weight="120" route_prio_weight="9">
 					<announcement level="0" distance_metric="300"/>
 					<announcement level="1" distance_metric="1000"/>
 					<announcement level="2" distance_metric="2000"/>
@@ -221,7 +261,7 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="200"/>
 					<announcement level="2" distance_metric="500"/>
 			</roadprofile>
-			<roadprofile item_types="roundabout" speed="10" route_weight="10" route_prio_weight="11"/>
+			<roadprofile item_types="roundabout" speed="35" route_weight="35" route_prio_weight="11"/>
 			<roadprofile item_types="ferry" speed="40" route_weight="40" route_prio_weight="1000"/>
 		</vehicleprofile>
 
@@ -280,17 +320,17 @@ Navigation</text></img>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
 
-			<roadprofile item_types="street_2_city,street_1_land,street_2_land" speed="15" route_weight="15" route_prio_weight="900">
+			<roadprofile item_types="street_2_city,ramp_street_2_city,street_1_land,street_2_land" speed="15" route_weight="15" route_prio_weight="900">
 					<announcement level="0" distance_metric="10"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city" speed="14" route_weight="14" route_prio_weight="2200">
+			<roadprofile item_types="street_3_city,ramp_street_3_city" speed="14" route_weight="14" route_prio_weight="2200">
 					<announcement level="0" distance_metric="10"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_4_city,ramp" speed="14" route_weight="14" route_prio_weight="5000">
+			<roadprofile item_types="street_4_city,ramp_street_4_city,ramp" speed="14" route_weight="14" route_prio_weight="5000">
 					<announcement level="0" distance_metric="10"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
@@ -347,17 +387,17 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_2_city,street_1_land,street_2_land" speed="14" route_weight="14" route_prio_weight="1200">
+			<roadprofile item_types="street_2_city,ramp_street_2_city,street_1_land,street_2_land" speed="14" route_weight="14" route_prio_weight="1200">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city" speed="14" route_weight="14" route_prio_weight="2200">
+			<roadprofile item_types="street_3_city,ramp_street_3_city" speed="14" route_weight="14" route_prio_weight="2200">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_4_city,ramp" speed="14" route_weight="14" route_prio_weight="5000">
+			<roadprofile item_types="street_4_city,ramp_street_4_city,ramp" speed="14" route_weight="14" route_prio_weight="5000">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
@@ -427,17 +467,17 @@ Navigation</text></img>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
 
-			<roadprofile item_types="street_2_city,street_1_land,street_2_land" speed="15" route_weight="15" route_prio_weight="900">
+			<roadprofile item_types="street_2_city,ramp_street_2_city,street_1_land,street_2_land" speed="15" route_weight="15" route_prio_weight="900">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city" speed="14" route_weight="14" route_prio_weight="2200">
+			<roadprofile item_types="street_3_city,ramp_street_3_city" speed="14" route_weight="14" route_prio_weight="2200">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_4_city,ramp" speed="14" route_weight="14" route_prio_weight="5000">
+			<roadprofile item_types="street_4_city,ramp_street_4_city,ramp" speed="14" route_weight="14" route_prio_weight="5000">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
@@ -482,12 +522,12 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_0,street_1_city,street_2_city" speed="5" route_weight="5">
+			<roadprofile item_types="street_0,street_1_city,street_2_city,ramp_street_2_city" speed="5" route_weight="5">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city,street_4_city,street_service" speed="5" route_weight="5">
+			<roadprofile item_types="street_3_city,ramp_street_3_city,street_4_city,ramp_street_4_city,street_service" speed="5" route_weight="5">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
@@ -539,12 +579,12 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_0,street_1_city,street_2_city" speed="5" route_weight="2">
+			<roadprofile item_types="street_0,street_1_city,street_2_city,ramp_street_2_city" speed="5" route_weight="2">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="street_3_city,street_4_city,street_service" speed="5" route_weight="4">
+			<roadprofile item_types="street_3_city,ramp_street_3_city,street_4_city,ramp_street_4_city,street_service" speed="5" route_weight="4">
 					<announcement level="0" distance_metric="25"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
@@ -594,17 +634,17 @@ Navigation</text></img>
                                         <announcement level="1" distance_metric="100"/>
                                         <announcement level="2" distance_metric="200"/>
                         </roadprofile>
-                        <roadprofile item_types="street_2_city,track_paved" speed="20" route_weight="20">
+                        <roadprofile item_types="street_2_city,ramp_street_2_city,track_paved" speed="20" route_weight="20">
                                         <announcement level="0" distance_metric="50"/>
                                         <announcement level="1" distance_metric="200"/>
                                         <announcement level="2" distance_metric="500"/>
                         </roadprofile>
-                        <roadprofile item_types="street_3_city" speed="30" route_weight="30">
+                        <roadprofile item_types="street_3_city,ramp_street_3_city" speed="30" route_weight="30">
                                         <announcement level="0" distance_metric="50"/>
                                         <announcement level="1" distance_metric="200"/>
                                         <announcement level="2" distance_metric="500"/>
                         </roadprofile>
-                       <roadprofile item_types="street_4_city" speed="40" route_weight="40">
+                       <roadprofile item_types="street_4_city,ramp_street_4_city" speed="40" route_weight="40">
                                         <announcement level="0" distance_metric="50"/>
                                         <announcement level="1" distance_metric="200"/>
                                         <announcement level="2" distance_metric="500"/>
@@ -639,7 +679,7 @@ Navigation</text></img>
                                         <announcement level="1" distance_metric="1000"/>
                                         <announcement level="2" distance_metric="2000"/>
                         </roadprofile>
-                        <roadprofile item_types="highway_land" speed="80" route_weight="80">
+                        <roadprofile item_types="highway_land,ramp_highway_land" speed="80" route_weight="80">
                                         <announcement level="0" distance_metric="300"/>
                                         <announcement level="1" distance_metric="1000"/>
                                         <announcement level="2" distance_metric="2000"/>
@@ -658,12 +698,12 @@ Navigation</text></img>
 
 		<navigation>
 			<announce type="street_0,street_1_city" level0="25" level1="100" level2="200" unit="m"/>
-			<announce type="street_2_city,street_3_city,street_4_city,ramp" level0="50" level1="200" level2="500" unit="m"/>
+			<announce type="street_2_city,ramp_street_2_city,street_3_city,ramp_street_3_city,street_4_city,ramp_street_4_city,ramp" level0="50" level1="200" level2="500" unit="m"/>
 			<announce type="highway_city,street_1_land,street_2_land,street_3_land,street_4_land" level0="100" level1="400" level2="1000" unit="m"/>
-			<announce type="street_n_lanes,highway_land" level0="300" level1="1000" level2="2000" unit="m"/>
+			<announce type="street_n_lanes,highway_land,ramp_highway_land" level0="300" level1="1000" level2="2000" unit="m"/>
 		</navigation>
 
-		<speech type="cmdline" data="echo 'Fix the speech tag in navit.xml to let navit say:' '%s'" cps="15"/>
+		<speech type="cmdline" data="echo 'Fix the speech tag in navit.xml to let navit say:' '%s'" cps="14"/>
 
 		<!-- You can only have enabled only one mapset at time, but with as much maps enabled as you want -->
 

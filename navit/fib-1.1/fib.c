@@ -33,6 +33,15 @@
 #include <limits.h>
 #include <stdlib.h>
 
+
+// DANGER !! !!
+// DANGER !! !!
+// DANGER !! !!
+// #include "../debug.h"
+// DANGER !! !!
+// DANGER !! !!
+// DANGER !! !!
+
 #define swap(type, a, b)		\
 		do {			\
 			type c;		\
@@ -231,7 +240,9 @@ fh_insertkey(struct fibheap *h, int key, void *data)
 	struct fibheap_el *x;
 
 	if ((x = fhe_newelem()) == NULL)
+	{
 		return NULL;
+	}
 
 	/* just insert on root list, and make sure it's not the new min */
 	x->fhe_data = data;
@@ -253,7 +264,8 @@ fh_minkey(struct fibheap *h)
 int
 fh_replacekey(struct fibheap *h, struct fibheap_el *x, int key)
 {
-	int ret;
+
+	int ret = 0;
 
 	ret = x->fhe_key;
 	(void)fh_replacekeydata(h, x, key, x->fhe_data);
@@ -278,8 +290,9 @@ fh_replacekeydata(struct fibheap *h, struct fibheap_el *x, int key, void *data)
 	 * we can increase a key by deleting and reinserting, that
 	 * requires O(lgn) time.
 	 */
-	if ((r = fh_comparedata(h, key, data, x)) > 0) {
-		printf("fh_comparedata r=%d key=%d data=%p\n", r, key, data);
+	if ((r = fh_comparedata(h, key, data, x)) > 0)
+	{
+		// printf("fh_comparedata r=%d key=%d data=%p\n", r, key, data);
 		/* XXX - bad code! */
 		abort();
 		fh_deleteel(h, x);

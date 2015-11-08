@@ -188,9 +188,11 @@ int global_order_level_for_fast_draw = 13;
 int global_show_english_labels = 1; // 0 -> only "normal" names/labels shown on map
 									// 1 -> show "normal, english"
 									// 2 -> show only "english" labels
+int global_routing_engine = 0; // 0 -> offline ZANavi, 1 -> online OSRM
+float global_overspill_factor = 1.0f; // overspill factor from Java code
 int global_avoid_sharp_turns_flag = 0; // 0 -> normal routing, 1 -> try to avoid sharp turns / u-turns
 int global_avoid_sharp_turns_min_angle = 40; // at what angle is it a sharp turn?
-int global_avoid_sharp_turns_min_penalty = 2000; // routing penalty for sharp turns
+int global_avoid_sharp_turns_min_penalty = 1000; // routing penalty for sharp turns (DEFAULT = 1000)
 
 int global_search_radius_for_housenumbers = 300; // search this far around street-coord to find potential housenumbers for this street
 int global_vehicle_profile = 0; // 0 -> car, 1 -> bicycle, 2 -> bicylce no one-ways
@@ -201,10 +203,33 @@ double global_v_pos_lat = 0.0; // global vehicle position
 double global_v_pos_lng = 0.0; // global vehicle position
 double global_v_pos_dir = 0.0; // global vehicle direction
 
+struct coord global_vehicle_pos_onscreen;
+struct coord_geo global_last_vehicle_pos_geo;
+double ggggg_lat = 0;
+double ggggg_lon = 0;
+
+
 int global_demo_vehicle = 0;
 int global_demo_vehicle_short_switch = 0;
 long global_last_spoken = -1;
 long global_last_spoken_base = 0;
+float global_road_speed_factor = 0.85f;
+
+float global_level0_announcement = 5.0f;
+float global_level1_announcement = 11.0f;
+float global_level2_announcement = 24.3f;
+float global_levelx_announcement_factor = 6.0f / 4.0f;
+
+float global_b_level0_announcement = 4.8f;
+float global_b_level1_announcement = 11.1f;
+float global_b_level2_announcement = 21.1f;
+float global_b_levelx_announcement_factor = 6.0f / 4.0f;
+
+int global_driven_away_from_route = 0;
+
+int global_enhance_cycleway = 0;
+int global_tracking_show_real_gps_pos = 0;
+int global_show_maps_debug_view = 0;
 
 GList *global_all_cbs = NULL;
 
@@ -822,10 +847,11 @@ static void navit_scale(struct navit *this_, long scale, struct point *p, int dr
  * @param speed The vehicles speed in meters per second
  * @param dir The direction into which the vehicle moves
  */
-static long navit_autozoom(struct navit *this_, struct coord *center, int speed, int draw)
+static long navit_autozoom(struct navit *this_, struct coord *center, int speed, int draw, int *lold, int *lnew)
 {
 	struct point pc;
-	int distance, w, h;
+	int w, h;
+	float distance;
 	long new_scale;
 	long scale;
 
@@ -839,10 +865,14 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 		return -1;
 	}
 
-	if (speed < 20)
-	{
-		return -1;
-	}
+	// --- no autozoom at slow speed ---
+	//if (speed < 20)
+	//{
+	//	return -1;
+	//}
+	// --- no autozoom at slow speed ---
+
+
 
 // this is kaputt!!
 #if 0
@@ -858,15 +888,30 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 #endif
 // this is kaputt!!
 
+
+
 	// distance = speed * this_->autozoom_secs;
 	if (speed > 109)
 	{
-		distance = speed * 10;
+		distance = (float)speed * 16.4f;
+	}
+	else if (speed > 75)
+	{
+		distance = (float)speed * 10.3f;
 	}
 	else
 	{
-		distance = speed * 5;
+		distance = (float)speed * 7.3f;
 	}
+
+	// dbg(0,"autozoom:   dis1=%f\n", distance);
+
+	// if overspill > 1 ?
+	if (global_overspill_factor > 1.0f)
+	{
+		distance = distance * global_overspill_factor;
+	}
+
 
 	// scale = this_->trans->scale * 16;
 	scale = transform_get_scale(this_->trans);
@@ -874,10 +919,13 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 	transform_get_size(this_->trans, &w, &h);
 	transform(this_->trans, transform_get_projection(this_->trans), center, &pc, 1, 0, 0, NULL);
 
-	//dbg(0,"autozoom:   dist=%d\n", distance);
-	//dbg(0,"autozoom:  scale=%d\n", (int)scale);
-	//dbg(0,"autozoom:o speed=%d\n", speed);
-	//dbg(0,"autozoom:n speed=%d\n", global_old_vehicle_speed);
+#if 0
+	// dbg(0,"autozoom:ovrspll=%f\n", global_overspill_factor);
+	dbg(0,"autozoom:   dist=%f\n", distance);
+	dbg(0,"autozoom:  scale=%d\n", (int)scale);
+	dbg(0,"autozoom:o speed=%d\n", speed);
+	dbg(0,"autozoom:n speed=%d\n", global_old_vehicle_speed);
+#endif
 
 	/* We make sure that the point we want to see is within a certain range
 	 * around the vehicle. The radius of this circle is the size of the
@@ -886,11 +934,11 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 
 	if (w > h)
 	{
-		new_scale = (long)( ((float)distance / (float)h) * 16);
+		new_scale = (long)( (distance / (float)h) * 16);
 	}
 	else
 	{
-		new_scale = (long)( ((float)distance / (float)w) * 16);
+		new_scale = (long)( (distance / (float)w) * 16);
 	}
 
 	if (new_scale < this_->autozoom_min)
@@ -898,7 +946,9 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 		new_scale = this_->autozoom_min;
 	}
 
-	//dbg(0,"autozoom:w scale=%d\n", (int)new_scale);
+#if 0
+	dbg(0,"autozoom:w n.scale=%d o.scale=%d\n", (int)new_scale, (int)scale);
+#endif
 
 	//if (abs(new_scale - scale) < 2)
 	//{
@@ -918,35 +968,53 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 		}
 		else
 		{
-			scale = scale++;
+			scale = scale + 1;
 		}
 	}
 	else if (new_scale < scale)
 	{
 		// zoom in
-		if ((new_scale + 5500) < scale)
+		if ((new_scale + 220500) < scale) // lower threshold
 		{
-			scale = scale - 4000;
+			scale = (int)((float)scale * 0.85f);
+			// dbg(0,"autozoom:step 8\n");
 		}
-		else if ((new_scale + 1850) < scale)
+		else if ((new_scale + 130500) < scale) // lower threshold
 		{
-			scale = scale - 1000;
+			scale = (int)((float)scale * 0.85f);
+			// dbg(0,"autozoom:step 7\n");
 		}
-		else if ((new_scale + 450) < scale)
+		else if ((new_scale + 4000) < scale) // lower threshold
 		{
-			scale = scale - 200;
+			scale = (int)((float)scale * 0.85f);
+			// dbg(0,"autozoom:step 6\n");
 		}
-		else if ((new_scale + 20) < scale)
+		else if ((new_scale + 1850) < scale) // lower threshold
 		{
-			scale = scale - 10;
+			// scale = scale - 1000;
+			scale = (int)((float)scale * 0.85f);
+			// dbg(0,"autozoom:step 5\n");
 		}
-		else if ((new_scale + 5) < scale)
+		else if ((new_scale + 90) < scale) // lower threshold
 		{
-			scale = scale - 4;
+			// scale = scale - 200;
+			scale = (int)((float)scale * 0.85f);
+			// dbg(0,"autozoom:step 4\n");
+		}
+		else if ((new_scale + 25) < scale) // lower threshold
+		{
+			scale = scale - 8;
+			// dbg(0,"autozoom:step 3\n");
+		}
+		else if ((new_scale + 7) < scale) // lower threshold
+		{
+			scale = scale - 2;
+			// dbg(0,"autozoom:step 2\n");
 		}
 		else
 		{
-			scale = scale--;
+			scale = scale - 1;
+			// dbg(0,"autozoom:step 1\n");
 		}
 	}
 	else
@@ -955,7 +1023,21 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 		return -1;
 	}
 
-	//dbg(0,"autozoom:n scale=%d\n", (int)scale);
+	// dbg(0,"autozoom:n scale=%d\n", (int)scale);
+
+	// OLD zoom is applied here -------------------------
+	struct coord c_left;
+	struct point p_left;
+	p_left.x = 0;
+	p_left.y = 200;
+	transform_reverse(this_->trans, &p_left, &c_left);
+	struct coord c_right;
+	struct point p_right;
+	p_right.x = 200;
+	p_right.y = 200;
+	transform_reverse(this_->trans, &p_right, &c_right);
+	// OLD zoom is applied here -------------------------
+
 
 	if (scale >= this_->autozoom_min)
 	{
@@ -968,6 +1050,17 @@ static long navit_autozoom(struct navit *this_, struct coord *center, int speed,
 			navit_scale(this_, this_->autozoom_min, &pc, 0);
 		//}
 	}
+
+	// new zoom is applied here already -----------------
+	struct point p_new_left;
+	transform(global_navit->trans, transform_get_projection(this_->trans), &c_left, &p_new_left, 1, 0, 0, NULL);
+	struct point p_new_right;
+	transform(global_navit->trans, transform_get_projection(this_->trans), &c_right, &p_new_right, 1, 0, 0, NULL);
+
+	*lold = 200;
+	*lnew = abs(p_new_right.x - p_new_left.x);
+	// new zoom is applied here already -----------------
+
 
 	// return new scale value
 	return scale;
@@ -1025,6 +1118,19 @@ void navit_zoom_in_cursor(struct navit *this_, int factor)
 		navit_zoom_in(this_, factor, NULL);
 	}
 }
+
+void navit_zoom_to_scale_no_draw(struct navit *this_, int new_scale)
+{
+	long scale = transform_get_scale(this_->trans);
+	long new_scale_long = new_scale;
+
+	// only do something if scale changed!
+	if (scale != new_scale_long)
+	{
+		navit_scale(this_, new_scale_long, NULL, 0);
+	}
+}
+
 
 void navit_zoom_to_scale(struct navit *this_, int new_scale)
 {
@@ -1179,6 +1285,141 @@ static void navit_cmd_toggle_layer(struct navit *this, char *function, struct at
 			}
 		}
 	}
+}
+
+
+void navit_enhance_cycleway(struct navit *this)
+{
+	GList *itms;
+	struct itemgra *itm;
+	struct element *e;
+	GList *es, *types;
+	int found = 0;
+	GList* layers = this->layout_current->layers;
+
+	global_enhance_cycleway = 1;
+
+	while (layers)
+	{
+
+		struct layer*l = layers->data;
+		if (l)
+		{
+
+			itms = l->itemgras;
+			while (itms)
+			{
+				itm = itms->data;
+				found = 0;
+
+				types = itm->type;
+				while (types)
+				{
+					if (GPOINTER_TO_INT(types->data) == type_cycleway)
+					{
+						found = 1;
+					}
+					types = g_list_next(types);
+				}
+
+				if (found == 1)
+				{
+
+					dbg(0, "CYC:001:min=%d max=%d\n", itm->order.min, itm->order.max);
+
+					if (itm->order.min == 14)
+					{
+						itm->order.min = 10;
+					}
+
+					es = itm->elements;
+					while (es)
+					{
+						e = es->data;
+
+						if (e->type == element_polyline)
+						{
+							e->u.polyline.width = e->u.polyline.width * 2;
+						}
+
+						es = g_list_next(es);
+					}
+				}
+
+				itms = g_list_next(itms);
+			}
+
+		}
+		layers = g_list_next(layers);
+
+	}
+
+}
+
+
+void navit_reset_cycleway(struct navit *this)
+{
+	GList *itms;
+	struct itemgra *itm;
+	struct element *e;
+	GList *es, *types;
+	int found = 0;
+	GList* layers = this->layout_current->layers;
+
+	global_enhance_cycleway = 0;
+
+	while (layers)
+	{
+
+		struct layer*l = layers->data;
+		if (l)
+		{
+
+			itms = l->itemgras;
+			while (itms)
+			{
+				itm = itms->data;
+				found = 0;
+
+				types = itm->type;
+				while (types)
+				{
+					if (GPOINTER_TO_INT(types->data) == type_cycleway)
+					{
+						found = 1;
+					}
+					types = g_list_next(types);
+				}
+
+				if (found == 1)
+				{
+					if (itm->order.min == 10)
+					{
+						itm->order.min = 14;
+					}
+
+					es = itm->elements;
+					while (es)
+					{
+						e = es->data;
+
+						if (e->type == element_polyline)
+						{
+							e->u.polyline.width = e->u.polyline.width / 2;
+						}
+
+						es = g_list_next(es);
+					}
+				}
+
+				itms = g_list_next(itms);
+			}
+
+		}
+		layers = g_list_next(layers);
+
+	}
+
 }
 
 
@@ -1796,7 +2037,7 @@ navit_new(struct attr *parent, struct attr **attrs)
 	this_->center_timeout = 1;
 	this_->use_mousewheel = 1;
 	this_->autozoom_secs = 10;
-	this_->autozoom_min = 6;
+	this_->autozoom_min = 5;
 	this_->autozoom_active = 0;
 	this_->zoom_min = 1;
 	this_->zoom_max = 1048576; //-> order=-2  // 2097152 -> order=-3;
@@ -2311,6 +2552,8 @@ void navit_speak(struct navit *this_)
 
 	// dbg(1, "this_.speech->active %i\n", attr.u.num);
 
+	dbg(0, "NAV_TURNAROUND:008:enter\n");
+
 	if (!attr.u.num)
 	{
 		return;
@@ -2325,11 +2568,18 @@ void navit_speak(struct navit *this_)
 	if (mr)
 	{
 		while ((item = map_rect_get_item(mr)) && (item->type == type_nav_position || item->type == type_nav_none))
-			;
+		{
+			dbg(0, "NAV_TURNAROUND:008a:%s\n", item_to_name(item->type));
+		}
 
-		if (item && item_attr_get(item, attr_navigation_speech, &attr))
+		dbg(0, "NAV_TURNAROUND:008b:item=%p\n", item);
+
+		if (item && item_attr_get(item, attr_navigation_speech, &attr)) // this calls --> navigation_map_item_attr_get(...) --> show_next_maneuvers(...)
 		{
 			//dbg(0,"say(2) s=X%sX\n", attr.u.str);
+
+			dbg(0, "NAV_TURNAROUND:009:%s\n", attr.u.str);
+
 			if (strlen(attr.u.str) > 0)
 			{
 				speech_say(this_->speech, attr.u.str);
@@ -3561,6 +3811,12 @@ void navit_zoom_to_route(struct navit *this_, int orientation)
 		transform_set_yaw(this_->trans, orientation);
 	}
 
+	// if overspill > 1 ?
+	if (global_overspill_factor > 1.0f)
+	{
+		coord_rect_extend_by_percent(&r, (global_overspill_factor - 1.0f));
+	}
+
 	navit_zoom_to_rect(this_, &r);
 }
 
@@ -3609,6 +3865,35 @@ void navit_set_center(struct navit *this_, struct pcoord *center, int set_timeou
 	if (this_->ready == 3)
 	{
 		navit_draw(this_);
+	}
+}
+
+
+void navit_set_center_no_draw(struct navit *this_, struct pcoord *center, int set_timeout)
+{
+
+
+	////DBG dbg(0,"EEnter\n");
+	struct coord *c = transform_center(this_->trans);
+	struct coord c1, c2;
+	enum projection pro = transform_get_projection(this_->trans);
+
+	if (pro != center->pro)
+	{
+		c1.x = center->x;
+		c1.y = center->y;
+		transform_from_to(&c1, center->pro, &c2, pro);
+	}
+	else
+	{
+		c2.x = center->x;
+		c2.y = center->y;
+	}
+
+	*c = c2;
+	if (set_timeout)
+	{
+		navit_set_timeout(this_);
 	}
 }
 
@@ -3698,14 +3983,20 @@ void navit_remove_cursors(struct navit *this_)
 
 static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_orientation, int *dir)
 {
+	//// dbg(0,"EEnter\n");
 
-
-	////DBG dbg(0,"EEnter\n");
 	int width, height;
 	struct navit_vehicle *nv = this_->vehicle;
 
-	float offset = this_->radius; // Cursor offset from the center of the screen (percent).
-#if 0 /* Better improve track.c to get that issue resolved or make it configurable with being off the default, the jumping back to the center is a bit annoying */
+	// valid values:  0 - 50 (0 -> center of screen, 50 -> bottom of screen)
+	// float offset = this_->radius; // Cursor offset from the center of the screen (percent). // percent of what??
+
+	float offset = 0;
+
+
+#if 0
+
+/*  Better improve track.c to get that issue resolved or make it configurable with being off the default, the jumping back to the center is a bit annoying */
 	float min_offset = 0.; // Percent offset at min_offset_speed.
 	float max_offset = 30.; // Percent offset at max_offset_speed.
 	int min_offset_speed = 2; // Speed in km/h
@@ -3723,13 +4014,32 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 	{
 		offset = (max_offset - min_offset) / (max_offset_speed - min_offset_speed) * (nv->speed - min_offset_speed);
 	}
+
 #endif
 
 	transform_get_size(this_->trans, &width, &height);
+
+	if (height == 0)
+	{
+		offset = 0;
+	}
+	else
+	{
+		// dbg(0, "VEHICLE_OFFSET:a:r=%d %d %d\n", (int)this_->radius, (int)(height - this_->radius), (int)((height - this_->radius) - (height / 2)));
+		offset = (float)((height - this_->radius) - (height / 2)) / (float)height * (float)50.0;
+		// dbg(0, "VEHICLE_OFFSET:b:o=%d\n", (int)offset);
+	}
+
+
+	// dbg(0, "VEHICLE_OFFSET:or=%d keep_or=%d\n", this_->orientation, keep_orientation);
+
 	if (this_->orientation == -1 || keep_orientation)
 	{
-		p->x = 50 * width / 100;
-		p->y = (50 + offset) * height / 100;
+		p->x = 50 * width / 100; // = (width / 2) // why doesnt it just say that?
+		p->y = (50 + (int)offset) * height / 100;
+
+		// dbg(0, "VEHICLE_OFFSET:2:%d %d %d\n", p->y, width, height);
+
 		if (dir)
 		{
 			*dir = keep_orientation ? this_->orientation : nv->dir;
@@ -3741,8 +4051,8 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 		if (this_->tracking && this_->tracking_flag)
 		{
 			mdir = tracking_get_angle(this_->tracking) - this_->orientation;
-			dbg(0, "+++++tr angle=%d\n", tracking_get_angle(this_->tracking));
-			dbg(0, "+++++this ori=%d\n", this_->orientation);
+			// dbg(0, "+++++tr angle=%d\n", tracking_get_angle(this_->tracking));
+			// dbg(0, "+++++this ori=%d\n", this_->orientation);
 		}
 		else
 		{
@@ -3751,6 +4061,9 @@ static int navit_get_cursor_pnt(struct navit *this_, struct point *p, int keep_o
 
 		p->x = (50 - offset * sin(M_PI * mdir / 180.)) * width / 100;
 		p->y = (50 + offset * cos(M_PI * mdir / 180.)) * height / 100;
+
+		// dbg(0, "VEHICLE_OFFSET:3:%d %d %d\n", p->y, width, height);
+
 		if (dir)
 		{
 			*dir = this_->orientation;
@@ -3770,7 +4083,7 @@ void navit_set_center_cursor(struct navit *this_, int autozoom, int keep_orienta
 	navit_get_cursor_pnt(this_, &pn, keep_orientation, &dir);
 	transform_set_yaw(this_->trans, dir);
 	navit_set_center_coord_screen(this_, &nv->coord, &pn, 0);
-	// OLD // navit_autozoom(this_, &nv->coord, nv->speed, 0);
+	// OLD // navit_aXXutozoom(this_, &nv->coord, nv->speed, 0);
 }
 
 static void navit_set_center_cursor_draw(struct navit *this_)
@@ -4777,6 +5090,8 @@ __F_START__
 	char *destination_file;
 	long new_scale_value;
 	long old_scale_value;
+	int l_old;
+	int l_new;
 
 	if (this_->ready != 3)
 	{
@@ -4947,6 +5262,11 @@ __F_START__
 	// save this position
 	global_last_vehicle_pos_geo.lat = attr_pos.u.coord_geo->lat;
 	global_last_vehicle_pos_geo.lng = attr_pos.u.coord_geo->lng;
+
+	ggggg_lat = attr_pos.u.coord_geo->lat;
+	ggggg_lon = attr_pos.u.coord_geo->lng;
+	// dbg(0, "PPPOS:%f %f lll=%f", global_last_vehicle_pos_geo.lat, global_last_vehicle_pos_geo.lng, ggggg_lat);
+
 	// save this position
 
 
@@ -5010,7 +5330,10 @@ __F_START__
 	// XXX // dbg(0,"v2 px:%d py:%d x:%d y:%d\n", cursor_pnt.x, cursor_pnt.y, nv->coord.x, nv->coord.y);
 
 	// ------- AUTOZOOM ---------
-	new_scale_value = navit_autozoom(this_, &nv->coord, nv->speed, 0);
+	l_old = 0;
+	l_new = 0;
+	new_scale_value = navit_autozoom(this_, &nv->coord, nv->speed, 0, &l_old, &l_new);
+	// dbg(0, "l_old=%d l_new=%d\n", l_old, l_new);
 	// ------- AUTOZOOM ---------
 
 	if (old_pos_invalid == 0)
@@ -5027,7 +5350,7 @@ __F_START__
 
 #ifdef HAVE_API_ANDROID
 		//dbg(0,"delta x=%d, y=%d, angle=%d\n", delta_x, delta_y, delta_angle);
-		set_vehicle_values_to_java_delta(delta_x, delta_y, delta_angle, delta_zoom);
+		set_vehicle_values_to_java_delta(delta_x, delta_y, delta_angle, delta_zoom, l_old, l_new);
 #endif
 	}
 
@@ -5076,6 +5399,9 @@ __F_START__
 
 	// where does this go????? ----------
 	// where does this go????? ----------
+	//
+	// i think this updates the OSD GUIs
+	//
 	callback_list_call_attr_2(this_->attr_cbl, attr_position_coord_geo, this_, nv->vehicle);
 	// where does this go????? ----------
 	// where does this go????? ----------
@@ -5100,8 +5426,11 @@ __F_START__
 #ifdef NAVIT_SAY_DEBUG_PRINT
 				android_send_generic_text(1,"+*#O:Waypoint reached\n");
 #endif
-				// say it
-				navit_say(this_, _("Waypoint reached"));
+				if (global_routing_engine != 1) // not OSRM routing
+				{
+					// say it
+					navit_say(this_, _("Waypoint reached"));
+				}
 #endif
 				break;
 			case 2:
@@ -5685,6 +6014,34 @@ int navit_normal_item(enum item_type type)
 	{
 		return 1;
 	}
+	else if (type == type_street_service)
+	{
+		return 1;
+	}
+	else if (type == type_street_pedestrian)
+	{
+		return 1;
+	}
+	else if (type == type_street_parking_lane)
+	{
+		return 1;
+	}
+	else if (type == type_ramp_highway_land)
+	{
+		return 1;
+	}
+	else if (type == type_ramp_street_4_city)
+	{
+		return 1;
+	}
+	else if (type == type_ramp_street_3_city)
+	{
+		return 1;
+	}
+	else if (type == type_ramp_street_2_city)
+	{
+		return 1;
+	}
 	else if ((type >= type_aeroway_runway) && (type <= type_footway_and_piste_nordic))
 	{
 		return 1;
@@ -5908,6 +6265,7 @@ navit_find_nearest_street(struct mapset *ms, struct pcoord *pc)
 				{
 					continue;
 				}
+
 				//dbg(0,"6 sd x:%d sd y:%d count:%d\n", sd->c->x, sd->c->y, sd->count);
 				//dbg(0,"6 c x:%d c y:%d\n", c.x, c.y);
 				dist = transform_distance_polyline_sq__v2(sd->c, sd->count, &c);
@@ -6459,6 +6817,162 @@ void navit_end_gpx_file(FILE *fp)
 
 	fprintf(fp,"%s",trailer1);
 	fclose(fp);
+}
+
+GList* navit_route_export_to_java_string(struct navit *this_, int result_id)
+{
+	struct point p;
+	struct map *map=NULL;
+	struct navigation *nav = NULL;
+	struct map_rect *mr=NULL;
+	struct item *item =NULL;
+	struct attr attr,route;
+	struct coord c;
+	// struct coord c_end;
+	struct coord_geo g;
+	struct transformation *trans;
+	char *d = NULL;
+	char *result_string = NULL;
+	GList* result = NULL;
+
+    nav = navit_get_navigation(this_);
+
+    if (!nav)
+	{
+		return NULL;
+    }
+
+    map = navigation_get_map(nav);
+
+    if (map)
+	{
+		mr = map_rect_new(map,NULL);
+	}
+	else
+	{
+		return;
+	}
+
+  	trans = navit_get_trans(this_);
+
+	mr = map_rect_new(map,NULL);
+	while ((item = map_rect_get_item(mr)))
+	{
+
+		// dbg(0, "005 ============== = %s : %d\n", item_to_name(item->type), item->id_lo);
+
+		//if (item_attr_get(item, attr_navigation_short, &attr))
+		//{
+		//	dbg(0, "005.c.01:%s\n", attr.u.str);
+		//}
+
+		if (item_attr_get(item, attr_length, &attr))
+		{
+			if (attr.u.num > 0)
+			{
+				d = get_distance(nav, attr.u.num, attr_navigation_short, 1);
+			}
+
+			// dbg(0, "005.c.02:%d %s\n", attr.u.num, d); // dist to next turn in meters! (take care when in imperial mode!)
+		}
+		else
+		{
+			d = NULL;
+		}
+
+		if ((item_attr_get(item, attr_navigation_long_exact, &attr)) || (item->type == type_nav_waypoint))
+		{
+			dbg(0, "NAVICG:call type=%s\n", item_to_name(item->type));
+			item_coord_get(item, &c, 1);
+			dbg(0, "NAVICG:call END\n");
+
+			//int num_coords = 0;
+			//while (item_coord_get(item, &c_end, 1))
+			//{
+			//	num_coords++;
+			//}
+
+			transform_to_geo(projection_mg, &c, &g);
+
+			if (result)
+			{
+			}
+			else
+			{
+				// 1st line is the ID
+				result = g_list_append(result, g_strdup_printf("%d", result_id));
+				if (result_id == 9990001)
+				{
+					// 2nd line is distance to target in meters
+					int len_meters_to_target = 0;
+					if (nav)
+					{
+						if (nav->first)
+						{
+							len_meters_to_target = nav->first->dest_length;
+						}
+					}
+					result = g_list_append(result, g_strdup_printf("meters:%d", len_meters_to_target));
+				}
+			}
+
+			dbg(0, "013 %s %s\n", item_to_name(item->type), map_convert_string(item->map, attr.u.str));
+
+			if (item->type == type_nav_waypoint)
+			{
+				result = g_list_append(result, g_strdup_printf("%s:%4.8f:%4.8f:%s:%s", d ? d : "", g.lat, g.lng, item_to_name(item->type), _("Waypoint")));
+			}
+			else
+			{
+				result = g_list_append(result, g_strdup_printf("%s:%4.8f:%4.8f:%s:%s", d ? d : "", g.lat, g.lng, item_to_name(item->type), map_convert_string(item->map,attr.u.str)));
+			}
+		}
+		else
+		{
+			// must be the start point (without navigation command)
+			item_coord_get(item, &c, 1);
+			transform_to_geo(projection_mg, &c, &g);
+
+			if (result)
+			{
+			}
+			else
+			{
+				// 1st line is the ID
+				result = g_list_append(result, g_strdup_printf("%d", result_id));
+				if (result_id == 9990001)
+				{
+					// 2nd line is distance to target in meters
+					int len_meters_to_target = 0;
+					if (nav)
+					{
+						if (nav->first)
+						{
+							len_meters_to_target = nav->first->dest_length;
+						}
+					}
+					result = g_list_append(result, g_strdup_printf("meters:%d", len_meters_to_target));
+				}
+			}
+
+			// dbg(0, "019.0 %p\n", attr.u.str);
+			// dbg(0, "019.b %d\n", item->type);
+			// dbg(0, "019.c %s\n", item_to_name(item->type));
+			result = g_list_append(result, g_strdup_printf("%s:%4.8f:%4.8f:+start+:", d ? d : "", g.lat, g.lng));
+		}
+
+		if (d)
+		{
+			g_free(d);
+			d = NULL;
+		}
+
+	}
+
+	map_rect_destroy(mr);
+
+	return result;
+
 }
 
 void navit_route_export_gpx_to_file(struct navit *this_, char *filename)
