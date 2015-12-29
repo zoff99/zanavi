@@ -4,7 +4,6 @@ machine:
 dependencies:
   cache_directories:
     - ~/.android
-    - ~/.ccache
   pre:
     - sudo apt-get update
     - sudo apt-get install libpng12-dev
@@ -12,7 +11,6 @@ dependencies:
     - sudo apt-get install libfreetype6-dev
     - sudo apt-get install libdbus-glib-1-dev
     - sudo apt-get install g++
-    - sudo apt-get install ccache
     - sudo apt-get install gettext
     - sudo apt-get install openjdk-8-jdk
     - sudo apt-get install ant
