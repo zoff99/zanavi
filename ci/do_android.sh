@@ -74,10 +74,8 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         mv l.txt AndroidManifest.xml
 
         ant release
-        
+
         pwd
-        
         ls -al bin/
-        
-        mv navit/android/bin/Navit-debug.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
-        
+        mv bin/Navit-release-unsigned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
+
