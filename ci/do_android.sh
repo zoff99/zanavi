@@ -1,16 +1,5 @@
 #!/bin/bash
 
-echo "================================="
-pwd
-echo "================================="
-echo $ANDROID_HOME
-echo "================================="
-echo $START_PATH
-echo "================================="
-echo ${CIRCLE_PROJECT_REPONAME}
-echo "================================="
-
-
 export START_PATH=~/
 export SOURCE_PATH="$START_PATH""/"${CIRCLE_PROJECT_REPONAME}"/"
 
@@ -21,6 +10,25 @@ export ANDROID_SDK="/usr/local/android-sdk-linux/"
 export _SDK_="$ANDROID_SDK"
 
 export BUILD_PATH="$START_PATH""/android-build"
+mkdir -p $BUILD_PATH
+
+echo "================================="
+pwd
+echo "================================="
+ls -al
+echo "================================="
+echo $ANDROID_HOME
+echo "================================="
+echo $START_PATH
+echo "================================="
+echo $SOURCE_PATH
+echo "================================="
+echo "$BUILD_PATH"
+echo "================================="
+ls -al "$BUILD_PATH"/
+echo "================================="
+echo ${CIRCLE_PROJECT_REPONAME}
+echo "================================="
 
 rm navit/maptool/poly2tri-c/001/seidel-1.0/triangulate && \
 rm pngout-static && \
@@ -31,7 +39,6 @@ chmod u+rx pngout-static
 if [ `uname -m` == 'x86_64' ] ; then SUFFIX2='_64' ; else SUFFIX2='' ; fi && \
 export PATH=$PATH:$_SDK_/tools:$_SDK_/platform-tools:$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/bin
 
-mkdir -p $BUILD_PATH
 cd $BUILD_PATH
 
 DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-strict-aliasing -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__  -Wno-psabi -march=armv5te -msoft-float -mthumb -finline-limit=64 -DHAVE_API_ANDROID -DANDROID  -Wa,--noexecstack -O3 -I$_NDK_/platforms/android-14/arch-arm/usr/include -nostdlib -Wl,-rpath-link=$_NDK_/platforms/android-14/arch-arm/usr/lib -L$_NDK_/platforms/android-14/arch-arm/usr/lib" && \
