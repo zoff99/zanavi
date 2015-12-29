@@ -60,19 +60,26 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         export NDK_CCACHE="" && \
         make && \
         pwd && \
-        cd navit && \
-        make apkg-release || pwd && \
+        cd navit
+
+pwd
+
         cd android-support-v7-appcompat && \
         cat local.properties |sed -e 's#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#' > l.txt && \
         mv l.txt local.properties && \
         cat local.properties
-        
+        cd ..
         
         pwd
-        cd ../android
-        pwd
-        cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
-        mv l.txt AndroidManifest.xml
-        cat AndroidManifest.xml | sed -e 's#android:versionName=".*"#android:versionName="2.0.40"#' > l.txt
-        mv l.txt AndroidManifest.xml
-        ant release
+        
+        make apkg-release
+        
+        
+        #pwd
+        #cd ../android
+        #pwd
+        #cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
+        #mv l.txt AndroidManifest.xml
+        #cat AndroidManifest.xml | sed -e 's#android:versionName=".*"#android:versionName="2.0.40"#' > l.txt
+        #mv l.txt AndroidManifest.xml
+        #ant release
