@@ -64,6 +64,12 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 
 pwd
 
+echo "1111111111111"
+ls -al
+echo "1111111111111"
+ls -al ../
+echo "2222222222222"
+
         cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
         mv l.txt local.properties && \
