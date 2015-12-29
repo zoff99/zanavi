@@ -29,6 +29,9 @@ ls -al "$BUILD_PATH"/
 echo "================================="
 echo ${CIRCLE_PROJECT_REPONAME}
 echo "================================="
+type -a ccache
+echo "================================="
+
 
 rm navit/maptool/poly2tri-c/001/seidel-1.0/triangulate && \
 rm pngout-static && \
