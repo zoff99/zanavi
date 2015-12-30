@@ -39,6 +39,8 @@ test:
     - mkdir ~/yaml-tests/
     - wget -t 10 -O ~/yaml-tests/yaml.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - cd ~/yaml-tests/ && unzip yaml.zip && cd ~
+    - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/"
+    - fb-adb push ~/yaml-tests/*.yaml "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/"
 
     - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
@@ -50,7 +52,7 @@ test:
 
     - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
 
-    - sleep 240
+    - sleep 60
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 5
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
