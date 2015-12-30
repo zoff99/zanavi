@@ -79,7 +79,12 @@ test:
     - sleep 5
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
+
+
+    - sleep 240
+
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
+    - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
 
 
 
