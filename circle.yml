@@ -25,6 +25,7 @@ test:
         parallel: true
     - circle-android wait-for-boot
   override:
+    - ls -al ~/android-build/navit/android/bin/
     - adb install ~/android-build/navit/android/bin/zanavi_debug_signed_aligned.apk
     - fb-adb shell "pwd"
     - fb-adb shell "ls -al /"
