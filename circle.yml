@@ -20,7 +20,7 @@ dependencies:
     - bash ci/do_android.sh
 test:
   pre:
-    - mksdcard -l e 990M sdcard.img
+    - mksdcard -l e 20000M sdcard.img
     - emulator -avd circleci-android21 -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
@@ -36,6 +36,17 @@ test:
     - fb-adb shell "df /storage/sdcard/"
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://zanavi.weidestraat.nl/data/austria.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://zanavi.weidestraat.nl/data/germany.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_003.bin "http://zanavi.weidestraat.nl/data/netherlands.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_004.bin "http://zanavi.weidestraat.nl/data/belgium.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://zanavi.weidestraat.nl/data/france.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://zanavi.weidestraat.nl/data/italy.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_007.bin "http://zanavi.weidestraat.nl/data/liechtenstein.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_008.bin "http://zanavi.weidestraat.nl/data/luxembourg.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_009.bin "http://zanavi.weidestraat.nl/data/switzerland.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://zanavi.weidestraat.nl/data/great_britain.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://zanavi.weidestraat.nl/data/ireland.bin"
+
     - mkdir ~/yaml-tests/
     - wget -t 10 -O ~/yaml-tests/yaml.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - cd ~/yaml-tests/ && unzip yaml.zip && cd ~/
@@ -44,7 +55,18 @@ test:
 
     - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
+
     - fb-adb push ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_002.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_003.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_004.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_005.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_006.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_007.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_008.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_009.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_010.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push ~/navitmap_011.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
