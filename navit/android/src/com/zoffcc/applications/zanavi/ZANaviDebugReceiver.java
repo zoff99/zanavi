@@ -715,7 +715,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				}
 			};
 
-			// System.out.println("XXXX:1:" + dir);
+			System.out.println("XXXX:1:" + dir);
 
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
