@@ -47,8 +47,10 @@ test:
 
     - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
 
-
-    # - adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 240
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 5
+    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
 
 
