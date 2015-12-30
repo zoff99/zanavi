@@ -745,7 +745,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					temp_work_thread.join();
 
 					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
-					// System.out.println("XXXX:2:" + yamlfile.getAbsolutePath());
+					System.out.println("XXXX:2:" + yamlfile.getAbsolutePath());
 				}
 			}
 		}
