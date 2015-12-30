@@ -91,7 +91,7 @@ jarsigner -verbose -keystore ~/.android/debug.keystore \
      -storepass android -keypass android -sigalg SHA1withRSA -digestalg SHA1 \
      -sigfile CERT -signedjar zanavi_debug_signed.apk \
       Navit-release-unsigned.apk androiddebugkey
-      
+
 $_SDK_/build-tools/23.0.1/zipalign -v 4 zanavi_debug_signed.apk zanavi_debug_signed_aligned.apk
 
 pwd
@@ -99,7 +99,7 @@ pwd
 ls -al
 
 cd ..
+pwd
 
-        pwd
-        mv bin/zanavi_debug_signed_aligned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
+cp -av bin/zanavi_debug_signed_aligned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
 
