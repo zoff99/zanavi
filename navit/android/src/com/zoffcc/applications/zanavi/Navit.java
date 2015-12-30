@@ -234,6 +234,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	// ----------------------------------------
 	// ----------------------------------------
 	static final boolean FDBL = false;
+	static final int CIDEBUG = 1;
 	// ----------------------------------------
 	// ----------------------------------------
 
@@ -4352,6 +4353,26 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		// glSurfaceView.onResume();
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+		
+		
+		
+		if (Navit.CIDEBUG == 1)
+		{
+			new Thread()
+			{
+				public void run()
+				{
+					try
+					{
+						Thread.sleep(15000);
+						ZANaviDebugReceiver.DR_run_all_yaml_tests();
+					}
+					catch (Exception e)
+					{
+					}
+				}
+			}.start();
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.FROYO)
