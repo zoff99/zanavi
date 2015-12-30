@@ -56,17 +56,17 @@ test:
     - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
 
-    - fb-adb push ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_002.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_003.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_004.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_005.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_006.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_007.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_008.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_009.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_010.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb push ~/navitmap_011.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_002.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_003.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_004.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_005.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_006.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_007.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_008.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_009.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_010.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb push -p ~/navitmap_011.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
@@ -83,7 +83,7 @@ test:
 
     - sleep 240
 
-    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
+    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
     - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
 
 
