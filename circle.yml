@@ -26,7 +26,9 @@ test:
     - circle-android wait-for-boot
   override:
     - ls -al ~/android-build/navit/android/bin/
-    - adb install ~/android-build/navit/android/bin/zanavi_debug_signed_aligned.apk
+    # - adb install ~/android-build/navit/android/bin/zanavi_debug_signed_aligned.apk
+    - ls -al $CIRCLE_ARTIFACTS/
+    - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
     - fb-adb shell "pwd"
     - fb-adb shell "ls -al /"
     - fb-adb shell "df"
