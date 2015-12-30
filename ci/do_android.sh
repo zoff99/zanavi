@@ -77,16 +77,22 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 
 type -a jarsigner
 type -a zipalign
+type -a keytool
 
-find $_SDK_ -name zipalign
+# jarsigner -help
 
-jarsigner -help
+if [ ! -f ~/.android/debug.keystore ]; then
+ keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
+fi
 
 jarsigner -verbose -keystore ~/.android/debug.keystore \
      -storepass android -keypass android -sigalg MD5withRSA -digestalg SHA1 \
      -sigfile CERT -signedjar bin/zanavi_debug_signed.apk \
       bin/Navit-release-unsigned.apk androiddebugkey
 
+
+$_SDK_/build-tools/23.0.1/zipalign -v 4 bin/zanavi_debug_signed.apk bin/zanavi_debug_signed_aligned.apk
+
         pwd
-        mv bin/zanavi_debug_signed.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
+        mv bin/zanavi_debug_signed_aligned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
 
