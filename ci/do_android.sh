@@ -75,6 +75,14 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 
         ant release
 
+type -a jarsigner
+type -a zipalign
+
+jarsigner -verbose -keystore ~/.android/debug.keystore
+     -storepass android -keypass android -sigalg MD5withRSA -digestalg SHA1
+     -sigfile CERT -signedjar bin/zanavi_debug_signed.apk
+      bin/Navit-release-unsigned.apk androiddebugkey
+
         pwd
-        mv bin/Navit-release-unsigned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
+        mv bin/zanavi_debug_signed.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
 
