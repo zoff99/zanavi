@@ -76,6 +76,5 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         ant release
 
         pwd
-        ls -al bin/
         mv bin/Navit-release-unsigned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
 
