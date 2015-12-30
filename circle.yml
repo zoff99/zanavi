@@ -34,3 +34,22 @@ test:
     - fb-adb shell "df"
     - fb-adb shell "df /storage/sdcard/"
 
+    - wget -t 10 -O ~/navitmap_001.bin "http://zanavi.weidestraat.nl/data/austria.bin"
+
+    - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/"
+    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/"
+    - fb-adb shell push ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/"
+
+    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/"
+
+    - fb-adb shell am start com.zoffcc.applications.zanavi
+
+    - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
+
+
+    # - adb shell am force-stop com.zoffcc.applications.zanavi
+
+
+
+
+
