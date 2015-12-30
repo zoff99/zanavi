@@ -78,9 +78,13 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 type -a jarsigner
 type -a zipalign
 
-jarsigner -verbose -keystore ~/.android/debug.keystore
-     -storepass android -keypass android -sigalg MD5withRSA -digestalg SHA1
-     -sigfile CERT -signedjar bin/zanavi_debug_signed.apk
+find $_SDK_ -name zipalign
+
+jarsigner -help
+
+jarsigner -verbose -keystore ~/.android/debug.keystore \
+     -storepass android -keypass android -sigalg MD5withRSA -digestalg SHA1 \
+     -sigfile CERT -signedjar bin/zanavi_debug_signed.apk \
       bin/Navit-release-unsigned.apk androiddebugkey
 
         pwd
