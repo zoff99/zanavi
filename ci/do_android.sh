@@ -89,7 +89,8 @@ jarsigner -verbose -keystore ~/.android/debug.keystore \
      -storepass android -keypass android -sigalg MD5withRSA -digestalg SHA1 \
      -sigfile CERT -signedjar bin/zanavi_debug_signed.apk \
       bin/Navit-release-unsigned.apk androiddebugkey
-
+      
+cp -av bin/Navit-release-unsigned.apk bin/zanavi_debug_signed.apk
 
 $_SDK_/build-tools/23.0.1/zipalign -v 4 bin/zanavi_debug_signed.apk bin/zanavi_debug_signed_aligned.apk
 
