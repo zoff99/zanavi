@@ -79,6 +79,8 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 rm -f ~/.android/debug.keystore
 ######  --------------- delete debug signing-key ---------------
 
+cd bin/
+
 if [ ! -f ~/.android/debug.keystore ]; then
  keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android \
  -keyalg RSA -keysize 2048 -validity 10000 \
@@ -87,12 +89,16 @@ fi
 
 jarsigner -verbose -keystore ~/.android/debug.keystore \
      -storepass android -keypass android -sigalg SHA1withRSA -digestalg SHA1 \
-     -sigfile CERT -signedjar bin/zanavi_debug_signed.apk \
-      bin/Navit-release-unsigned.apk androiddebugkey
+     -sigfile CERT -signedjar zanavi_debug_signed.apk \
+      Navit-release-unsigned.apk androiddebugkey
       
-#$_SDK_/build-tools/23.0.1/zipalign -v 4 bin/zanavi_debug_signed.apk bin/zanavi_debug_signed_aligned.apk
+$_SDK_/build-tools/23.0.1/zipalign -v 4 zanavi_debug_signed.apk zanavi_debug_signed_aligned.apk
 
-cp -av bin/zanavi_debug_signed.apk bin/zanavi_debug_signed_aligned.apk
+pwd
+
+ls -al
+
+cd ..
 
         pwd
         mv bin/zanavi_debug_signed_aligned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
