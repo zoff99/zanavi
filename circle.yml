@@ -20,7 +20,8 @@ dependencies:
     - bash ci/do_android.sh
 test:
   pre:
-    - emulator -avd circleci-android22 -no-audio -no-window:
+    - mksdcard -l e 990M sdcard.img
+    - emulator -avd circleci-android22 -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
