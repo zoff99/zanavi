@@ -85,8 +85,9 @@ test:
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
-    - fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
+    - mkdir ~/debug_results/ && cd ~/debug_results/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
+    - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
 
 
 
