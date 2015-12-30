@@ -75,9 +75,9 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 
         ant release
 
-# delete debug signing-key ---------------
-rm -f ~/.android/debug.keystore
-# delete debug signing-key ---------------
+######  --------------- delete debug signing-key ---------------
+###### rm -f ~/.android/debug.keystore
+######  --------------- delete debug signing-key ---------------
 
 if [ ! -f ~/.android/debug.keystore ]; then
  keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android \
