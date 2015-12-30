@@ -76,7 +76,7 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         ant release
 
 ######  --------------- delete debug signing-key ---------------
-rm -f ~/.android/debug.keystore
+### rm -f ~/.android/debug.keystore
 ######  --------------- delete debug signing-key ---------------
 
 cd bin/
