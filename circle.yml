@@ -29,3 +29,5 @@ test:
     - fb-adb shell "pwd"
     - fb-adb shell "ls -al /"
     - fb-adb shell "df"
+    - fb-adb shell "df /storage/sdcard/"
+
