@@ -37,8 +37,8 @@ test:
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://zanavi.weidestraat.nl/data/austria.bin"
 
-    - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/"
-    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/"
+    - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
     - fb-adb push ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
