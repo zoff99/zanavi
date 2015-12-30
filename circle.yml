@@ -25,6 +25,7 @@ test:
         parallel: true
     - circle-android wait-for-boot
   override:
-    - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
+    - adb install ~/android-build/navit/android/bin/Navit-release-unsigned.apk
     - fb-adb shell "pwd"
-    - fb-adb shell "ls -al"
+    - fb-adb shell "ls -al /"
+    - fb-adb shell "df"
