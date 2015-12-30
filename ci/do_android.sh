@@ -82,7 +82,9 @@ type -a keytool
 # jarsigner -help
 
 if [ ! -f ~/.android/debug.keystore ]; then
- keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
+ keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android \
+ -sigalg MD5withRSA -keyalg RSA -keysize 2048 -validity 10000 \
+ -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
 fi
 
 jarsigner -verbose -keystore ~/.android/debug.keystore \
