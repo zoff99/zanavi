@@ -21,6 +21,8 @@ dependencies:
 test:
   pre:
     - mksdcard -l e 20000M sdcard.img
+    - android list targets
+    - if [ ! -f ~/.android/zavd.txt ]; then echo no | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" && touch ~/.android/zavd.txt ; fi
     - emulator -avd circleci-android21 -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
