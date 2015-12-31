@@ -444,6 +444,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							String[] separated = NavitGraphics.GetRoadBookItems(9990001);
 
 							int jk = 0;
+							if (separated != null)
+							{
 							if (separated.length > 2)
 							{
 								FileOutputStream outf = null;
@@ -565,6 +567,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								{
 								}
 							}
+							}
 
 							// calculate success criterion ----------------------
 							// calculate success criterion ----------------------
@@ -645,6 +648,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				};
 				debug_zoom_to_route_001.start();
 				debug_zoom_to_route_001.join();
+
+				Thread.sleep(3000);
 
 				is_replaying = false;
 				NavitGraphics.NavitAOverlay_s.postInvalidate();
