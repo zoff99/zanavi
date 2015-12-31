@@ -60,22 +60,24 @@ test:
 
     #- fb-adb push -p ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
-    - echo 'mtools_skip_check=1' > ~/.mtoolsrclog
+    - echo 'mtools_skip_check=1' > ~/.mtoolsrc
 
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_001.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_002.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_003.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_004.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_005.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_006.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_007.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_008.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_009.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_010.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - mcopy -i ~/zanavi/sdcard.img ~/navitmap_011.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_001.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_002.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_003.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_004.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_005.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_006.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_007.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_008.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_009.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_010.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -i ~/zanavi/sdcard.img navitmap_011.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+
+    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
