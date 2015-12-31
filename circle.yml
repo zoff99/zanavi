@@ -81,6 +81,9 @@ test:
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
+    - adb logcat:
+        background: true
+
     - sleep 240
     - sleep 240
     - sleep 240
