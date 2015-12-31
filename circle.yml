@@ -21,6 +21,7 @@ dependencies:
 test:
   pre:
     - mksdcard -l e 20000M sdcard.img
+    - echo 'mtools_skip_check=1' > ~/.mtoolsrc
     - android list targets
     - if [ ! -f ~/.android/zavd.txt ]; then echo no | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" && touch ~/.android/zavd.txt ; fi
     - emulator -avd zanavi21 -sdcard sdcard.img -no-audio -no-window:
@@ -60,12 +61,12 @@ test:
 
     #- fb-adb push -p ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
-    - echo 'mtools_skip_check=1' > ~/.mtoolsrc
-
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
     - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
     - sleep 60
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 5
+    - adb -s emulator-5554 emu kill
     - sleep 5
 
     - mdir -i ~/zanavi/sdcard.img "::"
@@ -85,6 +86,12 @@ test:
 
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - sleep 5
+
+    - emulator -avd zanavi21 -sdcard sdcard.img -no-audio -no-window:
+        background: true
+        parallel: true
+    - circle-android wait-for-boot
+
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
     - sleep 5
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
