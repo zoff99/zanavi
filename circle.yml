@@ -97,6 +97,9 @@ test:
     - mkdir ~/debug_results/ && cd ~/debug_results/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
+    
+    - adb -s emulator-5555 emu kill
+    - adb -s emulator-5554 emu kill
 
 
 
