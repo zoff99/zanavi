@@ -68,6 +68,10 @@ test:
     - sleep 5
     - adb -s emulator-5554 emu kill
     - sleep 5
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir'
+    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir'
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir'
+
 
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
