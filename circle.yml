@@ -91,6 +91,7 @@ test:
         background: true
         parallel: true
     - circle-android wait-for-boot
+    - sleep 120
 
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
     - sleep 5
