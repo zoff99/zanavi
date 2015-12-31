@@ -82,6 +82,10 @@ test:
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
     - sleep 240
+    - sleep 240
+    - sleep 240
+    - sleep 240
+
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
