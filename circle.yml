@@ -62,6 +62,12 @@ test:
 
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
 
+    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
+    - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
+    - sleep 60
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 5
+
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
@@ -78,17 +84,10 @@ test:
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_011.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-
-    - sleep 30
-    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-
-    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
-
-    - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
-
-    - sleep 60
-    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 5
+    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - sleep 5
+    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
