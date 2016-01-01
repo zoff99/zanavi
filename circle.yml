@@ -101,21 +101,21 @@ test:
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
 
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pkill -9 -u ubuntu -f adb ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pkill -9 -u ubuntu -f adb ; echo "no error"
     - pkill -9 -u ubuntu -f emulator64-arm ; echo "no error"
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     - ps -fu ubuntu
-    - sleep 5
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - ps -fu ubuntu
-    - sleep 5
-    - pkill -u ubuntu -f java ; pkill -9 -u ubuntu -f java ; echo "no error"
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - ps -fu ubuntu
+    #- sleep 5
+    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- ps -fu ubuntu
+    #- sleep 5
+    #- pkill -u ubuntu -f java ; pkill -9 -u ubuntu -f java ; echo "no error"
+    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- ps -fu ubuntu
     # ------ kill ----------------
 
 
@@ -200,22 +200,23 @@ test:
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
 
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pkill -9 -u ubuntu -f adb ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pkill -9 -u ubuntu -f adb ; echo "no error"
     - pkill -9 -u ubuntu -f emulator64-arm ; echo "no error"
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     - ps -fu ubuntu
-    - sleep 5
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - ps -fu ubuntu
-    - sleep 5
-    - pkill -u ubuntu -f java ; pkill -9 -u ubuntu -f java ; echo "no error"
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    - ps -fu ubuntu
+    #- sleep 5
+    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- ps -fu ubuntu
+    #- sleep 5
+    #- pkill -u ubuntu -f java ; pkill -9 -u ubuntu -f java ; echo "no error"
+    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    #- ps -fu ubuntu
     # ------ kill ----------------
+
 
 
 
