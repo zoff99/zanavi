@@ -46,6 +46,20 @@ test:
     - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin"
 
+    - wget --no-check-certificate -t 10 -O ~/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin"
+
+    - wget --no-check-certificate -t 10 -O ~/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin"
+
+    - wget --no-check-certificate -t 10 -O ~/navitmap_021.bin "http://ci.zanavi.cc/data/restl_welt.bin"
+
+
     - mkdir ~/yaml-tests/
     - wget -t 10 -O ~/yaml-tests/yaml.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - cd ~/yaml-tests/ && unzip yaml.zip && cd ~/
@@ -81,6 +95,16 @@ test:
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_009.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_010.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_011.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_012.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_013.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_014.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_015.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_016.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_017.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_018.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_019.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_020.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_021.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
