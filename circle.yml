@@ -7,10 +7,10 @@ machine:
     sdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
 dependencies:
-  cache_directories:
-    - ~/.android
-#    - .android
+  #cache_directories:
+  #  - ~/.android
   pre:
+    - rm -Rfv ~/.android
     - sudo apt-get update
     - sudo apt-get install libpng12-dev
     - sudo apt-get install librsvg2-bin 
@@ -94,9 +94,6 @@ test:
 
     # ------ kill ----------------
     - ps -fu ubuntu
-    - adb -s emulator-5555 emu kill ; exit 0
-    - adb -s emulator-5554 emu kill ; exit 0
-    - adb -s emulator-5555 emu kill ; exit 0
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
     - sleep 10
@@ -181,8 +178,6 @@ test:
     
     # ------ kill ----------------
     - ps -fu ubuntu
-    - adb -s emulator-5555 emu kill ; exit 0
-    - adb -s emulator-5554 emu kill ; exit 0
     - adb -s emulator-5555 emu kill ; exit 0
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
