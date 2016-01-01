@@ -124,7 +124,12 @@ test:
         background: true
 
     - sleep 240
-    #- sleep 240
+    - sleep 240
+    - sleep 240
+    - sleep 240
+    - sleep 240
+    - sleep 240
+    - sleep 240
 
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
@@ -134,7 +139,7 @@ test:
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     
     - adb -s emulator-5555 emu kill || exit 0
-    - adb -s emulator-5554 emu kill
+    - adb -s emulator-5554 emu kill || exit 0
 
 
 
