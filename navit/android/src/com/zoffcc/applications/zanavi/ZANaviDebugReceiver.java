@@ -342,14 +342,14 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 				flag_route_ready = false;
 
-				Thread.sleep(2200);
-                                Navit.draw_map();
+				// Thread.sleep(1200);
+                                // Navit.draw_map();
 
 				final Thread debug_zoom_to_route_001 = new Thread()
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 60;
+					int max_count = 90;
 
 					@Override
 					public void run()
@@ -358,18 +358,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						{
 							try
 							{
-								// System.out.println("XXXX:#" + count + ":rstatus=" + NavitGraphics.navit_route_status);
+								System.out.println("XXXX:#" + count + ":rstatus=" + NavitGraphics.navit_route_status);
 
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
-									// zoom to route
-									Message msg = new Message();
-									Bundle b = new Bundle();
-									b.putInt("Callback", 17);
-									msg.setData(b);
-									NavitGraphics.callback_handler.sendMessage(msg);
-
-									Navit.set_map_position_to_screen_center();
+									Navit.zoom_to_route();
+									Thread.sleep(2000);
+									Navit.zoom_to_route();
+									Thread.sleep(10000);
+									Navit.draw_map();
+									Thread.sleep(10000);
 
 									// save route to gpx file
 									DR_save_route_to_gpx_file();
@@ -648,8 +646,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				};
 				debug_zoom_to_route_001.start();
 				debug_zoom_to_route_001.join();
-
-				Thread.sleep(3000);
+				// Thread.sleep(3000);
 
 				is_replaying = false;
 				NavitGraphics.NavitAOverlay_s.postInvalidate();
@@ -738,10 +735,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							try
 							{
 								Navit.show_geo_on_screen_no_draw(0, 0);
-								Thread.sleep(500);
+								Thread.sleep(50);
 								Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
-								Thread.sleep(120);
-								Navit.draw_map();
+								Thread.sleep(12);
 							}
 							catch (Exception e2)
 							{
@@ -994,7 +990,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							extras.putString("add_destination", "" + lat2 + "," + lon2);
 							DR_add_destination("add_destination", extras);
 
-							final Thread debug_zoom_to_route_001 = new Thread()
+							final Thread debug_zoom_to_route_001a = new Thread()
 							{
 								int wait = 1;
 								int count = 0;
@@ -1051,7 +1047,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 							};
-							debug_zoom_to_route_001.start();
+							debug_zoom_to_route_001a.start();
 
 							break;
 						}
