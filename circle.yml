@@ -100,7 +100,7 @@ test:
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
     - sleep 10
-    - pkill -9 -u ubuntu -f java ; echo "no error"
+    #- pkill -9 -u ubuntu -f java ; echo "no error"
     - sleep 10
     - ps -fu ubuntu
     # ------ kill ----------------
@@ -138,6 +138,7 @@ test:
         background: true
         parallel: true
     - circle-android wait-for-boot
+    - sleep 20
 
     - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
@@ -186,7 +187,7 @@ test:
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
     - sleep 10
-    - pkill -9 -u ubuntu -f java ; echo "no error"
+    #- pkill -9 -u ubuntu -f java ; echo "no error"
     - sleep 10
     - ps -fu ubuntu
     # ------ kill ----------------
