@@ -100,7 +100,7 @@ test:
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
     - sleep 10
-    #- pkill -9 -u ubuntu -f java ; echo "no error"
+    - pkill -9 -u ubuntu -f java
     - sleep 10
     - ps -fu ubuntu
     # ------ kill ----------------
@@ -146,8 +146,8 @@ test:
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
-#    - adb logcat -v time:
-#        background: true
+    - adb logcat -v time:
+        background: true
 
     - sleep 300
     - sleep 300
@@ -187,7 +187,7 @@ test:
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
     - sleep 10
-    #- pkill -9 -u ubuntu -f java ; echo "no error"
+    - pkill -9 -u ubuntu -f java
     - sleep 10
     - ps -fu ubuntu
     # ------ kill ----------------
