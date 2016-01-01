@@ -1,6 +1,8 @@
 machine:
   timezone:
     Europe/Vienna
+  environment:
+    EMU_: zanavi10
 dependencies:
   cache_directories:
     - ~/.android
@@ -26,7 +28,8 @@ test:
 
     - echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in"
     - echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854"
-    - EMU_="zanavi10"
+    
+    - echo "$EMU_"
 
     - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
