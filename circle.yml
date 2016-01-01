@@ -4,6 +4,7 @@ machine:
   environment:
     EMU_: "zanavi10"
     sdpath: "/mnt/sdcard"
+    Xsdpath: "/storage/sdcard"
 dependencies:
   cache_directories:
     - ~/.android
