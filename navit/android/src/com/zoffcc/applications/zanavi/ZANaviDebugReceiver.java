@@ -349,7 +349,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 90;
+					int max_count = 70;
 
 					@Override
 					public void run()
