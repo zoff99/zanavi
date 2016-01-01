@@ -93,30 +93,16 @@ test:
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi ; exit 0
 
     # ------ kill ----------------
-    - adb devices
     - ps -fu ubuntu
     - adb -s emulator-5555 emu kill ; exit 0
     - adb -s emulator-5554 emu kill ; exit 0
     - adb -s emulator-5555 emu kill ; exit 0
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
-
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pkill -9 -u ubuntu -f adb ; echo "no error"
-    - pkill -9 -u ubuntu -f emulator64-arm ; echo "no error"
+    - sleep 10
     - pkill -9 -u ubuntu -f java ; echo "no error"
-    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    - sleep 10
     - ps -fu ubuntu
-    #- sleep 5
-    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- ps -fu ubuntu
-    #- sleep 5
-    #- pkill -u ubuntu -f java ; pkill -9 -u ubuntu -f java ; echo "no error"
-    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- ps -fu ubuntu
     # ------ kill ----------------
 
 
@@ -193,34 +179,15 @@ test:
     - cd ~/debug_results/ && zip results.zip 201?-??-*/* && cp -av results.zip $CIRCLE_TEST_REPORTS/
     
     # ------ kill ----------------
-    - adb devices
     - ps -fu ubuntu
     - adb -s emulator-5555 emu kill ; exit 0
     - adb -s emulator-5554 emu kill ; exit 0
     - adb -s emulator-5555 emu kill ; exit 0
     - adb -s emulator-5554 emu kill ; exit 0
     - ps -fu ubuntu
-
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pkill -9 -u ubuntu -f adb ; echo "no error"
-    - pkill -9 -u ubuntu -f emulator64-arm ; echo "no error"
+    - sleep 10
     - pkill -9 -u ubuntu -f java ; echo "no error"
-    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
+    - sleep 10
     - ps -fu ubuntu
-    #- sleep 5
-    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- ps -fu ubuntu
-    #- sleep 5
-    #- pkill -u ubuntu -f java ; pkill -9 -u ubuntu -f java ; echo "no error"
-    #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
-    #- ps -fu ubuntu
     # ------ kill ----------------
-
-
-
-
-
 
