@@ -616,7 +616,15 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								{
 									if (success_item.equalsIgnoreCase("'nodes'"))
 									{
-										int s = (separated.length - 2);
+										int s = -99;
+										if (separated == null)
+										{
+											s = -99;
+										}
+										else
+										{
+											s = (separated.length - 2);
+										}
 										int v = Integer.parseInt(success_value);
 										result_code = success_value_compare(s, v);
 
