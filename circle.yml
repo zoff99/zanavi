@@ -2,10 +2,12 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    EMU_: zanavi10
+    EMU_: "zanavi10"
+    sdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
     - ~/.android
+    - .android
   pre:
     - sudo apt-get update
     - sudo apt-get install libpng12-dev
@@ -30,6 +32,7 @@ test:
     - echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854"
     
     - echo "$EMU_"
+    - echo "$sdpath"
 
     - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
@@ -40,7 +43,7 @@ test:
     - ls -al $CIRCLE_ARTIFACTS/
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
     - fb-adb shell "df"
-    - fb-adb shell "df /storage/sdcard/"
+    - fb-adb shell "df $sdpath/"
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
@@ -71,16 +74,16 @@ test:
     - mkdir ~/yaml-tests/
     - wget -t 10 -O ~/yaml-tests/yaml.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - cd ~/yaml-tests/ && unzip yaml.zip && cd ~/
-    - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/"
-    - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
+    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/"
+    - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
 
-    - fb-adb shell "mkdir -p /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
+    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
 
-    #- fb-adb push -p ~/navitmap_001.bin "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
-    - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
+    - fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/"
     - sleep 40
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - adb -s emulator-5554 emu kill
@@ -122,10 +125,10 @@ test:
     - circle-android wait-for-boot
     - sleep 10
 
-    - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
     - adb logcat -v time:
@@ -139,10 +142,10 @@ test:
     - sleep 240
     - sleep 240
 
-    - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
-    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
-    - mkdir ~/debug_results/ && cd ~/debug_results/ && fb-adb pull -p "/storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
+    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
+    - mkdir ~/debug_results/ && cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     
