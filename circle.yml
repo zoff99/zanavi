@@ -11,19 +11,19 @@ dependencies:
     - ~/.android
   pre:
     #- rm -Rfv ~/.android
-    - sudo apt-get update
-    - sudo apt-get install libpng12-dev
-    - sudo apt-get install librsvg2-bin 
-    - sudo apt-get install libfreetype6-dev
-    - sudo apt-get install libdbus-glib-1-dev
-    - sudo apt-get install g++
-    - sudo apt-get install gettext
-    - sudo apt-get install ant
-    - sudo apt-get install libsaxonb-java
-    - sudo apt-get install lib32stdc++6
-    - sudo apt-get install lib32z1
-    - sudo apt-get install zip
-    - bash ci/do_android.sh
+    - sudo apt-get update > /dev/null 2> /dev/null
+    - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
+    - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
+    - sudo apt-get install libfreetype6-dev > /dev/null 2> /dev/null
+    - sudo apt-get install libdbus-glib-1-dev > /dev/null 2> /dev/null
+    - sudo apt-get install g++ > /dev/null 2> /dev/null
+    - sudo apt-get install gettext > /dev/null 2> /dev/null
+    - sudo apt-get install ant > /dev/null 2> /dev/null
+    - sudo apt-get install libsaxonb-java > /dev/null 2> /dev/null
+    - sudo apt-get install lib32stdc++6 > /dev/null 2> /dev/null
+    - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
+    - sudo apt-get install zip > /dev/null 2> /dev/null
+    - bash ci/do_android.sh > /dev/null 2> /dev/null
 test:
   pre:
     - mksdcard -l e 20000M sdcard.img
