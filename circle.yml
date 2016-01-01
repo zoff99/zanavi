@@ -9,7 +9,7 @@ machine:
 dependencies:
   cache_directories:
     - ~/.android
-    - .android
+#    - .android
   pre:
     - sudo apt-get update
     - sudo apt-get install libpng12-dev
@@ -30,8 +30,8 @@ test:
 
     - android list targets
 
-    - echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in"
-    - echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854"
+    - if [ "$EMU_" -eq "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
+    - if [ "$EMU_" -eq "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854" ; fi
     
     - echo "$EMU_"
     - echo "$sdpath"
@@ -44,8 +44,8 @@ test:
     - ls -al ~/android-build/navit/android/bin/
     - ls -al $CIRCLE_ARTIFACTS/
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
-    - fb-adb shell "df"
-    - fb-adb shell "df $sdpath/"
+    - fb-adb shell "df" || exit 0
+    - fb-adb shell "df $sdpath/" || exit 0
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
@@ -76,22 +76,33 @@ test:
     - mkdir ~/yaml-tests/
     - wget -t 10 -O ~/yaml-tests/yaml.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - cd ~/yaml-tests/ && unzip yaml.zip && cd ~/
-    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/"
+    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" || exit 0
     - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
 
-    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/"
+    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" || exit 0
+    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" || exit 0
 
     #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
-    - fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/"
+    - fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" || exit 0
     - sleep 40
-    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
-    - adb -s emulator-5554 emu kill
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi || exit 0
+    - sleep 2
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi || exit 0
+    - adb -s emulator-5555 emu kill || exit 0
+    - adb -s emulator-5554 emu kill || exit 0
+    - adb -s emulator-5555 emu kill || exit 0
+    - adb -s emulator-5554 emu kill || exit 0
 
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir'
-    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir'
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
+    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
+    - sleep 5
+    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
+    - sleep 5
+    - pkill -9 -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
     - pgrep -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
 
     - mdir -i ~/zanavi/sdcard.img "::"
@@ -127,7 +138,7 @@ test:
     - circle-android wait-for-boot
     - sleep 10
 
-    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" || exit 0
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
@@ -149,6 +160,13 @@ test:
     - sleep 300
     - sleep 300
 
+    - sleep 300
+    - sleep 300
+
+    - sleep 300
+    - sleep 300
+
+    - sleep 300
     - sleep 300
 
 
