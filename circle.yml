@@ -12,7 +12,6 @@ dependencies:
     - sudo apt-get install libdbus-glib-1-dev
     - sudo apt-get install g++
     - sudo apt-get install gettext
-    # - sudo apt-get install openjdk-8-jdk
     - sudo apt-get install ant
     - sudo apt-get install libsaxonb-java
     - sudo apt-get install lib32stdc++6
@@ -23,18 +22,15 @@ test:
     - mksdcard -l e 20000M sdcard.img
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
     - android list targets
-    - if [ ! -f ~/.android/zavd.txt ]; then echo no | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" && touch ~/.android/zavd.txt ; fi
+    - android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in"
     - emulator -avd zanavi21 -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
   override:
     - ls -al ~/android-build/navit/android/bin/
-    # - adb install ~/android-build/navit/android/bin/zanavi_debug_signed_aligned.apk
     - ls -al $CIRCLE_ARTIFACTS/
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
-    - fb-adb shell "pwd"
-    - fb-adb shell "ls -al /"
     - fb-adb shell "df"
     - fb-adb shell "df /storage/sdcard/"
 
@@ -63,15 +59,13 @@ test:
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
     - fb-adb shell "ls -alR /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/"
-    - sleep 60
+    - sleep 40
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
-    - sleep 5
     - adb -s emulator-5554 emu kill
-    - sleep 5
+
     - pgrep -u ubuntu -f 'com.android.ddms.bindir'
     - pkill -9 -u ubuntu -f 'com.android.ddms.bindir'
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir'
-
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; exit $[ 1 - $? ]
 
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
@@ -89,16 +83,14 @@ test:
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_011.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - sleep 5
 
     - emulator -avd zanavi21 -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
-    - sleep 120
+    - sleep 10
 
     - fb-adb shell "ls -al /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
-    - sleep 5
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
@@ -108,9 +100,7 @@ test:
         background: true
 
     - sleep 240
-    - sleep 240
-    - sleep 240
-    - sleep 240
+    #- sleep 240
 
     - fb-adb shell "cd /storage/sdcard/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
@@ -121,8 +111,6 @@ test:
     
     - adb -s emulator-5555 emu kill || exit 0
     - adb -s emulator-5554 emu kill
-
-
 
 
 
