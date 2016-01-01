@@ -363,9 +363,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
 									Navit.zoom_to_route();
-									Thread.sleep(2000);
+									Thread.sleep(1500);
 									Navit.zoom_to_route();
-									Thread.sleep(10000);
+									Thread.sleep(2000);
 									Navit.draw_map();
 									Thread.sleep(10000);
 
