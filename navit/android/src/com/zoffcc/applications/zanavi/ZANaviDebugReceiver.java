@@ -363,11 +363,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
 									Navit.zoom_to_route();
-									Thread.sleep(1500);
+									Thread.sleep(1000);
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
 									Navit.draw_map();
-									Thread.sleep(10000);
+									Thread.sleep(2000);
 
 									// save route to gpx file
 									DR_save_route_to_gpx_file();
