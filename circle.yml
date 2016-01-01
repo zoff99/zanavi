@@ -30,8 +30,8 @@ test:
 
     - android list targets
 
-    - if [ "$EMU_" -eq "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
-    - if [ "$EMU_" -eq "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854" ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854" ; fi
     
     - echo "$EMU_"
     - echo "$sdpath"
