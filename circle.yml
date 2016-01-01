@@ -65,7 +65,7 @@ test:
 
     - pgrep -u ubuntu -f 'com.android.ddms.bindir'
     - pkill -9 -u ubuntu -f 'com.android.ddms.bindir'
-    - pgrep -u ubuntu -f 'com.android.ddms.bindir' ; exit $[ 1 - $? ]
+    - pgrep -u ubuntu -f 'com.android.ddms.bindir' || echo "no error"
 
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
