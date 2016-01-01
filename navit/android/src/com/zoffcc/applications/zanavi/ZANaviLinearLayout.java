@@ -323,6 +323,8 @@ public class ZANaviLinearLayout extends LinearLayout
 
 	public void redraw_OSD_view(int i)
 	{
+		try
+		{
 		//		child1 = Navit.Global_Navit_Object.findViewById(R.id.top_bar); // streetname
 		//		child2 = Navit.Global_Navit_Object.findViewById(R.id.osd_compass_new);
 		//		child3 = Navit.Global_Navit_Object.findViewById(R.id.osd_nextturn_new);
@@ -362,6 +364,11 @@ public class ZANaviLinearLayout extends LinearLayout
 		case 9:
 			child9.postInvalidate();
 			break;
+		}
+		
+		}
+		catch (Exception e)
+		{
 		}
 	}
 
