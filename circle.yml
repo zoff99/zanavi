@@ -7,8 +7,8 @@ machine:
     sdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
 dependencies:
-  #cache_directories:
-  #  - ~/.android
+  cache_directories:
+    - ~/.android
   pre:
     - rm -Rfv ~/.android
     - sudo apt-get update
