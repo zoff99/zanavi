@@ -21,9 +21,14 @@ test:
   pre:
     - mksdcard -l e 20000M sdcard.img
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
+
     - android list targets
+
     - echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in"
-    - emulator -avd zanavi21 -sdcard sdcard.img -no-audio -no-window:
+    - echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854"
+    - EMU_="zanavi10"
+
+    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
@@ -108,7 +113,7 @@ test:
 
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - emulator -avd zanavi21 -sdcard sdcard.img -no-audio -no-window:
+    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
