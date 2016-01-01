@@ -135,13 +135,18 @@ test:
     - adb logcat -v time:
         background: true
 
-    - sleep 240
-    - sleep 240
-    - sleep 240
-    - sleep 240
-    - sleep 240
-    - sleep 240
-    - sleep 240
+
+    - sleep 600
+    - sleep 600
+
+    - sleep 600
+    - sleep 600
+
+    - sleep 600
+    - sleep 600
+
+    - sleep 600
+
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
