@@ -4364,7 +4364,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				{
 					try
 					{
-						Thread.sleep(15000);
+						Thread.sleep(120000); // 2 min.
 						ZANaviDebugReceiver.DR_run_all_yaml_tests();
 					}
 					catch (Exception e)
