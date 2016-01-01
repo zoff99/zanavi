@@ -104,6 +104,7 @@ test:
     #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     #- pkill -9 -u ubuntu -f adb ; echo "no error"
     - pkill -9 -u ubuntu -f emulator64-arm ; echo "no error"
+    - pkill -9 -u ubuntu -f java ; echo "no error"
     #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     - ps -fu ubuntu
@@ -203,6 +204,7 @@ test:
     #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     #- pkill -9 -u ubuntu -f adb ; echo "no error"
     - pkill -9 -u ubuntu -f emulator64-arm ; echo "no error"
+    - pkill -9 -u ubuntu -f java ; echo "no error"
     #- pkill -9 -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     #- pgrep -u ubuntu -f 'com.android.ddms.bindir' ; echo "no error"
     - ps -fu ubuntu
