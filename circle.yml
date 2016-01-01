@@ -2,9 +2,10 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    EMU_: "zanavi10"
-    sdpath: "/mnt/sdcard"
-    Xsdpath: "/storage/sdcard"
+    EMU_: "zanavi21"
+    XEMU_: "zanavi10"
+    sdpath: "/storage/sdcard"
+    Xsdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
     - ~/.android
@@ -136,16 +137,19 @@ test:
         background: true
 
 
-    - sleep 600
-    - sleep 600
+    - sleep 300
+    - sleep 300
 
-    - sleep 600
-    - sleep 600
+    - sleep 300
+    - sleep 300
 
-    - sleep 600
-    - sleep 600
+    - sleep 300
+    - sleep 300
 
-    - sleep 600
+    - sleep 300
+    - sleep 300
+
+    - sleep 300
 
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
