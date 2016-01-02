@@ -235,6 +235,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	// ----------------------------------------
 	static final boolean FDBL = false;
 	static final int CIDEBUG = 1;
+	static boolean CIRUN = false;
 	// ----------------------------------------
 	// ----------------------------------------
 
@@ -4364,8 +4365,12 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				{
 					try
 					{
-						Thread.sleep(120000); // 2 min.
-						ZANaviDebugReceiver.DR_run_all_yaml_tests();
+						if (CIRUN == false)
+						{
+							CIRUN = true;
+							Thread.sleep(60000); // 1 min.
+							ZANaviDebugReceiver.DR_run_all_yaml_tests();
+						}
 					}
 					catch (Exception e)
 					{
