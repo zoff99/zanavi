@@ -22,6 +22,7 @@ dependencies:
     - sudo apt-get install lib32stdc++6 > /dev/null 2> /dev/null
     - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
     - sudo apt-get install zip > /dev/null 2> /dev/null
+    - sudo apt-get install bc > /dev/null 2> /dev/null
     - bash ci/do_android.sh > /dev/null 2> /dev/null
 test:
   pre:
