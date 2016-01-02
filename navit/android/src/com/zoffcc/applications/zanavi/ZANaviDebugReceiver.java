@@ -56,6 +56,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static int result_code = -1;
 	static int local_meters_value = 0;
 
+	static int yaml_sum = 0;
+	static int yaml_err = 0;
+
 	/*
 	 * 
 	 * Examples:
@@ -644,6 +647,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								File f2_to = new File(rename_to);
 								f2.renameTo(f2_to);
 							}
+							else
+							{
+								yaml_err++;
+							}
 
 							// calculate success criterion ----------------------
 							// calculate success criterion ----------------------
@@ -698,9 +705,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 	static void DR_run_all_yaml_tests()
 	{
+		String yaml_dir = Navit.NAVIT_DATA_DEBUG_DIR + "../yamltests/";
+
 		try
 		{
-			String yaml_dir = Navit.NAVIT_DATA_DEBUG_DIR + "../yamltests/";
 			File dir = new File(yaml_dir);
 			try
 			{
@@ -731,11 +739,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 			System.out.println("XXXX:1:" + dir);
 
+			yaml_sum = 0;
+			yaml_err = 0;
+
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
 			{
 				for (File yamlfile : directoryListing)
 				{
+					yaml_sum++;
+
 					final Thread temp_work_thread = new Thread()
 					{
 						@Override
@@ -768,6 +781,30 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		catch (Exception e)
 		{
 			System.out.println("XXXX:E02" + e.getMessage());
+		}
+
+		try
+		{
+			FileOutputStream outf = null;
+			OutputStreamWriter out = null;
+			outf = new FileOutputStream(yaml_dir + "/" + "_XX_XX_SUMMARY_XX_XX_.txt");
+			out = new OutputStreamWriter(outf);
+			out.write("tests:" + yaml_sum + "\n");
+			out.write("errors:" + yaml_err + "\n");
+			if (yaml_sum != yaml_err)
+			{
+				out.write("RES:" + "ERR" + "\n");
+			}
+			else
+			{
+				out.write("RES:" + "OK" + "\n");
+			}
+			out.flush();
+			out.close();
+		}
+		catch (Exception ef2)
+		{
+			System.out.println("EE00SUM:" + ef2.getMessage());
 		}
 
 		DR_clear_route();
