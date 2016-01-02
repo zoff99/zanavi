@@ -43,16 +43,20 @@ test:
     #- fb-adb shell "df"
     #- fb-adb shell "df $sdpath/"
 
-    - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin":
+        parallel: true
+    - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin":
+        parallel: true
+    - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin":
+        parallel: true
+
+    - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin":
     - wget --no-check-certificate -t 10 -O ~/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin"
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin"
@@ -90,7 +94,6 @@ test:
     - wget --no-check-certificate -t 10 -O ~/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin"
-
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin"
 
