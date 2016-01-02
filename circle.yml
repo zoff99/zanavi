@@ -10,7 +10,6 @@ dependencies:
   cache_directories:
     - ~/.android
   pre:
-    #- rm -Rfv ~/.android
     - sudo apt-get update > /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
     - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
@@ -45,33 +44,33 @@ test:
     - ls -al ~/android-build/navit/android/bin/
     - ls -al $CIRCLE_ARTIFACTS/
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
-    - fb-adb shell "df" ; exit 0
-    - fb-adb shell "df $sdpath/" ; exit 0
+    #- fb-adb shell "df"
+    #- fb-adb shell "df $sdpath/"
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin"
 
-    - wget --no-check-certificate -t 10 -O ~/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin"
 
-    - wget --no-check-certificate -t 10 -O ~/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin"
-    - wget --no-check-certificate -t 10 -O ~/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin"
 
-    - wget --no-check-certificate -t 10 -O ~/navitmap_021.bin "http://ci.zanavi.cc/data/restl_welt.bin"
+    #- wget --no-check-certificate -t 10 -O ~/navitmap_021.bin "http://ci.zanavi.cc/data/restl_welt.bin"
 
 
     - mkdir ~/yaml-tests/
@@ -81,16 +80,15 @@ test:
     - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
 
     - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
-    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
+    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
 
     #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
-    - fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
+    #- fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
     - sleep 40
-    - fb-adb shell am force-stop com.zoffcc.applications.zanavi ; exit 0
-    - sleep 2
-    - fb-adb shell am force-stop com.zoffcc.applications.zanavi ; exit 0
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 40
 
     # ------ kill ----------------
     - ps -fu ubuntu
@@ -104,8 +102,8 @@ test:
 
 
 
-    - mdir -i ~/zanavi/sdcard.img "::"
-    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    #- mdir -i ~/zanavi/sdcard.img "::"
+    #- mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_001.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_002.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
@@ -129,7 +127,7 @@ test:
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_020.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_021.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    #- mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
@@ -137,11 +135,13 @@ test:
     - circle-android wait-for-boot
     - sleep 20
 
-    - fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
-    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
+    #- mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
+    - sleep 10
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
+    - sleep 10
 
     - adb logcat -v time:
         background: true
@@ -167,6 +167,8 @@ test:
     - sleep 300
     - sleep 300
 
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 40
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
 
