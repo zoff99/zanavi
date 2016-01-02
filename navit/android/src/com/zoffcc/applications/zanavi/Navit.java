@@ -4365,8 +4365,11 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				{
 					try
 					{
+						System.out.println("DR_run_all_yaml_tests --> want");
+						
 						if (CIRUN == false)
 						{
+							System.out.println("DR_run_all_yaml_tests --> do");
 							CIRUN = true;
 							Thread.sleep(60000); // 1 min.
 							ZANaviDebugReceiver.DR_run_all_yaml_tests();
