@@ -43,29 +43,29 @@ test:
     #- fb-adb shell "df $sdpath/"
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin"
 
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin"
 
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin"
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin"
 
-    #- wget --no-check-certificate -t 10 -O ~/navitmap_021.bin "http://ci.zanavi.cc/data/restl_welt.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_039.bin "http://ci.zanavi.cc/data/restl_welt.bin"
 
 
     - mmd -i ~/zanavi/sdcard.img "::Android"
@@ -80,28 +80,8 @@ test:
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_001.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_002.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_003.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_004.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_005.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_006.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_007.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_008.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_009.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_010.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_011.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_012.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_013.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_014.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_015.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_016.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_017.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_018.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_019.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_020.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_021.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-
+    - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    #- cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_002.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
@@ -144,22 +124,22 @@ test:
     - sleep 300
 
     - sleep 300
-    - sleep 300
+    #- sleep 300
 
-    - sleep 300
-    - sleep 300
+    #- sleep 300
+    #- sleep 300
 
-    - sleep 300
-    - sleep 300
+    #- sleep 300
+    #- sleep 300
 
-    - sleep 300
-    - sleep 300
+    #- sleep 300
+    #- sleep 300
 
-    - sleep 300
-    - sleep 300
+    #- sleep 300
+    #- sleep 300
 
-    - sleep 300
-    - sleep 300
+    #- sleep 300
+    #- sleep 300
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 40
