@@ -189,8 +189,9 @@ test:
 
     # throw error if some tests failed
     - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep -v 'RES:ERR' ; exit $?
+
     # throw error if count of tests <> count of yaml files
-    - count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 else echo "COUNT OK" fi;
+    - count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 ; else echo "COUNT OK" ; fi
 
     # ------ kill ----------------
     #- ps -fu ubuntu
