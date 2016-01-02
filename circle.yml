@@ -2,10 +2,10 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    YEMU_: "zanavi21"
-    EMU_: "zanavi10"
-    Ysdpath: "/storage/sdcard"
-    sdpath: "/mnt/sdcard"
+    EMU_: "zanavi21"
+    XEMU_: "zanavi10"
+    sdpath: "/storage/sdcard"
+    Xsdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
     - ~/.android
