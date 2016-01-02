@@ -91,6 +91,7 @@ test:
     - wget --no-check-certificate -t 10 -O ~/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_045.bin "http://ci.zanavi.cc/data/canada.bin"
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin"
 
@@ -187,7 +188,7 @@ test:
     - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
 
     # throw error if some tests failed
-    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep -v 'RES:ERR' > /dev/null
+    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep -v 'RES:ERR' ; exit $?
     # throw error if count of tests <> count of yaml files
     - count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 else echo "COUNT OK" fi;
 
