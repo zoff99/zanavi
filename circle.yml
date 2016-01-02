@@ -2,10 +2,10 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    EMU_: "zanavi21"
-    XEMU_: "zanavi10"
-    sdpath: "/storage/sdcard"
-    Xsdpath: "/mnt/sdcard"
+    YEMU_: "zanavi21"
+    EMU_: "zanavi10"
+    Ysdpath: "/storage/sdcard"
+    sdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
     - ~/.android
@@ -26,7 +26,7 @@ dependencies:
     - bash ci/do_android.sh > /dev/null 2> /dev/null
 test:
   pre:
-    - mksdcard -l e 31000M sdcard.img
+    - mksdcard -l e 20000M sdcard.img
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
 
     - android list targets
