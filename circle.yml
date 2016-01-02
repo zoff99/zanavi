@@ -66,7 +66,33 @@ test:
     - wget --no-check-certificate -t 10 -O ~/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin"
 
-    - wget --no-check-certificate -t 10 -O ~/navitmap_039.bin "http://ci.zanavi.cc/data/restl_welt.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_021.bin "http://ci.zanavi.cc/data/central_america.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_022.bin "http://ci.zanavi.cc/data/south_america.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_023.bin "http://ci.zanavi.cc/data/africa.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_024.bin "http://ci.zanavi.cc/data/australia_oceania.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_025.bin "http://ci.zanavi.cc/data/andorra.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_026.bin "http://ci.zanavi.cc/data/belarus.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_027.bin "http://ci.zanavi.cc/data/bosnia-herzegovina.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_028.bin "http://ci.zanavi.cc/data/croatia.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_029.bin "http://ci.zanavi.cc/data/cyprus.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_030.bin "http://ci.zanavi.cc/data/czech_republic.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_031.bin "http://ci.zanavi.cc/data/estonia.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_032.bin "http://ci.zanavi.cc/data/hungary.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_033.bin "http://ci.zanavi.cc/data/greece.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_034.bin "http://ci.zanavi.cc/data/kosovo.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_035.bin "http://ci.zanavi.cc/data/macedonia.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_036.bin "http://ci.zanavi.cc/data/moldova.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_037.bin "http://ci.zanavi.cc/data/denmark.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_038.bin "http://ci.zanavi.cc/data/russia-european-part.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_039.bin "http://ci.zanavi.cc/data/serbia.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_040.bin "http://ci.zanavi.cc/data/slovakia.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_041.bin "http://ci.zanavi.cc/data/slovenia.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin"
+    - wget --no-check-certificate -t 10 -O ~/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin"
+
+
+    - wget --no-check-certificate -t 10 -O ~/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin"
 
 
     - mmd -i ~/zanavi/sdcard.img "::Android"
@@ -125,22 +151,22 @@ test:
     - sleep 300
 
     - sleep 300
-    #- sleep 300
+    - sleep 300
 
-    #- sleep 300
-    #- sleep 300
+    - sleep 300
+    - sleep 300
 
-    #- sleep 300
-    #- sleep 300
+    - sleep 300
+    - sleep 300
 
-    #- sleep 300
-    #- sleep 300
+    - sleep 300
+    - sleep 300
 
-    #- sleep 300
-    #- sleep 300
+    - sleep 300
+    - sleep 300
 
-    #- sleep 300
-    #- sleep 300
+    - sleep 300
+    - sleep 300
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 40
