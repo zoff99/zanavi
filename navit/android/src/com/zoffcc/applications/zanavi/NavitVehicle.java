@@ -1080,9 +1080,13 @@ public class NavitVehicle
 
 				String extrapolated_post_string = NavitGraphics.CallbackGeoCalc(12, 1, interval_millis);
 
-				if (extrapolated_post_string.equals("*ERROR*"))
+				if (extrapolated_post_string == null)
 				{
-					System.out.println("extrapolated pos:*ERROR*");
+					System.out.println("extrapolated pos:*ERROR.1*");
+				}
+				else if (extrapolated_post_string.equals("*ERROR*"))
+				{
+					System.out.println("extrapolated pos:*ERROR.2*");
 				}
 				else
 				{
