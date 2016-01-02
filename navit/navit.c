@@ -3188,7 +3188,7 @@ __F_START__
 		}
 
 		i = 10;
-		for (i = 10; i < 21; i++)
+		for (i = 10; i < 61; i++)
 		{
 			parent.type = attr_navit;
 			parent.u.navit = this_;
