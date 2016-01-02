@@ -94,6 +94,7 @@ test:
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin"
 
+    - du navitmap_0*bin|awk '{print $1 " + \\"}' > /tmp/sizes.txt ;echo -n "printf ' " > /tmp/calc.txt;cat /tmp/sizes.txt >> /tmp/calc.txt ; printf "0 \\\n' |bc\n" >> /tmp/calc.txt ; chmod u+x /tmp/calc.txt;eval /tmp/calc.txt > /tmp/res.txt ; printf "scale=2;`cat /tmp/res.txt` / 1024 / 1024 \n "|bc
 
     - mmd -i ~/zanavi/sdcard.img "::Android"
     - mmd -i ~/zanavi/sdcard.img "::Android/data"
