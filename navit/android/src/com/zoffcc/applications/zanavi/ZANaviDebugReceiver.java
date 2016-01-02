@@ -339,6 +339,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 				extras.putString("add_destination", "" + lat_dst + "," + lon_dst);
 				DR_add_destination("add_destination", extras);
+				Thread.sleep(1000);
 
 				flag_route_ready = false;
 
@@ -349,7 +350,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 70;
+					int max_count = 50;
 
 					@Override
 					public void run()
@@ -363,11 +364,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
 									Navit.zoom_to_route();
-									Thread.sleep(4000);
+									Thread.sleep(1000);
 									Navit.zoom_to_route();
-									Thread.sleep(4000);
-									Navit.draw_map();
-									Thread.sleep(10000);
+									Thread.sleep(6000);
+									// Navit.draw_map();
+									// Thread.sleep(10000);
 
 									// save route to gpx file
 									DR_save_route_to_gpx_file();
@@ -759,7 +760,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
 					System.out.println("XXXX:2:" + yamlfile.getAbsolutePath());
 					
-					Thread.sleep(2500);
+					Thread.sleep(1500);
 					
 				}
 			}
