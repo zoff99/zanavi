@@ -325,7 +325,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				}
 
 				DR_clear_route();
-				Thread.sleep(800);
+				Thread.sleep(2000);
 				Bundle extras = new Bundle();
 
 				// System.out.println("ZANaviDebugReceiver:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
@@ -363,11 +363,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
 									Navit.zoom_to_route();
-									Thread.sleep(1000);
+									Thread.sleep(4000);
 									Navit.zoom_to_route();
-									Thread.sleep(2000);
+									Thread.sleep(4000);
 									Navit.draw_map();
-									Thread.sleep(2000);
+									Thread.sleep(10000);
 
 									// save route to gpx file
 									DR_save_route_to_gpx_file();
@@ -654,7 +654,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				};
 				debug_zoom_to_route_001.start();
 				debug_zoom_to_route_001.join();
-				// Thread.sleep(3000);
+				Thread.sleep(500);
 
 				is_replaying = false;
 				NavitGraphics.NavitAOverlay_s.postInvalidate();
@@ -743,9 +743,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							try
 							{
 								Navit.show_geo_on_screen_no_draw(0, 0);
-								Thread.sleep(50);
+								Thread.sleep(150);
 								Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
-								Thread.sleep(12);
+								Thread.sleep(120);
 							}
 							catch (Exception e2)
 							{
@@ -759,7 +759,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
 					System.out.println("XXXX:2:" + yamlfile.getAbsolutePath());
 					
-					Thread.sleep(500);
+					Thread.sleep(2500);
 					
 				}
 			}
