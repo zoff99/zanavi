@@ -176,9 +176,16 @@ test:
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
     - mkdir ~/debug_results/ && cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
-    - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
+    - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
+
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
+    - cd ~/debug_output/ && cp -av ./* $CIRCLE_TEST_REPORTS/
+    - cd ~/debug_summary/ && cp -av ./* $CIRCLE_TEST_REPORTS/
+
     - cd ~/debug_results/ && zip results.zip 201?-??-*/* && cp -av results.zip $CIRCLE_TEST_REPORTS/
+
+    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
+
     
     # ------ kill ----------------
     #- ps -fu ubuntu
