@@ -50,7 +50,7 @@ test:
     - wget --no-check-certificate -t 10 -O ~/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin":
         parallel: true
 
-    - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin":
+    - wget --no-check-certificate -t 10 -O ~/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin"
