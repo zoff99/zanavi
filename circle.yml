@@ -26,7 +26,7 @@ dependencies:
     - bash ci/do_android.sh > /dev/null 2> /dev/null
 test:
   pre:
-    - mksdcard -l e 20000M sdcard.img
+    - mksdcard -l e 31000M sdcard.img
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
 
     - android list targets
