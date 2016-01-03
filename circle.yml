@@ -23,7 +23,7 @@ dependencies:
     - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
     - sudo apt-get install zip > /dev/null 2> /dev/null
     - sudo apt-get install bc > /dev/null 2> /dev/null
-    - bash ~/zanavi/ci/do_android.sh > /dev/null 2> /dev/null
+    - bash ~/zanavi/ci/do_android.sh
 test:
   pre:
     - mksdcard -l e 20000M sdcard.img
