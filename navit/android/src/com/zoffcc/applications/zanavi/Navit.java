@@ -234,7 +234,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	// ----------------------------------------
 	// ----------------------------------------
 	static final boolean FDBL = false;
-	static final int CIDEBUG = 1;
+	static final int CIDEBUG = 0;
 	static boolean CIRUN = false;
 	// ----------------------------------------
 	// ----------------------------------------
