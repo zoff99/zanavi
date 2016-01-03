@@ -8,7 +8,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See thezoo
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -367,9 +367,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
 									Navit.zoom_to_route();
-									Thread.sleep(1000);
+									Thread.sleep(2000);
 									Navit.zoom_to_route();
-									Thread.sleep(6000);
+									Thread.sleep(10000);
 									// Navit.draw_map();
 									// Thread.sleep(10000);
 
