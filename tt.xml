@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
    <testsuite name="JUnitXmlReporter" errors="0" tests="0" failures="0" time="0" />
-   <testsuite name="JUnitXmlReporter.constructor" errors="0" skipped="1" tests="3" failures="1" time="0" >
+   <testsuite name="JUnitXmlReporter.constructor" errors="0" skipped="0" tests="" failures="" time="0" >
       <properties>
          <property name="java.vendor" value="Sun Microsystems Inc." />
+         <property name="app" value="ZANavi for Android" />
+         <property name="developer.name" value="Zoff" />
+         <property name="developer.email" value="zoff@zanavi.cc" />
       </properties>
-      <testcase classname="JUnitXmlReporter.constructor" name="test 001" time="0">
-         <failure message="erkm5rimtim io4">eölrw3krpo3 failed</failure>
+      <testcase classname="JUnitXmlReporter.constructor" name="hgeri" time="0" />
+      <testcase classname="JUnitXmlReporter.constructor" name="hgeri" time="0" />
+      <testcase classname="JUnitXmlReporter.constructor" name="hgeri" time="0" />
+      <testcase classname="JUnitXmlReporter.constructor" name="hgeri" time="0">
+         <failure message="uiheriu">uhuih</failure>
       </testcase>
-      <testcase classname="JUnitXmlReporter.constructor" name="test 002" time="0">
-         <skipped />
+      <testcase classname="JUnitXmlReporter.constructor" name="hgeri" time="0">
+         <failure message="uiheriu">uhuih</failure>
       </testcase>
-      <testcase classname="JUnitXmlReporter.constructor" name="test _293wlep" time="0" />
+      <testcase classname="JUnitXmlReporter.constructor" name="hgeri" time="0">
+         <failure message="uiheriu">uhuih</failure>
+      </testcase>
    </testsuite>
 </testsuites>
