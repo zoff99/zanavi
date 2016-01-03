@@ -6,7 +6,7 @@
          <property name="java.vendor" value="Sun Microsystems Inc." />
       </properties>
       <testcase classname="JUnitXmlReporter.constructor" name="test 001" time="0">
-         <failure message="test failure">Assertion failed</failure>
+         <failure message="erkm5rimtim io4">eölrw3krpo3 failed</failure>
       </testcase>
       <testcase classname="JUnitXmlReporter.constructor" name="test 002" time="0">
          <skipped />
