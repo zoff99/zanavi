@@ -23,7 +23,7 @@ dependencies:
     - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
     - sudo apt-get install zip > /dev/null 2> /dev/null
     - sudo apt-get install bc > /dev/null 2> /dev/null
-    ###- bash ci/do_android.sh > /dev/null 2> /dev/null
+    - bash ci/do_android.sh > /dev/null 2> /dev/null
 test:
   pre:
     - mksdcard -l e 20000M sdcard.img
@@ -42,9 +42,6 @@ test:
     - ls -al $CIRCLE_ARTIFACTS/
     #- fb-adb shell "df"
     #- fb-adb shell "df $sdpath/"
-
-    - mkdir -p $CIRCLE_TEST_REPORTS/zanavi-runner/
-    - cp ~/zanavi/tt.xml $CIRCLE_TEST_REPORTS/zanavi-runner/tests.xml
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
@@ -113,7 +110,6 @@ test:
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    #- cd ~ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_002.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
@@ -198,10 +194,10 @@ test:
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 40
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; rm -f ~/tmp.txt ; echo $_dir
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
-    - mkdir ~/debug_results/ && cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
+    - _dir=`cat ~/tmp.txt` ; mkdir ~/debug_results/"$_dir"/ && cd ~/debug_results/"$_dir"/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
@@ -211,6 +207,10 @@ test:
     - cd ~/debug_results/ && zip results.zip 201?-??-*/* && cp -av results.zip $CIRCLE_TEST_REPORTS/
 
     - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
+
+    - mkdir -p $CIRCLE_TEST_REPORTS/zanavi-runner/
+    - ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; cd ~/yaml-tests/routing-qa-master/ ; for i in `ls -1 *.yaml` ; do f="~/debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; if [ -f "$f" ]; then echo "OK" ; else echo "FAIL" ; ju_fail=$[ $ju_fail + 1 ] ; fi ; done ; ~/ci/junit_start.sh ~/ju_res.xml "$count_files" "$ju_fail" ; for i in `ls -1 *.yaml` ; do f="~/debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; if [ -f "$f" ]; then echo "OK" ; ~/ci/junit_add.sh ~/ju_res.xml 0 "$1" "status" "OK" ; else echo "FAIL" ; ~/ci/junit_add.sh ~/ju_res.xml 1 "$i" "status" "FAILED" ; fi ; done ~/ci/junit_end.sh ~/ju_res.xml ; exit 0
+    - cp -v ~/ju_res.xml $CIRCLE_TEST_REPORTS/zanavi-runner/tests.xml
 
     # throw error if some tests failed
     - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'RES:ERR' ; ex=$? ; ex2=$[ 1 - $ex ] ; exit $ex2
