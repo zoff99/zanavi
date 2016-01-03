@@ -43,7 +43,7 @@ test:
     #- fb-adb shell "df"
     #- fb-adb shell "df $sdpath/"
 
-
+    - mkdir -p $CIRCLE_TEST_REPORTS/zanavi-runner/
     - cp ~/zanavi/tt.xml $CIRCLE_TEST_REPORTS/zanavi-runner/tests.xml
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
