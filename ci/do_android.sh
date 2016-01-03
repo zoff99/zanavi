@@ -32,6 +32,14 @@ echo "================================="
 type -a ccache
 echo "================================="
 
+# patch Navit.java for circleCI -------------
+pwd
+ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+sed -i -e 's#static final int CIDEBUG =.*#static final int CIDEBUG = 1;#' navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+cat navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'static final int CIDEBUG'
+ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+# patch Navit.java for circleCI -------------
+
 
 rm navit/maptool/poly2tri-c/001/seidel-1.0/triangulate && \
 rm pngout-static && \
@@ -58,10 +66,10 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         export DO_RELEASE_BUILD=1 && \
         export DO_PNG_BUILD=1 && \
         export NDK_CCACHE="" && \
-        make && \
+        make 2>&1 | grep -i error && \
         pwd && \
         cd navit
-        make apkg-release || pwd
+        make apkg-release > /dev/null 2> /dev/null || pwd
 
         cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
@@ -73,7 +81,7 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
         mv l.txt AndroidManifest.xml
 
-        ant release
+        ant release > /dev/null 2> /dev/null
 
 ######  --------------- delete debug signing-key ---------------
 ### rm -f ~/.android/debug.keystore
@@ -82,6 +90,11 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 cd bin/
 
 if [ ! -f ~/.android/debug.keystore ]; then
+
+ echo "*** generating new signer key ***"
+ echo "*** generating new signer key ***"
+ echo "*** generating new signer key ***"
+
  keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android \
  -keyalg RSA -keysize 2048 -validity 10000 \
  -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
@@ -90,9 +103,9 @@ fi
 jarsigner -verbose -keystore ~/.android/debug.keystore \
      -storepass android -keypass android -sigalg SHA1withRSA -digestalg SHA1 \
      -sigfile CERT -signedjar zanavi_debug_signed.apk \
-      Navit-release-unsigned.apk androiddebugkey
+      Navit-release-unsigned.apk androiddebugkey > /dev/null 2> /dev/null
 
-$_SDK_/build-tools/23.0.1/zipalign -v 4 zanavi_debug_signed.apk zanavi_debug_signed_aligned.apk
+$_SDK_/build-tools/23.0.1/zipalign -v 4 zanavi_debug_signed.apk zanavi_debug_signed_aligned.apk > /dev/null 2> /dev/null
 
 pwd
 
