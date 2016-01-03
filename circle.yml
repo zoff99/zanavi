@@ -23,7 +23,7 @@ dependencies:
     - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
     - sudo apt-get install zip > /dev/null 2> /dev/null
     - sudo apt-get install bc > /dev/null 2> /dev/null
-    - bash ci/do_android.sh > /dev/null 2> /dev/null
+    ###- bash ci/do_android.sh > /dev/null 2> /dev/null
 test:
   pre:
     - mksdcard -l e 20000M sdcard.img
@@ -42,6 +42,9 @@ test:
     - ls -al $CIRCLE_ARTIFACTS/
     #- fb-adb shell "df"
     #- fb-adb shell "df $sdpath/"
+
+
+    - cp ~/zanavi/tt.xml $CIRCLE_TEST_REPORTS/zanavi-runner/tests.xml
 
     - wget --no-check-certificate -t 10 -O ~/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin"
     - wget --no-check-certificate -t 10 -O ~/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin"
