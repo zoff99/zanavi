@@ -348,7 +348,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				flag_route_ready = false;
 
 				// Thread.sleep(1200);
-                                // Navit.draw_map();
+				// Navit.draw_map();
 
 				final Thread debug_zoom_to_route_001 = new Thread()
 				{
@@ -423,294 +423,314 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 						System.out.println("XXXX:rstatus=" + NavitGraphics.navit_route_status);
 
-						if (NavitGraphics.navit_route_status == 3)
+						try
 						{
-							// route blocked / no route found
-							DR_clear_route();
-							System.out.println("XXXX:route blocked");
-						}
-						else if (NavitGraphics.navit_route_status == 1)
-						{
-							// still calculating route
-							DR_clear_route();
-							System.out.println("XXXX:still calculating route");
-						}
-						else
-						{
-							// save map screenshot
-							File f = new File(file_name_global);
-							// System.out.println("NNNNN=" + f.getParent() + "/" + date + "/" + f.getName());
-							File d2 = new File(f.getParent() + "/" + date + "/");
-							d2.mkdirs();
-							Navit.take_map_screenshot(f.getParent() + "/" + date + "/", f.getName());
 
-							// save roadbook
-							String[] separated = NavitGraphics.GetRoadBookItems(9990001);
-
-							if (separated == null)
+							if (NavitGraphics.navit_route_status == 3)
 							{
-								System.out.println("XXXX:Roadbook try #2");
-								
-								Thread.sleep(1000);
-								separated = NavitGraphics.GetRoadBookItems(9990001);
-								
+								// route blocked / no route found
+								DR_clear_route();
+								System.out.println("XXXX:route blocked");
+							}
+							else if (NavitGraphics.navit_route_status == 1)
+							{
+								// still calculating route
+								DR_clear_route();
+								System.out.println("XXXX:still calculating route");
+							}
+							else
+							{
+								// save map screenshot
+								File f = new File(file_name_global);
+								// System.out.println("NNNNN=" + f.getParent() + "/" + date + "/" + f.getName());
+								File d2 = new File(f.getParent() + "/" + date + "/");
+								d2.mkdirs();
+								Navit.take_map_screenshot(f.getParent() + "/" + date + "/", f.getName());
+
+								// save roadbook
+								String[] separated = NavitGraphics.GetRoadBookItems(9990001);
+
 								if (separated == null)
 								{
-									System.out.println("XXXX:Roadbook try #3");
+									System.out.println("XXXX:Roadbook try #2");
 
-									Thread.sleep(1000);
+									try
+									{
+										Thread.sleep(1000);
+									}
+									catch (InterruptedException e)
+									{
+									}
 									separated = NavitGraphics.GetRoadBookItems(9990001);
-									
+
 									if (separated == null)
 									{
-										separated = new String[4];
-										separated[0] = "broken";
-										separated[1] = "broken";
-										separated[2] = "broken";
-										separated[3] = "broken";
-									}
-								}
-							}
-							
-							if (separated.length < 3)
-							{
-								System.out.println("_DRxx_:018" + "Roadbook items < 3 !!";
-							}
-
-
-							int jk = 0;
-							if (separated != null)
-							{
-							if (separated.length > 2)
-							{
-								FileOutputStream outf = null;
-								try
-								{
-									outf = new FileOutputStream(f.getParent() + "/" + date + "/" + f.getName() + ".result.txt");
-								}
-								catch (Exception ef)
-								{
-									//System.out.println("EE002:" + ef.getMessage());
-									System.out.println("_DREX_:003" + ef.getMessage());
-								}
-
-								OutputStreamWriter out = null;
-								try
-								{
-									out = new OutputStreamWriter(outf);
-								}
-								catch (Exception e)
-								{
-									// System.out.println("EE003:" + e.getMessage());
-									System.out.println("_DREX_:004" + e.getMessage());
-								}
-
-								//System.out.println("Roadbook:length=" + (separated.length - 2));
-								try
-								{
-									out.write("Roadbook:length=" + (separated.length - 2) + "\n");
-								}
-								catch (Exception e)
-								{
-									//System.out.println("EE004:" + e.getMessage());
-									System.out.println("_DREX_:005" + e.getMessage());
-								}
-
-								for (jk = 0; jk < separated.length; jk++)
-								{
-									// System.out.println("ROADBOOK_RES=" + jk + ":" + separated[jk]);
-									if (jk > 2)
-									{
-										String[] values = new String[5];
-										String[] values2 = separated[jk].split(":");
-										values[0] = values2[0];
-										values[1] = values2[1];
-										values[2] = values2[2];
-										values[3] = values2[3];
-										try
-										{
-											values[4] = values2[4];
-										}
-										catch (Exception ee)
-										{
-											values[4] = "";
-											System.out.println("_DREX_:006" + ee.getMessage());
-										}
-										// 0 string:distance short form
-										// 1 lat
-										// 2 lon
-										// 3 icon name
-										// 4 text
-
-										//									if (values[3].compareTo("nav_waypoint") == 0)
-										//									{
-										//									}
-										//									else if (values[3].compareTo("nav_destination") == 0)
-										//									{
-										//									}
-										//									else
-										//									{
-										//									}
+										System.out.println("XXXX:Roadbook try #3");
 
 										try
 										{
-											//System.out.println("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4]);
-											out.write("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4] + "\n");
+											Thread.sleep(1000);
 										}
-										catch (Exception ee)
+										catch (InterruptedException e)
 										{
-											System.out.println("_DREX_:007" + ee.getMessage());
 										}
-									}
-									else if (jk == 1)
-									{
-										String[] values_local = separated[jk].split(":");
-										try
-										{
-											local_meters_value = Integer.parseInt(values_local[1]);
-										}
-										catch (Exception e)
-										{
-											local_meters_value = 0;
-											System.out.println("_DREX_:008" + e.getMessage());
-										}
+										separated = NavitGraphics.GetRoadBookItems(9990001);
 
-										System.out.println("Roadbook:distance=" + local_meters_value);
-										try
-										{
-											out.write("Roadbook:distance [m]=" + local_meters_value + "\n");
-										}
-										catch (Exception e)
-										{
-											System.out.println("_DREX_:009" + e.getMessage());
-										}
-									}
-									else if (jk == 2)
-									{
-										//System.out.println("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "");
-										try
-										{
-											out.write("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "" + "\n");
-										}
-										catch (Exception e)
-										{
-											System.out.println("_DREX_:010" + e.getMessage());
-										}
-									}
-								}
-
-								try
-								{
-									out.flush();
-									out.close();
-									outf.flush();
-									outf.close();
-								}
-								catch (Exception e)
-								{
-									System.out.println("_DREX_:016" + e.getMessage());
-								}
-							}
-							}
-							else
-							{
-								System.out.println("_DRxx_:017" + "Roadbook items = NULL !!";
-							}
-
-							// calculate success criterion ----------------------
-							// calculate success criterion ----------------------
-
-							result_code = -1;
-
-							if ((!success_operator.equals("")) && (!success_value.equals("")))
-							{
-								System.out.println("roadbook:so=" + success_source);
-								System.out.println("roadbook:it=" + success_item);
-								System.out.println("roadbook:sv=" + success_value);
-
-								if (success_source.equalsIgnoreCase("'dbus'"))
-								{
-									if (success_item.equalsIgnoreCase("'status'"))
-									{
-										int s = NavitGraphics.navit_route_status;
-										int v = Integer.parseInt(success_value);
-										
-										if ((success_operator.contains(">")) || ((success_operator.contains("<"))))
-										{
-											if (s == 17)
-											{
-												s = 33;
-											}
-										}
-										else
-										{
-											if (v == 33)
-											{
-												v = 17;
-												if (s == 33)
-												{
-													s = 17;
-												}
-											}
-											else if (v == 17)
-											{
-												if (s == 33)
-												{
-													s = 17;
-												}
-											}
-										}
-										result_code = success_value_compare(s, v);
-
-										System.out.println("roadbook:003:" + s + " " + v);
-									}
-									else if (success_item.equalsIgnoreCase("'distance'"))
-									{
-										int s = local_meters_value;
-										int v = Integer.parseInt(success_value);
-										result_code = success_value_compare(s, v);
-
-										System.out.println("roadbook:001:" + s + " " + v);
-									}
-								}
-								else if (success_source.equalsIgnoreCase("'gpx'"))
-								{
-									if (success_item.equalsIgnoreCase("'nodes'"))
-									{
-										int s = -99;
 										if (separated == null)
 										{
-											s = -99;
+											separated = new String[4];
+											separated[0] = "broken";
+											separated[1] = "broken";
+											separated[2] = "broken";
+											separated[3] = "broken";
 										}
-										else
-										{
-											s = (separated.length - 2);
-										}
-										int v = Integer.parseInt(success_value);
-										result_code = success_value_compare(s, v);
-
-										System.out.println("roadbook:002:" + s + " " + v);
 									}
 								}
+
+								if (separated.length < 3)
+								{
+									System.out.println("_DRxx_:018" + "Roadbook items < 3 !!");
+								}
+
+								int jk = 0;
+								if (separated != null)
+								{
+									if (separated.length > 2)
+									{
+										FileOutputStream outf = null;
+										try
+										{
+											outf = new FileOutputStream(f.getParent() + "/" + date + "/" + f.getName() + ".result.txt");
+										}
+										catch (Exception ef)
+										{
+											//System.out.println("EE002:" + ef.getMessage());
+											System.out.println("_DREX_:003" + ef.getMessage());
+										}
+
+										OutputStreamWriter out = null;
+										try
+										{
+											out = new OutputStreamWriter(outf);
+										}
+										catch (Exception e)
+										{
+											// System.out.println("EE003:" + e.getMessage());
+											System.out.println("_DREX_:004" + e.getMessage());
+										}
+
+										//System.out.println("Roadbook:length=" + (separated.length - 2));
+										try
+										{
+											out.write("Roadbook:length=" + (separated.length - 2) + "\n");
+										}
+										catch (Exception e)
+										{
+											//System.out.println("EE004:" + e.getMessage());
+											System.out.println("_DREX_:005" + e.getMessage());
+										}
+
+										for (jk = 0; jk < separated.length; jk++)
+										{
+											// System.out.println("ROADBOOK_RES=" + jk + ":" + separated[jk]);
+											if (jk > 2)
+											{
+												String[] values = new String[5];
+												String[] values2 = separated[jk].split(":");
+												values[0] = values2[0];
+												values[1] = values2[1];
+												values[2] = values2[2];
+												values[3] = values2[3];
+												try
+												{
+													values[4] = values2[4];
+												}
+												catch (Exception ee)
+												{
+													values[4] = "";
+													System.out.println("_DREX_:006" + ee.getMessage());
+												}
+												// 0 string:distance short form
+												// 1 lat
+												// 2 lon
+												// 3 icon name
+												// 4 text
+
+												//									if (values[3].compareTo("nav_waypoint") == 0)
+												//									{
+												//									}
+												//									else if (values[3].compareTo("nav_destination") == 0)
+												//									{
+												//									}
+												//									else
+												//									{
+												//									}
+
+												try
+												{
+													//System.out.println("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4]);
+													out.write("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4] + "\n");
+												}
+												catch (Exception ee)
+												{
+													System.out.println("_DREX_:007" + ee.getMessage());
+												}
+											}
+											else if (jk == 1)
+											{
+												String[] values_local = separated[jk].split(":");
+												try
+												{
+													local_meters_value = Integer.parseInt(values_local[1]);
+												}
+												catch (Exception e)
+												{
+													local_meters_value = 0;
+													System.out.println("_DREX_:008" + e.getMessage());
+												}
+
+												System.out.println("Roadbook:distance=" + local_meters_value);
+												try
+												{
+													out.write("Roadbook:distance [m]=" + local_meters_value + "\n");
+												}
+												catch (Exception e)
+												{
+													System.out.println("_DREX_:009" + e.getMessage());
+												}
+											}
+											else if (jk == 2)
+											{
+												//System.out.println("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "");
+												try
+												{
+													out.write("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "" + "\n");
+												}
+												catch (Exception e)
+												{
+													System.out.println("_DREX_:010" + e.getMessage());
+												}
+											}
+										}
+
+										try
+										{
+											out.flush();
+											out.close();
+											outf.flush();
+											outf.close();
+										}
+										catch (Exception e)
+										{
+											System.out.println("_DREX_:016" + e.getMessage());
+										}
+									}
+								}
+								//								else
+								//								{
+								//									System.out.println("_DRxx_:017" + "Roadbook items = NULL !!");
+								//								}
+
+								// calculate success criterion ----------------------
+								// calculate success criterion ----------------------
+
+								result_code = -1;
+
+								if ((!success_operator.equals("")) && (!success_value.equals("")))
+								{
+									System.out.println("roadbook:so=" + success_source);
+									System.out.println("roadbook:it=" + success_item);
+									System.out.println("roadbook:sv=" + success_value);
+
+									if (success_source.equalsIgnoreCase("'dbus'"))
+									{
+										if (success_item.equalsIgnoreCase("'status'"))
+										{
+											int s = NavitGraphics.navit_route_status;
+											int v = Integer.parseInt(success_value);
+
+											if ((success_operator.contains(">")) || ((success_operator.contains("<"))))
+											{
+												if (s == 17)
+												{
+													s = 33;
+												}
+											}
+											else
+											{
+												if (v == 33)
+												{
+													v = 17;
+													if (s == 33)
+													{
+														s = 17;
+													}
+												}
+												else if (v == 17)
+												{
+													if (s == 33)
+													{
+														s = 17;
+													}
+												}
+											}
+											result_code = success_value_compare(s, v);
+
+											System.out.println("roadbook:003:" + s + " " + v);
+										}
+										else if (success_item.equalsIgnoreCase("'distance'"))
+										{
+											int s = local_meters_value;
+											int v = Integer.parseInt(success_value);
+											result_code = success_value_compare(s, v);
+
+											System.out.println("roadbook:001:" + s + " " + v);
+										}
+									}
+									else if (success_source.equalsIgnoreCase("'gpx'"))
+									{
+										if (success_item.equalsIgnoreCase("'nodes'"))
+										{
+											int s = -99;
+											if (separated == null)
+											{
+												s = -99;
+											}
+											else
+											{
+												s = (separated.length - 2);
+											}
+											int v = Integer.parseInt(success_value);
+											result_code = success_value_compare(s, v);
+
+											System.out.println("roadbook:002:" + s + " " + v);
+										}
+									}
+								}
+
+								System.out.println("roadbook:RES=" + result_code);
+
+								if (result_code == 0)
+								{
+									String orig = f.getParent() + "/" + date + "/" + f.getName() + ".result.txt";
+									String rename_to = f.getParent() + "/" + date + "/" + f.getName() + "._SUCCESS_.result.txt";
+									File f2 = new File(orig);
+									File f2_to = new File(rename_to);
+									f2.renameTo(f2_to);
+								}
+								else
+								{
+									yaml_err++;
+								}
+
+								// calculate success criterion ----------------------
+								// calculate success criterion ----------------------
+
 							}
 
-							System.out.println("roadbook:RES=" + result_code);
-
-							if (result_code == 0)
-							{
-								String orig = f.getParent() + "/" + date + "/" + f.getName() + ".result.txt";
-								String rename_to = f.getParent() + "/" + date + "/" + f.getName() + "._SUCCESS_.result.txt";
-								File f2 = new File(orig);
-								File f2_to = new File(rename_to);
-								f2.renameTo(f2_to);
-							}
-							else
-							{
-								yaml_err++;
-							}
-
-							// calculate success criterion ----------------------
-							// calculate success criterion ----------------------
+						}
+						catch (Exception ebig)
+						{
 
 						}
 
@@ -812,7 +832,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			{
 				public boolean accept(File dir, String name)
 				{
-					String lowercaseName = name.toLowerCase();
+					String lowercaseName = name.toLowerCase(Locale.GERMAN);
 					if (lowercaseName.endsWith(".yaml"))
 					{
 						return true;
@@ -860,16 +880,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
 					System.out.println("XXXX:2:" + yamlfile.getAbsolutePath());
-					
+
 					Thread.sleep(1500);
-					
+
 				}
 			}
 		}
 		catch (Exception e)
 		{
 			// System.out.println("XXXX:E02" + e.getMessage());
-			System.out.println("_DREX_:019" + e2.getMessage());
+			System.out.println("_DREX_:019" + e.getMessage());
 		}
 
 		try
