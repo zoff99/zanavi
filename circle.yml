@@ -190,6 +190,24 @@ test:
     - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
     - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
 
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 40
@@ -209,7 +227,7 @@ test:
     - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
 
     - mkdir -p $CIRCLE_TEST_REPORTS/zanavi-runner/
-    - set -x ; ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; cd ~/yaml-tests/routing-qa-master/ ; for i in `ls -1 *.yaml` ; do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; echo "f=""$f" ; cd ~ ; if [ -f "$f" ]; then echo "OK" ; else echo "FAIL" ; ju_fail=$[ $ju_fail + 1 ] ; fi ; done ; . ~/zanavi/ci/junit_start.sh ~/ju_res.xml "$count_files" "$ju_fail" ; cd ~/yaml-tests/routing-qa-master/ ; for i in `ls -1 *.yaml` ; do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; cd ~ ; if [ -f "$f" ]; then echo "OK2" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 0 "$1" "status" "OK" ; else echo "FAIL2" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 1 "$i" "status" "FAILED" ; fi ; done ; . ~/zanavi/ci/junit_end.sh ~/ju_res.xml ; exit 0
+    - ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; cd ~/yaml-tests/routing-qa-master/ ; for i in `ls -1 *.yaml` ; do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; echo "f=""$f" ; cd ~ ; if [ -f "$f" ]; then echo "OK" ; else echo "FAIL" ; ju_fail=$[ $ju_fail + 1 ] ; fi ; done ; . ~/zanavi/ci/junit_start.sh ~/ju_res.xml "$count_files" "$ju_fail" ; cd ~/yaml-tests/routing-qa-master/ ; for i in `ls -1 *.yaml` ; do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; cd ~ ; if [ -f "$f" ]; then echo "OK2" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 0 "$1" "status" "OK" ; else echo "FAIL2" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 1 "$i" "status" "FAILED" ; fi ; done ; . ~/zanavi/ci/junit_end.sh ~/ju_res.xml ; exit 0
     - cp -v ~/ju_res.xml $CIRCLE_TEST_REPORTS/zanavi-runner/tests.xml
 
     # throw error if some tests failed
