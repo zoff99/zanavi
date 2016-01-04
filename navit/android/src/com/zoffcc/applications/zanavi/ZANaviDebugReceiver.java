@@ -8,7 +8,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See thezoo
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -863,10 +863,20 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						{
 							try
 							{
-								Navit.show_geo_on_screen_no_draw(0, 0);
-								Thread.sleep(150);
-								Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
-								Thread.sleep(120);
+								if (Navit.CIDEBUG > 0) // automatic debug run
+								{
+									Navit.show_geo_on_screen_no_draw(0, 0);
+									Thread.sleep(200);
+									Navit.set_zoom_level_no_draw((int) Math.pow(2, 5)); // zoom level: (18 - 5) = 13
+									Thread.sleep(200);
+								}
+								else
+								{
+									Navit.show_geo_on_screen_no_draw(0, 0);
+									Thread.sleep(150);
+									Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
+									Thread.sleep(120);
+								}
 							}
 							catch (Exception e2)
 							{
@@ -878,8 +888,15 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					temp_work_thread.start();
 					temp_work_thread.join();
 
+					System.out.println("XXXX:2:1:" + "");
+					System.out.println("XXXX:2:2:" + "");
+					System.out.println("XXXX:2:3:" + "======= START =======");
+					System.out.println("XXXX:2:4:" + yamlfile.getAbsolutePath());
 					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
-					System.out.println("XXXX:2:" + yamlfile.getAbsolutePath());
+					System.out.println("XXXX:2:5:" + yamlfile.getAbsolutePath());
+					System.out.println("XXXX:2:6:" + "=======  END  =======");
+					System.out.println("XXXX:2:7:" + "");
+					System.out.println("XXXX:2:8:" + "");
 
 					Thread.sleep(1500);
 
