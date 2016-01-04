@@ -588,7 +588,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 												catch (Exception e)
 												{
 													local_meters_value = 0;
-													System.out.println("_DREX_:008" + e.getMessage());
+													System.out.println("_DREX_:008" + Navit.stacktrace_to_string(e));
 												}
 
 												System.out.println("Roadbook:distance=" + local_meters_value);
@@ -733,7 +733,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						}
 						catch (Exception ebig)
 						{
-							System.out.println("_DREX_:033" + ebig.getMessage());
+							System.out.println("_DREX_:033" + Navit.stacktrace_to_string(ebig));
 						}
 
 						flag_route_ready = true;
@@ -874,10 +874,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								//}
 								//else
 								//{
-									Navit.show_geo_on_screen_no_draw(0, 0);
-									Thread.sleep(150);
-									Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
-									Thread.sleep(120);
+								Navit.show_geo_on_screen_no_draw(0, 0);
+								Thread.sleep(150);
+								Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
+								Thread.sleep(120);
 								//}
 							}
 							catch (Exception e2)
