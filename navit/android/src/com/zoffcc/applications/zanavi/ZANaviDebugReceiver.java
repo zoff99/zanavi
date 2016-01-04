@@ -323,7 +323,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						}
 						catch (Exception e2)
 						{
-							System.out.println("_DREX_:" + e2.getMessage());
+							System.out.println("_DREX_:001" + e2.getMessage());
 						}
 					}
 				}
@@ -417,7 +417,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							}
 							catch (Exception e)
 							{
-								System.out.println("_DREX_:" + e.getMessage());
+								System.out.println("_DREX_:002" + e.getMessage());
 							}
 						}
 
@@ -460,7 +460,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								catch (Exception ef)
 								{
 									//System.out.println("EE002:" + ef.getMessage());
-									System.out.println("_DREX_:" + ef.getMessage());
+									System.out.println("_DREX_:003" + ef.getMessage());
 								}
 
 								OutputStreamWriter out = null;
@@ -471,7 +471,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								catch (Exception e)
 								{
 									// System.out.println("EE003:" + e.getMessage());
-									System.out.println("_DREX_:" + e.getMessage());
+									System.out.println("_DREX_:004" + e.getMessage());
 								}
 
 								//System.out.println("Roadbook:length=" + (separated.length - 2));
@@ -482,7 +482,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								catch (Exception e)
 								{
 									//System.out.println("EE004:" + e.getMessage());
-									System.out.println("_DREX_:" + e.getMessage());
+									System.out.println("_DREX_:005" + e.getMessage());
 								}
 
 								for (jk = 0; jk < separated.length; jk++)
@@ -503,7 +503,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										catch (Exception ee)
 										{
 											values[4] = "";
-											System.out.println("_DREX_:" + ee.getMessage());
+											System.out.println("_DREX_:006" + ee.getMessage());
 										}
 										// 0 string:distance short form
 										// 1 lat
@@ -528,7 +528,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										}
 										catch (Exception ee)
 										{
-											System.out.println("_DREX_:" + ee.getMessage());
+											System.out.println("_DREX_:007" + ee.getMessage());
 										}
 									}
 									else if (jk == 1)
@@ -541,7 +541,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										catch (Exception e)
 										{
 											local_meters_value = 0;
-											System.out.println("_DREX_:" + e.getMessage());
+											System.out.println("_DREX_:008" + e.getMessage());
 										}
 
 										System.out.println("Roadbook:distance=" + local_meters_value);
@@ -551,7 +551,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										}
 										catch (Exception e)
 										{
-											System.out.println("_DREX_:" + e.getMessage());
+											System.out.println("_DREX_:009" + e.getMessage());
 										}
 									}
 									else if (jk == 2)
@@ -563,7 +563,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										}
 										catch (Exception e)
 										{
-											System.out.println("_DREX_:" + e.getMessage());
+											System.out.println("_DREX_:010" + e.getMessage());
 										}
 									}
 								}
@@ -692,7 +692,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 		catch (Exception e)
 		{
-			System.out.println("_DREX_:" + e.getMessage());
+			System.out.println("_DREX_:011" + e.getMessage());
 			is_replaying = false;
 			NavitGraphics.NavitAOverlay_s.postInvalidate();
 		}
@@ -767,7 +767,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			catch (Exception e2)
 			{
 				// System.out.println("XXXX:E01" + e2.getMessage());
-				System.out.println("_DREX_:" + e2.getMessage());
+				System.out.println("_DREX_:012" + e2.getMessage());
 			}
 
 			String date_str = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
@@ -814,7 +814,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							}
 							catch (Exception e2)
 							{
-								System.out.println("_DREX_:" + e2.getMessage());
+								System.out.println("_DREX_:013" + e2.getMessage());
 								e2.printStackTrace();
 							}
 						}
@@ -856,7 +856,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 		catch (Exception ef2)
 		{
-			System.out.println("_DREX_:" + ef2.getMessage());
+			System.out.println("_DREX_:014" + ef2.getMessage());
 			// System.out.println("EE00SUM:" + ef2.getMessage());
 		}
 
@@ -1021,7 +1021,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 		catch (Exception e)
 		{
-			System.out.println("_DREX_:" + e.getMessage());
+			System.out.println("_DREX_:015" + e.getMessage());
 			e.printStackTrace();
 			System.out.println("ZANaviDebugReceiver:" + "EX:" + e.getMessage());
 		}
