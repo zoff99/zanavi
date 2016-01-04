@@ -692,9 +692,37 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				return 0;
 			}
 		}
+		else if (success_operator.equalsIgnoreCase("'<='"))
+		{
+			if (s <= v)
+			{
+				return 0;
+			}
+		}
+		else if (success_operator.equalsIgnoreCase("'=<'"))
+		{
+			if (s <= v)
+			{
+				return 0;
+			}
+		}
 		else if (success_operator.equalsIgnoreCase("'>'"))
 		{
 			if (s > v)
+			{
+				return 0;
+			}
+		}
+		else if (success_operator.equalsIgnoreCase("'>='"))
+		{
+			if (s >= v)
+			{
+				return 0;
+			}
+		}
+		else if (success_operator.equalsIgnoreCase("'=>'"))
+		{
+			if (s >= v)
 			{
 				return 0;
 			}
