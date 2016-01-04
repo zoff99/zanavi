@@ -1135,26 +1135,31 @@ public class NavitVehicle
 	{
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
 
-		if (!Navit.tunnel_extrapolation)
+		if (Navit.CIDEBUG == 0)
 		{
-			if (te_thread != null)
-			{
-				try
-				{
-					// try to clean up old thread
-					te_thread.stop_me();
-					te_thread = null;
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
 
-			te_thread = new TunnelExtrapolationThread();
-			te_thread.start();
+			if (!Navit.tunnel_extrapolation)
+			{
+				if (te_thread != null)
+				{
+					try
+					{
+						// try to clean up old thread
+						te_thread.stop_me();
+						te_thread = null;
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+
+				te_thread = new TunnelExtrapolationThread();
+				te_thread.start();
+			}
+			Navit.tunnel_extrapolation = true;
+
 		}
-		Navit.tunnel_extrapolation = true;
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
@@ -1163,23 +1168,28 @@ public class NavitVehicle
 	{
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
 
-		if (Navit.tunnel_extrapolation)
+		if (Navit.CIDEBUG == 0)
 		{
-			if (te_thread != null)
+
+			if (Navit.tunnel_extrapolation)
 			{
-				try
+				if (te_thread != null)
 				{
-					// try to stop thread
-					te_thread.stop_me();
-					te_thread = null;
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
+					try
+					{
+						// try to stop thread
+						te_thread.stop_me();
+						te_thread = null;
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
+			Navit.tunnel_extrapolation = false;
+
 		}
-		Navit.tunnel_extrapolation = false;
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
