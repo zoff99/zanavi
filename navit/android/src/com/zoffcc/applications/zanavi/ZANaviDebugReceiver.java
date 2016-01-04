@@ -447,6 +447,37 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							// save roadbook
 							String[] separated = NavitGraphics.GetRoadBookItems(9990001);
 
+							if (separated == null)
+							{
+								System.out.println("XXXX:Roadbook try #2");
+								
+								Thread.sleep(1000);
+								separated = NavitGraphics.GetRoadBookItems(9990001);
+								
+								if (separated == null)
+								{
+									System.out.println("XXXX:Roadbook try #3");
+
+									Thread.sleep(1000);
+									separated = NavitGraphics.GetRoadBookItems(9990001);
+									
+									if (separated == null)
+									{
+										separated = new String[4];
+										separated[0] = "broken";
+										separated[1] = "broken";
+										separated[2] = "broken";
+										separated[3] = "broken";
+									}
+								}
+							}
+							
+							if (separated.length < 3)
+							{
+								System.out.println("_DRxx_:018" + "Roadbook items < 3 !!";
+							}
+
+
 							int jk = 0;
 							if (separated != null)
 							{
@@ -577,8 +608,13 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								}
 								catch (Exception e)
 								{
+									System.out.println("_DREX_:016" + e.getMessage());
 								}
 							}
+							}
+							else
+							{
+								System.out.println("_DRxx_:017" + "Roadbook items = NULL !!";
 							}
 
 							// calculate success criterion ----------------------
@@ -832,7 +868,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 		catch (Exception e)
 		{
-			System.out.println("XXXX:E02" + e.getMessage());
+			// System.out.println("XXXX:E02" + e.getMessage());
+			System.out.println("_DREX_:019" + e2.getMessage());
 		}
 
 		try
