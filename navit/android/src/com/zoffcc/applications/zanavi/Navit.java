@@ -49,8 +49,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
@@ -4354,9 +4356,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		// glSurfaceView.onResume();
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
-		
-		
-		
+
 		if (Navit.CIDEBUG == 1)
 		{
 			new Thread()
@@ -4366,7 +4366,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 					try
 					{
 						System.out.println("DR_run_all_yaml_tests --> want");
-						
+
 						if (CIRUN == false)
 						{
 							System.out.println("DR_run_all_yaml_tests --> do");
@@ -15645,6 +15645,27 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 		catch (Exception e4)
 		{
+		}
+	}
+
+	static String stacktrace_to_string(Exception e)
+	{
+		try
+		{
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			return errors.toString();
+		}
+		catch (Exception e2)
+		{
+			try
+			{
+				return e.getMessage();
+			}
+			catch (Exception e3)
+			{
+				return "xxx";
+			}
 		}
 	}
 }
