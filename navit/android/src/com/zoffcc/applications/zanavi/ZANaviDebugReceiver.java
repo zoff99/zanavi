@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -487,7 +488,17 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 
-								System.out.println("XXXX:Roadbook=" + separated);
+								System.out.println("XXXX:Roadbook(1)=" + separated);
+								if (separated != null)
+								{
+									try
+									{
+										System.out.println("XXXX:Roadbook(2)=" + Arrays.toString(separated));
+									}
+									catch (Exception e)
+									{
+									}
+								}
 
 								if ((separated != null) && (separated.length < 3))
 								{
