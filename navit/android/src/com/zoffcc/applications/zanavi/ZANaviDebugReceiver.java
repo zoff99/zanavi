@@ -588,19 +588,30 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									{
 										int s = NavitGraphics.navit_route_status;
 										int v = Integer.parseInt(success_value);
-										if (v == 33)
+										
+										if ((success_operator.contains(">")) || ((success_operator.contains("<"))))
 										{
-											v = 17;
-											if (s == 33)
+											if (s == 17)
 											{
-												s = 17;
+												s = 33;
 											}
 										}
-										else if (v == 17)
+										else
 										{
-											if (s == 33)
+											if (v == 33)
 											{
-												s = 17;
+												v = 17;
+												if (s == 33)
+												{
+													s = 17;
+												}
+											}
+											else if (v == 17)
+											{
+												if (s == 33)
+												{
+													s = 17;
+												}
 											}
 										}
 										result_code = success_value_compare(s, v);
