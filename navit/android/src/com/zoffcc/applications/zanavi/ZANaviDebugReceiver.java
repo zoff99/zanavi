@@ -354,7 +354,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 50;
+					int max_count = 60;
 
 					@Override
 					public void run()
@@ -368,9 +368,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
 									Navit.zoom_to_route();
-									Thread.sleep(1000);
+									Thread.sleep(2000);
 									Navit.zoom_to_route();
-									Thread.sleep(11000);
+									Thread.sleep(9000);
 									// Navit.draw_map();
 									// Thread.sleep(10000);
 
@@ -487,7 +487,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 
-								if (separated.length < 3)
+								System.out.println("XXXX:Roadbook=" + separated);
+
+								if ((separated != null) && (separated.length < 3))
 								{
 									System.out.println("_DRxx_:018" + "Roadbook items < 3 !!");
 								}
@@ -532,7 +534,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 										for (jk = 0; jk < separated.length; jk++)
 										{
-											// System.out.println("ROADBOOK_RES=" + jk + ":" + separated[jk]);
+											System.out.println("ROADBOOK_RES=" + jk + ":" + separated[jk]);
 											if (jk > 2)
 											{
 												String[] values = new String[5];
@@ -568,7 +570,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 												try
 												{
-													//System.out.println("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4]);
+													System.out.println("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4]);
 													out.write("Roadbook:" + jk + ":" + values[0] + ":" + values[1] + ":" + values[2] + ":" + values[3] + ":" + values[4] + "\n");
 												}
 												catch (Exception ee)
@@ -601,7 +603,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 											}
 											else if (jk == 2)
 											{
-												//System.out.println("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "");
+												System.out.println("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "");
 												try
 												{
 													out.write("Roadbook:" + jk + ":" + "0" + ":" + "0" + ":" + "0" + ":" + "start" + ":" + "" + "\n");
@@ -731,7 +733,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						}
 						catch (Exception ebig)
 						{
-
+							System.out.println("_DREX_:033" + ebig.getMessage());
 						}
 
 						flag_route_ready = true;
@@ -863,20 +865,20 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						{
 							try
 							{
-								if (Navit.CIDEBUG > 0) // automatic debug run
-								{
-									Navit.show_geo_on_screen_no_draw(0, 0);
-									Thread.sleep(200);
-									Navit.set_zoom_level_no_draw((int) Math.pow(2, 5)); // zoom level: (18 - 5) = 13
-									Thread.sleep(200);
-								}
-								else
-								{
+								//if (Navit.CIDEBUG > 0) // automatic debug run
+								//{
+								//	Navit.show_geo_on_screen_no_draw(0, 0);
+								//	Thread.sleep(200);
+								//	Navit.set_zoom_level_no_draw((int) Math.pow(2, 5)); // zoom level: (18 - 5) = 13
+								//	Thread.sleep(200);
+								//}
+								//else
+								//{
 									Navit.show_geo_on_screen_no_draw(0, 0);
 									Thread.sleep(150);
 									Navit.set_zoom_level_no_draw((int) Math.pow(2, 17));
 									Thread.sleep(120);
-								}
+								//}
 							}
 							catch (Exception e2)
 							{
