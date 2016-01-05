@@ -224,6 +224,12 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		System.out.println("ZANaviDebugReceiver:" + "skip");
 	}
 
+	static double lat_pos = 0.0;
+	static double lon_pos = 0.0;
+	static double lat_dst = 0.0;
+	static double lon_dst = 0.0;
+
+
 	static void DR_replay_yaml_file(String filename, final String date)
 	{
 
@@ -244,10 +250,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				disable_normal_location();
 
 				String mode = "-";
-				double lat_pos = 0.0;
-				double lon_pos = 0.0;
-				double lat_dst = 0.0;
-				double lon_dst = 0.0;
+				lat_pos = 0.0;
+				lon_pos = 0.0;
+				lat_dst = 0.0;
+				lon_dst = 0.0;
 
 				String line = "";
 				while ((line = br.readLine()) != null)
@@ -370,7 +376,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 60;
+					int max_count = 200; // 60
 
 					@Override
 					public void run()
@@ -478,7 +484,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 									try
 									{
-										Thread.sleep(2000);
+										Thread.sleep(3000);
 									}
 									catch (InterruptedException e)
 									{
@@ -491,7 +497,20 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 										try
 										{
-											Thread.sleep(2000);
+											Bundle extras77 = new Bundle();
+											System.out.println("ZANaviDebugReceiver:77:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
+											extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
+											DR_set_position("set_position", extras, true);
+											Thread.sleep(2200);
+										}
+										catch (InterruptedException e)
+										{
+										}
+
+
+										try
+										{
+											Thread.sleep(15000);
 										}
 										catch (InterruptedException e)
 										{
