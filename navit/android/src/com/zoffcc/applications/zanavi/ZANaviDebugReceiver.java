@@ -229,6 +229,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 		file_name_global = filename;
 
+		yaml_err++; // incr. error count (on success later -> decrease it again)
+
 		try
 		{
 			if ((filename != null) && (!filename.equals("")))
@@ -384,9 +386,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
 									Navit.zoom_to_route();
-									Thread.sleep(11000);
-									// Navit.draw_map();
-									// Thread.sleep(10000);
+									Thread.sleep(15000);
+									Navit.draw_map();
+									Thread.sleep(15000);
 
 									File f = new File(file_name_global);
 									File d2 = new File(f.getParent() + "/" + date + "/");
@@ -448,12 +450,14 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							{
 								// route blocked / no route found
 								DR_clear_route();
+								Thread.sleep(1000);
 								System.out.println("XXXX:route blocked");
 							}
 							else if (NavitGraphics.navit_route_status == 1)
 							{
 								// still calculating route
 								DR_clear_route();
+								Thread.sleep(1000);
 								System.out.println("XXXX:still calculating route");
 							}
 							else
@@ -474,7 +478,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 									try
 									{
-										Thread.sleep(1000);
+										Thread.sleep(2000);
 									}
 									catch (InterruptedException e)
 									{
@@ -487,7 +491,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 										try
 										{
-											Thread.sleep(1000);
+											Thread.sleep(2000);
 										}
 										catch (InterruptedException e)
 										{
@@ -738,7 +742,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 
-								System.out.println("roadbook:RES=" + result_code);
+								System.out.println("++--------++ roadbook:RES=" + result_code);
 
 								if (result_code == 0)
 								{
@@ -747,10 +751,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									File f2 = new File(orig);
 									File f2_to = new File(rename_to);
 									f2.renameTo(f2_to);
+									
+									yaml_err--;
 								}
 								else
 								{
-									yaml_err++;
 								}
 
 								// calculate success criterion ----------------------
