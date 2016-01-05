@@ -223,7 +223,7 @@ test:
     - cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
-    - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/00__out/ && cp -av ./* $CIRCLE_TEST_REPORTS/00__out/
+    - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/00__out/ && cp -av ./* $CIRCLE_TEST_REPORTS/00__out/ ; exit 0
     - cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/00__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/00__reports/
 
     - cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* && cp -av results.zip $CIRCLE_TEST_REPORTS/
