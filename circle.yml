@@ -233,7 +233,7 @@ test:
     - wget -O ~/gpx2png/gpx2png.pl 'https://gitlab.com/tfscripts/openstreetmap/raw/7819b361e0084aef0015c05604df6d955d04742c/gpx2png/gpx2png.pl'
     - chmod u+x ~/gpx2png/gpx2png.pl
     - cd ~/gpx2png/temp/
-    - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o "~/gpx2png/out/$f""_GPX_.png" "$i"; cp -av "~/gpx2png/out/$f""_GPX_.png" ~debug_output/; done ; exit 0
+    - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~debug_output/; done ; exit 0
     - cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
