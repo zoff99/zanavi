@@ -69,7 +69,7 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         make 2>&1 | grep -i error && \
         pwd && \
         cd navit
-        make apkg-release # > /dev/null 2> /dev/null || pwd
+        make apkg-release > /dev/null 2> /dev/null || pwd
 
         cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
@@ -81,7 +81,7 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
         mv l.txt AndroidManifest.xml
 
-        ant release # > /dev/null 2> /dev/null
+        ant release > /dev/null 2> /dev/null
 
 ######  --------------- delete debug signing-key ---------------
 ### rm -f ~/.android/debug.keystore
