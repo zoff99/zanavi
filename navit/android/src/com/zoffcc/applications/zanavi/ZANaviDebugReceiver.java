@@ -499,9 +499,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										{
 											Bundle extras77 = new Bundle();
 											System.out.println("ZANaviDebugReceiver:77:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
-											extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
-											DR_set_position("set_position", extras, true);
-											Thread.sleep(2200);
+											extras77.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
+											DR_set_position("set_position", extras77, true);
+											Thread.sleep(1000);
 										}
 										catch (InterruptedException e)
 										{
@@ -510,7 +510,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 										try
 										{
-											Thread.sleep(15000);
+											Thread.sleep(22000);
 										}
 										catch (InterruptedException e)
 										{
