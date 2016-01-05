@@ -188,6 +188,19 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		System.out.println("ZANaviDebugReceiver:" + "file=" + filename);
 	}
 
+	static void DR_save_route_to_gpx_file_with_name(String name)
+	{
+		Message msg = new Message();
+		Bundle b = new Bundle();
+		b.putInt("Callback", 96);
+		String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
+		String filename = name;
+		b.putString("s", filename);
+		msg.setData(b);
+		NavitGraphics.callback_handler.sendMessage(msg);
+		System.out.println("ZANaviDebugReceiver:" + "file=" + filename);
+	}
+
 	static void DR_clear_route()
 	{
 		// clear any previous destinations
@@ -330,18 +343,18 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				}
 
 				DR_clear_route();
-				Thread.sleep(2000);
+				Thread.sleep(1000);
+				DR_clear_route();
+				Thread.sleep(2100);
+
 				Bundle extras = new Bundle();
-
-				// System.out.println("ZANaviDebugReceiver:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
-
+				System.out.println("ZANaviDebugReceiver:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
 				extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
 				DR_set_position("set_position", extras, true);
 				Thread.sleep(2200);
+
 				extras = new Bundle();
-
-				// System.out.println("ZANaviDebugReceiver:" + "add_destination" + lat_dst + "," + lon_dst);
-
+				System.out.println("ZANaviDebugReceiver:" + "add_destination" + lat_dst + "," + lon_dst);
 				extras.putString("add_destination", "" + lat_dst + "," + lon_dst);
 				DR_add_destination("add_destination", extras);
 				Thread.sleep(1000);
@@ -371,12 +384,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
 									Navit.zoom_to_route();
-									Thread.sleep(9000);
+									Thread.sleep(11000);
 									// Navit.draw_map();
 									// Thread.sleep(10000);
 
+									File f = new File(file_name_global);
+									File d2 = new File(f.getParent() + "/" + date + "/");
+									d2.mkdirs();
+
 									// save route to gpx file
-									DR_save_route_to_gpx_file();
+									DR_save_route_to_gpx_file_with_name(f.getParent() + "/" + date + "/" + f.getName() + ".gpx");
 
 									wait = 0;
 								}
@@ -825,6 +842,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static void DR_run_all_yaml_tests()
 	{
 		String yaml_dir = Navit.NAVIT_DATA_DEBUG_DIR + "../yamltests/";
+		String duration_string = "";
 
 		try
 		{
@@ -904,10 +922,15 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					System.out.println("XXXX:2:1:" + "");
 					System.out.println("XXXX:2:2:" + "");
 					System.out.println("XXXX:2:3:" + "======= START =======");
+					long startTime = System.currentTimeMillis();
 					System.out.println("XXXX:2:4:" + yamlfile.getAbsolutePath());
+
 					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
+
 					System.out.println("XXXX:2:5:" + yamlfile.getAbsolutePath());
-					System.out.println("XXXX:2:6:" + "=======  END  =======");
+					float difference = (float) (System.currentTimeMillis() - startTime);
+					duration_string = duration_string + yamlfile.getName() + ":" + (difference / 1000.0f) + "\n";
+					System.out.println("XXXX:2:6:" + "=======  END  ======= duration: " + (difference / 1000.0f) + " secs.");
 					System.out.println("XXXX:2:7:" + "");
 					System.out.println("XXXX:2:8:" + "");
 
@@ -920,6 +943,21 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		{
 			// System.out.println("XXXX:E02" + e.getMessage());
 			System.out.println("_DREX_:019" + e.getMessage());
+		}
+
+		try
+		{
+			FileOutputStream outf = null;
+			OutputStreamWriter out = null;
+			outf = new FileOutputStream(yaml_dir + "/" + "_XX_XX_DURATION_XX_XX_.txt");
+			out = new OutputStreamWriter(outf);
+			out.write(duration_string);
+			out.flush();
+			out.close();
+		}
+		catch (Exception ef2)
+		{
+			System.out.println("_DREX_:034" + ef2.getMessage());
 		}
 
 		try
