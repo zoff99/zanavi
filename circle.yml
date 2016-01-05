@@ -23,6 +23,11 @@ dependencies:
     - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
     - sudo apt-get install zip > /dev/null 2> /dev/null
     - sudo apt-get install bc > /dev/null 2> /dev/null
+    - sudo apt-get install libfftw3-double3
+    - sudo apt-get install libmagickcore5
+    - sudo apt-get install perlmagick
+    - sudo apt-get install liblwp-useragent-determined-perl
+
     - bash ~/zanavi/ci/do_android.sh
 test:
   pre:
@@ -221,6 +226,14 @@ test:
     - _dir=`cat ~/tmp.txt` ; mkdir -p ~/debug_results/"$_dir"/ && cd ~/debug_results/"$_dir"/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
     - cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
+
+    - mkdir -p ~/gpx2png/out
+    - mkdir -p ~/gpx2png/temp
+    - cd ~/gpx2png/
+    - wget -O gpx2png.pl 'https://gitlab.com/tfscripts/openstreetmap/raw/7819b361e0084aef0015c05604df6d955d04742c/gpx2png/gpx2png.pl'
+    - chmod u+x gpx2png.pl
+    - cd ~/gpx2png/temp/
+    - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o "~/gpx2png/out/$f""_GPX_.png" "$i"; cp -av "~/gpx2png/out/$f""_GPX_.png" ~debug_output/; done ; exit 0
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/00__out/ && cp -av ./* $CIRCLE_TEST_REPORTS/00__out/ ; exit 0
