@@ -234,12 +234,13 @@ test:
     - chmod u+x gpx2png.pl
     - cd ~/gpx2png/temp/
     - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o "~/gpx2png/out/$f""_GPX_.png" "$i"; cp -av "~/gpx2png/out/$f""_GPX_.png" ~debug_output/; done ; exit 0
+    - cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/00__out/ && cp -av ./* $CIRCLE_TEST_REPORTS/00__out/ ; exit 0
     - cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/00__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/00__reports/
 
-    - cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* && cp -av results.zip $CIRCLE_TEST_REPORTS/
+    - cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* ~/yaml-tests/routing-qa-master/*.yaml && cp -av results.zip $CIRCLE_TEST_REPORTS/
 
     - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
     - cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt
