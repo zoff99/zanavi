@@ -193,7 +193,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		Message msg = new Message();
 		Bundle b = new Bundle();
 		b.putInt("Callback", 96);
-		String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
+		// String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
 		String filename = name;
 		b.putString("s", filename);
 		msg.setData(b);
@@ -228,7 +228,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static double lon_pos = 0.0;
 	static double lat_dst = 0.0;
 	static double lon_dst = 0.0;
-
 
 	static void DR_replay_yaml_file(String filename, final String date)
 	{
@@ -389,6 +388,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
 								{
+									System.out.println("XXXX:--:001");
+
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
 									Navit.zoom_to_route();
@@ -396,37 +397,54 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									Navit.draw_map();
 									Thread.sleep(15000);
 
+									System.out.println("XXXX:--:002");
+
 									File f = new File(file_name_global);
 									File d2 = new File(f.getParent() + "/" + date + "/");
 									d2.mkdirs();
 
+									System.out.println("XXXX:--:003");
+
 									// save route to gpx file
 									DR_save_route_to_gpx_file_with_name(f.getParent() + "/" + date + "/" + f.getName() + ".gpx");
+
+									System.out.println("XXXX:--:004");
 
 									wait = 0;
 								}
 								else
 								{
+									System.out.println("XXXX:--:005");
+
 									wait = 1;
 								}
 
 								if (count > 0)
 								{
-									if (NavitGraphics.navit_route_status == 1)
+									System.out.println("XXXX:--:006");
+
+									//if (NavitGraphics.navit_route_status == 1)
+									if (NavitGraphics.navit_route_status == 999199) // disable !!
 									{
+										System.out.println("XXXX:--:007");
 										wait = 0;
 										count = max_count;
 									}
 									else if (NavitGraphics.navit_route_status == 3)
 									{
+										System.out.println("XXXX:--:008");
 										wait = 0;
 										count = max_count;
 									}
 								}
 
+								System.out.println("XXXX:--:009");
+
 								count++;
 								if (count > max_count)
 								{
+									System.out.println("XXXX:--:010");
+
 									wait = 0;
 
 									Message msg7 = Navit.Navit_progress_h.obtainMessage();
@@ -438,16 +456,22 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								}
 								else
 								{
+									System.out.println("XXXX:--:011");
+
 									Thread.sleep(1000);
 								}
 							}
 							catch (Exception e)
 							{
-								System.out.println("_DREX_:002" + e.getMessage());
+								System.out.println("XXXX:--:012");
+
+								System.out.println("_DREX_:002" + Navit.stacktrace_to_string(e));
 							}
 						}
 
-						System.out.println("XXXX:rstatus=" + NavitGraphics.navit_route_status);
+						System.out.println("XXXX:--:013");
+
+						System.out.println("XXXX:rstatus[FIN]=" + NavitGraphics.navit_route_status);
 
 						try
 						{
@@ -506,7 +530,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										catch (InterruptedException e)
 										{
 										}
-
 
 										try
 										{
@@ -745,14 +768,14 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										if (success_item.equalsIgnoreCase("'nodes'"))
 										{
 											int s = -99;
-											if (separated == null)
-											{
-												s = -99;
-											}
-											else
-											{
-												s = (separated.length - 2);
-											}
+											//if (separated == null)
+											//{
+											//	s = -99;
+											//}
+											//else
+											//{
+											s = (separated.length - 2);
+											//}
 											int v = Integer.parseInt(success_value);
 											result_code = success_value_compare(s, v);
 
@@ -770,7 +793,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									File f2 = new File(orig);
 									File f2_to = new File(rename_to);
 									f2.renameTo(f2_to);
-									
+
 									yaml_err--;
 								}
 								else
