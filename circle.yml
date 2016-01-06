@@ -216,9 +216,28 @@ test:
     - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
     - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
 
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
+    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+
+
+
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 40
+
+
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
