@@ -377,7 +377,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 70; // 60
+					int max_count = 80; // 60
+					int first_status = -999;
+					int status_wrong = 0;
 
 					@Override
 					public void run()
@@ -387,8 +389,26 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							try
 							{
 								System.out.println("XXXX:#" + count + ":rstatus=" + NavitGraphics.navit_route_status);
+								
+								if (first_status == -999)
+								{
+									first_status = NavitGraphics.navit_route_status;
+								}
 
-								if ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33))
+								if ((first_status == -999) || (first_status == 17) || (first_status == 33))
+								{
+									if (count < 30)
+									{
+										// wait some more! status is wrong it seems!
+										status_wrong = 1;
+									}
+									else
+									{
+										status_wrong = 0;
+									}
+								}
+
+								if ( ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33)) && (status_wrong == 0) )
 								{
 									System.out.println("XXXX:--:001");
 
