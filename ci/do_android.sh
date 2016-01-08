@@ -29,8 +29,8 @@ ls -al "$BUILD_PATH"/
 echo "================================="
 echo ${CIRCLE_PROJECT_REPONAME}
 echo "================================="
-type -a ccache
-echo "================================="
+# type -a ccache
+# echo "================================="
 
 # patch Navit.java for circleCI -------------
 pwd
@@ -81,7 +81,7 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
         cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
         mv l.txt AndroidManifest.xml
 
-        ant release # > /dev/null 2> /dev/null
+        ant release > /dev/null 2> /dev/null
 
 ######  --------------- delete debug signing-key ---------------
 ### rm -f ~/.android/debug.keystore
