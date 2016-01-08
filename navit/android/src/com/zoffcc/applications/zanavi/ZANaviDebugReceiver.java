@@ -1048,7 +1048,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			out = new OutputStreamWriter(outf);
 			out.write("tests:" + yaml_sum + "\n");
 			out.write("errors:" + yaml_err + "\n");
-			if (yaml_sum != yaml_err)
+			if (yaml_err > 0)
 			{
 				out.write("RES:" + "ERR" + "\n");
 			}
