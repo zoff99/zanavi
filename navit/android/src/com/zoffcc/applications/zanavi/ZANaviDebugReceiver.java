@@ -695,7 +695,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										{
 											out.write("URL1:" + "http://www.openstreetmap.org/directions?engine=osrm_car&route=" + lat_pos + "%2C" + lon_pos + "%3B"+ lat_dst + "%2C"+ lon_dst + "\n");
 											out.write("URL2:" + "https://graphhopper.com/maps/?point=" + lat_pos + "%2C" + lon_pos + "&point=" + lat_dst + "%2C"+ lon_dst + "\n");
-											out.write("URL3:" + "http://www.google.com/maps/dir/" + lat_pos + "," + lon_pos + "/" + lat_dst + "," + lon_dst "\n");
+											out.write("URL3:" + "http://www.google.com/maps/dir/" + lat_pos + "," + lon_pos + "/" + lat_dst + "," + lon_dst + "\n");
 										}
 										catch (Exception e)
 										{
