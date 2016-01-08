@@ -364,7 +364,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				System.out.println("ZANaviDebugReceiver:" + "add_destination" + lat_dst + "," + lon_dst);
 				extras.putString("add_destination", "" + lat_dst + "," + lon_dst);
 				DR_add_destination("add_destination", extras);
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 
 				flag_route_ready = false;
 
@@ -375,7 +375,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 200; // 60
+					int max_count = 300; // 60
 
 					@Override
 					public void run()
