@@ -49,7 +49,9 @@ test:
     #- fb-adb shell "df"
     #- fb-adb shell "df $sdpath/"
 
+    - ls -al ~/maps/
     - mkdir -p ~/maps/ ; exit 0
+    - ls -al ~/maps/
 
     - if [ ! -f ~/maps/navitmap_005.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin" ; fi
     - if [ ! -f ~/maps/navitmap_002.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin" ; fi
