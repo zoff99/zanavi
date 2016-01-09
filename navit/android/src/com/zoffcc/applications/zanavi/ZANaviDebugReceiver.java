@@ -228,6 +228,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static double lon_pos = 0.0;
 	static double lat_dst = 0.0;
 	static double lon_dst = 0.0;
+	static double heading_pos = 0.0;
 
 	static void DR_replay_yaml_file(String filename, final String date)
 	{
@@ -253,6 +254,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				lon_pos = 0.0;
 				lat_dst = 0.0;
 				lon_dst = 0.0;
+				heading_pos = 0.0;
 
 				String line = "";
 				while ((line = br.readLine()) != null)
@@ -315,6 +317,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								String value_str = line.split(":", 2)[1];
 								double lat = 0.0;
 								double lon = 0.0;
+								double heading = 0.0;
 
 								if (name_str.contains("lat"))
 								{
@@ -340,6 +343,14 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										lon_dst = lon;
 									}
 								}
+								else if (name_str.contains("heading"))
+								{
+									heading = Double.parseDouble(value_str);
+									if (mode.equals("from"))
+									{
+										heading_pos = heading;
+									}
+								}
 							}
 						}
 						catch (Exception e2)
@@ -355,8 +366,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				Thread.sleep(2100);
 
 				Bundle extras = new Bundle();
-				System.out.println("ZANaviDebugReceiver:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
-				extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
+				System.out.println("ZANaviDebugReceiver:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + heading_pos);
+				extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + heading_pos);
 				DR_set_position("set_position", extras, true);
 				Thread.sleep(3200);
 				//xy//DR_set_position("set_position", extras, true);
@@ -389,7 +400,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							try
 							{
 								System.out.println("XXXX:#" + count + ":rstatus=" + NavitGraphics.navit_route_status);
-								
+
 								if (first_status == -999)
 								{
 									first_status = NavitGraphics.navit_route_status;
@@ -408,7 +419,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 
-								if ( ((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33)) && (status_wrong == 0) )
+								if (((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33)) && (status_wrong == 0))
 								{
 									System.out.println("XXXX:--:001");
 
@@ -710,11 +721,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 												}
 											}
 										}
-										
+
 										try
 										{
-											out.write("URL1:" + "http://www.openstreetmap.org/directions?engine=osrm_car&route=" + lat_pos + "%2C" + lon_pos + "%3B"+ lat_dst + "%2C"+ lon_dst + "\n");
-											out.write("URL2:" + "https://graphhopper.com/maps/?point=" + lat_pos + "%2C" + lon_pos + "&point=" + lat_dst + "%2C"+ lon_dst + "\n");
+											out.write("URL1:" + "http://www.openstreetmap.org/directions?engine=osrm_car&route=" + lat_pos + "%2C" + lon_pos + "%3B" + lat_dst + "%2C" + lon_dst + "\n");
+											out.write("URL2:" + "https://graphhopper.com/maps/?point=" + lat_pos + "%2C" + lon_pos + "&point=" + lat_dst + "%2C" + lon_dst + "\n");
 											out.write("URL3:" + "http://www.google.com/maps/dir/" + lat_pos + "," + lon_pos + "/" + lat_dst + "," + lon_dst + "\n");
 										}
 										catch (Exception e)
