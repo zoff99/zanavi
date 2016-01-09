@@ -168,13 +168,15 @@ test:
     - adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
         background: true
 
-    - sleep 300
+
 
     - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+    - if [ ! -f ~/_done_.txt ]; then sleep 120 ; fi
 
     - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
+    - if [ ! -f ~/_done_.txt ]; then sleep 120 ; fi
+
+
 
     - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
     - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
