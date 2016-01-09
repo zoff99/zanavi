@@ -359,8 +359,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + "0");
 				DR_set_position("set_position", extras, true);
 				Thread.sleep(3200);
-				DR_set_position("set_position", extras, true);
-				Thread.sleep(3200);
+				//xy//DR_set_position("set_position", extras, true);
+				//xy//Thread.sleep(3200);
 
 				extras = new Bundle();
 				System.out.println("ZANaviDebugReceiver:" + "add_destination" + lat_dst + "," + lon_dst);
@@ -414,10 +414,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
-									Navit.zoom_to_route();
-									Thread.sleep(15000);
+									//xy//Navit.zoom_to_route();
+									//xy//Thread.sleep(15000);
 									Navit.draw_map();
-									Thread.sleep(15000);
+									//xy//Thread.sleep(15000);
 
 									System.out.println("XXXX:--:002");
 
@@ -1014,7 +1014,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					System.out.println("XXXX:2:7:" + "");
 					System.out.println("XXXX:2:8:" + "");
 
-					Thread.sleep(1500);
+					//xy//Thread.sleep(1500);
 
 				}
 			}
