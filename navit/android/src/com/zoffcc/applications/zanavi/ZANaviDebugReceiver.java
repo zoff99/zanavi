@@ -425,9 +425,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
-									//xy//Navit.zoom_to_route();
-									//xy//Thread.sleep(15000);
-									Navit.draw_map();
+									Navit.zoom_to_route();
+									Thread.sleep(15000);
+									//xy//Navit.draw_map();
 									//xy//Thread.sleep(15000);
 
 									System.out.println("XXXX:--:002");
