@@ -207,7 +207,7 @@ test:
     - pkill -f firefox
     - pkill -f firefox
     - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
-    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/' :
+    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
     - sleep 3
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
@@ -219,12 +219,13 @@ test:
       sleep 3;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
+      ls -al ~/capture001.png ;
       cp -v ~/capture001.png ~/debug_results/201?-??-*/"$out"._URL3_.png ;
       rm -fv ~/capture001.png ;
       done ; exit 0
 
-    - pkill -f firefox
-    - pkill -f firefox
+    - pkill -f firefox ; exit 0
+    - pkill -f firefox ; exit 0
 
 
 
