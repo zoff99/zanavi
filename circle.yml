@@ -11,7 +11,7 @@ dependencies:
     - ~/.android
     - ~/maps
   pre:
-    #- sudo apt-get update > /dev/null 2> /dev/null
+    - sudo apt-get update > /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
     - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
     - sudo apt-get install libfreetype6-dev > /dev/null 2> /dev/null
@@ -28,6 +28,8 @@ dependencies:
     - sudo apt-get install libmagickcore5 > /dev/null 2> /dev/null
     - sudo apt-get install perlmagick > /dev/null 2> /dev/null
     - sudo apt-get install liblwp-useragent-determined-perl > /dev/null 2> /dev/null
+    - sudo apt-get install xvfb
+    - sudo apt-get install xdotool
 
     - bash ~/zanavi/ci/do_android.sh
 
@@ -198,8 +200,6 @@ test:
     - pkill -9 -u ubuntu -f emulator64-arm
 
 
-    - sudo apt-get install xvfb
-    - sudo apt-get install xdotool
     - Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
         background: true
     - rm -Rf ~/.mozilla ; exit 0
