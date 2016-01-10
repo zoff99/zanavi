@@ -204,19 +204,40 @@ test:
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser :
         background: true
     - sleep 4
-    - pkill -f firefox ; exit 0
-    - pkill -f firefox ; exit 0
+
+    - pkill -u ubuntu -f firefox
+
     - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
-    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
+    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
-    - sleep 3
+    - sleep 10
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
+    - sleep 2
 
     - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
-      echo "file=$i"; url=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url" ;
-      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url" ;
-      sleep 3;
+      echo "file=$i";
+      url1=`cat "$i"|grep 'URL1'|cut -d":" -f2-` ; echo "$url1" ;
+      url2=`cat "$i"|grep 'URL2'|cut -d":" -f2-` ; echo "$url2" ;
+      url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
+      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url1" ;
+      sleep 5;
+      export DISPLAY=:2 ; import -window root ~/capture001.png ;
+      out=`basename "$i" \.txt`;
+      ls -al ~/capture001.png ;
+      echo "$_dir" ; ls -al ~/debug_results/"$_dir"/ ;
+      cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL1_.png ;
+      rm -fv ~/capture001.png ;
+      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url2" ;
+      sleep 5;
+      export DISPLAY=:2 ; import -window root ~/capture001.png ;
+      out=`basename "$i" \.txt`;
+      ls -al ~/capture001.png ;
+      echo "$_dir" ; ls -al ~/debug_results/"$_dir"/ ;
+      cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL2_.png ;
+      rm -fv ~/capture001.png ;
+      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url3" ;
+      sleep 5;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       ls -al ~/capture001.png ;
@@ -225,10 +246,7 @@ test:
       rm -fv ~/capture001.png ;
       done ; exit 0
 
-    - pkill -f firefox ; exit 0
-    - pkill -f firefox ; exit 0
-
-
+    - pkill -u ubuntu -f firefox
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
