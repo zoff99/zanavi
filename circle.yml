@@ -275,6 +275,41 @@ test:
     - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
     - cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
+
+
+    - sudo apt-get install xvfb
+    - sudo apt-get install xdotool
+    - Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
+        background: true
+    - rm -Rf ~/.mozilla ; exit 0
+    - sleep 1
+    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser :
+        background: true
+    - sleep 4
+    - pkill -f firefox
+    - pkill -f firefox
+    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
+    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/' :
+        background: true
+    - sleep 3
+    - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
+    - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
+
+    - for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
+    echo "file=$i"; url=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ; echo "$url" ;
+    export DISPLAY=:2 ; firefox --setDefaultBrowser "$url" ;
+    sleep 3;
+    export DISPLAY=:2 ; import -window root ~/capture001.png ;
+    out=`basename "$i" \.txt`;
+    cp -v ~/capture001.png ~/debug_results/201?-??-*/"$out"._URL3_.png ;
+    rm -fv ~/capture001.png ;
+    done ; exit 0
+
+    - pkill -f firefox
+    - pkill -f firefox
+
+
+
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
     - cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/0000__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/0000__reports/
