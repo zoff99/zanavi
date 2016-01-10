@@ -210,7 +210,7 @@ test:
 
     - pkill -9 -u ubuntu -f firefox
 
-    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
+    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
     - sleep 10
