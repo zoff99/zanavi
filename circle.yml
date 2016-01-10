@@ -213,14 +213,15 @@ test:
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
 
-    - for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
+    - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
       echo "file=$i"; url=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url" ;
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url" ;
       sleep 3;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       ls -al ~/capture001.png ;
-      cp -v ~/capture001.png ~/debug_results/201?-??-*/"$out"._URL3_.png ;
+      echo "$_dir" ; ls -al ~/debug_results/"$_dir"/ ;
+      cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL3_.png ;
       rm -fv ~/capture001.png ;
       done ; exit 0
 
