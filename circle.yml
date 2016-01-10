@@ -204,8 +204,8 @@ test:
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser :
         background: true
     - sleep 4
-    - pkill -f firefox
-    - pkill -f firefox
+    - pkill -f firefox ; exit 0
+    - pkill -f firefox ; exit 0
     - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
