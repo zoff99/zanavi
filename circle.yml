@@ -128,7 +128,7 @@ test:
 
 
     - mkdir ~/yaml-tests/
-    - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
+    #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - wget -t 10 -O ~/yaml-tests/yaml2.zip "https://github.com/zoff99/routing-qa/archive/master.zip"
     - cd ~/yaml-tests/ && unzip yaml1.zip && cd ~/ ; exit 0
     - cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
@@ -195,6 +195,9 @@ test:
 
 
 
+    - pkill -9 -u ubuntu -f emulator64-arm
+
+
     - sudo apt-get install xvfb
     - sudo apt-get install xdotool
     - Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
@@ -205,9 +208,9 @@ test:
         background: true
     - sleep 4
 
-    - pkill -u ubuntu -f firefox
+    - pkill -9 -u ubuntu -f firefox
 
-    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
+    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
     - sleep 10
@@ -246,7 +249,7 @@ test:
       rm -fv ~/capture001.png ;
       done ; exit 0
 
-    - pkill -u ubuntu -f firefox
+    - pkill -9 -u ubuntu -f firefox
 
     - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
