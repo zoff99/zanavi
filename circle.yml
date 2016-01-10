@@ -135,9 +135,9 @@ test:
     - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; exit 0
 
     # delete test files that give errors, for now *!*!
-    - cd ~/yaml-tests/routing-qa-master/ ; rm 002_missing_destination_name.yaml 003_highway_entrance.yaml 004_turn_restriction.yaml 005_car_forbidden_traffic.yaml Aalter_straight.yaml B2R_W.yaml Brugge.yaml Brussels_turn_restriction.yaml Emmeloord_N.yaml Hamburg_Sued_S.yaml
-    - cd ~/yaml-tests/routing-qa-master/ ; rm Ichostrasse_S.yaml Imst_A12_E.yaml Imst_A12_W.yaml OSRM_issue_1645.yaml Oakland_highway_entrance.yaml RTE_Drongen_Deinze.yaml RTE_OSRM_issue_1794.yaml RTE_Tonisberg_1.yaml Sint-Niklaas.yaml Vierzon_turn_restriction.yaml no_HOV_1.yaml no_right_turn.yaml
-    - cd ~/yaml-tests/routing-qa-master/ ; rm A92.yaml Aalter_left.yaml Boulevard_Peripherique_1.yaml Ichostrasse_SE.yaml Vievis.yaml
+    - cd ~/yaml-tests/routing-qa-master/ ; rm -v 002_missing_destination_name.yaml 003_highway_entrance.yaml 004_turn_restriction.yaml 005_car_forbidden_traffic.yaml Aalter_straight.yaml B2R_W.yaml Brugge.yaml Brussels_turn_restriction.yaml Emmeloord_N.yaml Hamburg_Sued_S.yaml ; exit 0
+    - cd ~/yaml-tests/routing-qa-master/ ; rm -v Ichostrasse_S.yaml Imst_A12_E.yaml Imst_A12_W.yaml OSRM_issue_1645.yaml Oakland_highway_entrance.yaml RTE_Drongen_Deinze.yaml RTE_OSRM_issue_1794.yaml RTE_Tonisberg_1.yaml Sint-Niklaas.yaml Vierzon_turn_restriction.yaml no_HOV_1.yaml no_right_turn.yaml ; exit 0
+    - cd ~/yaml-tests/routing-qa-master/ ; rm -v A92.yaml Aalter_left.yaml Boulevard_Peripherique_1.yaml Ichostrasse_SE.yaml Vievis.yaml ; exit 0
     - cd ~/
     # delete test files that give errors, for now *!*!
 
@@ -167,97 +167,15 @@ test:
         background: true
 
 
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 120 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 120 ; fi
-
-
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-    
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-    - adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; exit 0
-    - if [ ! -f ~/_done_.txt ]; then sleep 300 ; fi
-
-
-
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+    - rm -fv ~/_done_.txt ; exit 0
+    - ready_="0" ; while [ $ready_ == "0" ]; do echo "running tests ..." ; adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; if [ ! -f ~/_done_.txt ]; then sleep 120 ; else ready_="1" ; fi ; done ; exit 0
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 20
-
-
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
