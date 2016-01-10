@@ -296,14 +296,14 @@ test:
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
 
     - for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
-    echo "file=$i"; url=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ; echo "$url" ;
-    export DISPLAY=:2 ; firefox --setDefaultBrowser "$url" ;
-    sleep 3;
-    export DISPLAY=:2 ; import -window root ~/capture001.png ;
-    out=`basename "$i" \.txt`;
-    cp -v ~/capture001.png ~/debug_results/201?-??-*/"$out"._URL3_.png ;
-    rm -fv ~/capture001.png ;
-    done ; exit 0
+      echo "file=$i"; url=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ; echo "$url" ;
+      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url" ;
+      sleep 3;
+      export DISPLAY=:2 ; import -window root ~/capture001.png ;
+      out=`basename "$i" \.txt`;
+      cp -v ~/capture001.png ~/debug_results/201?-??-*/"$out"._URL3_.png ;
+      rm -fv ~/capture001.png ;
+      done ; exit 0
 
     - pkill -f firefox
     - pkill -f firefox
