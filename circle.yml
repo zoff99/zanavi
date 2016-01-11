@@ -227,24 +227,18 @@ test:
       sleep 5;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
-      ls -al ~/capture001.png ;
-      echo "$_dir" ; ls -al ~/debug_results/"$_dir"/ ;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL1_.png ;
       rm -fv ~/capture001.png ;
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url2" ;
       sleep 5;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
-      ls -al ~/capture001.png ;
-      echo "$_dir" ; ls -al ~/debug_results/"$_dir"/ ;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL2_.png ;
       rm -fv ~/capture001.png ;
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url3" ;
       sleep 5;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
-      ls -al ~/capture001.png ;
-      echo "$_dir" ; ls -al ~/debug_results/"$_dir"/ ;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL3_.png ;
       rm -fv ~/capture001.png ;
       done ; exit 0
