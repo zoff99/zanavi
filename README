@@ -6,6 +6,11 @@ for more details look at our wiki
 
 http://zanavi.cc
 
+CircleCI
+========
+
+[![Circle CI](https://circleci.com/gh/zoff99/zanavi/tree/ci.svg?style=svg)](https://circleci.com/gh/zoff99/zanavi/tree/ci)
+
 
 tagsoup-1.2.1.jar:
 ==================
