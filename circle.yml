@@ -173,7 +173,7 @@ test:
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
-    - ready_="0" ; while [ $ready_ == "0" ]; do echo "running tests ..." ; adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt ; if [ ! -f ~/_done_.txt ]; then sleep 120 ; else ready_="1" ; fi ; done ; exit 0
+    - ready_="0" ; while [ $ready_ == "0" ]; do echo "running tests ..." ; adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ; if [ ! -f ~/_done_.txt ]; then sleep 120 ; else ready_="1" ; fi ; done ; exit 0
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 
