@@ -169,9 +169,9 @@ test:
     - adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
         background: true
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
-
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
@@ -190,11 +190,14 @@ test:
       exit 0
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 20
 
-    # - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
     - _dir=`cat ~/tmp.txt` ; mkdir -p ~/debug_results/"$_dir"/ && cd ~/debug_results/"$_dir"/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
