@@ -423,6 +423,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								{
 									System.out.println("XXXX:--:001");
 
+									Navit.static_show_route_graph(true);
+
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
 									Navit.zoom_to_route();
@@ -972,7 +974,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			yaml_sum = 0;
 			yaml_err = 0;
 
-			Navit.static_show_route_graph(true);
+			// Navit.static_show_route_graph(true);
 
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
