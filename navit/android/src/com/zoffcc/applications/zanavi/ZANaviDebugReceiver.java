@@ -972,6 +972,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			yaml_sum = 0;
 			yaml_err = 0;
 
+			Navit.static_show_route_graph(true);
+
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
 			{
