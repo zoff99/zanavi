@@ -175,7 +175,19 @@ test:
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
-    - ready_="0" ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; while [ $ready_ == "0" ]; do echo -n "running tests : " ; n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep '\.yaml' | grep 'file=' | wc -l` ; echo "[""$n""/""$count_files""]"  ; adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ; if [ ! -f ~/_done_.txt ]; then sleep 120 ; else ready_="1" ; fi ; done ; exit 0
+    - ready_="0" ;
+      count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+      while [ $ready_ == "0" ]; do
+      echo -n "running tests : " ;
+      n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
+      echo "$n" "/" "$count_files"  ;
+      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
+      if [ ! -f ~/_done_.txt ]; then
+      sleep 120 ;
+      else ready_="1" ;
+      fi ;
+      done ;
+      exit 0
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 
