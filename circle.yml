@@ -2,10 +2,10 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    YEMU_: "zanavi21"
-    EMU_: "zanavi10"
-    Ysdpath: "/storage/sdcard"
-    sdpath: "/mnt/sdcard"
+    EMU_: "zanavi21"
+    XEMU_: "zanavi10"
+    sdpath: "/storage/sdcard"
+    Xsdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
     - ~/.android
@@ -169,18 +169,20 @@ test:
     - adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
         background: true
 
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
+
 
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
-    - ready_="0" ; while [ $ready_ == "0" ]; do echo "running tests ..." ; adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ; if [ ! -f ~/_done_.txt ]; then sleep 120 ; else ready_="1" ; fi ; done ; exit 0
+    - ready_="0" ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; while [ $ready_ == "0" ]; do echo -n "running tests : " ; n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep '\.yaml' | grep 'file=' | wc -l` ; echo "[""$n""/""$count_files""]"  ; adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ; if [ ! -f ~/_done_.txt ]; then sleep 120 ; else ready_="1" ; fi ; done ; exit 0
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 20
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
+    # - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
     - _dir=`cat ~/tmp.txt` ; mkdir -p ~/debug_results/"$_dir"/ && cd ~/debug_results/"$_dir"/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
