@@ -15648,6 +15648,48 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 	}
 
+	static void take_phone_screenshot(String dir_name, String name_base)
+	{
+		try
+		{
+			View v1 = Global_Navit_Object.getWindow().getDecorView().getRootView();
+			v1.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+			v1.setDrawingCacheEnabled(true);
+			Bitmap bm = v1.getDrawingCache();
+
+			FileOutputStream out = null;
+			try
+			{
+				out = new FileOutputStream(dir_name + "/" + name_base + ".png");
+				bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				System.out.println("TSCR:004 " + e.getMessage());
+			}
+			finally
+			{
+				v1.setDrawingCacheEnabled(false);
+
+				try
+				{
+					if (out != null)
+					{
+						out.close();
+					}
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		catch (Exception e4)
+		{
+		}
+	}
+
 	static String stacktrace_to_string(Exception e)
 	{
 		try
@@ -15679,13 +15721,12 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 		else
 		{
-			Navit.Routgraph_enabled = 1;
+			Navit.Routgraph_enabled = 0;
 		}
 
 		Message msg = new Message();
 		Bundle b = new Bundle();
 		b.putInt("Callback", 71);
-		Navit.Routgraph_enabled = 1 - Navit.Routgraph_enabled;
 		b.putString("s", "" + Navit.Routgraph_enabled);
 		msg.setData(b);
 		NavitGraphics.callback_handler.sendMessage(msg);
