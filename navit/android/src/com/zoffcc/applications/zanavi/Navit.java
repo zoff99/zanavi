@@ -15714,37 +15714,56 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	static void static_show_route_graph(int v)
 	{
 		// DEBUG: toggle Routgraph on/off
+		try
+		{
+			if (v == 1)
+			{
+				Navit.Routgraph_enabled = 1;
+	
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putInt("Callback", 71);
+				b.putString("s", "" + Navit.Routgraph_enabled);
+				msg.setData(b);
+				NavitGraphics.callback_handler.sendMessage(msg);
+			}
+			else if (v == 0)
+			{
+				Navit.Routgraph_enabled = 0;
+				
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putInt("Callback", 71);
+				b.putString("s", "" + Navit.Routgraph_enabled);
+				msg.setData(b);
+				NavitGraphics.callback_handler.sendMessage(msg);
+			}
+			else
+			{
+				Navit.Routgraph_enabled = 0;
+				
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putInt("Callback", 71);
+				b.putString("s", "" + Navit.Routgraph_enabled);
+				msg.setData(b);
+				NavitGraphics.callback_handler.sendMessage(msg);
+	
+				Thread.sleep(350);
 
-		if (v == 1)
-		{
-			Navit.Routgraph_enabled = 1;
+				System.out.println("static_show_route_graph:v=" + v);
 
-			Message msg = new Message();
-			Bundle b = new Bundle();
-			b.putInt("Callback", 71);
-			b.putString("s", "" + Navit.Routgraph_enabled);
-			msg.setData(b);
-			NavitGraphics.callback_handler.sendMessage(msg);
+				Message msg = new Message();
+				Bundle b = new Bundle();
+				b.putInt("Callback", 71);
+				b.putString("s", "" + v);
+				msg.setData(b);
+				NavitGraphics.callback_handler.sendMessage(msg);
+			}
 		}
-		else if (v == 0)
+		catch (Exception e)
 		{
-			Navit.Routgraph_enabled = 0;
-			
-			Message msg = new Message();
-			Bundle b = new Bundle();
-			b.putInt("Callback", 71);
-			b.putString("s", "" + Navit.Routgraph_enabled);
-			msg.setData(b);
-			NavitGraphics.callback_handler.sendMessage(msg);
 		}
-		else
-		{
-			Message msg = new Message();
-			Bundle b = new Bundle();
-			b.putInt("Callback", 71);
-			b.putString("s", "" + v);
-			msg.setData(b);
-			NavitGraphics.callback_handler.sendMessage(msg);
-		}
+
 	}
 }
