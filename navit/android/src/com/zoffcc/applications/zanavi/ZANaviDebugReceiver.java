@@ -423,7 +423,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								{
 									System.out.println("XXXX:--:001");
 
-									Navit.static_show_route_graph(true);
+									// Navit.static_show_route_graph(4);
 
 									Navit.zoom_to_route();
 									Thread.sleep(2000);
@@ -951,6 +951,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				// System.out.println("XXXX:E01" + e2.getMessage());
 				System.out.println("_DREX_:012" + e2.getMessage());
 			}
+
+			Navit.static_show_route_graph(4);
 
 			String date_str = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
 
