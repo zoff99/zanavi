@@ -2873,11 +2873,11 @@ highway_land" speed="120" route_weight="120" route_prio_weight="9">
 
 			s = (*env)->GetStringUTFChars(env, str, NULL);
 			
-			if (s == 3)
+			if (atoi(s) == 3)
 			{
 				navit_map_active_flag(global_navit, 0, "_ms_navigation");
 			}
-			else if (s == 4)
+			else if (atoi(s) == 4)
 			{
 				navit_map_active_flag(global_navit, 1, "_ms_navigation");
 			}
