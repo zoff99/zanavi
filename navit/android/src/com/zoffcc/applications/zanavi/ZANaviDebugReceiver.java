@@ -533,7 +533,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								File d2 = new File(f.getParent() + "/" + date + "/");
 								d2.mkdirs();
 								Navit.take_map_screenshot(f.getParent() + "/" + date + "/", f.getName());
-								Navit.take_phone_screenshot(f.getParent() + "/" + date + "/", f.getName() + "_full");
+								// Navit.take_phone_screenshot(f.getParent() + "/" + date + "/", f.getName() + "_full");
 
 								// save roadbook
 								String[] separated = NavitGraphics.GetRoadBookItems(9990001);
