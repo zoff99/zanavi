@@ -183,7 +183,7 @@ test:
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
       if [ ! -f ~/_done_.txt ]; then
-      sleep 60 ;
+      sleep 180 ;
       else ready_="1" ;
       fi ;
       done ;
