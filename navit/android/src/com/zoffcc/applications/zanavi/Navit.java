@@ -15711,24 +15711,40 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 	}
 
-	static void static_show_route_graph(boolean on)
+	static void static_show_route_graph(int v)
 	{
 		// DEBUG: toggle Routgraph on/off
 
-		if (on)
+		if (v == 1)
 		{
 			Navit.Routgraph_enabled = 1;
+
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putInt("Callback", 71);
+			b.putString("s", "" + Navit.Routgraph_enabled);
+			msg.setData(b);
+			NavitGraphics.callback_handler.sendMessage(msg);
+		}
+		else if (v == 0)
+		{
+			Navit.Routgraph_enabled = 0;
+			
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putInt("Callback", 71);
+			b.putString("s", "" + Navit.Routgraph_enabled);
+			msg.setData(b);
+			NavitGraphics.callback_handler.sendMessage(msg);
 		}
 		else
 		{
-			Navit.Routgraph_enabled = 0;
+			Message msg = new Message();
+			Bundle b = new Bundle();
+			b.putInt("Callback", 71);
+			b.putString("s", "" + v);
+			msg.setData(b);
+			NavitGraphics.callback_handler.sendMessage(msg);
 		}
-
-		Message msg = new Message();
-		Bundle b = new Bundle();
-		b.putInt("Callback", 71);
-		b.putString("s", "" + Navit.Routgraph_enabled);
-		msg.setData(b);
-		NavitGraphics.callback_handler.sendMessage(msg);
 	}
 }
