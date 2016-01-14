@@ -2864,11 +2864,28 @@ highway_land" speed="120" route_weight="120" route_prio_weight="9">
 			// 0 -> deactivate
 			// 1 -> activate
 
+			// activate/deactivate only "navigation items map" display
+			// 3 -> deactivate
+			// 4 -> activate
+
 			// _ms_route_graph
 			// _ms_navigation
+
 			s = (*env)->GetStringUTFChars(env, str, NULL);
-			navit_map_active_flag(global_navit, atoi(s), "_ms_route_graph");
-			navit_map_active_flag(global_navit, atoi(s), "_ms_navigation");
+			
+			if (s == 3)
+			{
+				navit_map_active_flag(global_navit, 0, "_ms_navigation");
+			}
+			else if (s == 4)
+			{
+				navit_map_active_flag(global_navit, 1, "_ms_navigation");
+			}
+			else
+			{
+				navit_map_active_flag(global_navit, atoi(s), "_ms_route_graph");
+				navit_map_active_flag(global_navit, atoi(s), "_ms_navigation");
+			}
 			(*env)->ReleaseStringUTFChars(env, str, s);
 		}
 		else if (i == 70)
