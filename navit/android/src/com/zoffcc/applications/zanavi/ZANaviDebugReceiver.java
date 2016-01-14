@@ -533,6 +533,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								File d2 = new File(f.getParent() + "/" + date + "/");
 								d2.mkdirs();
 								Navit.take_map_screenshot(f.getParent() + "/" + date + "/", f.getName());
+								Navit.take_phone_screenshot(f.getParent() + "/" + date + "/", f.getName() + "_full");
 
 								// save roadbook
 								String[] separated = NavitGraphics.GetRoadBookItems(9990001);
@@ -973,8 +974,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 			yaml_sum = 0;
 			yaml_err = 0;
-
-			// Navit.static_show_route_graph(true);
 
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
