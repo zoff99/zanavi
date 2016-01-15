@@ -388,7 +388,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 860; // 60 // seconds
+					int max_count = 500; // 60 // seconds
 					int first_status = -999;
 					int status_wrong = 0;
 
