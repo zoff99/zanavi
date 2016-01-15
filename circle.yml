@@ -123,7 +123,7 @@ test:
     - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
+    - emulator -memory 1024 -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
