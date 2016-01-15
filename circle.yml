@@ -9,7 +9,7 @@ machine:
 dependencies:
   cache_directories:
     - ~/.android
-    - ~/maps
+    #- ~/maps
   pre:
     - sudo apt-get update > /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
@@ -98,6 +98,8 @@ test:
     - android list targets
     - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
     - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854" ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1024MB#' ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1024MB#' ~/.android/avd/zanavi10.avd/config.ini ; fi
     - echo "$EMU_"
     - echo "$sdpath"
   override:
