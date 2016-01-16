@@ -208,6 +208,18 @@ struct route_graph_segment
 	struct route_graph_point *start; /**< Pointer to the point this segment starts at. */
 	struct route_graph_point *end; /**< Pointer to the point this segment ends at. */
 
+
+	int seg_start_out_cost;
+	int seg_end_out_cost;
+
+	struct route_graph_segment *start_from_seg;
+	struct route_graph_segment *end_from_seg;
+
+	struct fibheap_el *el_start;
+	struct fibheap_el *el_end;
+
+
+
 	// -- NEW --
 	struct coord c_start_plus_1;	// second coord
 	struct coord c_end_minus_1;		// second to last coord
