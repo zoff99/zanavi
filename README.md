@@ -9,7 +9,7 @@ http://zanavi.cc
 CircleCI
 ========
 
-[![Circle CI](https://circleci.com/gh/zoff99/zanavi/tree/ci.svg?style=svg)](https://circleci.com/gh/zoff99/zanavi/tree/ci)
+[![Circle CI](https://circleci.com/gh/zoff99/zanavi/tree/new-routing.svg?style=svg)](https://circleci.com/gh/zoff99/zanavi/tree/new-routing)
 
 
 tagsoup-1.2.1.jar:
