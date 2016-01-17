@@ -198,7 +198,7 @@ test:
       echo "com.zoffcc.applications.zanavi crashed";
       cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|tail -1 ;
       ready_="1" ;
-      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*J:##'|sed -e 's#,N:.*##'|tail -1 ;
+      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|tail -1 ;
       fi ;
       if [ ! -f ~/_done_.txt ]; then
       sleep 180 ;
