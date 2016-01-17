@@ -258,7 +258,7 @@ test:
       echo "file=$i";
       url1=`cat "$i"|grep 'URL1'|cut -d":" -f2-` ; echo "$url1" ;
       url2=`cat "$i"|grep 'URL2'|cut -d":" -f2-` ; echo "$url2" ;
-      url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
+      url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1' ; echo "$url3" ;
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url1" >/dev/null 2>/dev/null ;
       sleep 5;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
