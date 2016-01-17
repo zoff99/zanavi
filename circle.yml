@@ -196,9 +196,9 @@ test:
       died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
       if [ "$died_count""x" == "2x" ]; then
       echo "com.zoffcc.applications.zanavi crashed";
-      cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|tail -1 ;
+      cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
       ready_="1" ;
-      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|tail -1 ;
+      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
       fi ;
       if [ ! -f ~/_done_.txt ]; then
       sleep 180 ;
