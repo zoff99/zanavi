@@ -81,6 +81,23 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	 * -
 	 */
 
+	static void enable_normal_location()
+	{
+		System.out.println("ZANaviDebugReceiver:" + "ENABLE normal location");
+
+		if (Navit.p.PREF_use_fast_provider)
+		{
+			NavitVehicle.turn_on_fast_provider();
+		}
+		else
+		{
+			NavitVehicle.turn_off_fast_provider();
+		}
+
+		// activate gps AFTER 3g-location
+		NavitVehicle.turn_on_precise_provider();
+	}
+
 	static void disable_normal_location()
 	{
 		NavitVehicle.turn_off_all_providers();
@@ -1104,6 +1121,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 
 		DR_clear_route();
+
+		// restore normal state ----------------------
+		Navit.static_show_route_graph(3);
+		enable_normal_location();
+		// restore normal state ----------------------
 	}
 
 	static void DR_replay_gps_file(String filename, String date_str)
