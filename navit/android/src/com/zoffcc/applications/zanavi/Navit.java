@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ZANavi, Zoff Android Navigation system.
  * Copyright (C) 2011-2015 Zoff <zoff@zoff.cc>
  *
