@@ -301,9 +301,11 @@ test:
       . ~/zanavi/ci/junit_start.sh ~/ju_res.xml "$count_files" "$ju_fail" ;
       cd ~/yaml-tests/routing-qa-master/ ;
       for i in `ls -1 *.yaml` ;
-      do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; cd ~ ; if [ -f "$f" ]; then echo "OK2" ;
-      ls -al "$f" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 0 "$i" "status" "OK" ; else echo "FAIL2" ;
-      . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 1 "$i" "status" "FAILED" ; fi ;
+      do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; cd ~ ;
+      rtime=`cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt | grep "$i"'.yaml' 2> /dev/null | cut -d":" -f2 2>/dev/null | tr -d " " 2>/dev/null` ;
+      if [ -f "$f" ]; then echo "OK2" ;
+      ls -al "$f" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 0 "$i" "status" "OK" "$rtime"; else echo "FAIL2" ;
+      . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 1 "$i" "status" "FAILED" "$rtime"; fi ;
       done ;
       . ~/zanavi/ci/junit_end.sh ~/ju_res.xml ; exit 0
 
