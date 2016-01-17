@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ZANavi, Zoff Android Navigation system.
  * Copyright (C) 2011-2015 Zoff <zoff@zoff.cc>
  *
@@ -13310,6 +13310,43 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		{
 		}
 		return ("" + df.format(allocated) + "/" + df.format(sum_size) + "(" + df.format(free) + ")" + ":" + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "/" + df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "(" + df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576)) + ") " + mem_type);
+	}
+
+	public static String logHeap_for_batch(Class clazz)
+	{
+		try
+		{
+			Double allocated = Double.valueOf(Debug.getNativeHeapAllocatedSize()) / Double.valueOf((1048576));
+			Double sum_size = Double.valueOf(Debug.getNativeHeapSize() / Double.valueOf(1048576.0));
+			Double free = Double.valueOf(Debug.getNativeHeapFreeSize() / Double.valueOf(1048576.0));
+			DecimalFormat df = new DecimalFormat();
+			df.setMaximumFractionDigits(2);
+			df.setMinimumFractionDigits(2);
+
+			// Log.d("Navit", "MemMem:DEBUG: =================================");
+			Log.d("Navit", "MemMem:DEBUG:heap native: allc " + df.format(allocated) + "MB sum=" + df.format(sum_size) + "MB (" + df.format(free) + "MB free) in [" + clazz.getName().replaceAll("com.zoffcc.applications.zanavi.", "") + "]");
+			Log.d("Navit", "MemMem:DEBUG:java memory: allc: " + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "MB sum=" + df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "MB (" + df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576)) + "MB free)");
+
+			// calcAvailableMemory();
+
+			String mem_type = "NATIVE";
+			try
+			{
+				if (android.os.Build.VERSION.SDK_INT >= 11)
+				{
+					mem_type = "JAVA";
+				}
+			}
+			catch (Exception e)
+			{
+			}
+			// return ("" + df.format(allocated) + "/" + df.format(sum_size) + "(" + df.format(free) + ")" + ":" + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "/" + df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "(" + df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576)) + ") " + mem_type);
+			return ("==MEM==:" + "J:" + (Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + ":" + (Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + ",N:" + allocated + ":" + sum_size);
+		}
+		catch (Exception e2)
+		{
+			return ("==MEM==:ERROR");
+		}
 	}
 
 	private static long calcAvailableMemory()

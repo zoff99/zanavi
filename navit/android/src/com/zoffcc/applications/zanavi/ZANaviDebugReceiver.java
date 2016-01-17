@@ -361,15 +361,32 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				}
 
 				DR_clear_route();
-				Thread.sleep(1500);
-				DR_clear_route();
-				Thread.sleep(3000);
+				Thread.sleep(1000);
+
+				try
+				{
+					int jj = 0;
+					while (NavitGraphics.navit_route_status != 0)
+					{
+						jj++;
+						System.out.println("ZANaviDebugReceiver:" + "waiting for route to clear:" + jj);
+						// wait for old route to be cleared
+						Thread.sleep(1000);
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+
+				// DR_clear_route();
+				// Thread.sleep(3000);
 
 				Bundle extras = new Bundle();
 				System.out.println("ZANaviDebugReceiver:" + "set_position" + lat_pos + "," + lon_pos + "," + "0.0" + "," + heading_pos);
 				extras.putString("set_position", "" + lat_pos + "," + lon_pos + "," + "0.0" + "," + heading_pos);
 				DR_set_position("set_position", extras, true);
-				Thread.sleep(2200);
+				Thread.sleep(2500);
 				//xy//DR_set_position("set_position", extras, true);
 				//xy//Thread.sleep(3200);
 
@@ -384,11 +401,13 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				// Thread.sleep(1200);
 				// Navit.draw_map();
 
+				System.out.println("ZANaviDebugReceiver:" + "mem0:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
+
 				final Thread debug_zoom_to_route_001 = new Thread()
 				{
 					int wait = 1;
 					int count = 0;
-					int max_count = 200; // 60 // seconds
+					int max_count = 190; // seconds
 					int first_status = -999;
 					int status_wrong = 0;
 
@@ -418,6 +437,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										status_wrong = 0;
 									}
 								}
+
+								System.out.println("ZANaviDebugReceiver:" + "mem1:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
 
 								if (((NavitGraphics.navit_route_status == 17) || (NavitGraphics.navit_route_status == 33)) && (status_wrong == 0))
 								{
