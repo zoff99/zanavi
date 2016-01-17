@@ -383,10 +383,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				try
 				{
 					int jj = 0;
-					while (NavitGraphics.navit_route_status != 0)
+					while ((NavitGraphics.navit_route_status != 0) && (jj < 120))
 					{
 						jj++;
-						System.out.println("ZANaviDebugReceiver:" + "waiting for route to clear:" + jj);
+						System.out.println("ZANaviDebugReceiver:" + "waiting for route to clear (status=" + NavitGraphics.navit_route_status + "):" + jj);
 						// wait for old route to be cleared
 						Thread.sleep(1000);
 					}
