@@ -7,7 +7,7 @@ tests_res="$2" # 0 -> ok, 1 -> fail, (2 -> skipped)
 tests_name="$3"
 tests_header="$4"
 tests_message="$5"
-tests_rtime="$6"""
+tests_rtime="$6"
 
 tests_name=`echo "$tests_name" | tr '<"> \\&' '_'`
 tests_header=`echo "$tests_header" | tr '<"> \\&' '_'`
