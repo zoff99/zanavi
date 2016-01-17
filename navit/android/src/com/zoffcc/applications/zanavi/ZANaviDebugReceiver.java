@@ -83,26 +83,40 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 	static void enable_normal_location()
 	{
-		System.out.println("ZANaviDebugReceiver:" + "ENABLE normal location");
-
-		if (Navit.p.PREF_use_fast_provider)
+		Navit.runOnUI(new Runnable()
 		{
-			NavitVehicle.turn_on_fast_provider();
-		}
-		else
-		{
-			NavitVehicle.turn_off_fast_provider();
-		}
+			@Override
+			public void run()
+			{
+				System.out.println("ZANaviDebugReceiver:" + "ENABLE normal location");
 
-		// activate gps AFTER 3g-location
-		NavitVehicle.turn_on_precise_provider();
+				if (Navit.p.PREF_use_fast_provider)
+				{
+					NavitVehicle.turn_on_fast_provider();
+				}
+				else
+				{
+					NavitVehicle.turn_off_fast_provider();
+				}
+
+				// activate gps AFTER 3g-location
+				NavitVehicle.turn_on_precise_provider();
+			}
+		});
 	}
 
 	static void disable_normal_location()
 	{
-		NavitVehicle.turn_off_all_providers();
-		NavitVehicle.turn_off_sat_status();
-		System.out.println("ZANaviDebugReceiver:" + "disable normal location");
+		Navit.runOnUI(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				NavitVehicle.turn_off_all_providers();
+				NavitVehicle.turn_off_sat_status();
+				System.out.println("ZANaviDebugReceiver:" + "disable normal location");
+			}
+		});
 	}
 
 	static void DR_add_destination(String key, Bundle extras)
