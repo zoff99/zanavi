@@ -99,13 +99,13 @@ test:
 #
     - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
     - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1216MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1632MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi21" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
 #
     - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854" ; fi
     - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1216MB#' ~/.android/avd/zanavi10.avd/config.ini ; cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1632MB#' ~/.android/avd/zanavi10.avd/config.ini ; cat ~/.android/avd/zanavi10.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
 #
     - echo "$EMU_"
@@ -133,7 +133,7 @@ test:
     - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
+    - emulator -memory 1632 -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
@@ -158,6 +158,8 @@ test:
 
     - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
     #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
+
+    - fb-adb shell "cat /proc/meminfo" ; exit 0
 
     #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
