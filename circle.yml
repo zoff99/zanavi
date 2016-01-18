@@ -161,6 +161,7 @@ test:
 
     - fb-adb shell "cat /proc/meminfo" ; exit 0
     - fb-adb shell "free" ; exit 0
+    - fb-adb shell "sysctl vm.swappiness" ; exit 0
 
     #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
