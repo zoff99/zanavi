@@ -102,7 +102,7 @@ public class NavitMapDownloader
 	// ------- DEBUG DEBUG SETTINGS --------
 	// ------- DEBUG DEBUG SETTINGS --------
 
-	static int MULTI_NUM_THREADS_MAX = 6;
+	static int MULTI_NUM_THREADS_MAX = 4;
 	static int MULTI_NUM_THREADS = 1; // how many download streams for a file
 	static int MULTI_NUM_THREADS_LOCAL = 1; // how many download streams for the current file from the current server
 
@@ -610,7 +610,7 @@ public class NavitMapDownloader
 				int alt = UPDATE_PROGRESS_EVERY_CYCLE; // show progress about every xx cylces
 				int alt_cur = 0;
 				long alt_progress_update_timestamp = 0L;
-				int progress_update_intervall = 600; // show progress about every xx milliseconds
+				int progress_update_intervall = 700; // show progress about every xx milliseconds
 
 				String kbytes_per_second = "";
 				long start_timestamp = System.currentTimeMillis();
@@ -875,14 +875,14 @@ public class NavitMapDownloader
 											e.printStackTrace();
 										}
 
-										try
-										{
-											Thread.sleep(5);
-										}
-										catch (Exception sleep_e)
-										{
-											sleep_e.printStackTrace();
-										}
+										//										try
+										//										{
+										//											Thread.sleep(70); // give a little time to catch breath, and write to disk
+										//										}
+										//										catch (Exception sleep_e)
+										//										{
+										//											sleep_e.printStackTrace();
+										//										}
 
 										// System.out.println("" + this.my_num + " " + already_read + " - " + (already_read - this.start_byte));
 										// System.out.println("+++++++++++++ still downloading +++++++++++++");
@@ -1031,15 +1031,22 @@ public class NavitMapDownloader
 						catch (Exception e)
 						{
 
-							mapdownload_byte_per_second_now[this.my_num - 1] = 0;
-							// update speedbar
-							Message msg_prog77 = new Message();
-							Bundle b_prog77 = new Bundle();
-							b_prog77.putInt("speed_kb_per_sec", 0);
-							b_prog77.putInt("threadnum", (this.my_num - 1));
-							msg_prog77.what = 3;
-							msg_prog77.setData(b_prog77);
-							ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+							try
+							{
+								mapdownload_byte_per_second_now[this.my_num - 1] = 0;
+								// update speedbar
+								Message msg_prog77 = new Message();
+								Bundle b_prog77 = new Bundle();
+								b_prog77.putInt("speed_kb_per_sec", 0);
+								b_prog77.putInt("threadnum", (this.my_num - 1));
+								msg_prog77.what = 3;
+								msg_prog77.setData(b_prog77);
+								ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog77);
+							}
+							catch (Exception e4)
+							{
+								e4.printStackTrace();
+							}
 
 							try
 							{
@@ -3201,6 +3208,10 @@ public class NavitMapDownloader
 	public String calc_md5sum_on_device(Handler handler, int my_dialog_num, long size)
 	{
 		String md5sum = null;
+		final int sleep_millis = 0;
+		final int sleep_millis_long = 60;
+		final int looper_mod = 100;
+		int looper_count = 0;
 
 		if (size > MAX_SINGLE_BINFILE_SIZE)
 		{
@@ -3282,15 +3293,25 @@ public class NavitMapDownloader
 
 							if (numRead > 0)
 							{
-								//								try
-								//								{
-								//									// allow to catch breath
-								//									Thread.sleep(1);
-								//								}
-								//								catch (InterruptedException e)
-								//								{
-								//									e.printStackTrace();
-								//								}
+								try
+								{
+									looper_count++;
+									if (looper_count > looper_mod)
+									{
+										looper_count = 0;
+										// allow to catch breath
+										Thread.sleep(sleep_millis_long);
+									}
+									else
+									{
+										// allow to catch breath
+										Thread.sleep(sleep_millis);
+									}
+								}
+								catch (InterruptedException e)
+								{
+									e.printStackTrace();
+								}
 								digest.update(buffer, 0, numRead);
 								cur_pos = cur_pos + numRead;
 							}
@@ -3310,6 +3331,14 @@ public class NavitMapDownloader
 							{
 								ZANaviMapDownloaderService.set_noti_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
 								ZANaviMapDownloaderService.set_large_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+
+								// update progressbar
+								Message msg_prog = new Message();
+								Bundle b_prog = new Bundle();
+								b_prog.putInt("pg", calc_percent((int) (cur_pos / 1000), size2));
+								msg_prog.what = 2;
+								msg_prog.setData(b_prog);
+								ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
 							}
 							catch (Exception e)
 							{
@@ -3479,15 +3508,25 @@ public class NavitMapDownloader
 
 				if (numRead > 0)
 				{
-					//					try
-					//					{
-					//						// allow to catch breath
-					//						Thread.sleep(1);
-					//					}
-					//					catch (InterruptedException e)
-					//					{
-					//						e.printStackTrace();
-					//					}
+					try
+					{
+						looper_count++;
+						if (looper_count > looper_mod)
+						{
+							looper_count = 0;
+							// allow to catch breath
+							Thread.sleep(sleep_millis_long);
+						}
+						else
+						{
+							// allow to catch breath
+							Thread.sleep(sleep_millis);
+						}
+					}
+					catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
 					digest.update(buffer, 0, numRead);
 					cur_pos = cur_pos + numRead;
 				}
@@ -3507,6 +3546,15 @@ public class NavitMapDownloader
 				{
 					ZANaviMapDownloaderService.set_noti_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
 					ZANaviMapDownloaderService.set_large_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+
+					// update progressbar
+					Message msg_prog = new Message();
+					Bundle b_prog = new Bundle();
+					b_prog.putInt("pg", calc_percent((int) (cur_pos / 1000), size2));
+					msg_prog.what = 2;
+					msg_prog.setData(b_prog);
+					ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+
 				}
 				catch (Exception e)
 				{
