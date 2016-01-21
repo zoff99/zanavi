@@ -1281,6 +1281,13 @@ public class NavitGraphics
 					//draw_canvas_screen.setDensity(Global_want_dpi);					
 
 					draw_canvas_screen2 = new Canvas(draw_bitmap_screen2);
+
+					/*
+					 * draw_canvas.drawColor(Color.BLACK);
+					 * draw_canvas_screen.drawColor(Color.BLACK);
+					 * draw_canvas_screen2.drawColor(Color.BLACK);
+					 */
+
 					// DPI
 					//draw_canvas_screen2.setDensity(Global_want_dpi);
 					if (gr_type == 1)
