@@ -15686,11 +15686,11 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 	}
 
-	static void take_phone_screenshot(String dir_name, String name_base)
+	static void take_phone_screenshot(Activity a, String dir_name, String name_base)
 	{
 		try
 		{
-			View v1 = Global_Navit_Object.getWindow().getDecorView().getRootView();
+			View v1 = a.getWindow().getDecorView().getRootView();
 			v1.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 			v1.setDrawingCacheEnabled(true);
 			Bitmap bm = v1.getDrawingCache();
@@ -15804,7 +15804,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 
 	}
-	
+
 	/*
 	 * start a search with given values
 	 */
@@ -15818,11 +15818,11 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		{
 			if (index)
 			{
-				search_intent.putExtra("address_string", street+" "+town);
+				search_intent.putExtra("address_string", street + " " + town);
 			}
 			else
 			{
-				search_intent.putExtra("address_string", town+" "+street);
+				search_intent.putExtra("address_string", town + " " + street);
 			}
 		}
 		else if (town != null)
@@ -15838,7 +15838,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		{
 			search_intent.putExtra("hn_string", hn);
 		}
-		
+
 		if (offline)
 		{
 			search_intent.putExtra("type", "offline");
