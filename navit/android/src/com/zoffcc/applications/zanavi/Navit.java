@@ -15810,7 +15810,6 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	 */
 	static void executeSearch_with_values(String street, String town, String hn, boolean offline, boolean index, boolean partialmatch)
 	{
-		Navit.use_index_search = Navit.allow_use_index_search();
 		Intent search_intent = new Intent(Global_Navit_Object, NavitAddressSearchActivity.class);
 		search_intent.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
 
