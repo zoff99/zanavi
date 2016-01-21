@@ -1004,6 +1004,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				public void run()
 				{
 					System.out.println("search test 001");
+					Navit.use_index_search = true;
 					Navit.executeSearch_with_values("burggas", "wien", null, true, true, true);
 				}
 			};
@@ -1019,7 +1020,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				System.out.println("search test 004:" + c3);
 				Thread.sleep(500);
 				c3++;
-				
+
 				if (c3 > 60)
 				{
 					System.out.println("search test 004a");
