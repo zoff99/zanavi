@@ -208,6 +208,7 @@ test:
       sleep 180 ;
       else ready_="1" ;
       fi ;
+      ready_="1";
       done ;
       exit 0
 # ---------- waiting for tests to complete -------------
