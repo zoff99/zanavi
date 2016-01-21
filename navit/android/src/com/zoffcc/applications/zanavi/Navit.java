@@ -15854,7 +15854,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			pm_temp = "1";
 		}
 		search_intent.putExtra("partial_match", pm_temp);
-		this.startActivityForResult(search_intent, NavitAddressSearch_id_offline);
+		Global_Navit_Object.startActivityForResult(search_intent, NavitAddressSearch_id_offline);
 	}
 
 }
