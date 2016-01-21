@@ -81,7 +81,7 @@ import com.zoffcc.applications.zanavi.NavitSearchResultListArrayAdapter.search_r
 
 public class NavitAddressSearchActivity extends ActionBarActivity
 {
-	private ZANaviAutoCompleteTextViewSearchLocation address_string;
+	static ZANaviAutoCompleteTextViewSearchLocation address_string;
 	private EditText hn_string;
 	private TextView addrhn_view;
 	private static CheckBox pm_checkbox;
@@ -103,6 +103,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 	private static int res_counter_ = 0;
 	private int selected_id = -1;
 	private int selected_id_passthru = -1;
+	static Activity NavitAddressSearchActivity_s = null;
 
 	public class SearchResultListNewArrayAdapter extends ArrayAdapter<search_result_entry>
 	{
@@ -462,7 +463,6 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 
 			if (Navit.use_index_search)
 			{
-
 				while (running) // loop until we leave
 				{
 					// start the search, this could take a long time!!
@@ -554,9 +554,8 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 					Log.e("Navit", "SearchResultsThread args:pm=" + partial_match_i + " str=" + street_ + " town=" + town_ + " hn=" + hn_ + " cfl=" + Navit.Navit_last_address_search_country_flags + " iso=" + Navit.Navit_last_address_search_country_iso2_string);
 					Navit.N_NavitGraphics.SearchResultList(2, partial_match_i, street_, town_, hn_, Navit.Navit_last_address_search_country_flags, Navit.Navit_last_address_search_country_iso2_string, "0#0", 0);
 
-					Navit.search_ready = true;
-
 					is_searching = false;
+					Navit.search_ready = true;
 
 					while ((!changed) && (running))
 					{
@@ -613,6 +612,8 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 				finish();
 			}
 		});
+
+		NavitAddressSearchActivity_s = this;
 
 		// address: label
 		TextView addr_view = (TextView) findViewById(R.id.enter_dest);
@@ -762,7 +763,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 		catch (Exception e)
 		{
 		}
-		
+
 		hn_string = (EditText) findViewById(R.id.et_house_number_string);
 
 		if (Navit.use_index_search)
@@ -1063,6 +1064,28 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 
 	}
 
+	static void force_done()
+	{
+		try
+		{
+			if (searchresultsThreadNew_offline != null)
+			{
+				searchresultsThreadNew_offline.stop_me();
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		Intent resultIntent = new Intent();
+
+		NavitAddressSearchActivity_s.setResult(ActionBarActivity.RESULT_OK, resultIntent);
+		resultIntent.putExtra("address_string", NavitAddressSearchActivity.address_string.getText().toString());
+		resultIntent.putExtra("what", "-");
+
+		NavitAddressSearchActivity_s.finish();
+	}
+
 	private void executeDone(String what)
 	{
 		try
@@ -1077,7 +1100,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 		}
 
 		Intent resultIntent = new Intent();
-		resultIntent.putExtra("address_string", NavitAddressSearchActivity.this.address_string.getText().toString());
+		resultIntent.putExtra("address_string", NavitAddressSearchActivity.address_string.getText().toString());
 
 		if (this.search_type.endsWith("offline"))
 		{
@@ -1086,7 +1109,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 				resultIntent.putExtra("hn_string", NavitAddressSearchActivity.this.hn_string.getText().toString());
 			}
 
-			if (NavitAddressSearchActivity.this.pm_checkbox.isChecked())
+			if (NavitAddressSearchActivity.pm_checkbox.isChecked())
 			{
 				resultIntent.putExtra("partial_match", "1");
 			}
@@ -1095,7 +1118,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 				resultIntent.putExtra("partial_match", "0");
 			}
 
-			if (NavitAddressSearchActivity.this.hdup_checkbox.isChecked())
+			if (NavitAddressSearchActivity.hdup_checkbox.isChecked())
 			{
 				resultIntent.putExtra("hide_dup", "1");
 			}
