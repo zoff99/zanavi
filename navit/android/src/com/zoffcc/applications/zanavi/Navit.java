@@ -260,6 +260,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	static ZANaviPrefs p = new ZANaviPrefs();
 	static ZANaviPrefs p_old = new ZANaviPrefs();
 	static final int STREET_SEARCH_STRINGS_SAVE_COUNT = 10;
+	static boolean search_ready = false;
 
 	// static AnimationDrawable mFrameAnimation;
 	static Menu cur_menu = null;
