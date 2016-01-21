@@ -995,9 +995,91 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		try
 		{
 
-			// -------- ST --------
-			// -------- ST --------
-			// -------- ST --------
+			// -------- ST N --------
+			// -------- ST N --------
+			// -------- ST N --------
+
+			// clear results
+			Navit.NavitAddressResultList_foundItems.clear();
+			Navit.Navit_Address_Result_double_index.clear();
+			Navit.NavitSearchresultBarIndex = -1;
+			Navit.NavitSearchresultBar_title = "";
+			Navit.NavitSearchresultBar_text = "";
+			Navit.search_results_towns = 0;
+			Navit.search_results_streets = 0;
+			Navit.search_results_streets_hn = 0;
+			Navit.search_results_poi = 0;
+
+			final Thread tttt2 = new Thread()
+			{
+				@Override
+				public void run()
+				{
+					System.out.println("search test 001");
+					Navit.use_index_search = false;
+					Navit.executeSearch_with_values("burggas", "wien", null, true, false, true, true);
+				}
+			};
+			tttt2.start();
+			System.out.println("search test 002");
+			Thread.sleep(6000);
+			System.out.println("search test 003");
+
+			// -- wait for search result --
+			int c4 = 0;
+			while (Navit.search_ready == false)
+			{
+				System.out.println("search test 004:" + c4);
+				Thread.sleep(500);
+				c4++;
+
+				if (c4 > (2 * 60) * 5)
+				{
+					System.out.println("search test 004a");
+					Navit.search_ready = true;
+				}
+			}
+			// -- wait for search result --
+
+			System.out.println("search test 006");
+
+			// save screenshot
+			System.out.println("SCREENSHOT 001");
+			try
+			{
+				Navit.take_phone_screenshot(NavitAddressResultListActivity.NavitAddressResultListActivity_s, "/sdcard", "a");
+				NavitAddressResultListActivity.force_done();
+			}
+			catch (Exception ee4)
+			{
+				System.out.println("SCREENSHOT:error:" + Navit.stacktrace_to_string(ee4));
+				ee4.printStackTrace();
+			}
+			System.out.println("SCREENSHOT 002");
+
+			if (1 == 2 - 1)
+			{
+				return;
+			}
+			// -------- ST N --------
+			// -------- ST N --------
+			// -------- ST N --------
+
+			// -------- ST I --------
+			// -------- ST I --------
+			// -------- ST I --------
+
+			// clear results
+			Navit.NavitAddressResultList_foundItems.clear();
+			Navit.Navit_Address_Result_double_index.clear();
+			Navit.NavitSearchresultBarIndex = -1;
+			Navit.NavitSearchresultBar_title = "";
+			Navit.NavitSearchresultBar_text = "";
+			Navit.search_results_towns = 0;
+			Navit.search_results_streets = 0;
+			Navit.search_results_streets_hn = 0;
+			Navit.search_results_poi = 0;
+
 			final Thread tttt = new Thread()
 			{
 				@Override
@@ -1005,12 +1087,12 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				{
 					System.out.println("search test 001");
 					Navit.use_index_search = true;
-					Navit.executeSearch_with_values("burggas", "wien", null, true, true, true);
+					Navit.executeSearch_with_values("burggas", "wien", null, true, true, true, true);
 				}
 			};
 			tttt.start();
 			System.out.println("search test 002");
-			Thread.sleep(60000);
+			Thread.sleep(6000);
 			System.out.println("search test 003");
 
 			// -- wait for search result --
@@ -1021,7 +1103,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				Thread.sleep(500);
 				c3++;
 
-				if (c3 > 60)
+				if (c3 > (2 * 60) * 5)
 				{
 					System.out.println("search test 004a");
 					Navit.search_ready = true;
@@ -1065,9 +1147,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			{
 				return;
 			}
-			// -------- ST --------
-			// -------- ST --------
-			// -------- ST --------
+			// -------- ST I --------
+			// -------- ST I --------
+			// -------- ST I --------
 
 			File dir = new File(yaml_dir);
 			try
