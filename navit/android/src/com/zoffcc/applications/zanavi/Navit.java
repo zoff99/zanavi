@@ -4372,7 +4372,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 						{
 							System.out.println("DR_run_all_yaml_tests --> do");
 							CIRUN = true;
-							Thread.sleep(20000); // 20 min.
+							Thread.sleep(20000); // 20 secs.
 							ZANaviDebugReceiver.DR_run_all_yaml_tests();
 						}
 					}
@@ -8084,6 +8084,8 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 			if (this.my_dialog_num == Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE)
 			{
+				Navit.search_ready = false;
+
 				// start the search, this could take a long time!!
 				Log.e("Navit", "SearchResultsThread run1");
 				// need lowercase to find stuff !!
@@ -8137,10 +8139,15 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 						// flags --> 3: search all countries
 						//           2: search <iso2 string> country
 						//           1: search default country (what you have set as language in prefs)
+						System.out.println("searching ... 001");
 						N_NavitGraphics.SearchResultList(29, partial_match_i, Navit_last_address_search_string, "", "", Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
+						System.out.println("searching ... 002");
 
 						// sort result list
 						Collections.sort(Navit.NavitAddressResultList_foundItems);
+
+						System.out.println("searching ... 099");
+						Navit.search_ready = true;
 					}
 				}
 				Log.e("Navit", "SearchResultsThread run2");
@@ -9072,7 +9079,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 					/*
 					 * Intent intent = getIntent();
-					 * System.out.println("ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ**********************");
+					 * System.out.println("ÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœÃœ**********************");
 					 * startActivity(intent);
 					 * System.out.println("FFFFFFFFFFFFFFFFFFF**********************");
 					 * Log.d("Navit", "instance count=" + Navit.getInstanceCount());
@@ -15808,29 +15815,34 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	/*
 	 * start a search with given values
 	 */
-	static void executeSearch_with_values(String street, String town, String hn, boolean offline, boolean index, boolean partialmatch)
+	static void executeSearch_with_values(String street, String town, String hn, boolean offline, boolean index, boolean partialmatch, boolean hide_dupl)
 	{
 		Intent search_intent = new Intent(Global_Navit_Object, NavitAddressSearchActivity.class);
 		search_intent.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
+		String addr1 = "";
 
 		if ((town != null) && (street != null))
 		{
 			if (index)
 			{
 				search_intent.putExtra("address_string", street + " " + town);
+				addr1 = street + " " + town;
 			}
 			else
 			{
 				search_intent.putExtra("address_string", town + " " + street);
+				addr1 = town + " " + street;
 			}
 		}
 		else if (town != null)
 		{
 			search_intent.putExtra("address_string", town);
+			addr1 = town;
 		}
 		else if (street != null)
 		{
 			search_intent.putExtra("address_string", street);
+			addr1 = street;
 		}
 
 		if (hn != null)
@@ -15846,7 +15858,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		{
 			search_intent.putExtra("type", "online");
 		}
-		// search_intent.putExtra("search_country_id", 999);
+
 		String pm_temp = "0";
 		if (partialmatch)
 		{
@@ -15856,11 +15868,31 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 		if (index)
 		{
+			search_hide_duplicates = hide_dupl;
 			Global_Navit_Object.startActivityForResult(search_intent, NavitAddressSearch_id_offline);
 		}
 		else
 		{
+			Navit_last_address_partial_match = partialmatch;
+			Navit_last_address_search_string = addr1;
+			Navit_last_address_hn_string = hn;
+			Navit_last_address_full_file_search = false;
+			search_hide_duplicates = hide_dupl;
 
+			// only from offline mask!
+			// { "*A", "*AA", "*ALL*" }
+			Navit_last_address_search_country_iso2_string = "*A";
+			Navit_last_address_search_country_flags = 3;
+			Navit_last_address_search_country_id = 1; // default=*ALL*
+			p.PREF_search_country = Navit_last_address_search_country_id;
+			setPrefs_search_country();
+
+			Message msg = Navit_progress_h.obtainMessage();
+			Bundle b = new Bundle();
+			msg.what = 11;
+			b.putInt("dialog_num", Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
+			msg.setData(b);
+			Navit_progress_h.sendMessage(msg);
 		}
 	}
 
