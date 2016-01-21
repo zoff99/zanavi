@@ -455,12 +455,14 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 			Log.e("Navit", "SearchResultsThreadNew started");
 
 			Navit.index_search_realtime = true;
+			Navit.search_ready = false;
 
 			System.out.println("Global_Location_update_not_allowed = 1");
 			Navit.Global_Location_update_not_allowed = 1; // dont allow location updates now!
 
 			if (Navit.use_index_search)
 			{
+
 				while (running) // loop until we leave
 				{
 					// start the search, this could take a long time!!
@@ -551,6 +553,8 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 
 					Log.e("Navit", "SearchResultsThread args:pm=" + partial_match_i + " str=" + street_ + " town=" + town_ + " hn=" + hn_ + " cfl=" + Navit.Navit_last_address_search_country_flags + " iso=" + Navit.Navit_last_address_search_country_iso2_string);
 					Navit.N_NavitGraphics.SearchResultList(2, partial_match_i, street_, town_, hn_, Navit.Navit_last_address_search_country_flags, Navit.Navit_last_address_search_country_iso2_string, "0#0", 0);
+
+					Navit.search_ready = true;
 
 					is_searching = false;
 
