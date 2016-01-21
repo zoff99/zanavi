@@ -1013,10 +1013,18 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			System.out.println("search test 003");
 
 			// -- wait for search result --
+			int c3 = 0;
 			while (Navit.search_ready == false)
 			{
-				System.out.println("search test 004");
+				System.out.println("search test 004:" + c3);
 				Thread.sleep(500);
+				c3++;
+				
+				if (c3 > 60)
+				{
+					System.out.println("search test 004a");
+					Navit.search_ready = true;
+				}
 			}
 			// -- wait for search result --
 
