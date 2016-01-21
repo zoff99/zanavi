@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.inputmethod.InputMethodManager;
 
 public class ZANaviDebugReceiver extends BroadcastReceiver
 {
@@ -585,7 +586,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								File d2 = new File(f.getParent() + "/" + date + "/");
 								d2.mkdirs();
 								Navit.take_map_screenshot(f.getParent() + "/" + date + "/", f.getName());
-								// Navit.take_phone_screenshot(f.getParent() + "/" + date + "/", f.getName() + "_full");
+								// Navit.take_phone_screenshot(Navit.Global_Navit_Object, f.getParent() + "/" + date + "/", f.getName() + "_full");
 
 								// save roadbook
 								String[] separated = NavitGraphics.GetRoadBookItems(9990001);
@@ -993,7 +994,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 		try
 		{
-			
+
 			// -------- ST --------
 			// -------- ST --------
 			// -------- ST --------
@@ -1002,24 +1003,54 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				@Override
 				public void run()
 				{
-					Navit.executeSearch_with_values("burggas","wien",null,true,true,true);
+					Navit.executeSearch_with_values("burggas", "wien", null, true, true, true);
 				}
 			};
 			tttt.start();
-			Thread.sleep(25000);
+			Thread.sleep(3000);
+
+			// -- wait for search result --
+			while (Navit.search_ready == false)
+			{
+				Thread.sleep(500);
+			}
+			// -- wait for search result --
+
+			Navit.runOnUI(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						System.out.println("hide keyboard-1");
+						// now hide the keyboard
+						InputMethodManager inputManager = (InputMethodManager) Navit.Global_Navit_Object.getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputManager.hideSoftInputFromWindow(Navit.Global_Navit_Object.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+						inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+						System.out.println("hide keyboard-2");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+						System.out.println("hide keyboard-3");
+					}
+				}
+			});
+
 			// save screenshot
 			System.out.println("SCREENSHOT 001");
-			Navit.take_phone_screenshot("/sdcard", "a");
+			Navit.take_phone_screenshot(NavitAddressSearchActivity.NavitAddressSearchActivity_s, "/sdcard", "a");
+			NavitAddressSearchActivity.force_done();
 			System.out.println("SCREENSHOT 002");
 
-			if (1 == 2-1)
+			if (1 == 2 - 1)
 			{
 				return;
 			}
 			// -------- ST --------
 			// -------- ST --------
 			// -------- ST --------
-			
 
 			File dir = new File(yaml_dir);
 			try
