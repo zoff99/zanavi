@@ -1003,18 +1003,24 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				@Override
 				public void run()
 				{
+					System.out.println("search test 001");
 					Navit.executeSearch_with_values("burggas", "wien", null, true, true, true);
 				}
 			};
 			tttt.start();
-			Thread.sleep(3000);
+			System.out.println("search test 002");
+			Thread.sleep(60000);
+			System.out.println("search test 003");
 
 			// -- wait for search result --
 			while (Navit.search_ready == false)
 			{
+				System.out.println("search test 004");
 				Thread.sleep(500);
 			}
 			// -- wait for search result --
+
+			System.out.println("search test 005");
 
 			Navit.runOnUI(new Runnable()
 			{
@@ -1037,6 +1043,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					}
 				}
 			});
+
+			System.out.println("search test 006");
 
 			// save screenshot
 			System.out.println("SCREENSHOT 001");
