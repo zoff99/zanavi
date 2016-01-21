@@ -15803,4 +15803,57 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 
 	}
+	
+	/*
+	 * start a search with given values
+	 */
+	static void executeSearch_with_values(String street, String town, String hn, boolean offline, boolean index, boolean partialmatch)
+	{
+		Navit.use_index_search = Navit.allow_use_index_search();
+		Intent search_intent = new Intent(this, NavitAddressSearchActivity.class);
+		search_intent.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
+
+		if ((town != null) && (street != null))
+		{
+			if (index)
+			{
+				search_intent.putExtra("address_string", street+" "+town);
+			}
+			else
+			{
+				search_intent.putExtra("address_string", town+" "+street);
+			}
+		}
+		else if (town != null)
+		{
+			search_intent.putExtra("address_string", town);
+		}
+		else if (street != null)
+		{
+			search_intent.putExtra("address_string", street);
+		}
+
+		if (hn != null)
+		{
+			search_intent.putExtra("hn_string", hn);
+		}
+		
+		if (offline)
+		{
+			search_intent.putExtra("type", "offline");
+		}
+		else
+		{
+			search_intent.putExtra("type", "online");
+		}
+		// search_intent.putExtra("search_country_id", 999);
+		String pm_temp = "0";
+		if (partialmatch)
+		{
+			pm_temp = "1";
+		}
+		search_intent.putExtra("partial_match", pm_temp);
+		this.startActivityForResult(search_intent, NavitAddressSearch_id_offline);
+	}
+
 }
