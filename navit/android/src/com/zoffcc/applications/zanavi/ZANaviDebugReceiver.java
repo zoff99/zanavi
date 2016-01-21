@@ -1009,7 +1009,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			Thread.sleep(25000);
 			// save screenshot
 			System.out.println("SCREENSHOT 001");
-			Navit.take_phone_screenshot("/sdcard/a.png");
+			Navit.take_phone_screenshot("/sdcard", "a");
 			System.out.println("SCREENSHOT 002");
 
 			if (1 == 2-1)
