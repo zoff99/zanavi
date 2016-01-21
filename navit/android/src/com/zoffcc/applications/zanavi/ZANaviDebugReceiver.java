@@ -995,12 +995,27 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		{
 			
 			// -------- ST --------
-			Navit.executeSearch_with_values("burggas","wien",null,true,true,true);
+			// -------- ST --------
+			// -------- ST --------
+			final Thread tttt = new Thread()
+			{
+				@Override
+				public void run()
+				{
+					Navit.executeSearch_with_values("burggas","wien",null,true,true,true);
+				}
+			};
+			tttt.start();
+			Thread.sleep(25000);
+			// save screenshot
+			Navit.take_phone_screenshot("/sdcard/a.png");
 
 			if (1 == 2-1)
 			{
 				return;
 			}
+			// -------- ST --------
+			// -------- ST --------
 			// -------- ST --------
 			
 
