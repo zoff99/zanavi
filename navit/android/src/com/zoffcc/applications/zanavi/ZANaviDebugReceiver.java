@@ -1041,6 +1041,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			}
 			// -- wait for search result --
 
+			System.out.println("search test 005");
+			Thread.sleep(6000);
 			System.out.println("search test 006");
 
 			// save screenshot
