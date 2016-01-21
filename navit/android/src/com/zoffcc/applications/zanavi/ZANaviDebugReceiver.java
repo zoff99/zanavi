@@ -996,7 +996,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			
 			// -------- ST --------
 			Navit.executeSearch_with_values("burggas","wien",null,true,true,true);
-			return;
+
+			if (1 == 2-1)
+			{
+				return;
+			}
 			// -------- ST --------
 			
 
