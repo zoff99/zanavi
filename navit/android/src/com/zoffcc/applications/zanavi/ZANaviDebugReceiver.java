@@ -993,6 +993,13 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 		try
 		{
+			
+			// -------- ST --------
+			Navit.executeSearch_with_values("burggas","wien",null,true,true,true);
+			return;
+			// -------- ST --------
+			
+
 			File dir = new File(yaml_dir);
 			try
 			{
