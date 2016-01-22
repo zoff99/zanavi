@@ -71,27 +71,27 @@ dependencies:
     #- if [ ! -f ~/maps/navitmap_028.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_028.bin "http://ci.zanavi.cc/data/croatia.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_029.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_029.bin "http://ci.zanavi.cc/data/cyprus.bin" ; fi
 
-    - if [ ! -f ~/maps/navitmap_030.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_030.bin "http://ci.zanavi.cc/data/czech_republic.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_031.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_031.bin "http://ci.zanavi.cc/data/estonia.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_032.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_032.bin "http://ci.zanavi.cc/data/hungary.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_033.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_033.bin "http://ci.zanavi.cc/data/greece.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_034.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_034.bin "http://ci.zanavi.cc/data/kosovo.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_035.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_035.bin "http://ci.zanavi.cc/data/macedonia.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_036.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_036.bin "http://ci.zanavi.cc/data/moldova.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_037.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_037.bin "http://ci.zanavi.cc/data/denmark.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_038.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_038.bin "http://ci.zanavi.cc/data/russia-european-part.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_039.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_039.bin "http://ci.zanavi.cc/data/serbia.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_030.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_030.bin "http://ci.zanavi.cc/data/czech_republic.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_031.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_031.bin "http://ci.zanavi.cc/data/estonia.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_032.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_032.bin "http://ci.zanavi.cc/data/hungary.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_033.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_033.bin "http://ci.zanavi.cc/data/greece.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_034.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_034.bin "http://ci.zanavi.cc/data/kosovo.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_035.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_035.bin "http://ci.zanavi.cc/data/macedonia.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_036.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_036.bin "http://ci.zanavi.cc/data/moldova.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_037.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_037.bin "http://ci.zanavi.cc/data/denmark.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_038.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_038.bin "http://ci.zanavi.cc/data/russia-european-part.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_039.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_039.bin "http://ci.zanavi.cc/data/serbia.bin" ; fi
 
-    - if [ ! -f ~/maps/navitmap_040.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_040.bin "http://ci.zanavi.cc/data/slovakia.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_041.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_041.bin "http://ci.zanavi.cc/data/slovenia.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_042.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_043.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_044.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_045.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_045.bin "http://ci.zanavi.cc/data/canada.bin" ; fi
-    - if [ ! -f ~/maps/navitmap_046.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_046.bin "http://ci.zanavi.cc/data/mexico.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_040.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_040.bin "http://ci.zanavi.cc/data/slovakia.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_041.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_041.bin "http://ci.zanavi.cc/data/slovenia.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_042.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_043.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_044.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_045.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_045.bin "http://ci.zanavi.cc/data/canada.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_046.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_046.bin "http://ci.zanavi.cc/data/mexico.bin" ; fi
 
     - if [ ! -f ~/maps/navitmap_001.bin.idx ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_001.bin.idx "http://zanavi.weidestraat.nl/data/planet.bin.idx" ; fi
-    - if [ ! -f ~/maps/navitmap_049.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_049.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin" ; fi
 test:
   pre:
     - mksdcard -l e 18000M sdcard.img
