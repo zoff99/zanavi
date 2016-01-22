@@ -1113,7 +1113,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								System.out.println("search test 005");
 								c4 = 0;
-								while (NavitAddressResultListActivity.NavitAddressResultListActivity_s == NULL)
+								while (NavitAddressResultListActivity.NavitAddressResultListActivity_s == null)
 								{
 									System.out.println("search test 004b:" + c4);
 									System.out.println("ZANaviDebugReceiver:" + "mem1:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
