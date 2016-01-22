@@ -201,7 +201,6 @@ test:
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
       counter=$[ $counter + 1 ] ;
-      echo $counter ;
       if [ $counter -eq 38 ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
@@ -234,7 +233,6 @@ test:
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
       counter=$[ $counter + 1 ] ;
-      echo $counter ;
       if [ $counter -eq 38 ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
