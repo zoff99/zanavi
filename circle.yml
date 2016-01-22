@@ -201,7 +201,8 @@ test:
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
       counter = $[ $counter + 1 ] ;
-      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      echo $counter ;
+      if [ "$counter" == "38" ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
@@ -233,7 +234,8 @@ test:
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
       counter = $[ $counter + 1 ] ;
-      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      echo $counter ;
+      if [ "$counter" == "38" ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
