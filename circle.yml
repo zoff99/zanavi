@@ -142,9 +142,11 @@ test:
 
 
     - mkdir ~/yaml-tests/
-    - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
-    - wget -t 10 -O ~/yaml-tests/yaml2.zip "https://github.com/zoff99/routing-qa/archive/master.zip"
+    #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
+    #- wget -t 10 -O ~/yaml-tests/yaml2.zip "https://github.com/zoff99/routing-qa/archive/master.zip"
+    - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/search-test001.zip"
     - cd ~/yaml-tests/ && unzip yaml1.zip && cd ~/ ; exit 0
+    - cd ~/yaml-tests/ && mv routing-qa-search-test001 routing-qa-master && cd ~/ ; exit 0
     - cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
     - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; exit 0
 
@@ -209,7 +211,6 @@ test:
       sleep 180 ;
       else ready_="1" ;
       fi ;
-      ready_="1";
       done ;
       exit 0
 # ---------- waiting for tests to complete -------------
@@ -222,10 +223,6 @@ test:
     - sleep 20
 
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
-
-
-
-    - fb-adb pull "/sdcard/a.png" $CIRCLE_TEST_REPORTS/a.png
 
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
