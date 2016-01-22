@@ -62,12 +62,12 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static int yaml_err = 0;
 
 	/*
-	 * 
+	 *
 	 * Examples:
-	 * 
+	 *
 	 * (params: "lat, lon")
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es set_position2 "48.656, 15.6777"
-	 * 
+	 *
 	 * lat, lon, speed (m/s), direction (degrees)
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es set_position "48.656, 15.6777, 12, -75"
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es add_destination "48.656, 15.6777"
@@ -75,10 +75,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es disable_normal_location ""
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es enable_normal_location ""
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es export_route_gpx ""
-	 * 
-	 * 
+	 *
+	 *
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es set_pos_and_dest "Via_Graf 9.1439748 45.5133242 9.1391345 45.5146592"
-	 * 
+	 *
 	 * -
 	 */
 
@@ -932,11 +932,415 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 	}
 
+	static void DR_replay_yaml_file_search_n(String filename, final String date)
+	{
+
+		file_name_global = filename;
+
+		yaml_err++; // incr. error count (on success later -> decrease it again)
+
+		try
+		{
+			if ((filename != null) && (!filename.equals("")))
+			{
+				BufferedReader br = null;
+				br = new BufferedReader(new FileReader(filename));
+
+				is_replaying = true;
+				NavitGraphics.NavitAOverlay_s.postInvalidate();
+
+				disable_normal_location();
+
+				DR_clear_route();
+				Thread.sleep(1000);
+
+				String str_str = "";
+				String city_str = "";
+				String hn_str = "";
+
+				String mode = "-";
+				String line = "";
+				while ((line = br.readLine()) != null)
+				{
+					if ((line.length() >= "type:".length()) && (line.equals("type:")))
+					{
+						mode = "type";
+					}
+					else if ((line.length() >= "input:".length()) && (line.equals("input:")))
+					{
+						mode = "input";
+					}
+					else if ((line.length() >= "success:".length()) && (line.equals("success:")))
+					{
+						mode = "success";
+					}
+					else if ((line.length() > 2) && (!line.startsWith("#")))
+					{
+						try
+						{
+							if (mode == "success")
+							{
+								String name_str = line.split(":", 2)[0].replace(" ", "");
+								String value_str = line.split(":", 2)[1].replace(" ", "");
+
+								if (name_str.equalsIgnoreCase("item"))
+								{
+									success_item = value_str;
+								}
+								else if (name_str.equalsIgnoreCase("value"))
+								{
+									success_value = value_str;
+								}
+								else if (name_str.equalsIgnoreCase("operator"))
+								{
+									success_operator = value_str;
+								}
+							}
+							else if (mode == "type")
+							{
+								// do nothing
+							}
+							else
+							{
+								String name_str = line.split(":", 2)[0];
+								String value_str = line.split(":", 2)[1];
+
+								if (name_str.contains("street"))
+								{
+									str_str = value_str;
+								}
+								else if (name_str.contains("city"))
+								{
+									city_str = value_str;
+								}
+								else if (name_str.contains("housenumber"))
+								{
+									hn_str = value_str;
+								}
+							}
+						}
+						catch (Exception e2)
+						{
+							System.out.println("_DREX_:001" + e2.getMessage());
+						}
+					}
+				}
+
+				try
+				{
+					int jj = 0;
+					while ((NavitGraphics.navit_route_status != 0) && (jj < 120))
+					{
+						jj++;
+						System.out.println("ZANaviDebugReceiver:" + "waiting for route to clear (status=" + NavitGraphics.navit_route_status + "):" + jj);
+						// wait for old route to be cleared
+						Thread.sleep(1000);
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+
+				System.out.println("ZANaviDebugReceiver:" + "mem0:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
+
+				final Thread search_n_001 = new Thread()
+				{
+					int wait = 1;
+					int count = 0;
+					int max_count = 380; // seconds
+
+					@Override
+					public void run()
+					{
+						while (wait == 1)
+						{
+							try
+							{
+
+
+								// -------- ST N --------
+								// -------- ST N --------
+								// -------- ST N --------
+
+								// clear results
+								Navit.NavitAddressResultList_foundItems.clear();
+								Navit.Navit_Address_Result_double_index.clear();
+								Navit.NavitSearchresultBarIndex = -1;
+								Navit.NavitSearchresultBar_title = "";
+								Navit.NavitSearchresultBar_text = "";
+								Navit.search_results_towns = 0;
+								Navit.search_results_streets = 0;
+								Navit.search_results_streets_hn = 0;
+								Navit.search_results_poi = 0;
+
+								final Thread tttt2 = new Thread()
+								{
+									@Override
+									public void run()
+									{
+										System.out.println("search test 001");
+										Navit.use_index_search = false;
+										Navit.executeSearch_with_values(str_str, city_str, hn_str, true, false, true, true);
+									}
+								};
+								tttt2.start();
+								System.out.println("search test 002");
+								Thread.sleep(6000);
+								System.out.println("search test 003");
+
+								// -- wait for search result --
+								int c4 = 0;
+								while (Navit.search_ready == false)
+								{
+									System.out.println("search test 004:" + c4);
+									System.out.println("ZANaviDebugReceiver:" + "mem1:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
+
+									Thread.sleep(500);
+									c4++;
+
+									if (c4 > (2 * 60) * 5)
+									{
+										System.out.println("search test 004a");
+										Navit.search_ready = true;
+									}
+								}
+								// -- wait for search result --
+
+								System.out.println("search test 005");
+								Thread.sleep(6000); // wait for result windows to open
+								System.out.println("search test 006");
+
+								// save screenshot
+								System.out.println("SCREENSHOT 001");
+								try
+								{
+									File f = new File(file_name_global);
+									File d2 = new File(f.getParent() + "/" + date + "/");
+									d2.mkdirs();
+									Navit.take_phone_screenshot(NavitAddressResultListActivity.NavitAddressResultListActivity_s, f.getParent() + "/" + date + "/", f.getName());
+
+									NavitAddressResultListActivity.force_done();
+								}
+								catch (Exception ee4)
+								{
+									System.out.println("SCREENSHOT:error:" + Navit.stacktrace_to_string(ee4));
+									ee4.printStackTrace();
+								}
+								System.out.println("SCREENSHOT 002");
+
+								wait = 0;
+								// -------- ST N --------
+								// -------- ST N --------
+								// -------- ST N --------
+
+
+								FileOutputStream outf = null;
+								try
+								{
+									outf = new FileOutputStream(f.getParent() + "/" + date + "/" + f.getName() + ".result.txt");
+								}
+								catch (Exception ef)
+								{
+									//System.out.println("EE002:" + ef.getMessage());
+									System.out.println("_DREX_:003" + ef.getMessage());
+								}
+
+								OutputStreamWriter out = null;
+								try
+								{
+									out = new OutputStreamWriter(outf);
+								}
+								catch (Exception e)
+								{
+									// System.out.println("EE003:" + e.getMessage());
+									System.out.println("_DREX_:004" + e.getMessage());
+								}
+
+								//System.out.println("Roadbook:length=" + (separated.length - 2));
+								try
+								{
+									out.write("Search:length=" + 3 + "\n");
+								}
+								catch (Exception e)
+								{
+									//System.out.println("EE004:" + e.getMessage());
+									System.out.println("_DREX_:005" + e.getMessage());
+								}
+
+								try
+								{
+									out.flush();
+									out.close();
+									outf.flush();
+									outf.close();
+								}
+								catch (Exception e)
+								{
+									System.out.println("_DREX_:016" + e.getMessage());
+								}
+
+
+
+								// calculate success criterion ----------------------
+								// calculate success criterion ----------------------
+
+								result_code = -1;
+
+
+
+
+								// disable ---------
+								// disable ---------
+								// disable ---------
+								// disable ---------
+								success_operator = "";
+								success_value = "";
+								result_code = 0;
+								// disable ---------
+								// disable ---------
+								// disable ---------
+								// disable ---------
+
+
+
+
+
+								if ((!success_operator.equals("")) && (!success_value.equals("")))
+								{
+									System.out.println("search:so=" + success_source);
+									System.out.println("search:it=" + success_item);
+									System.out.println("search:sv=" + success_value);
+
+									if (success_source.equalsIgnoreCase("'dbus'"))
+									{
+										if (success_item.equalsIgnoreCase("'status'"))
+										{
+											int s = NavitGraphics.navit_route_status;
+											int v = Integer.parseInt(success_value);
+
+											if ((success_operator.contains(">")) || ((success_operator.contains("<"))))
+											{
+												if (s == 17)
+												{
+													s = 33;
+												}
+											}
+											else
+											{
+												if (v == 33)
+												{
+													v = 17;
+													if (s == 33)
+													{
+														s = 17;
+													}
+												}
+												else if (v == 17)
+												{
+													if (s == 33)
+													{
+														s = 17;
+													}
+												}
+											}
+											result_code = success_value_compare(s, v);
+
+											System.out.println("search:003:" + s + " " + v);
+										}
+										else if (success_item.equalsIgnoreCase("'distance'"))
+										{
+											int s = local_meters_value;
+											int v = Integer.parseInt(success_value);
+											result_code = success_value_compare(s, v);
+
+											System.out.println("search:001:" + s + " " + v);
+										}
+									}
+									else if (success_source.equalsIgnoreCase("'gpx'"))
+									{
+										if (success_item.equalsIgnoreCase("'nodes'"))
+										{
+											int s = -99;
+											//if (separated == null)
+											//{
+											//	s = -99;
+											//}
+											//else
+											//{
+											s = (separated.length - 2);
+											//}
+											int v = Integer.parseInt(success_value);
+											result_code = success_value_compare(s, v);
+										}
+									}
+								}
+
+
+								if (result_code == 0)
+								{
+									String orig = f.getParent() + "/" + date + "/" + f.getName() + ".result.txt";
+									String rename_to = f.getParent() + "/" + date + "/" + f.getName() + "._SUCCESS_.result.txt";
+									File f2 = new File(orig);
+									File f2_to = new File(rename_to);
+									f2.renameTo(f2_to);
+
+									yaml_err--;
+								}
+								else
+								{
+								}
+
+								// calculate success criterion ----------------------
+								// calculate success criterion ----------------------
+
+							}
+
+						}
+						catch (Exception ebig)
+						{
+							System.out.println("_DREX_:033" + Navit.stacktrace_to_string(ebig));
+						}
+					}
+				};
+				search_n_001.start();
+				search_n_001.join();
+				Thread.sleep(500);
+
+				is_replaying = false;
+				NavitGraphics.NavitAOverlay_s.postInvalidate();
+				br.close();
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("_DREX_:011" + e.getMessage());
+			is_replaying = false;
+			NavitGraphics.NavitAOverlay_s.postInvalidate();
+		}
+	}
+
+
+
 	static int success_value_compare(int s, int v)
 	{
 		if (success_operator.equalsIgnoreCase("'=='"))
 		{
 			if (s == v)
+			{
+				return 0;
+			}
+		}
+		else if (success_operator.equalsIgnoreCase("'<>'"))
+		{
+			if (s != v)
+			{
+				return 0;
+			}
+		}
+		else if (success_operator.equalsIgnoreCase("'!='"))
+		{
+			if (s != v)
 			{
 				return 0;
 			}
@@ -994,165 +1398,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 		try
 		{
-
-			// -------- ST N --------
-			// -------- ST N --------
-			// -------- ST N --------
-
-			// clear results
-			Navit.NavitAddressResultList_foundItems.clear();
-			Navit.Navit_Address_Result_double_index.clear();
-			Navit.NavitSearchresultBarIndex = -1;
-			Navit.NavitSearchresultBar_title = "";
-			Navit.NavitSearchresultBar_text = "";
-			Navit.search_results_towns = 0;
-			Navit.search_results_streets = 0;
-			Navit.search_results_streets_hn = 0;
-			Navit.search_results_poi = 0;
-
-			final Thread tttt2 = new Thread()
-			{
-				@Override
-				public void run()
-				{
-					System.out.println("search test 001");
-					Navit.use_index_search = false;
-					Navit.executeSearch_with_values("burggas", "wien", null, true, false, true, true);
-				}
-			};
-			tttt2.start();
-			System.out.println("search test 002");
-			Thread.sleep(6000);
-			System.out.println("search test 003");
-
-			// -- wait for search result --
-			int c4 = 0;
-			while (Navit.search_ready == false)
-			{
-				System.out.println("search test 004:" + c4);
-				Thread.sleep(500);
-				c4++;
-
-				if (c4 > (2 * 60) * 5)
-				{
-					System.out.println("search test 004a");
-					Navit.search_ready = true;
-				}
-			}
-			// -- wait for search result --
-
-			System.out.println("search test 005");
-			Thread.sleep(6000);
-			System.out.println("search test 006");
-
-			// save screenshot
-			System.out.println("SCREENSHOT 001");
-			try
-			{
-				Navit.take_phone_screenshot(NavitAddressResultListActivity.NavitAddressResultListActivity_s, "/sdcard", "a");
-				NavitAddressResultListActivity.force_done();
-			}
-			catch (Exception ee4)
-			{
-				System.out.println("SCREENSHOT:error:" + Navit.stacktrace_to_string(ee4));
-				ee4.printStackTrace();
-			}
-			System.out.println("SCREENSHOT 002");
-
-			if (1 == 2 - 1)
-			{
-				return;
-			}
-			// -------- ST N --------
-			// -------- ST N --------
-			// -------- ST N --------
-
-			// -------- ST I --------
-			// -------- ST I --------
-			// -------- ST I --------
-
-			// clear results
-			Navit.NavitAddressResultList_foundItems.clear();
-			Navit.Navit_Address_Result_double_index.clear();
-			Navit.NavitSearchresultBarIndex = -1;
-			Navit.NavitSearchresultBar_title = "";
-			Navit.NavitSearchresultBar_text = "";
-			Navit.search_results_towns = 0;
-			Navit.search_results_streets = 0;
-			Navit.search_results_streets_hn = 0;
-			Navit.search_results_poi = 0;
-
-			final Thread tttt = new Thread()
-			{
-				@Override
-				public void run()
-				{
-					System.out.println("search test 001");
-					Navit.use_index_search = true;
-					Navit.executeSearch_with_values("burggas", "wien", null, true, true, true, true);
-				}
-			};
-			tttt.start();
-			System.out.println("search test 002");
-			Thread.sleep(6000);
-			System.out.println("search test 003");
-
-			// -- wait for search result --
-			int c3 = 0;
-			while (Navit.search_ready == false)
-			{
-				System.out.println("search test 004:" + c3);
-				Thread.sleep(500);
-				c3++;
-
-				if (c3 > (2 * 60) * 5)
-				{
-					System.out.println("search test 004a");
-					Navit.search_ready = true;
-				}
-			}
-			// -- wait for search result --
-
-			System.out.println("search test 005");
-
-			Navit.runOnUI(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					try
-					{
-						System.out.println("hide keyboard-1");
-						// now hide the keyboard
-						InputMethodManager inputManager = (InputMethodManager) Navit.Global_Navit_Object.getSystemService(Context.INPUT_METHOD_SERVICE);
-						inputManager.hideSoftInputFromWindow(Navit.Global_Navit_Object.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-						inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-						System.out.println("hide keyboard-2");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-						System.out.println("hide keyboard-3");
-					}
-				}
-			});
-
-			System.out.println("search test 006");
-
-			// save screenshot
-			System.out.println("SCREENSHOT 001");
-			Navit.take_phone_screenshot(NavitAddressSearchActivity.NavitAddressSearchActivity_s, "/sdcard", "a");
-			NavitAddressSearchActivity.force_done();
-			System.out.println("SCREENSHOT 002");
-
-			if (1 == 2 - 1)
-			{
-				return;
-			}
-			// -------- ST I --------
-			// -------- ST I --------
-			// -------- ST I --------
-
 			File dir = new File(yaml_dir);
 			try
 			{
@@ -1188,6 +1433,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 			yaml_sum = 0;
 			yaml_err = 0;
+			BufferedReader br = null;
+			String line2 = "";
+
 
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
@@ -1234,7 +1482,27 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					long startTime = System.currentTimeMillis();
 					System.out.println("XXXX:2:4:" + yamlfile.getAbsolutePath());
 
-					DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
+					br = null;
+					line2 = "";
+					try
+					{
+						br = new BufferedReader(new FileReader(yamlfile.getAbsolutePath()));
+						line2 = br.readLine();
+					}
+					catch(Exception e66)
+					{
+					}
+
+					if ((line2.length() >= "type:".length()) && (line2.equals("type: 'NS'")))
+					{
+						DR_replay_yaml_file_search_n(yamlfile.getAbsolutePath(), date_str);
+					}
+					else
+					{
+						DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
+					}
+
+
 
 					System.out.println("XXXX:2:5:" + yamlfile.getAbsolutePath());
 					float difference = (float) (System.currentTimeMillis() - startTime);
