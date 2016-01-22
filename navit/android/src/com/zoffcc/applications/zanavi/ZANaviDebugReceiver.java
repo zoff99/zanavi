@@ -1103,7 +1103,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									Thread.sleep(500);
 									c4++;
 
-									if (c4 > (2 * 60) * 5)
+									if (c4 > (2 * 60) * 15)
 									{
 										System.out.println("search test 004a");
 										Navit.search_ready = true;
