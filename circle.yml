@@ -28,8 +28,8 @@ dependencies:
     - sudo apt-get install libmagickcore5 > /dev/null 2> /dev/null
     - sudo apt-get install perlmagick > /dev/null 2> /dev/null
     - sudo apt-get install liblwp-useragent-determined-perl > /dev/null 2> /dev/null
-    - sudo apt-get install xvfb
-    - sudo apt-get install xdotool
+    - sudo apt-get install xvfb > /dev/null 2> /dev/null
+    - sudo apt-get install xdotool > /dev/null 2> /dev/null
 
     - bash ~/zanavi/ci/do_android.sh
 
