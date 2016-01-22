@@ -1090,7 +1090,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								};
 								tttt2.start();
 								System.out.println("search test 002");
-								Thread.sleep(6000);
+								Thread.sleep(2000);
 								System.out.println("search test 003");
 
 								// -- wait for search result --
@@ -1112,7 +1112,21 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								// -- wait for search result --
 
 								System.out.println("search test 005");
-								Thread.sleep(6000); // wait for result windows to open
+								c4 = 0;
+								while (NavitAddressResultListActivity.NavitAddressResultListActivity_s == NULL)
+								{
+									System.out.println("search test 004b:" + c4);
+									System.out.println("ZANaviDebugReceiver:" + "mem1:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
+
+									Thread.sleep(500);
+									c4++;
+
+									if (c4 > (2 * 60) * 5)
+									{
+										System.out.println("search test 004ab");
+										break;
+									}
+								}
 								System.out.println("search test 006");
 
 								// save screenshot
