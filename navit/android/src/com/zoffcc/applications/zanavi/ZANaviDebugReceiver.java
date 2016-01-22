@@ -1130,6 +1130,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								}
 								System.out.println("search test 006");
 
+								// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
+
 								// save screenshot
 								System.out.println("SCREENSHOT 001");
 								try
