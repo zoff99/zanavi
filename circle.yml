@@ -193,10 +193,47 @@ test:
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
+
+
     - ready_="0" ;
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+      counter = 0;
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
+      counter = $[ $counter + 1 ] ;
+      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
+      echo "$n" "/" "$count_files"  ;
+      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
+      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
+      if [ $died_count -gt 1 ]; then
+      echo "com.zoffcc.applications.zanavi crashed";
+      cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
+      ready_="1" ;
+      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
+      fi ;
+      if [ ! -f ~/_done_.txt ]; then
+      sleep 180 ;
+      else ready_="1" ;
+      fi ;
+      done ;
+      exit 0
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+    - ready_="0" ;
+      count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+      counter = 0;
+      while [ $ready_ == "0" ]; do
+      echo -n "running tests " ;
+      counter = $[ $counter + 1 ] ;
+      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
