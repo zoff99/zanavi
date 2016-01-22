@@ -1095,6 +1095,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								// -- wait for search result --
 								int c4 = 0;
+								Navit.search_list_ready = false;
 								while (Navit.search_ready == false)
 								{
 									System.out.println("search test 004:" + c4);
@@ -1113,7 +1114,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								System.out.println("search test 005");
 								c4 = 0;
-								while (NavitAddressResultListActivity.NavitAddressResultListActivity_s == null)
+								while (Navit.search_list_ready == false)
 								{
 									System.out.println("search test 004b:" + c4);
 									System.out.println("ZANaviDebugReceiver:" + "mem1:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
