@@ -197,12 +197,12 @@ test:
 
     - ready_="0" ;
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
-      counter = 0;
+      counter=0;
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
-      counter = $[ $counter + 1 ] ;
+      counter=$[ $counter + 1 ] ;
       echo $counter ;
-      if [ "$counter" == "38" ] ; then exit 0 ; fi ;
+      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
@@ -230,12 +230,12 @@ test:
 # ---------- waiting for tests to complete -------------
     - ready_="0" ;
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
-      counter = 0;
+      counter=0;
       while [ $ready_ == "0" ]; do
       echo -n "running tests " ;
-      counter = $[ $counter + 1 ] ;
+      counter=$[ $counter + 1 ] ;
       echo $counter ;
-      if [ "$counter" == "38" ] ; then exit 0 ; fi ;
+      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
