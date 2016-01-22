@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.OutputStreamWriter;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -1130,8 +1131,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								}
 								System.out.println("search test 006");
 
-								// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
-
 								// save screenshot
 								System.out.println("SCREENSHOT 001");
 								try
@@ -1188,6 +1187,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								{
 									//System.out.println("EE004:" + e.getMessage());
 									System.out.println("_DREX_:005" + e.getMessage());
+								}
+
+								try
+								{
+									// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
+									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+								}
+								catch (Exception e)
+								{
+									System.out.println("_DREX_:046" + e.getMessage());
 								}
 
 								try
