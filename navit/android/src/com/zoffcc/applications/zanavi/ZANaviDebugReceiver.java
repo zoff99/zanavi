@@ -1295,11 +1295,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								// calculate success criterion ----------------------
 
 							}
-
-						}
-						catch (Exception ebig)
-						{
-							System.out.println("_DREX_:033" + Navit.stacktrace_to_string(ebig));
+							catch (Exception ebig)
+							{
+								System.out.println("_DREX_:033" + Navit.stacktrace_to_string(ebig));
+							}
 						}
 					}
 				};
