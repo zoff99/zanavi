@@ -132,6 +132,7 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
 
 		NavitAddressResultListActivity_s = this;
+		Navit.search_list_ready = true;
 		System.out.println("SCREENSHOT:this");
 
 		//Log.e("Navit", "all ok");
