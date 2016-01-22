@@ -1042,6 +1042,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					e.printStackTrace();
 				}
 
+				final String str_str_f = str_str;
+				final String city_str_f = city_str;
+				final String hn_str_f = hn_str;
+
 				System.out.println("ZANaviDebugReceiver:" + "mem0:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
 
 				final Thread search_n_001 = new Thread()
@@ -1081,7 +1085,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									{
 										System.out.println("search test 001");
 										Navit.use_index_search = false;
-										Navit.executeSearch_with_values(str_str, city_str, hn_str, true, false, true, true);
+										Navit.executeSearch_with_values(str_str_f, city_str_f, hn_str_f, true, false, true, true);
 									}
 								};
 								tttt2.start();
@@ -1138,6 +1142,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								FileOutputStream outf = null;
 								try
 								{
+									File f = new File(file_name_global);
 									outf = new FileOutputStream(f.getParent() + "/" + date + "/" + f.getName() + ".result.txt");
 								}
 								catch (Exception ef)
@@ -1268,7 +1273,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 											//}
 											//else
 											//{
-											s = (separated.length - 2);
+											// ** // s = (separated.length - 2);
 											//}
 											int v = Integer.parseInt(success_value);
 											result_code = success_value_compare(s, v);
@@ -1279,6 +1284,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								if (result_code == 0)
 								{
+									File f = new File(file_name_global);
 									String orig = f.getParent() + "/" + date + "/" + f.getName() + ".result.txt";
 									String rename_to = f.getParent() + "/" + date + "/" + f.getName() + "._SUCCESS_.result.txt";
 									File f2 = new File(orig);
