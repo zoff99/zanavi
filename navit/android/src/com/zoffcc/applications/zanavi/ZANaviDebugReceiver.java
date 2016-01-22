@@ -37,7 +37,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
-import android.view.inputmethod.InputMethodManager;
 
 public class ZANaviDebugReceiver extends BroadcastReceiver
 {
@@ -63,12 +62,12 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static int yaml_err = 0;
 
 	/*
-	 *
+	 * 
 	 * Examples:
-	 *
+	 * 
 	 * (params: "lat, lon")
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es set_position2 "48.656, 15.6777"
-	 *
+	 * 
 	 * lat, lon, speed (m/s), direction (degrees)
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es set_position "48.656, 15.6777, 12, -75"
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es add_destination "48.656, 15.6777"
@@ -76,10 +75,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es disable_normal_location ""
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es enable_normal_location ""
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es export_route_gpx ""
-	 *
-	 *
+	 * 
+	 * 
 	 * adb shell am broadcast -a com.zoffcc.applications.zanavi.comm --es set_pos_and_dest "Via_Graf 9.1439748 45.5133242 9.1391345 45.5146592"
-	 *
+	 * 
 	 * -
 	 */
 
@@ -1063,7 +1062,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 							try
 							{
 
-
 								// -------- ST N --------
 								// -------- ST N --------
 								// -------- ST N --------
@@ -1105,7 +1103,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									Thread.sleep(500);
 									c4++;
 
-									if (c4 > (2 * 60) * 15)
+									if (c4 > (2 * 60) * 2)
 									{
 										System.out.println("search test 004a");
 										Navit.search_ready = true;
@@ -1123,7 +1121,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									Thread.sleep(500);
 									c4++;
 
-									if (c4 > (2 * 60) * 5)
+									if (c4 > (2 * 60) * 1)
 									{
 										System.out.println("search test 004ab");
 										break;
@@ -1139,21 +1137,30 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									File d2 = new File(f.getParent() + "/" + date + "/");
 									d2.mkdirs();
 									Navit.take_phone_screenshot(NavitAddressResultListActivity.NavitAddressResultListActivity_s, f.getParent() + "/" + date + "/", f.getName());
+								}
+								catch (Exception ee4)
+								{
+									System.out.println("SCREENSHOT:error1:" + Navit.stacktrace_to_string(ee4));
+									ee4.printStackTrace();
+								}
+								System.out.println("SCREENSHOT 002");
 
+								try
+								{
 									NavitAddressResultListActivity.force_done();
 								}
 								catch (Exception ee4)
 								{
-									System.out.println("SCREENSHOT:error:" + Navit.stacktrace_to_string(ee4));
+									System.out.println("SCREENSHOT:error2:" + Navit.stacktrace_to_string(ee4));
 									ee4.printStackTrace();
 								}
-								System.out.println("SCREENSHOT 002");
+
+								System.out.println("SCREENSHOT 003");
 
 								wait = 0;
 								// -------- ST N --------
 								// -------- ST N --------
 								// -------- ST N --------
-
 
 								FileOutputStream outf = null;
 								try
@@ -1181,7 +1188,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								//System.out.println("Roadbook:length=" + (separated.length - 2));
 								try
 								{
-									out.write("Search:length=" + 3 + "\n");
+									out.write("Search:length=" + Navit.NavitAddressResultList_foundItems.size() + "\n");
 								}
 								catch (Exception e)
 								{
@@ -1211,15 +1218,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									System.out.println("_DREX_:016" + e.getMessage());
 								}
 
-
-
 								// calculate success criterion ----------------------
 								// calculate success criterion ----------------------
 
 								result_code = -1;
-
-
-
 
 								// disable ---------
 								// disable ---------
@@ -1232,10 +1234,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								// disable ---------
 								// disable ---------
 								// disable ---------
-
-
-
-
 
 								if ((!success_operator.equals("")) && (!success_value.equals("")))
 								{
@@ -1307,7 +1305,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 
-
 								if (result_code == 0)
 								{
 									File f = new File(file_name_global);
@@ -1350,8 +1347,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			NavitGraphics.NavitAOverlay_s.postInvalidate();
 		}
 	}
-
-
 
 	static int success_value_compare(int s, int v)
 	{
@@ -1467,7 +1462,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 			BufferedReader br = null;
 			String line2 = "";
 
-
 			File[] directoryListing = dir.listFiles(textFilter);
 			if (directoryListing != null)
 			{
@@ -1520,7 +1514,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						br = new BufferedReader(new FileReader(yamlfile.getAbsolutePath()));
 						line2 = br.readLine();
 					}
-					catch(Exception e66)
+					catch (Exception e66)
 					{
 					}
 
@@ -1532,8 +1526,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					{
 						DR_replay_gps_file(yamlfile.getAbsolutePath(), date_str);
 					}
-
-
 
 					System.out.println("XXXX:2:5:" + yamlfile.getAbsolutePath());
 					float difference = (float) (System.currentTimeMillis() - startTime);
