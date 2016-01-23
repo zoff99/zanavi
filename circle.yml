@@ -90,7 +90,7 @@ dependencies:
     - if [ ! -f ~/maps/navitmap_045.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_045.bin "http://ci.zanavi.cc/data/canada.bin" ; fi
     - if [ ! -f ~/maps/navitmap_046.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_046.bin "http://ci.zanavi.cc/data/mexico.bin" ; fi
 
-    - if [ ! -f ~/maps/navitmap_001.bin.idx ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_001.bin.idx "http://zanavi.weidestraat.nl/data/planet.bin.idx" ; fi
+    - if [ ! -f ~/maps/navitmap_001.bin.idx ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_001.bin.idx "http://ci.zanavi.cc/data/planet.bin.idx" ; fi
     - if [ ! -f ~/maps/navitmap_049.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin" ; fi
 test:
   pre:
