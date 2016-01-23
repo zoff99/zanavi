@@ -8252,6 +8252,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			}
 
 			// ok, remove dialog
+			Log.e("Navit", "SearchResultsThread:remove dialog (99)");
 			msg = mHandler.obtainMessage();
 			b = new Bundle();
 			msg.what = 99;
@@ -9715,6 +9716,9 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	{
 		switch (id)
 		{
+		// ==============---------- real search offline (old style) here ----------==============
+		// ==============---------- real search offline (old style) here ----------==============
+		// ==============---------- real search offline (old style) here ----------==============
 		case Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE:
 			search_results_wait_offline = new ProgressDialog(this);
 			search_results_wait_offline.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
