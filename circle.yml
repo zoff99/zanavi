@@ -199,6 +199,7 @@ test:
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       counter=0;
       while [ $ready_ == "0" ]; do
+      cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ;
       echo -n "running tests " ;
       counter=$[ $counter + 1 ] ;
       if [ $counter -eq 38 ] ; then exit 0 ; fi ;
@@ -365,6 +366,8 @@ test:
     - cp -v ~/ju_res.xml $CIRCLE_TEST_REPORTS/0000__zanavi-runner/tests.xml
     # -- count erros ----------------------------------
     # -- count erros ----------------------------------
+
+    - cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ; exit 0
 
     #- cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* ~/yaml-tests/routing-qa-master/*.yaml && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av results.zip $CIRCLE_TEST_REPORTS/0000__packed/
     - cd $CIRCLE_TEST_REPORTS/ && zip -r ~/results.zip * && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av ~/results.zip $CIRCLE_TEST_REPORTS/0000__packed/
