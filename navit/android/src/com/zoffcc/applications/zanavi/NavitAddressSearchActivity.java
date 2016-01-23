@@ -526,7 +526,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 					// Log.e("Navit", "SearchResultsThread run1");
 					// need lowercase to find stuff !!
 					Navit.Navit_last_address_search_string = Navit.filter_bad_chars(Navit.Navit_last_address_search_string).toLowerCase();
-					if ((Navit.Navit_last_address_hn_string != null) && (Navit.Navit_last_address_hn_string.equals("")))
+					if ((Navit.Navit_last_address_hn_string != null) && (!Navit.Navit_last_address_hn_string.equals("")))
 					{
 						Navit.Navit_last_address_hn_string = Navit.filter_bad_chars(Navit.Navit_last_address_hn_string).toLowerCase();
 					}
