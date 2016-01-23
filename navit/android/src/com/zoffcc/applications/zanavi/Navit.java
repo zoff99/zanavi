@@ -9000,6 +9000,9 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		@SuppressLint("NewApi")
 		public void handleMessage(Message msg)
 		{
+
+			System.out.println("progress_handler:msg:" + msg.what + "::" + msg.getData().toString());
+
 			switch (msg.what)
 			{
 			case 0:
@@ -15932,7 +15935,6 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			NavitGraphics.callback_handler.sendMessage(msg2);
 			// show duplicates in search ------------
 
-			
 			if (hide_dupl)
 			{
 				search_hide_duplicates = true;
