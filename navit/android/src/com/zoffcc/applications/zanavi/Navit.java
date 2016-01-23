@@ -6415,16 +6415,19 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 									e.printStackTrace();
 								}
 
-								// show dialog, and start search for the results
-								// make it indirect, to give our activity a chance to startup
-								// (remember we come straight from another activity and ours is still paused!)
-								System.out.println("dialog -- 11:004");
-								Message msg = progress_handler.obtainMessage();
-								Bundle b = new Bundle();
-								msg.what = 11;
-								b.putInt("dialog_num", Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
-								msg.setData(b);
-								progress_handler.sendMessage(msg);
+								if (!Navit.use_index_search)
+								{
+									// show dialog, and start search for the results
+									// make it indirect, to give our activity a chance to startup
+									// (remember we come straight from another activity and ours is still paused!)
+									System.out.println("dialog -- 11:004");
+									Message msg = progress_handler.obtainMessage();
+									Bundle b = new Bundle();
+									msg.what = 11;
+									b.putInt("dialog_num", Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
+									msg.setData(b);
+									progress_handler.sendMessage(msg);
+								}
 							}
 						}
 					}
@@ -15858,13 +15861,13 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			if (index)
 			{
 				search_intent.putExtra("address_string", street + " " + town);
-				addr1 = town + " " + street;
+				addr1 = street + " " + town;
 				addr2 = street + " " + town;
 			}
 			else
 			{
 				search_intent.putExtra("address_string", town + " " + street);
-				addr1 = street + " " + town;
+				addr1 = town + " " + street;
 				addr2 = town + " " + street;
 			}
 		}
