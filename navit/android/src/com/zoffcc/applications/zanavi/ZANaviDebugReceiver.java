@@ -1078,6 +1078,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								Navit.search_results_streets_hn = 0;
 								Navit.search_results_poi = 0;
 
+								Navit.search_list_ready = false;
+
 								final Thread tttt2 = new Thread()
 								{
 									@Override
@@ -1096,7 +1098,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								// -- wait for search result --
 								int c4 = 0;
 								boolean no_result = false;
-								Navit.search_list_ready = false;
 								while (Navit.search_ready == false)
 								{
 									System.out.println("search test 004:" + c4);
@@ -1113,6 +1114,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									}
 								}
 								// -- wait for search result --
+
+								Thread.sleep(1500);
 
 								System.out.println("search test 005");
 								c4 = 0;
