@@ -1126,7 +1126,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										Thread.sleep(500);
 										c4++;
 
-										if (c4 > (2 * 60) * 5)
+										if (c4 > (2 * 60) * 2)
 										{
 											System.out.println("search test 004ab");
 											break;
@@ -1594,7 +1594,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 									File f = new File(file_name_global);
 									File d2 = new File(f.getParent() + "/" + date + "/");
 									d2.mkdirs();
-									Navit.take_phone_screenshot(NavitAddressResultListActivity.NavitAddressResultListActivity_s, f.getParent() + "/" + date + "/", f.getName());
+									Navit.take_phone_screenshot(NavitAddressSearchActivity.NavitAddressSearchActivity_s, f.getParent() + "/" + date + "/", f.getName());
 								}
 								catch (Exception ee4)
 								{
