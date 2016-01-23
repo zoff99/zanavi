@@ -15839,29 +15839,34 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		Intent search_intent = new Intent(Global_Navit_Object, NavitAddressSearchActivity.class);
 		search_intent.putExtra("title", Navit.get_text("Enter: City and Street")); //TRANS
 		String addr1 = "";
+		String addr2 = "";
 
 		if ((town != null) && (street != null))
 		{
 			if (index)
 			{
 				search_intent.putExtra("address_string", street + " " + town);
-				addr1 = street + " " + town;
+				addr1 = town + " " + street;
+				addr2 = street + " " + town;
 			}
 			else
 			{
 				search_intent.putExtra("address_string", town + " " + street);
-				addr1 = town + " " + street;
+				addr1 = street + " " + town;
+				addr2 = town + " " + street;
 			}
 		}
 		else if (town != null)
 		{
 			search_intent.putExtra("address_string", town);
 			addr1 = town;
+			addr2 = town;
 		}
 		else if (street != null)
 		{
 			search_intent.putExtra("address_string", street);
 			addr1 = street;
+			addr2 = street;
 		}
 
 		if (hn != null)
@@ -15887,6 +15892,10 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 		if (index)
 		{
+			Navit_last_address_partial_match = partialmatch;
+			Navit_last_address_search_string = addr2;
+			Navit_last_address_hn_string = hn;
+			Navit_last_address_full_file_search = false;
 			search_hide_duplicates = hide_dupl;
 			Global_Navit_Object.startActivityForResult(search_intent, NavitAddressSearch_id_offline);
 		}
