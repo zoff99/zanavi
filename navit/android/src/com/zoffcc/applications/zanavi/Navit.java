@@ -4996,6 +4996,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				// hide duplicates when searching
 			}
 
+			System.out.println("dialog -- 11:002");
 			Message msg = progress_handler.obtainMessage();
 			Bundle b = new Bundle();
 			msg.what = 11;
@@ -6393,6 +6394,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 									e.printStackTrace();
 								}
 
+								System.out.println("dialog -- 11:003");
 								System.out.println("online googlemaps search");
 								Message msg = progress_handler.obtainMessage();
 								Bundle b = new Bundle();
@@ -6416,6 +6418,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 								// show dialog, and start search for the results
 								// make it indirect, to give our activity a chance to startup
 								// (remember we come straight from another activity and ours is still paused!)
+								System.out.println("dialog -- 11:004");
 								Message msg = progress_handler.obtainMessage();
 								Bundle b = new Bundle();
 								msg.what = 11;
@@ -15944,7 +15947,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				// hide duplicates when searching
 			}
 
-			
+			System.out.println("dialog -- 11:001");
 			Message msg = Navit_progress_h.obtainMessage();
 			Bundle b = new Bundle();
 			msg.what = 11;
