@@ -8091,7 +8091,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				Log.e("Navit", "SearchResultsThread run1");
 				// need lowercase to find stuff !!
 				Navit_last_address_search_string = filter_bad_chars(Navit_last_address_search_string).toLowerCase();
-				if ((Navit_last_address_hn_string != null) && (Navit_last_address_hn_string.equals("")))
+				if ((Navit_last_address_hn_string != null) && (!Navit_last_address_hn_string.equals("")))
 				{
 					Navit_last_address_hn_string = filter_bad_chars(Navit_last_address_hn_string).toLowerCase();
 				}
@@ -8128,6 +8128,8 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 							street_ = Navit_last_address_search_string;
 							town_ = "";
 						}
+
+						System.out.println("search params1=" + street_ + ":" + town_ + ":" + hn_);
 						N_NavitGraphics.SearchResultList(2, partial_match_i, street_, town_, hn_, Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
 
 						// sort result list
@@ -8141,7 +8143,19 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 						//           2: search <iso2 string> country
 						//           1: search default country (what you have set as language in prefs)
 						System.out.println("searching ... 001");
-						N_NavitGraphics.SearchResultList(29, partial_match_i, Navit_last_address_search_string, "", "", Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
+
+						System.out.println("search params2a=" + Navit_last_address_hn_string);
+
+						String old_s = Navit_last_address_search_string;
+						String new_s = Navit_last_address_search_string;
+						if ((Navit_last_address_hn_string != null) && (!Navit_last_address_hn_string.equals("")))
+						{
+							new_s = Navit_last_address_search_string + " " + Navit_last_address_hn_string;
+						}
+
+						System.out.println("search params2=" + new_s + ":" + Navit_last_address_search_country_flags + ":" + Navit_last_address_search_country_iso2_string);
+
+						N_NavitGraphics.SearchResultList(29, partial_match_i, new_s, "", "", Navit_last_address_search_country_flags, Navit_last_address_search_country_iso2_string, "0#0", 0);
 						System.out.println("searching ... 002");
 
 						// sort result list
