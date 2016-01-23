@@ -6052,7 +6052,7 @@ public class NavitGraphics
 					Navit.Navit_Address_Result_double_index.add(hash_id);
 					//System.out.println("*add*=" + hash_id);
 
-					System.out.println("search_result:N:" + Navit.NavitAddressResultList_foundItems.size() + ":" + tmp_addr.result_type + ":" + tmp_addr.lat + ":" + tmp_addr.lon + ":" + tmp_addr.addr);
+					// System.out.println("search_result:N:" + Navit.NavitAddressResultList_foundItems.size() + ":" + tmp_addr.result_type + ":" + tmp_addr.lat + ":" + tmp_addr.lon + ":" + tmp_addr.addr);
 
 					if (tmp_addr.result_type.equals("TWN"))
 					{
