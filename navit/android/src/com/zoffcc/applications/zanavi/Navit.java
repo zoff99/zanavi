@@ -15921,6 +15921,30 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			p.PREF_search_country = Navit_last_address_search_country_id;
 			setPrefs_search_country();
 
+			// show duplicates in search ------------
+			Message msg2 = new Message();
+			Bundle b2 = new Bundle();
+			b2.putInt("Callback", 44);
+			msg2.setData(b2);
+			NavitGraphics.callback_handler.sendMessage(msg2);
+			// show duplicates in search ------------
+
+			
+			if (hide_dupl)
+			{
+				search_hide_duplicates = true;
+				// hide duplicates when searching
+				// hide duplicates when searching
+				Message msg22 = new Message();
+				Bundle b22 = new Bundle();
+				b22.putInt("Callback", 45);
+				msg22.setData(b22);
+				NavitGraphics.callback_handler.sendMessage(msg22);
+				// hide duplicates when searching
+				// hide duplicates when searching
+			}
+
+			
 			Message msg = Navit_progress_h.obtainMessage();
 			Bundle b = new Bundle();
 			msg.what = 11;
