@@ -1135,7 +1135,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								System.out.println("search test 006");
 
 								Thread.sleep(5000);
-								
+
 								// save screenshot
 								System.out.println("SCREENSHOT 001");
 								try
@@ -1313,6 +1313,11 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										}
 									}
 								}
+
+								// dummy for circleCI
+								File f3 = new File(file_name_global);
+								System.out.println("ZANaviDebugReceiver:" + "file=" + (f3.getParent() + "/" + date + "/" + f3.getName()));
+								// dummy for circleCI
 
 								if (result_code == 0)
 								{
