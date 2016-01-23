@@ -9247,6 +9247,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				{
 					// System.out.println("Ex D1: " + e.toString());
 				}
+				System.out.println("showDialog 001 dialog_num=" + msg.getData().getInt("dialog_num"));
 				showDialog(msg.getData().getInt("dialog_num"));
 				break;
 			case 12:
@@ -9728,6 +9729,9 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	@TargetApi(Build.VERSION_CODES.FROYO)
 	protected Dialog onCreateDialog(int id)
 	{
+
+		System.out.println("onCreateDialog id=" + id);
+
 		switch (id)
 		{
 		// ==============---------- real search offline (old style) here ----------==============
@@ -9783,6 +9787,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				}
 			};
 			search_results_wait_offline.setOnDismissListener(mOnDismissListener4);
+			System.out.println("new SearchResultsThread 001");
 			searchresultsThread_offline = new SearchResultsThread(progress_handler, Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
 			searchresultsThread_offline.start();
 
@@ -9811,6 +9816,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				}
 			};
 			search_results_wait.setOnDismissListener(mOnDismissListener3);
+			System.out.println("new SearchResultsThread 002");
 			searchresultsThread = new SearchResultsThread(progress_handler, Navit.SEARCHRESULTS_WAIT_DIALOG);
 			searchresultsThread.start();
 
