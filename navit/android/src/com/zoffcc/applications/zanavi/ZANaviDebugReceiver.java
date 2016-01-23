@@ -1067,6 +1067,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								// -------- ST N --------
 								// -------- ST N --------
 
+								Thread.sleep(10000); // wait for other stuff to finish
+								
 								// clear results
 								Navit.NavitAddressResultList_foundItems.clear();
 								Navit.Navit_Address_Result_double_index.clear();
