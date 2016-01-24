@@ -199,7 +199,6 @@ test:
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       counter=0;
       while [ $ready_ == "0" ]; do
-      cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ;
       echo -n "running tests " ;
       counter=$[ $counter + 1 ] ;
       if [ $counter -eq 38 ] ; then exit 0 ; fi ;
