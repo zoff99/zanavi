@@ -6324,7 +6324,11 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 							catch (Exception e)
 							{
 							}
-							Navit.use_index_search = Navit.allow_use_index_search();
+
+							if (Navit.CIDEBUG == 0)
+							{
+								Navit.use_index_search = Navit.allow_use_index_search();
+							}
 						}
 						else
 						{
@@ -6406,17 +6410,18 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 							else if (requestCode == NavitAddressSearch_id_offline)
 							{
 								// offline binfile search
-								try
-								{
-									Log.e("Navit", "call-11: (2)num " + Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
-								}
-								catch (Exception e)
-								{
-									e.printStackTrace();
-								}
 
 								if (!Navit.use_index_search)
 								{
+									try
+									{
+										Log.e("Navit", "call-11: (2)num " + Navit.SEARCHRESULTS_WAIT_DIALOG_OFFLINE);
+									}
+									catch (Exception e)
+									{
+										e.printStackTrace();
+									}
+
 									// show dialog, and start search for the results
 									// make it indirect, to give our activity a chance to startup
 									// (remember we come straight from another activity and ours is still paused!)
