@@ -1049,11 +1049,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 				System.out.println("ZANaviDebugReceiver:" + "mem0:" + Navit.logHeap_for_batch(Navit.Global_Navit_Object.getClass()));
 
-				final Thread search_n_001 = new Thread()
+				final Thread search_n_002 = new Thread()
 				{
 					int wait = 1;
-					int count = 0;
-					int max_count = 380; // seconds
 
 					@Override
 					public void run()
@@ -1062,13 +1060,10 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						{
 							try
 							{
-
 								// -------- ST N --------
 								// -------- ST N --------
 								// -------- ST N --------
 
-								Thread.sleep(10000); // wait for other stuff to finish
-								
 								// clear results
 								Navit.NavitAddressResultList_foundItems.clear();
 								Navit.Navit_Address_Result_double_index.clear();
@@ -1225,10 +1220,9 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								try
 								{
-									// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
 									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
-									out.write("URL2:" + "about:\n");
-									out.write("URL3:" + "about:\n");
+									// out.write("URL2:" + "about:\n");
+									// out.write("URL3:" + "about:\n");
 								}
 								catch (Exception e)
 								{
@@ -1365,8 +1359,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 						}
 					}
 				};
-				search_n_001.start();
-				search_n_001.join();
+				search_n_002.start();
+				search_n_002.join();
 				Thread.sleep(500);
 
 				is_replaying = false;
@@ -1501,8 +1495,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				final Thread search_n_001 = new Thread()
 				{
 					int wait = 1;
-					int count = 0;
-					int max_count = 380; // seconds
 
 					@Override
 					public void run()
@@ -1677,8 +1669,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								{
 									// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
 									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
-									out.write("URL2:" + "about:\n");
-									out.write("URL3:" + "about:\n");
+									// out.write("URL2:" + "\n");
+									// out.write("URL3:" + "\n");
 								}
 								catch (Exception e)
 								{
