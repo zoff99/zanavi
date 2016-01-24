@@ -2506,133 +2506,124 @@ static void route_path_add_line_as_waypoint(struct route_path *this, struct coor
  * @param pos  Information about start point if this is the first segment
  * @param dst  Information about end point if this is the last segment
  */
-static int route_path_add_item_from_graph(struct route_path *this, struct route_path *oldpath, struct route_graph_segment *rgs, int dir, struct route_info *pos, struct route_info *dst)
+static int
+route_path_add_item_from_graph(struct route_path *this, struct route_path *oldpath, struct route_graph_segment *rgs, int dir, struct route_info *position, struct route_info *dst)
 {
-	//// dbg(0, "enter\n");
+	struct route_path_segment *segment=NULL;
+	int i, ccnt, extra=0, ret=0;
+	struct coord *c,*cd,ca[2048];
+	int offset=1;
+	int seg_size,seg_dat_size;
+	int len=rgs->data.len;
+	if (rgs->data.flags & NAVIT_AF_SEGMENTED) 
+		offset=RSD_OFFSET(&rgs->data);
 
-	struct route_path_segment *segment;
-	int i, ccnt, extra = 0, ret = 0;
-	struct coord *c, *cd, ca[2048];
-	int offset = 1;
-	int seg_size, seg_dat_size;
-	int len = rgs->data.len;
-	if (rgs->data.flags & NAVIT_AF_SEGMENTED)
-	{
-		offset = RSD_OFFSET(&rgs->data);
-	}
-
-	//dbg(1, "enter (0x%x,0x%x) dir=%d pos=%p dst=%p\n", rgs->data.item.id_hi,
-	//		rgs->data.item.id_lo, dir, pos, dst);
+	dbg(lvl_debug,"enter (0x%x,0x%x) dir=%d pos=%p dst=%p\n", rgs->data.item.id_hi, rgs->data.item.id_lo, dir, position, dst);
 	if (oldpath)
 	{
-		segment = item_hash_lookup(oldpath->path_hash, &rgs->data.item);
-		if (segment && segment->direction == dir)
+		segment=item_hash_lookup(oldpath->path_hash, &rgs->data.item);
+
+		if (segment && !(dst && segment->direction != dir)) // testen als het het laatste segment betreft of dir wel gelijk is
 		{
+
 			segment = route_extract_segment_from_path(oldpath, &rgs->data.item, offset);
 			if (segment)
 			{
-				ret = 1;
-
-				if (!pos)
-					goto linkold;
-
+				ret=1;   /////////////////
+				if (!position)
+				{
+					segment->data->len=len;
+					segment->next=NULL;
+					item_hash_insert(this->path_hash,  &rgs->data.item, segment);
+					route_path_add_segment(this, segment);
+					return ret;
+				}
 			}
 		}
 	}
 
-	if (pos)
+	if (position)
 	{
 		if (dst)
 		{
-			extra = 2;
-			if (dst->lenneg >= pos->lenneg)
+			extra=2;
+			if (dst->lenneg >= position->lenneg)
 			{
-				dir = 1;
-				ccnt = dst->pos - pos->pos;
-				c = pos->street->c + pos->pos + 1;
-				len = dst->lenneg - pos->lenneg;
+				dir=1;
+				ccnt=dst->pos-position->pos;
+				c=position->street->c+position->pos+1;
+				len=dst->lenneg-position->lenneg;
 			}
 			else
 			{
-				dir = -1;
-				ccnt = pos->pos - dst->pos;
-				c = pos->street->c + dst->pos + 1;
-				len = pos->lenneg - dst->lenneg;
+				dir=-1;
+				ccnt=position->pos-dst->pos;
+				c=position->street->c+dst->pos+1;
+			len=position->lenneg-dst->lenneg;
 			}
 		}
 		else
 		{
-			extra = 1;
-			//dbg(1, "pos dir=%d\n", dir);
-			//dbg(1, "pos pos=%d\n", pos->pos);
-			//dbg(1, "pos count=%d\n", pos->street->count);
+			extra=1;
+			dbg(lvl_debug,"pos dir=%d\n", dir);
+			dbg(lvl_debug,"pos pos=%d\n", position->pos);
+			dbg(lvl_debug,"pos count=%d\n", position->street->count);
 			if (dir > 0)
 			{
-				c = pos->street->c + pos->pos + 1;
-				ccnt = pos->street->count - pos->pos - 1;
-				len = pos->lenpos;
+				c=position->street->c+position->pos+1;
+				ccnt=position->street->count-position->pos-1;
+				len=position->lenpos;
 			}
 			else
 			{
-				c = pos->street->c;
-				ccnt = pos->pos + 1;
-				len = pos->lenneg;
+				c=position->street->c;
+				ccnt=position->pos+1;
+				len=position->lenneg;
 			}
 		}
-		pos->dir = dir;
+		position->dir=dir;
 	}
-	else if (dst)
+	else 	if (dst)
 	{
-		extra = 1;
-		//dbg(1, "dst dir=%d\n", dir);
-		//dbg(1, "dst pos=%d\n", dst->pos);
-		if (dir > 0)
-		{
-			c = dst->street->c;
-			ccnt = dst->pos + 1;
-			len = dst->lenpos;
+		extra=1;
+		dbg(lvl_debug,"dst dir=%d\n", dir);
+		dbg(lvl_debug,"dst pos=%d\n", dst->pos);
+		if (dir > 0) {
+			c=dst->street->c;
+			ccnt=dst->pos+1;
+			len=dst->lenneg;
 		}
 		else
 		{
-			c = dst->street->c + dst->pos + 1;
-			ccnt = dst->street->count - dst->pos - 1;
-			len = dst->lenneg;
+			c=dst->street->c+dst->pos+1;
+			ccnt=dst->street->count-dst->pos-1;
+			len=dst->lenpos;
 		}
 	}
 	else
 	{
-		ccnt = get_item_seg_coords(&rgs->data.item, ca, 2047, &rgs->start->c, &rgs->end->c);
-		c = ca;
+		ccnt=get_item_seg_coords(&rgs->data.item, ca, 2047, &rgs->start->c, &rgs->end->c);
+		c=ca;
 	}
-	seg_size = sizeof(*segment) + sizeof(struct coord) * (ccnt + extra);
-	seg_dat_size = route_segment_data_size(rgs->data.flags);
-	segment = g_malloc0(seg_size + seg_dat_size);
-	//global_route_memory_size = global_route_memory_size + seg_size + seg_dat_size;
-	//dbg(0,"route mem=%lu\n", global_route_memory_size);
-
-	segment->data = (struct route_segment_data *) ((char *) segment + seg_size);
-	segment->direction = dir;
-	cd = segment->c;
-
-	if (pos && (c[0].x != pos->lp.x || c[0].y != pos->lp.y))
-		*cd++ = pos->lp;
-
+	seg_size=sizeof(*segment) + sizeof(struct coord) * (ccnt + extra);
+	seg_dat_size=route_segment_data_size(rgs->data.flags);
+	segment=g_malloc0(seg_size + seg_dat_size);
+	segment->data=(struct route_segment_data *)((char *)segment+seg_size);
+	segment->direction=dir; //
+	cd=segment->c;
+	if (position && (c[0].x != position->lp.x || c[0].y != position->lp.y))
+		*cd++=position->lp;
 	if (dir < 0)
-		c += ccnt - 1;
-
-	for (i = 0; i < ccnt; i++)
+		c+=ccnt-1;
+for (i = 0 ; i < ccnt ; i++)
 	{
-		*cd++ = *c;
-		c += dir;
+		*cd++=*c;
+		c+=dir;	
 	}
-
-	segment->ncoords += ccnt;
-
-	if (dst && (cd[-1].x != dst->lp.x || cd[-1].y != dst->lp.y))
-		*cd++ = dst->lp;
-
-	segment->ncoords = cd - segment->c;
-
+	segment->ncoords+=ccnt;
+	if (dst && (cd[-1].x != dst->lp.x || cd[-1].y != dst->lp.y)) 
+		*cd++=dst->lp;
+	segment->ncoords=cd-segment->c;
 	if (segment->ncoords <= 1)
 	{
 		g_free(segment);
@@ -2641,16 +2632,17 @@ static int route_path_add_item_from_graph(struct route_path *this, struct route_
 
 	/* We check if the route graph segment is part of a roundabout here, because this
 	 * only matters for route graph segments which form parts of the route path */
-	if (!(rgs->data.flags & NAVIT_AF_ROUNDABOUT))
-	{
+
+// no need for OSM !!!
+	if (!(rgs->data.flags & NAVIT_AF_ROUNDABOUT)) {
 		// We identified this roundabout earlier
-		route_check_roundabout(rgs, 13, (dir < 1), NULL); // 13 z8z8
+		route_check_roundabout(rgs, 13, (dir < 1), NULL);
 	}
 
 	memcpy(segment->data, &rgs->data, seg_dat_size);
-	linkold: segment->data->len = len;
-	segment->next = NULL;
-	item_hash_insert(this->path_hash, &rgs->data.item, segment);
+	segment->data->len=len;
+	segment->next=NULL;
+	item_hash_insert(this->path_hash,  &rgs->data.item, segment);
 
 	route_path_add_segment(this, segment);
 
