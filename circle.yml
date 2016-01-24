@@ -144,7 +144,7 @@ test:
     - mkdir ~/yaml-tests/
     - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     - wget -t 10 -O ~/yaml-tests/yaml2.zip "https://github.com/zoff99/routing-qa/archive/master.zip"
-    - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/search-test001.zip"
+    #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/search-test001.zip"
     - cd ~/yaml-tests/ && unzip yaml1.zip && cd ~/ ; exit 0
     - cd ~/yaml-tests/ && mv routing-qa-search-test001 routing-qa-master && cd ~/ ; exit 0
     - cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
