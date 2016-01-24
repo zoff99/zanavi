@@ -203,6 +203,7 @@ test:
       echo -n "running tests " ;
       counter=$[ $counter + 1 ] ;
       if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      emu=`adb devices|grep -v 'List of devices attached'|grep -v '^$'|wc -l|tr -d ' '` ; if [ $emu -eq 0 ]; then echo "emulator crashed" ; ready_="1" ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
@@ -235,6 +236,7 @@ test:
       echo -n "running tests " ;
       counter=$[ $counter + 1 ] ;
       if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      emu=`adb devices|grep -v 'List of devices attached'|grep -v '^$'|wc -l|tr -d ' '` ; if [ $emu -eq 0 ]; then echo "emulator crashed" ; ready_="1" ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
