@@ -1557,7 +1557,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								System.out.println("search test 005");
 
-								Thread.sleep(3000);
+								Thread.sleep(6000);
 
 								Navit.runOnUI(new Runnable()
 								{
@@ -1582,7 +1582,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								});
 
 								System.out.println("search test 005");
-								Thread.sleep(400);
+								Thread.sleep(1500);
 
 								// save screenshot
 								System.out.println("SCREENSHOT 001");
