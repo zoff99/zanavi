@@ -5997,7 +5997,7 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 				}
 #endif
 
-				mr->str = g_strdup("??");
+				mr->str = g_strdup("fix me - fix me");
 
 				attr->u.str = mr->str;
 			}
