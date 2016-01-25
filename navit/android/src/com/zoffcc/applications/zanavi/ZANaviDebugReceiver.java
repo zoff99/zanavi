@@ -1220,8 +1220,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								try
 								{
-									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
-									// out.write("URL2:" + "about:\n");
+									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+									out.write("URL2:" + "https://www.google.at/maps/place/" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
 									// out.write("URL3:" + "about:\n");
 								}
 								catch (Exception e)
@@ -1668,8 +1668,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								try
 								{
 									// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
-									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
-									// out.write("URL2:" + "\n");
+									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+									out.write("URL2:" + "https://www.google.at/maps/place/" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
 									// out.write("URL3:" + "\n");
 								}
 								catch (Exception e)
