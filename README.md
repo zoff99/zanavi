@@ -20,11 +20,11 @@ http://home.ccil.org/~cowan/tagsoup/
 downloaded from: http://home.ccil.org/~cowan/tagsoup/tagsoup-1.2.1.jar
 
 
-
+<pre>
 ====================== original README below ==================
 ====================== original README below ==================
 ====================== original README below ==================
-
+</pre>
 
 
 NavIT
