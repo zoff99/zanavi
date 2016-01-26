@@ -1,7 +1,7 @@
 ZANavi
 ======
 
-ZANavi is a fork of NavIT. It is for the Android platfrom only!
+ZANavi is a fork of NavIT. It is for the Android platform only!
 for more details look at our wiki
 
 http://zanavi.cc
