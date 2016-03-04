@@ -2,9 +2,11 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    EMU_: "zanavi21"
+    EMU_: "zanavi23"
+    YEMU_: "zanavi21"
     XEMU_: "zanavi10"
     sdpath: "/storage/sdcard"
+    Ysdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
@@ -30,6 +32,11 @@ dependencies:
     - sudo apt-get install liblwp-useragent-determined-perl > /dev/null 2> /dev/null
     - sudo apt-get install xvfb > /dev/null 2> /dev/null
     - sudo apt-get install xdotool > /dev/null 2> /dev/null
+    - sudo apt-get install telnet
+    - sudo apt-get install x11-utils
+    - sudo apt-get install xvkbd
+    - echo y | android update sdk --no-ui --all --filter build-tools-23.0.0
+    - echo y | android update sdk --no-ui --all --filter android-23
 
     - bash ~/zanavi/ci/do_android.sh
 
@@ -98,6 +105,12 @@ test:
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
     - android list targets
 #
+    - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
+    - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+#
     - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
     - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
@@ -134,11 +147,17 @@ test:
     - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio -no-window:
+    - import -window root $CIRCLE_ARTIFACTS/capture000a.png
+ 
+    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio:
         background: true
         parallel: true
     - circle-android wait-for-boot
     - sleep 5
+
+    - import -window root $CIRCLE_ARTIFACTS/capture000b.png
+
+    - for i in `xdotool search --name "DDMS"`; do xdotool windowfocus "$i" ; xdotool key "Return" ; sleep 1 ; done ; exit 0
 
 
     - mkdir ~/yaml-tests/
@@ -169,6 +188,14 @@ test:
     #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
+
+    - import -window root $CIRCLE_ARTIFACTS/capture001.png
+
+    - xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
+    - xdotool search --name "zanavi" key "F2"
+    - xdotool search --name "zanavi" key "Return"
+
+    - import -window root $CIRCLE_ARTIFACTS/capture002.png
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
     #- fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
@@ -214,6 +241,7 @@ test:
       else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
       fi ;
       if [ ! -f ~/_done_.txt ]; then
+      import -window root $CIRCLE_ARTIFACTS/capture_tests_1_${$counter}.png ;
       sleep 180 ;
       else ready_="1" ;
       fi ;
@@ -247,6 +275,7 @@ test:
       else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
       fi ;
       if [ ! -f ~/_done_.txt ]; then
+      import -window root $CIRCLE_ARTIFACTS/capture_tests_2_${$counter}.png ;
       sleep 180 ;
       else ready_="1" ;
       fi ;
