@@ -5,7 +5,7 @@ machine:
     EMU_: "zanavi23"
     YEMU_: "zanavi21"
     XEMU_: "zanavi10"
-    sdpath: "/storage/sdcard"
+    sdpath: "/sdcard"
     Ysdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
 dependencies:
@@ -163,6 +163,7 @@ test:
     - import -window root $CIRCLE_ARTIFACTS/capture000b.png
 
     - for i in `xdotool search --name "DDMS"`; do xdotool windowfocus "$i" ; xdotool key "Return" ; sleep 1 ; done ; exit 0
+    - sleep 210
 
 
     - mkdir ~/yaml-tests/
