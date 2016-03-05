@@ -44,7 +44,7 @@ dependencies:
     - mkdir -p ~/maps/ ; exit 0
     - ls -al ~/maps/
 
-    - if [ ! -f ~/maps/navitmap_005.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin" ; fi
+    #- if [ ! -f ~/maps/navitmap_005.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_002.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_010.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin" ; fi
 
@@ -52,7 +52,7 @@ dependencies:
     #- if [ ! -f ~/maps/navitmap_003.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_004.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_006.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin" ; fi
-    #- if [ ! -f ~/maps/navitmap_007.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin" ; fi
+    - if [ ! -f ~/maps/navitmap_007.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_008.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_009.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin" ; fi
     #- if [ ! -f ~/maps/navitmap_011.bin ]; then wget --no-check-certificate -t 10 -O ~/maps/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin" ; fi
