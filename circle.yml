@@ -247,7 +247,7 @@ test:
       else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
       fi ;
       if [ ! -f ~/_done_.txt ]; then
-      import -window root $CIRCLE_ARTIFACTS/capture_tests_1_${$counter}.png ;
+      import -window root $CIRCLE_ARTIFACTS/capture_tests_1_${counter}.png ;
       sleep 180 ;
       else ready_="1" ;
       fi ;
@@ -281,7 +281,7 @@ test:
       else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
       fi ;
       if [ ! -f ~/_done_.txt ]; then
-      import -window root $CIRCLE_ARTIFACTS/capture_tests_2_${$counter}.png ;
+      import -window root $CIRCLE_ARTIFACTS/capture_tests_2_${counter}.png ;
       sleep 180 ;
       else ready_="1" ;
       fi ;
