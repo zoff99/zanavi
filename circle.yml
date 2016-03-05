@@ -2,11 +2,11 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    YEMU_: "zanavi23"
-    EMU_: "zanavi21"
+    EMU_: "zanavi23"
+    YEMU_: "zanavi21"
     XEMU_: "zanavi10"
-    Ysdpath: "/storage/sdcard"
     sdpath: "/storage/sdcard"
+    Ysdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
@@ -112,9 +112,9 @@ test:
 #
     - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
     - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    #- if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    #- if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    #- if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
 #
     - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
     - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
