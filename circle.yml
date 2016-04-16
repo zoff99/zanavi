@@ -2,11 +2,11 @@ machine:
   timezone:
     Europe/Vienna
   environment:
-    EMU_: "zanavi23"
-    YEMU_: "zanavi21"
+    ZEMU_: "zanavi23"
+    EMU_: "zanavi21"
     XEMU_: "zanavi10"
-    sdpath: "/sdcard"
-    Ysdpath: "/storage/sdcard"
+    Zsdpath: "/sdcard"
+    sdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
 dependencies:
   cache_directories:
