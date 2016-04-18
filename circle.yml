@@ -211,6 +211,7 @@ test:
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 8
     #- fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
     - sleep 5
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
