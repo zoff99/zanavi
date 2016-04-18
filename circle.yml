@@ -154,7 +154,7 @@ dependencies:
     - wget --no-check-certificate -t 100 -O ~/maps/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin" ; touch ~/_downloadmaps_/049 :
         background: true
 
-    - set -x ; files=48 ; have=0 ; while [ $have -lt $files ]; do ls -al ~/_downloadmaps_/ ; have=`ls -1 ~/_downloadmaps_/|wc -l|tr -d " "` ; echo "have=""$have" sleep 30  ; done
+    - files=48 ; have=0 ; while [ $have -lt $files ]; do ls -al ~/_downloadmaps_/ ; have=`ls -1 ~/_downloadmaps_/|wc -l|tr -d " "` ; echo "have=""$have" ; sleep 30  ; done
 
 
 test:
