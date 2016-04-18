@@ -303,6 +303,7 @@ test:
 
 
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
+    - mkdir ~/debug_results/ ; exit 0
     - ls -al ~/debug_results/
     - _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - ls -al ~/debug_results/
