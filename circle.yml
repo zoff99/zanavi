@@ -268,12 +268,14 @@ test:
         background: true
 
 
+    - sleep 120 # let app startup , it takes a while on the emulator
+
+
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
-
 
     - ready_="0" ;
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
