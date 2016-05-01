@@ -163,19 +163,19 @@ test:
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
     - android list targets
 #
-    - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
+    - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA720" ; fi
     - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
     #- if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
     #- if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
     #- if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
 #
-    - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA800-7in" ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA720" ; fi
     - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi21" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
 #
-    - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WVGA854" ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
     - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1024MB#' ~/.android/avd/zanavi10.avd/config.ini ; cat ~/.android/avd/zanavi10.avd/config.ini ; fi
     - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
@@ -211,12 +211,12 @@ test:
         background: true
         parallel: true
     - circle-android wait-for-boot
-    - sleep 5
 
-    - import -window root $CIRCLE_ARTIFACTS/capture000b.png
-
-    - for i in `xdotool search --name "DDMS"`; do xdotool windowfocus "$i" ; xdotool key "Return" ; sleep 1 ; done ; exit 0
+    - xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
     - sleep 210
+    - adb shell input keyevent 82
+    - sleep 10
+    - import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
 
 
     - mkdir ~/yaml-tests/
@@ -243,20 +243,11 @@ test:
     #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
 
     - fb-adb shell "cat /proc/meminfo" ; exit 0
-    - fb-adb shell "free" ; exit 0
-    - fb-adb shell "sysctl vm.swappiness" ; exit 0
 
     #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
 
-    - import -window root $CIRCLE_ARTIFACTS/capture001.png
-
-    - xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
-    - xdotool search --name "zanavi" key "F2"
-    - xdotool search --name "zanavi" key "Return"
-
-    - import -window root $CIRCLE_ARTIFACTS/capture002.png
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
     #- fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
