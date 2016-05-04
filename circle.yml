@@ -400,8 +400,8 @@ test:
     - ps auxwww ; exit 0
 
     # - xdotool search --name "Mozilla Firefox" windowsize 1900 1060 # too big for screen now
-    - xdotool search --name "Mozilla Firefox" windowsize 1280 1024
-    - xdotool search --name "Mozilla Firefox" windowsize 1280 1024
+    - xdotool search --name "Mozilla Firefox" windowsize 1280 720
+    - xdotool search --name "Mozilla Firefox" windowsize 1280 720
     - sleep 2
 
     - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
