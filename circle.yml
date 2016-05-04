@@ -363,7 +363,7 @@ test:
     - mkdir -p ~/gpx2png/out
     - mkdir -p ~/gpx2png/temp
     - cd ~/gpx2png/
-    - wget -O ~/gpx2png/gpx2png.pl 'https://gitlab.com/tfscripts/openstreetmap/raw/7819b361e0084aef0015c05604df6d955d04742c/gpx2png/gpx2png.pl'
+    - wget -O ~/gpx2png/gpx2png.pl 'https://raw.githubusercontent.com/zoff99/gpx2png_perl/75abd95444385816e14c222272d971c5ac93fe2d/gpx2png.pl'
     - chmod u+x ~/gpx2png/gpx2png.pl
     - cd ~/gpx2png/temp/
     - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
