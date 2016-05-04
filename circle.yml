@@ -396,7 +396,7 @@ test:
       url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
       if [ "$url1""x" != "x" ]; then
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url1" >/dev/null 2>/dev/null ;
-      sleep 5;
+      sleep 10;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL1_.png ;
@@ -404,7 +404,7 @@ test:
       fi ;
       if [ "$url2""x" != "x" ]; then
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url2" >/dev/null 2>/dev/null ;
-      sleep 5;
+      sleep 10;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL2_.png ;
@@ -412,7 +412,7 @@ test:
       fi ;
       if [ "$url3_orig""x" != "x" ]; then
       export DISPLAY=:2 ; firefox --setDefaultBrowser "$url3" >/dev/null 2>/dev/null ;
-      sleep 5;
+      sleep 10;
       export DISPLAY=:2 ; import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL3_.png ;
