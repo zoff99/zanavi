@@ -156,6 +156,10 @@ dependencies:
 
     - files=48 ; have=0 ; while [ $have -lt $files ]; do ls -al ~/_downloadmaps_/ ; have=`ls -1 ~/_downloadmaps_/|wc -l|tr -d " "` ; echo "have=""$have" ; sleep 30  ; done
 
+    - ls -al ~/*txt ; exit 0
+    - rm -fv ~/stdout_wget_*.txt ; rm -fv ~/stderr_wget_*.txt ; exit 0
+    - ls -al $CIRCLE_ARTIFACTS ; exit 0
+    - rm -fv $CIRCLE_ARTIFACTS/stdout_wget_*.txt ; rm -fv $CIRCLE_ARTIFACTS/stderr_wget_*.txt ; exit 0
 
 test:
   pre:
@@ -372,18 +376,29 @@ test:
 
     - Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
         background: true
+
+    - ps auxwww ; exit 0
+
     - rm -Rf ~/.mozilla ; exit 0
     - sleep 1
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser :
         background: true
-    - sleep 4
+    - sleep 20
+
+    - ps auxwww ; exit 0
 
     - pkill -9 -u ubuntu -f firefox
+    - type -a firefox
+
+    - ps auxwww ; exit 0
 
     - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
     - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
-    - sleep 10
+    - sleep 20
+
+    - ps auxwww ; exit 0
+
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
     - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
     - sleep 2
