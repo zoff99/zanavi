@@ -374,14 +374,14 @@ test:
     - pkill -9 -u ubuntu -f emulator64-arm
 
 
-    - Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
-        background: true
+    #- Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
+    #    background: true
 
     - ps auxwww ; exit 0
 
     - rm -Rf ~/.mozilla ; exit 0
     - sleep 1
-    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser :
+    - nohup firefox --setDefaultBrowser :
         background: true
     - sleep 20
 
@@ -393,14 +393,14 @@ test:
     - ps auxwww ; exit 0
 
     - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
-    - export DISPLAY=:2 ; nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
+    - nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
         background: true
     - sleep 20
 
     - ps auxwww ; exit 0
 
-    - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
-    - export DISPLAY=:2 ; xdotool search --name "Mozilla Firefox" windowsize 1900 1060
+    - xdotool search --name "Mozilla Firefox" windowsize 1900 1060
+    - xdotool search --name "Mozilla Firefox" windowsize 1900 1060
     - sleep 2
 
     - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
@@ -410,25 +410,25 @@ test:
       url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
       url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
       if [ "$url1""x" != "x" ]; then
-      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url1" >/dev/null 2>/dev/null ;
+      firefox --setDefaultBrowser "$url1" >/dev/null 2>/dev/null ;
       sleep 10;
-      export DISPLAY=:2 ; import -window root ~/capture001.png ;
+      import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL1_.png ;
       rm -fv ~/capture001.png ;
       fi ;
       if [ "$url2""x" != "x" ]; then
-      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url2" >/dev/null 2>/dev/null ;
+      firefox --setDefaultBrowser "$url2" >/dev/null 2>/dev/null ;
       sleep 10;
-      export DISPLAY=:2 ; import -window root ~/capture001.png ;
+      import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL2_.png ;
       rm -fv ~/capture001.png ;
       fi ;
       if [ "$url3_orig""x" != "x" ]; then
-      export DISPLAY=:2 ; firefox --setDefaultBrowser "$url3" >/dev/null 2>/dev/null ;
+      firefox --setDefaultBrowser "$url3" >/dev/null 2>/dev/null ;
       sleep 10;
-      export DISPLAY=:2 ; import -window root ~/capture001.png ;
+      import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
       cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL3_.png ;
       rm -fv ~/capture001.png ;
