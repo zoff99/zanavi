@@ -352,11 +352,15 @@ test:
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
 
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al"
     - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
+    - ls -al ~/debug_output/ ; exit 0
+
     - mkdir ~/debug_results/ ; exit 0
     - ls -al ~/debug_results/
     - _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - ls -al ~/debug_results/
+
     - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
     - cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
 
