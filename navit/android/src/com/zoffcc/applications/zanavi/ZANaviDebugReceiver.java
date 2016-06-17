@@ -781,7 +781,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 										try
 										{
-											out.write("URL1:" + "http://map.project-osrm.org/?z=10&loc=" + lat_pos + "%2C" + lon_pos + "&loc=" + lat_dst + "%2C" + lon_dst + "&hl=en&alt=0\n");
+											out.write("URL1:" + "http://map.project-osrm.org/?loc=" + lat_pos + "%2C" + lon_pos + "&loc=" + lat_dst + "%2C" + lon_dst + "&hl=en&ly=&alt=&df=&srv=\n");
 											out.write("URL2:" + "https://graphhopper.com/maps/?point=" + lat_pos + "%2C" + lon_pos + "&point=" + lat_dst + "%2C" + lon_dst + "\n");
 											out.write("URL3:" + "http://www.google.com/maps/dir/" + lat_pos + "," + lon_pos + "/" + lat_dst + "," + lon_dst + "\n");
 											out.write("URL4:" + "http://www.openstreetmap.org/directions?engine=osrm_car&route=" + lat_pos + "%2C" + lon_pos + "%3B" + lat_dst + "%2C" + lon_dst + "\n");
@@ -883,6 +883,54 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 											System.out.println("roadbook:002:" + s + " " + v);
 										}
+										else if (success_item.startsWith("'nav"))
+										{
+											String nav_num_str = success_item.replace("'nav", "").replace("'", "");
+											int nav_num = Integer.parseInt(nav_num_str);
+
+											if (separated.length > (nav_num + 2))
+											{
+												// ok we have enough entries in roadbook
+
+												String[] values = new String[5];
+												String[] values2 = separated[nav_num + 2].split(":");
+												values[0] = values2[0];
+												values[1] = values2[1];
+												values[2] = values2[2];
+												values[3] = values2[3];
+												try
+												{
+													values[4] = values2[4];
+												}
+												catch (Exception ee)
+												{
+													values[4] = "";
+													System.out.println("_DREX_:006entries" + ee.getMessage());
+												}
+												// 0 string:distance short form
+												// 1 lat
+												// 2 lon
+												// 3 icon name
+												// 4 text
+
+												if (values[3].equalsIgnoreCase(success_value))
+												{
+													result_code = 0;
+												}
+												else
+												{
+													result_code = -1;
+												}
+											}
+											else
+											{
+												// not enough entries in roadbook --> fail
+												result_code = -1;
+											}
+
+											System.out.println("roadbook:002:" + success_item + " " + success_value);
+										}
+
 									}
 								}
 
@@ -1220,8 +1268,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								try
 								{
-									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
-									out.write("URL2:" + "https://www.google.at/maps/place/" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+									// out.write("URL2:" + "about:\n");
 									// out.write("URL3:" + "about:\n");
 								}
 								catch (Exception e)
@@ -1668,8 +1716,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								try
 								{
 									// http://nominatim.openstreetmap.org/search.php?q=wienerneustadt+blubgasse+99
-									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
-									out.write("URL2:" + "https://www.google.at/maps/place/" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + "+" + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+									out.write("URL1:" + "http://nominatim.openstreetmap.org/search.php?q=" + URLEncoder.encode(city_str_f, "UTF-8") + "+" + URLEncoder.encode(str_str_f, "UTF-8") + " " + URLEncoder.encode(hn_str_f, "UTF-8") + "\n");
+									// out.write("URL2:" + "\n");
 									// out.write("URL3:" + "\n");
 								}
 								catch (Exception e)
@@ -1911,8 +1959,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 				System.out.println("_DREX_:012" + e2.getMessage());
 			}
 
-			// Navit.static_show_route_graph(4);
-			Navit.static_show_route_graph(1);
+			Navit.static_show_route_graph(4);
 
 			String date_str = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
 
