@@ -370,7 +370,7 @@ test:
     - wget -O ~/gpx2png/gpx2png.pl 'https://raw.githubusercontent.com/zoff99/gpx2png_perl/75abd95444385816e14c222272d971c5ac93fe2d/gpx2png.pl'
     - chmod u+x ~/gpx2png/gpx2png.pl
     - cd ~/gpx2png/temp/
-    - for i in `ls -1 ~/debug_results/201?-??-*/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
+    - for i in `ls -1 ~/debug_results/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
     - cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
 
@@ -408,7 +408,7 @@ test:
     - xdotool search --name "Mozilla Firefox" windowsize 1280 900
     - sleep 2
 
-    - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/201?-??-*/*._SUCCESS_.result.txt`; do
+    - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/*._SUCCESS_.result.txt`; do
       echo "file=$i";
       url1=`cat "$i"|grep 'URL1'|cut -d":" -f2-` ; echo "$url1" ;
       url2=`cat "$i"|grep 'URL2'|cut -d":" -f2-` ; echo "$url2" ;
@@ -419,7 +419,7 @@ test:
       sleep 10;
       import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
-      cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL1_.png ;
+      cp -v ~/capture001.png ~/debug_results/"$out"._URL1_.png ;
       rm -fv ~/capture001.png ;
       fi ;
       if [ "$url2""x" != "x" ]; then
@@ -427,7 +427,7 @@ test:
       sleep 10;
       import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
-      cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL2_.png ;
+      cp -v ~/capture001.png ~/debug_results/"$out"._URL2_.png ;
       rm -fv ~/capture001.png ;
       fi ;
       if [ "$url3_orig""x" != "x" ]; then
@@ -435,7 +435,7 @@ test:
       sleep 10;
       import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
-      cp -v ~/capture001.png ~/debug_results/"$_dir"/"$out"._URL3_.png ;
+      cp -v ~/capture001.png ~/debug_results/"$out"._URL3_.png ;
       rm -fv ~/capture001.png ;
       fi ;
       done ;
@@ -443,7 +443,7 @@ test:
 
     - pkill -9 -u ubuntu -f firefox
 
-    - cd ~/debug_results/ && cp -av 201?-??-*/* $CIRCLE_TEST_REPORTS/
+    - cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
     - cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/0000__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/0000__reports/
 
@@ -455,15 +455,15 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/0000__zanavi-runner/
 
     - ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
-      echo $count_files ; cd ~ ; ls -al ./debug_results/$_dir/ ; cd ~/yaml-tests/routing-qa-master/ ;
+      echo $count_files ; cd ~ ; ls -al ./debug_results/ ; cd ~/yaml-tests/routing-qa-master/ ;
       for i in `ls -1 *.yaml` ;
-      do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; cd ~ ; echo "f=""$f" ;
+      do f="./debug_results/$i"'._SUCCESS_.result.txt' ; cd ~ ; echo "f=""$f" ;
       ls -al "$f" ; if [ -f "$f" ]; then echo "OK" ; else echo "FAIL" ; ju_fail=$[ $ju_fail + 1 ] ; fi ;
       done ;
       . ~/zanavi/ci/junit_start.sh ~/ju_res.xml "$count_files" "$ju_fail" ;
       cd ~/yaml-tests/routing-qa-master/ ;
       for i in `ls -1 *.yaml` ;
-      do f="./debug_results/$_dir/$i"'._SUCCESS_.result.txt' ; cd ~ ;
+      do f="./debug_results/$i"'._SUCCESS_.result.txt' ; cd ~ ;
       rtime=`cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt | grep "$i" 2> /dev/null | cut -d":" -f2 2>/dev/null | tr -d " " 2>/dev/null` ;
       if [ -f "$f" ]; then echo "OK2" ;
       ls -al "$f" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 0 "$i" "status" "OK" "$rtime"; else echo "FAIL2" ;
