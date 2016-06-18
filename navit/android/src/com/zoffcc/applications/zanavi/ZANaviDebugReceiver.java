@@ -870,14 +870,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										if (success_item.equalsIgnoreCase("'nodes'"))
 										{
 											int s = -99;
-											//if (separated == null)
-											//{
-											//	s = -99;
-											//}
-											//else
-											//{
 											s = (separated.length - 2);
-											//}
 											int v = Integer.parseInt(success_value);
 											result_code = success_value_compare(s, v);
 
@@ -1308,70 +1301,21 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								if ((!success_operator.equals("")) && (!success_value.equals("")))
 								{
-									System.out.println("search:so=" + success_source);
+									// System.out.println("search:so=" + success_source);
 									System.out.println("search:it=" + success_item);
 									System.out.println("search:sv=" + success_value);
 
-									if (success_source.equalsIgnoreCase("'dbus'"))
+									if (success_item.equalsIgnoreCase("'resultcount'"))
 									{
-										if (success_item.equalsIgnoreCase("'status'"))
+										try
 										{
-											int s = NavitGraphics.navit_route_status;
+											int s = Navit.NavitAddressResultList_foundItems.size();
 											int v = Integer.parseInt(success_value);
-
-											if ((success_operator.contains(">")) || ((success_operator.contains("<"))))
-											{
-												if (s == 17)
-												{
-													s = 33;
-												}
-											}
-											else
-											{
-												if (v == 33)
-												{
-													v = 17;
-													if (s == 33)
-													{
-														s = 17;
-													}
-												}
-												else if (v == 17)
-												{
-													if (s == 33)
-													{
-														s = 17;
-													}
-												}
-											}
 											result_code = success_value_compare(s, v);
-
-											System.out.println("search:003:" + s + " " + v);
 										}
-										else if (success_item.equalsIgnoreCase("'distance'"))
+										catch (Exception e)
 										{
-											int s = local_meters_value;
-											int v = Integer.parseInt(success_value);
-											result_code = success_value_compare(s, v);
-
-											System.out.println("search:001:" + s + " " + v);
-										}
-									}
-									else if (success_source.equalsIgnoreCase("'gpx'"))
-									{
-										if (success_item.equalsIgnoreCase("'nodes'"))
-										{
-											int s = -99;
-											//if (separated == null)
-											//{
-											//	s = -99;
-											//}
-											//else
-											//{
-											// ** // s = (separated.length - 2);
-											//}
-											int v = Integer.parseInt(success_value);
-											result_code = success_value_compare(s, v);
+											result_code = -1;
 										}
 									}
 								}
@@ -1756,70 +1700,21 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								if ((!success_operator.equals("")) && (!success_value.equals("")))
 								{
-									System.out.println("search:so=" + success_source);
+									// System.out.println("search:so=" + success_source);
 									System.out.println("search:it=" + success_item);
 									System.out.println("search:sv=" + success_value);
 
-									if (success_source.equalsIgnoreCase("'dbus'"))
+									if (success_item.equalsIgnoreCase("'resultcount'"))
 									{
-										if (success_item.equalsIgnoreCase("'status'"))
+										try
 										{
-											int s = NavitGraphics.navit_route_status;
+											int s = Navit.NavitAddressResultList_foundItems.size();
 											int v = Integer.parseInt(success_value);
-
-											if ((success_operator.contains(">")) || ((success_operator.contains("<"))))
-											{
-												if (s == 17)
-												{
-													s = 33;
-												}
-											}
-											else
-											{
-												if (v == 33)
-												{
-													v = 17;
-													if (s == 33)
-													{
-														s = 17;
-													}
-												}
-												else if (v == 17)
-												{
-													if (s == 33)
-													{
-														s = 17;
-													}
-												}
-											}
 											result_code = success_value_compare(s, v);
-
-											System.out.println("search:003:" + s + " " + v);
 										}
-										else if (success_item.equalsIgnoreCase("'distance'"))
+										catch (Exception e)
 										{
-											int s = local_meters_value;
-											int v = Integer.parseInt(success_value);
-											result_code = success_value_compare(s, v);
-
-											System.out.println("search:001:" + s + " " + v);
-										}
-									}
-									else if (success_source.equalsIgnoreCase("'gpx'"))
-									{
-										if (success_item.equalsIgnoreCase("'nodes'"))
-										{
-											int s = -99;
-											//if (separated == null)
-											//{
-											//	s = -99;
-											//}
-											//else
-											//{
-											// ** // s = (separated.length - 2);
-											//}
-											int v = Integer.parseInt(success_value);
-											result_code = success_value_compare(s, v);
+											result_code = -1;
 										}
 									}
 								}
