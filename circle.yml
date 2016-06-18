@@ -352,8 +352,8 @@ test:
     - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al"
-    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/"
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al" ; exit 0
+    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/" ; exit 0
     - ls -al ~/debug_output/ ; exit 0
 
     - mkdir ~/debug_results/ ; exit 0
