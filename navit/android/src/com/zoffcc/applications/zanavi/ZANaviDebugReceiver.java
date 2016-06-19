@@ -1287,18 +1287,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 								result_code = -1;
 
-								// disable ---------
-								// disable ---------
-								// disable ---------
-								// disable ---------
-								success_operator = "";
-								success_value = "";
-								result_code = 0;
-								// disable ---------
-								// disable ---------
-								// disable ---------
-								// disable ---------
-
 								if ((!success_operator.equals("")) && (!success_value.equals("")))
 								{
 									// System.out.println("search:so=" + success_source);
@@ -1685,18 +1673,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 								// calculate success criterion ----------------------
 
 								result_code = -1;
-
-								// disable ---------
-								// disable ---------
-								// disable ---------
-								// disable ---------
-								success_operator = "";
-								success_value = "";
-								result_code = 0;
-								// disable ---------
-								// disable ---------
-								// disable ---------
-								// disable ---------
 
 								if ((!success_operator.equals("")) && (!success_value.equals("")))
 								{
