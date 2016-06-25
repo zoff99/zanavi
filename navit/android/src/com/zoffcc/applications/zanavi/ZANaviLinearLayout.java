@@ -323,45 +323,52 @@ public class ZANaviLinearLayout extends LinearLayout
 
 	public void redraw_OSD_view(int i)
 	{
-		//		child1 = Navit.Global_Navit_Object.findViewById(R.id.top_bar); // streetname
-		//		child2 = Navit.Global_Navit_Object.findViewById(R.id.osd_compass_new);
-		//		child3 = Navit.Global_Navit_Object.findViewById(R.id.osd_nextturn_new);
-		//		child4 = Navit.Global_Navit_Object.findViewById(R.id.osd_timetoturn_new);
-		//		child5 = Navit.Global_Navit_Object.findViewById(R.id.osd_timetodest_new);
-		//		child6 = Navit.Global_Navit_Object.findViewById(R.id.osd_roaddistance_new);
-		//		child7 = Navit.Global_Navit_Object.findViewById(R.id.osd_eta_new);
-		//		child8 = Navit.Global_Navit_Object.findViewById(R.id.view_speeding);
-		//		child9 = Navit.Global_Navit_Object.findViewById(R.id.view_laneassist);		
-
-		switch (i)
+		try
 		{
-		case 1:
-			child1.postInvalidate();
-			break;
-		case 2:
-			child2.postInvalidate();
-			break;
-		case 3:
-			child3.postInvalidate();
-			break;
-		case 4:
-			child4.postInvalidate();
-			break;
-		case 5:
-			child5.postInvalidate();
-			break;
-		case 6:
-			child6.postInvalidate();
-			break;
-		case 7:
-			child7.postInvalidate();
-			break;
-		case 8:
-			child8.postInvalidate();
-			break;
-		case 9:
-			child9.postInvalidate();
-			break;
+			//		child1 = Navit.Global_Navit_Object.findViewById(R.id.top_bar); // streetname
+			//		child2 = Navit.Global_Navit_Object.findViewById(R.id.osd_compass_new);
+			//		child3 = Navit.Global_Navit_Object.findViewById(R.id.osd_nextturn_new);
+			//		child4 = Navit.Global_Navit_Object.findViewById(R.id.osd_timetoturn_new);
+			//		child5 = Navit.Global_Navit_Object.findViewById(R.id.osd_timetodest_new);
+			//		child6 = Navit.Global_Navit_Object.findViewById(R.id.osd_roaddistance_new);
+			//		child7 = Navit.Global_Navit_Object.findViewById(R.id.osd_eta_new);
+			//		child8 = Navit.Global_Navit_Object.findViewById(R.id.view_speeding);
+			//		child9 = Navit.Global_Navit_Object.findViewById(R.id.view_laneassist);		
+
+			switch (i)
+			{
+			case 1:
+				child1.postInvalidate();
+				break;
+			case 2:
+				child2.postInvalidate();
+				break;
+			case 3:
+				child3.postInvalidate();
+				break;
+			case 4:
+				child4.postInvalidate();
+				break;
+			case 5:
+				child5.postInvalidate();
+				break;
+			case 6:
+				child6.postInvalidate();
+				break;
+			case 7:
+				child7.postInvalidate();
+				break;
+			case 8:
+				child8.postInvalidate();
+				break;
+			case 9:
+				child9.postInvalidate();
+				break;
+			}
+
+		}
+		catch (Exception e)
+		{
 		}
 	}
 

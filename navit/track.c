@@ -941,8 +941,16 @@ void tracking_calc_and_send_possbile_turn_info(struct route_graph_point *rgp, st
 	int angles_found_count = 0;
 	int drive_here_angle = -999;
 
-	drive_here = rgp->seg;
+	// FIXME : move codeblock down
 
+	if (street_dir == 1)
+	{
+		drive_here = s->end_from_seg;
+	}
+	else
+	{
+		drive_here = s->start_from_seg;
+	}
 	int found_first = 0;
 
 	char *next_roads_and_angles = NULL;
@@ -2363,18 +2371,20 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 						g_free(seg_len);
 #endif
 
-						struct route_graph_segment *cur;
+				//		struct route_graph_segment *cur; unused ??
 						struct route_graph_point *rgp;
 						if (tr->street_direction == -1)
 						{
 							//dbg(0, "RR:03.5:\n");
-							rgp = s->start;
+							rgp = s->start;  						//jandegr : first next point
+							next_route_seg = s->start_from_seg;		//jandegr : first next segment
 							street_dir = -1;
 						}
 						else // tr->street_direction == 1 or 0
 						{
 							//dbg(0, "RR:03.6:\n");
-							rgp = s->end;
+							rgp = s->end;    						//jandegr : first next point
+							next_route_seg = s->end_from_seg;		//jandegr : first next segment
 							street_dir = 1;
 						}
 
@@ -2390,20 +2400,26 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 						tracking_calc_and_send_possbile_turn_info(rgp, s, street_dir, 0);
 
 						// save the next segment data --------------
-						if (rgp->seg)
+				//		if (rgp->seg) jandegr
+						if (next_route_seg && rgp)
 						{
-							next_route_seg = rgp->seg;
+							// simplify this back later, done for clarity temporary
+							struct route_graph_segment *second_next_route_seg;
+
+						//	next_route_seg = rgp->seg;  jandegr
 							//dbg(0, "RR:04.0a:%p\n", next_route_seg);
 							if (next_route_seg->start == rgp)
 							{
 								rgp_next = next_route_seg->end;
 								street_dir_next = 1;
+								second_next_route_seg = next_route_seg->start_from_seg;
 								//dbg(0, "RR:04.2:%p %p %p\n", rgp, next_route_seg->start, next_route_seg->end);
 							}
 							else
 							{
 								rgp_next = next_route_seg->start;
 								street_dir_next = -1;
+								second_next_route_seg = next_route_seg->end_from_seg;
 								//dbg(0, "RR:04.3:%p %p %p\n", rgp, next_route_seg->start, next_route_seg->end);
 							}
 							//dbg(0, "RR:04.4:%p\n", rgp_next);
@@ -2421,25 +2437,26 @@ void tracking_update(struct tracking *tr, struct vehicle *v, struct vehicleprofi
 
 							// --- and also the next next seg ----
 							// --- and also the next next seg ----
-							if (rgp_next->seg)
+			//				if (rgp_next->seg) jandegr
+							if (second_next_route_seg)
 							{
-								next_route_seg = rgp_next->seg;
+			//					next_route_seg = rgp_next->seg;
 								//dbg(0, "RR:04.0a:%p\n", next_route_seg);
-								if (next_route_seg->start == rgp_next)
+								if (second_next_route_seg->start == rgp_next)
 								{
-									rgp_next = next_route_seg->end;
+									rgp_next = second_next_route_seg->end;
 									street_dir_next = 1;
 									//dbg(0, "RR:04.2:%p %p %p\n", rgp_next, next_route_seg->start, next_route_seg->end);
 								}
 								else
 								{
-									rgp_next = next_route_seg->start;
+									rgp_next = second_next_route_seg->start;
 									street_dir_next = -1;
 									//dbg(0, "RR:04.3:%p %p %p\n", rgp_next, next_route_seg->start, next_route_seg->end);
 								}
 								//dbg(0, "RR:04.4:%p\n", rgp_next);
 
-								tracking_calc_and_send_possbile_turn_info(rgp_next, next_route_seg, street_dir_next, 2);
+								tracking_calc_and_send_possbile_turn_info(rgp_next, second_next_route_seg, street_dir_next, 2);
 								street_dir_next__prev = street_dir_next;
 
 							}

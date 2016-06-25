@@ -1487,8 +1487,11 @@ item_to_name(enum item_type item)
 	for (i = 0; i < sizeof(item_names) / sizeof(struct item_name); i++)
 	{
 		if (item_names[i].item == item)
+		{
 			return item_names[i].name;
+		}
 	}
+
 	return NULL;
 }
 

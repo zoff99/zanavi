@@ -149,9 +149,6 @@ __inline__ int transform_from_geo_lon_fast(double lon)
 
 
 
-
-
-
 static void transform_set_screen_dist(struct transformation *t, int dist)
 {
 	t->screen_dist = dist;

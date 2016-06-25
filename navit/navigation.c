@@ -4891,7 +4891,7 @@ __F_START__
 					}
 					else
 					{
-						// TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+						// TRANSLATORS: First argument is strength, second direction, third distance, fourth destination
 						ret = g_strdup_printf_4_str(_("then turn %1$s%2$s %3$s%4$s"), strength, dir, d, destination ? destination : "");
 					}
 				}
@@ -4899,7 +4899,7 @@ __F_START__
 				{
 					if (delta >= 10)
 					{
-						// TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
+						// TRANSLATORS: First argument is strength, second direction, third distance, fourth destination
 						ret = g_strdup_printf_4_str(_("then turn %1$s%2$s %3$s%4$s"), strength, dir, d, destination ? destination : "");
 					}
 					else
@@ -5609,7 +5609,8 @@ __F_START__
 			d = get_distance(nav, distance, attr_navigation_short, 0);
 			break;
 		case 0:
-			skip_roads = count_possible_turns(nav, cmd->prev ? cmd->prev->itm : nav->first, cmd->itm, cmd->delta);
+			// DISABLE S_R // skip_roads = count_possible_turns(nav, cmd->prev ? cmd->prev->itm : nav->first, cmd->itm, cmd->delta);
+			skip_roads = 0;
 
 			dbg(0, "count_possible_turns:1:%d", skip_roads);
 
@@ -5661,7 +5662,8 @@ __F_START__
 			break;
 
 		case -2:
-			skip_roads = count_possible_turns(nav, cmd->prev->itm, cmd->itm, cmd->delta);
+			// DISABLE S_R // skip_roads = count_possible_turns(nav, cmd->prev->itm, cmd->itm, cmd->delta);
+			skip_roads = 0;
 
 			dbg(0, "count_possible_turns:2:%d", skip_roads);
 

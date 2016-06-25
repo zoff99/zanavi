@@ -163,15 +163,15 @@ struct route_graph_point
 	 *  of this linked-list are in route_graph_segment->start_next.*/
 	struct route_graph_segment *end; /**< Pointer to a list of segments of which this pointer is the end. The links
 	 *  of this linked-list are in route_graph_segment->end_next. */
-	struct route_graph_segment *seg; /**< Pointer to the segment one should use to reach the destination at
-	 *  least costs */
-	struct fibheap_el *el; /**< When this point is put on a Fibonacci heap, this is a pointer
-	 *  to this point's heap-element */
-	int value; /**< The cost at which one can reach the destination from this point on */
+//	struct route_graph_segment *seg; /**< Pointer to the segment one should use to reach the destination at
+//	 *  least costs */
+//	struct fibheap_el *el; /**< When this point is put on a Fibonacci heap, this is a pointer
+//	 *  to this point's heap-element */
+//	int value; /**< The cost at which one can reach the destination from this point on */
 	struct coord c; /**< Coordinates of this point */
 	int flags; /**< Flags for this point (eg traffic distortion) */
 
-	struct route_graph_segment *seg_rev;
+//	struct route_graph_segment *seg_rev;
 
 	/*
        Dijkstra values:
@@ -208,10 +208,22 @@ struct route_graph_segment
 	struct route_graph_point *start; /**< Pointer to the point this segment starts at. */
 	struct route_graph_point *end; /**< Pointer to the point this segment ends at. */
 
+
 	// -- NEW --
 	struct coord c_start_plus_1;	// second coord
 	struct coord c_end_minus_1;		// second to last coord
 	// -- NEW --
+
+
+	// -- NEW -- jandgr --
+	int seg_start_out_cost;
+	int seg_end_out_cost;
+	struct route_graph_segment *start_from_seg;
+	struct route_graph_segment *end_from_seg;
+	struct fibheap_el *el_start;
+	struct fibheap_el *el_end;
+	// -- NEW -- jandgr --
+
 
 	struct route_segment_data data; /**< The segment data */
 };

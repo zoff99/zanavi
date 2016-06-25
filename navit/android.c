@@ -58,6 +58,7 @@ jmethodID send_generic_text;
 jclass NavitMapPreviewActivityClass = NULL;
 jmethodID DrawMapPreview_target;
 jmethodID DrawMapPreview_polyline = NULL;
+jmethodID DrawPreview_polyline = NULL;
 jmethodID DrawMapPreview_text = NULL;
 jmethodID NavitGraphics_send_osd_values2 = NULL;
 jmethodID NavitGraphics_set_vehicle_values2 = NULL;
@@ -293,6 +294,42 @@ struct gui_priv
 		struct widget *container;
 	} html[10];
 };
+
+
+// copied from graphics_android.c !!!!!! (always keep in sync!!!)
+struct graphics_priv
+{
+	jclass NavitGraphicsClass;
+	jmethodID NavitGraphics_draw_polyline, NavitGraphics_draw_polyline2, NavitGraphics_draw_polyline3, NavitGraphics_draw_polyline4, NavitGraphics_draw_polyline_dashed, NavitGraphics_set_dashes, NavitGraphics_draw_polygon, NavitGraphics_draw_polygon2, NavitGraphics_draw_rectangle, NavitGraphics_draw_circle, NavitGraphics_draw_text, NavitGraphics_draw_image,
+			NavitGraphics_draw_bigmap, NavitGraphics_draw_image_warp, NavitGraphics_draw_mode, NavitGraphics_draw_drag, NavitGraphics_overlay_disable, NavitGraphics_overlay_resize, NavitGraphics_SetCamera, NavitGraphicsClass_rotate_and_scale_bitmap;
+
+	jclass PaintClass;
+	jmethodID Paint_init, Paint_setStrokeWidth, Paint_setARGB;
+
+	jobject NavitGraphics;
+	jobject Paint;
+
+	jclass BitmapFactoryClass;
+	jmethodID BitmapFactory_decodeFile, BitmapFactory_decodeResource;
+
+	jclass BitmapClass;
+	jmethodID Bitmap_getHeight, Bitmap_getWidth;
+
+	jclass ContextClass;
+	jmethodID Context_getResources;
+
+	jclass ResourcesClass;
+	jobject Resources;
+	jmethodID Resources_getIdentifier;
+
+};
+
+// copied from graphics.c !!!!!! (always keep in sync!!!)
+struct graphics
+{
+	struct graphics_priv *priv;
+};
+
 
 // ------------------------- COPIED STUFF --- this is generally bad ------------------
 // ------------------------- COPIED STUFF --- this is generally bad ------------------
@@ -1050,6 +1087,7 @@ void android_return_generic_int(int id, int i)
 	JNIEnv *jnienv2;
 	jnienv2 = jni_getenv();
 
+
 	if (NavitGraphicsClass2 == NULL)
 	{
 		if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitGraphics", &NavitGraphicsClass2))
@@ -1137,6 +1175,12 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEn
 
 		}
 		// search for street in variable "s" within "search_country" -> return a list of streets as result
+		// ------- normal search ----------
+		// ------- normal search ----------
+		// ------- normal search ----------
+		// ------- normal search ----------
+		// ------- normal search ----------
+		// ------- normal search ----------
 		else if (id == 29)
 		{
 			//struct attr s_attr4;
@@ -1307,6 +1351,241 @@ static void map_preview_label_line(struct point *p, int count, char *label, int 
 		}
 	}
 }
+
+
+
+JNIEXPORT void JNICALL
+Java_com_zoffcc_applications_zanavi_NavitGraphics_DrawLowqualMap(JNIEnv* env, jobject thiz, jobject latlonzoom, int width, int height, int font_size, int scale, int sel_range)
+{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	// config_get_attr(config, attr_navit, &attr, NULL);
+
+	const char *s;
+	int zoom;
+	s = (*env)->GetStringUTFChars(env, latlonzoom, NULL);
+	char parse_str[strlen(s) + 1];
+	strcpy(parse_str, s);
+	(*env)->ReleaseStringUTFChars(env, latlonzoom, s);
+	////DBG // dbg(0,"*****string=%s\n",s);
+
+	// show map preview for (lat#lon#zoom)
+	struct coord_geo g;
+	char *p;
+	char *stopstring;
+
+	// lat
+	p = strtok(parse_str, "#");
+	g.lat = strtof(p, &stopstring);
+	// lon
+	p = strtok(NULL, "#");
+	g.lng = strtof(p, &stopstring);
+	// zoom
+	p = strtok(NULL, "#");
+	zoom = atoi(p);
+
+	////DBG // dbg(0,"lat=%f\n",g.lat);
+	////DBG // dbg(0,"lng=%f\n",g.lng);
+	////DBG // dbg(0,"zoom=%d\n",zoom);
+	////DBG // dbg(0,"w=%d\n",width);
+	////DBG // dbg(0,"h=%d\n",height);
+
+	struct coord c;
+	transform_from_geo(projection_mg, &g, &c);
+
+	// struct pcoord pc;
+	// pc.x=c.x;
+	// pc.y=c.y;
+	// pc.pro=projection_mg;
+
+
+	// ----------------------- big draw loop -----------------------
+	// ----------------------- big draw loop -----------------------
+	// ----------------------- big draw loop -----------------------
+	// ----------------------- big draw loop -----------------------
+	struct item *item;
+	struct map_rect *mr = NULL;
+	struct mapset *ms;
+	struct mapset_handle *msh;
+	struct map* map = NULL;
+	struct attr map_name_attr;
+	struct attr attr;
+
+	struct map_selection sel;
+	const int selection_range = sel_range; // should be something with "width" and "height" i guess ??!!
+
+	const int max = 100;
+	int count;
+	struct coord *ca = g_alloca(sizeof(struct coord) * max);
+	struct point *pa = g_alloca(sizeof(struct point) * max);
+
+	sel.next = NULL;
+	sel.order = zoom;
+	sel.range.min = type_none;
+	sel.range.max = type_last;
+	sel.u.c_rect.lu.x = c.x - selection_range;
+	sel.u.c_rect.lu.y = c.y + selection_range;
+	sel.u.c_rect.rl.x = c.x + selection_range;
+	sel.u.c_rect.rl.y = c.y - selection_range;
+
+	struct transformation *tr;
+	tr = transform_dup(global_navit->trans);
+	struct point p_center;
+	p_center.x = width / 2;
+	p_center.y = height / 2;
+	transform_set_screen_center(tr, &p_center);
+	transform_set_center(tr, &c);
+	transform_set_scale(tr, scale);
+	enum projection pro = transform_get_projection(global_navit->trans_cursor);
+
+	// reset cancel flag
+	global_cancel_preview_map_drawing = 0;
+
+	ms = global_navit->mapsets->data;
+	msh = mapset_open(ms);
+	while (msh && (map = mapset_next(msh, 0)))
+	{
+		if (map_get_attr(map, attr_name, &map_name_attr, NULL))
+		{
+			if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
+			{
+				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 38) == 0)
+				{
+					// its an sdcard map
+					mr = map_rect_new(map, &sel);
+					if (mr)
+					{
+						while ((item = map_rect_get_item(mr)))
+						{
+
+							if (global_cancel_preview_map_drawing == 1)
+							{
+								dbg(0, "global_cancel_preview_map_drawing = 1");
+								break;
+							}
+
+							count = item_coord_get_within_selection(item, ca, max, &sel);
+
+							if (!count)
+							{
+								continue;
+							}
+
+							struct attr attr_77;
+							if (item_attr_get(item, attr_flags, &attr_77))
+							{
+								item->flags = attr_77.u.num;
+							}
+							else
+							{
+								item->flags = 0;
+							}
+
+							count = transform(tr, pro, ca, pa, count, 0, 0, NULL);
+
+							if (item_is_street(*item))
+							{
+								android_DrawPreview_polyline(pa, count, 0, item_to_name(item->type));
+							}
+
+						}
+						map_rect_destroy(mr);
+					}
+				}
+			}
+		}
+	}
+	mapset_close(msh);
+
+// ===============================================
+
+	if (global_cancel_preview_map_drawing == 1)
+	{
+		dbg(0, "global_cancel_preview_map_drawing = 1");
+		return;
+	}
+
+
+// ===============================================
+
+
+	msh = mapset_open(ms);
+	while (msh && (map = mapset_next(msh, 0)))
+	{
+		if (map_get_attr(map, attr_name, &map_name_attr, NULL))
+		{
+			if (strncmp("_ms_sdcard_map:", map_name_attr.u.str, 15) == 0)
+			{
+				if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/navitmap", map_name_attr.u.str, 38) == 0)
+				{
+					// its an sdcard map
+					mr = map_rect_new(map, &sel);
+					if (mr)
+					{
+						while ((item = map_rect_get_item(mr)))
+						{
+
+							if (global_cancel_preview_map_drawing == 1)
+							{
+								dbg(0, "global_cancel_preview_map_drawing = 1");
+								break;
+							}
+
+							count = item_coord_get_within_selection(item, ca, max, &sel);
+
+							if (!count)
+							{
+								continue;
+							}
+
+							struct attr attr_77;
+							if (item_attr_get(item, attr_flags, &attr_77))
+							{
+								item->flags = attr_77.u.num;
+							}
+							else
+							{
+								item->flags = 0;
+							}
+
+							count = transform(tr, pro, ca, pa, count, 0, 0, NULL);
+
+							if (item_type_is_area(item->type))
+							{
+								android_DrawPreview_polyline(pa, count, 0, item_to_name(item->type));
+							}
+
+						}
+						map_rect_destroy(mr);
+					}
+				}
+			}
+		}
+	}
+	mapset_close(msh);
+
+
+
+
+
+
+/*
+	enum projection pro2 = transform_get_projection(global_navit->trans_cursor);
+	struct point pnt;
+	transform(tr, pro2, &c, &pnt, 1, 0, 0, NULL);
+	transform_destroy(tr);
+
+*/
+}
+
+
+
+
+
+
+
+
 
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitMapPreviewActivity_DrawMapPreview(JNIEnv* env, jobject thiz, jobject latlonzoom, int width, int height, int font_size, int scale, int sel_range)
@@ -1692,6 +1971,79 @@ void android_DrawMapPreview_polyline(struct point *p, int count, int type)
 }
 
 
+void android_DrawPreview_polyline(struct point *p, int count, int type, const char* item_type)
+{
+#ifdef NAVIT_FUNC_CALLS_DEBUG_PRINT
+	dbg(0,"+#+:enter\n");
+#endif
+	// type:
+	// 0 -> normal street
+	// 2 -> country border
+
+	JNIEnv *jnienv2;
+	jnienv2 = jni_getenv();
+
+
+	if (NavitGraphicsClass2 == NULL)
+	{
+		if (!android_find_class_global("com/zoffcc/applications/zanavi/NavitGraphics", &NavitGraphicsClass2))
+		{
+			NavitGraphicsClass2 = NULL;
+			return;
+		}
+	}
+
+
+	if (DrawPreview_polyline == NULL)
+	{
+		android_find_static_method(NavitGraphicsClass2, "DrawPreview_polyline", "(I[ILjava/lang/String;)V", &DrawPreview_polyline);
+	}
+
+	if (DrawPreview_polyline == NULL)
+	{
+		//DBG // dbg(0, "no method found\n");
+		return; /* exception thrown */
+	}
+
+	jint pc[count * 2];
+	int i;
+	jintArray points;
+	if (count <= 0)
+	{
+		return;
+	}
+
+	if (global_cancel_preview_map_drawing == 1)
+	{
+		return;
+	}
+
+
+	points = (*jnienv2)->NewIntArray(jnienv2, count * 2);
+
+	for (i = 0; i < count; i++)
+	{
+		pc[i * 2] = p[i].x;
+		pc[i * 2 + 1] = p[i].y;
+	}
+
+	jstring string1;
+	if (item_type)
+	{
+		string1 = (*jnienv2)->NewStringUTF(jnienv2, item_type);
+	}
+	else
+	{
+		string1 = (*jnienv2)->NewStringUTF(jnienv2, "xx__unknown__xx");
+	}
+
+	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
+	(*jnienv2)->CallStaticVoidMethod(jnienv2, NavitGraphicsClass2, DrawPreview_polyline, type, points, string1);
+	(*jnienv2)->DeleteLocalRef(jnienv2, points);
+	(*jnienv2)->DeleteLocalRef(jnienv2, string1);
+}
+
+
 JNIEXPORT jobjectArray JNICALL 
 Java_com_zoffcc_applications_zanavi_NavitGraphics_GetRoadBookItems(JNIEnv *env, jobject thiz, int result_id)
 {
@@ -1707,7 +2059,13 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_GetRoadBookItems(JNIEnv *env, 
 		return NULL;
 	}
 
-    ret = (jobjectArray)(*env)->NewObjectArray(env, g_list_length(result), string_class, (*env)->NewStringUTF(env, ""));
+
+	jstring string77 = (*env)->NewStringUTF(env, "");
+    ret = (jobjectArray)(*env)->NewObjectArray(env, g_list_length(result), string_class, string77);
+	(*env)->DeleteLocalRef(env, string77);
+
+
+	jstring string88 = (*env)->NewStringUTF(env, "");
 
 	GList *result2 = result;
 	i = 0;
@@ -1717,12 +2075,14 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_GetRoadBookItems(JNIEnv *env, 
 
 		if (str != NULL)
 		{
-			(*env)->SetObjectArrayElement(env, ret, i, (*env)->NewStringUTF(env, str));
+			jstring string99 = (*env)->NewStringUTF(env, str);
+			(*env)->SetObjectArrayElement(env, ret, i, string99);
+			(*env)->DeleteLocalRef(env, string99);
 			g_free(str);
 		}
 		else
 		{
-			(*env)->SetObjectArrayElement(env, ret, i, (*env)->NewStringUTF(env, ""));
+			(*env)->SetObjectArrayElement(env, ret, i, string88);
 		}
 		i++;
 
@@ -1730,6 +2090,8 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_GetRoadBookItems(JNIEnv *env, 
 	}
 
 	g_list_free(result);
+
+	(*env)->DeleteLocalRef(env, string88);
 
     return(ret);
  }
@@ -2233,9 +2595,14 @@ __F_START__
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
 		}
+		else if (i == 113)
+		{
+			// cancel preview map drawing
+			global_cancel_preview_map_drawing = 1;
+		}
 		else if (i == 112)
 		{
-			// show maps debug view
+			// show maps debug view (show maps on lower zoom levels)
 			s = (*env)->GetStringUTFChars(env, str, NULL);
 			global_show_maps_debug_view = atoi(s);
 			(*env)->ReleaseStringUTFChars(env, str, s);

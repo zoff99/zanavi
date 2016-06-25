@@ -67,6 +67,7 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 	NavitSearchResultListArrayAdapter adapter_ = null;
 	private int selected_id = -1;
 	private int selected_id_passthru = -1;
+	static NavitAddressResultListActivity NavitAddressResultListActivity_s = null;
 	// private Boolean is_empty = true;
 	// public ArrayList<HashMap<Integer, search_result_entry>> result_list;
 	public Map<Integer, List<search_result_entry>> result_list;
@@ -129,6 +130,10 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		// The new activity is pulled in from the left and the current activity is kept still
 		// This has to be called before onCreate
 		overridePendingTransition(R.anim.pull_in_from_right, R.anim.hold);
+
+		NavitAddressResultListActivity_s = this;
+		Navit.search_list_ready = true;
+		System.out.println("SCREENSHOT:this");
 
 		//Log.e("Navit", "all ok");
 
@@ -223,6 +228,20 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		ExpandableListView lv = getExpandableListView();
 		lv.setOnChildClickListener(this);
 		// lv.setFastScrollEnabled(true);
+
+		if (Navit.CIDEBUG == 1)
+		{
+			try
+			{
+				lv.expandGroup(0);
+				lv.expandGroup(1);
+				lv.expandGroup(2);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
 
 		// Then you can create a listener like so:
 		//		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
@@ -345,4 +364,11 @@ public class NavitAddressResultListActivity extends ExpandableListActivity
 		finish();
 	}
 
+	static void force_done()
+	{
+		Intent resultIntent = new Intent();
+		resultIntent.putExtra("what", "-");
+		NavitAddressResultListActivity_s.setResult(Activity.RESULT_OK, resultIntent);
+		NavitAddressResultListActivity_s.finish();
+	}
 }

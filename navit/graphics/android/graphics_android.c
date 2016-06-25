@@ -206,6 +206,8 @@ static void gc_set_foreground(struct graphics_gc_priv *gc, struct color *c)
 	gc->g = c->g >> 8;
 	gc->b = c->b >> 8;
 	gc->a = c->a >> 8;
+
+	// dbg(0, "CCCC:2:%d %d %d %d\n", gc->r, gc->g, gc->b, gc->a);
 }
 
 static void gc_set_background(struct graphics_gc_priv *gc, struct color *c)
@@ -1935,6 +1937,9 @@ static void draw_polygon(struct graphics_priv *gra, struct graphics_gc_priv *gc,
 		pc[i * 2] = p[i].x;
 		pc[i * 2 + 1] = p[i].y;
 	}
+
+	// dbg(0, "CCCC:%d %d %d %d\n", gc->r, gc->g, gc->b, gc->a);
+
 	// initPaint(gra, gc);
 	(*jnienv2)->SetIntArrayRegion(jnienv2, points, 0, count * 2, pc);
 	(*jnienv2)->CallVoidMethod(jnienv2, gra->NavitGraphics, gra->NavitGraphics_draw_polygon, points, gc->linewidth, gc->r, gc->g, gc->b, gc->a);

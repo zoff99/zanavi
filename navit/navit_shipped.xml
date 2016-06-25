@@ -279,7 +279,7 @@ Navigation</text></img>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>
 			</roadprofile>
-			<roadprofile item_types="footway" speed="5" route_weight="5" route_prio_weight="1800">
+			<roadprofile item_types="footway" speed="5" route_weight="5" route_prio_weight="45">
 					<announcement level="0" distance_metric="10"/>
 					<announcement level="1" distance_metric="100"/>
 					<announcement level="2" distance_metric="200"/>

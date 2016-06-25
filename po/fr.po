@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-14 16:05+0200\n"
-"PO-Revision-Date: 2015-10-23 09:10+0000\n"
+"PO-Revision-Date: 2015-11-13 18:57+0000\n"
 "Last-Translator: Jean-Marc <Unknown>\n"
 "Language-Team: KaZeR <kazer@altern.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2015-11-08 11:32+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2016-06-21 19:16+0000\n"
+"X-Generator: Launchpad (build 18097)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -264,7 +264,7 @@ msgstr "à gauche"
 #. TRANSLATORS: EXAMPLE: turn slight right
 #: navigation.c:4204 navigation.c:4630
 msgid "slighty "
-msgstr ""
+msgstr "légèrement "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn slight right
@@ -329,11 +329,11 @@ msgstr "Vous êtes arrivé à destination : %s"
 
 #: navigation.c:4442 navigation.c:5292
 msgid "then you have reached your destination."
-msgstr "ensuite vous serez à destination"
+msgstr "puis vous arriverez à destination"
 
 #: navigation.c:4608
 msgid "straight"
-msgstr ""
+msgstr "tout droit"
 
 #: navigation.c:4800
 msgid "Enter the roundabout soon"
@@ -343,20 +343,20 @@ msgstr "Vous entrez bientôt dans un rond point"
 #: navigation.c:4817 navigation.c:4865
 #, c-format
 msgid "Leave the roundabout at the %s"
-msgstr "Sortez du rond-point à la %s"
+msgstr "Quittez le rond-point à la %s"
 
 #. TRANSLATORS: %s is the distance to the roundabout
 #. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
 #: navigation.c:4834
 #, c-format
 msgid "In %s, enter the roundabout"
-msgstr "Dans %s, engagez vous dans le rond-point"
+msgstr "Dans %s, engagez-vous dans le rond-point"
 
 #. TRANSLATORS: EXAMPLE: ... then leave the roundabout at the second exit
 #: navigation.c:4852
 #, c-format
 msgid "then leave the roundabout at the %s"
-msgstr "puis sortez du rond-point à la %s"
+msgstr "puis quittez le rond-point à la %s"
 
 #. TRANSLATORS: First argument is the how manieth street to take, second the direction
 #: navigation.c:4958
@@ -386,7 +386,7 @@ msgstr "erreur"
 #: navigation.c:5156 navigation.c:5171
 #, c-format
 msgid "%1$s%2$s %3$s%4$s"
-msgstr ""
+msgstr "%1$s%2$s %3$s%4$s"
 
 #. TRANSLATORS: The argument is the distance. Example: 'keep left in 100 meters'
 #: navigation.c:5180
@@ -408,11 +408,11 @@ msgstr ""
 
 #: navigation.c:5252
 msgid "then keep left"
-msgstr ""
+msgstr "puis restez à gauche"
 
 #: navigation.c:5256
 msgid "then keep right"
-msgstr ""
+msgstr "puis restez à droite"
 
 #: navit.c:2452 gui/internal/gui_internal.c:3038
 msgid "Position"
@@ -486,7 +486,7 @@ msgstr "Rues"
 
 #: gui/internal/gui_internal.c:2814
 msgid "House numbers"
-msgstr "Numéros de maison"
+msgstr "Numéros de rue"
 
 #: gui/internal/gui_internal.c:3932 gui/internal/gui_internal.c:3941
 msgid "House number"
@@ -510,7 +510,7 @@ msgstr "Active"
 
 #: gui/internal/gui_internal.c:4125
 msgid "Download Enabled"
-msgstr "Téléchargement possible"
+msgstr "Téléchargement activé"
 
 #: gui/internal/gui_internal.c:4183
 msgid "Maps"
@@ -580,7 +580,7 @@ msgstr "Verrouiller sur la route"
 
 #: gui/internal/gui_internal.c:4525
 msgid "Northing"
-msgstr "Orientation toujours au Nord"
+msgstr "Orientation toujours au nord"
 
 #: gui/internal/gui_internal.c:4531
 msgid "Map follows Vehicle"
@@ -592,7 +592,7 @@ msgstr "Message"
 
 #: gui/internal/gui_internal.c:6217
 msgid "Route Description"
-msgstr "Description de la route"
+msgstr "Description de l'itinéraire"
 
 #: gui/internal/gui_internal.c:6341
 msgid "Height Profile"
@@ -604,4 +604,4 @@ msgstr "Attention ! Contrôle radar !"
 
 #: osd/core/osd_core.c:2206
 msgid "Please decrease your speed"
-msgstr "Merci de réduire votre vitesse"
+msgstr "Veuillez ralentir"

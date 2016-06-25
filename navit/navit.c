@@ -230,6 +230,7 @@ int global_driven_away_from_route = 0;
 int global_enhance_cycleway = 0;
 int global_tracking_show_real_gps_pos = 0;
 int global_show_maps_debug_view = 0;
+int global_cancel_preview_map_drawing = 0;
 
 GList *global_all_cbs = NULL;
 
@@ -2938,6 +2939,9 @@ __F_START__
 		}
 		g_free(map_file);
 
+
+
+/*
 		parent.type = attr_navit;
 		parent.u.navit = this_;
 		type.type = attr_type;
@@ -2971,6 +2975,10 @@ __F_START__
 			map_set_attr(map2, &active);
 		}
 		g_free(map_file);
+
+
+*/
+
 
 		// gpx tracks map --------------------
 		parent.type = attr_navit;
@@ -3188,7 +3196,7 @@ __F_START__
 		}
 
 		i = 10;
-		for (i = 10; i < 21; i++)
+		for (i = 10; i < 61; i++)
 		{
 			parent.type = attr_navit;
 			parent.u.navit = this_;
@@ -7266,3 +7274,4 @@ void navit_destroy(struct navit *this_)
 }
 
 /** @} */
+

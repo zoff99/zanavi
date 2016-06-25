@@ -1,4 +1,23 @@
 /**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+/**
  * Navit, a modular navigation system.
  * Copyright (C) 2005-2008 Navit Team
  *
@@ -21,7 +40,8 @@
 #define NAVIT_FILE_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifndef PATH_MAX
@@ -33,7 +53,12 @@ extern "C" {
 #include "param.h"
 #include <stdio.h>
 
-struct file {
+#define MAX_SPLIT_FILES 50
+
+#define CACHE_SIZE 1
+
+struct file
+{
 	struct file *next;
 	unsigned char *begin;
 	unsigned char *end;
@@ -44,7 +69,7 @@ struct file {
 #ifndef __CEGCC__
 	time_t mtime;
 	time_t ctime;
-	int version;			
+	int version;
 #endif
 #if defined(_WIN32) || defined(__CEGCC__)
 	long map_handle;
@@ -57,6 +82,11 @@ struct file {
 	unsigned char *buffer;
 	int buffer_len;
 	GHashTable *headers;
+	/* 0-> only orig file, >0 -> we have also some split files ".1" -> ".50" */
+	int num_splits;
+	long long split_size_in_bytes;
+	long long last_splitter_size_in_bytes;
+	int current_splitter; // 0 -> orig file opened, >0 -> splitter X opened
 };
 
 struct attr;
@@ -95,6 +125,7 @@ int file_version(struct file *file, int byname);
 void *file_get_os_handle(struct file *file);
 void file_init(void);
 int file_is_reg(char *name);
+void file_cache_init(void);
 /* end of prototypes */
 
 #ifdef __cplusplus
@@ -102,6 +133,3 @@ int file_is_reg(char *name);
 #endif
 
 #endif
-
-void file_cache_init(void);
-

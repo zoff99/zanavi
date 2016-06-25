@@ -49,6 +49,7 @@
 #include <glib.h>
 #include <stdio.h>
 #include <math.h>
+#include <zlib.h>
 #include "config.h"
 #include "debug.h"
 #include "string.h"
@@ -233,6 +234,18 @@ struct displayitem
 static void draw_circle(struct point *pnt, int diameter, int scale, int start, int len, struct point *res, int *pos, int dir);
 static void graphics_process_selection(struct graphics *gra, struct displaylist *dl);
 static void graphics_gc_init(struct graphics *this_);
+static void graphics_draw_polygon_clipped(struct graphics *gra, struct graphics_gc *gc, struct point *pin, int count_in);
+
+
+// ------------- TILES -------------
+// ------------- TILES -------------
+// ------------- TILES -------------
+#include "mvt_tiles.h";
+// ------------- TILES -------------
+// ------------- TILES -------------
+// ------------- TILES -------------
+
+
 
 static void clear_hash(struct displaylist *dl)
 {
@@ -4056,6 +4069,75 @@ __F_START__
 	// reset value; --> not sure here, maybe it should NOT be reset here!!!???
 	// cancel_drawing_global = 0;
 
+
+
+
+
+
+
+	// stop drawing is requested
+	if (cancel_drawing_global != 1)
+	{
+
+		if ((display_list->order >= ORDER_USE_PRERENDERED_MAP) || (global_show_maps_debug_view)) // ==5 , (4,3,2,1,0)--> no vector map
+		{
+			// MAPNIK -- MVT --
+			// MAPNIK -- MVT --
+			// MAPNIK -- MVT --
+			int screen_width, screen_height;
+			struct coord c_screen;
+			struct point p_screen;
+			struct coord_geo g_screen_lt;
+			struct coord_geo g_screen_rt;
+			struct coord_geo g_screen_rb;
+
+			transform_get_size(global_navit->trans, &screen_width, &screen_height);
+			// dbg(0, "transform_get_size:w=%d h=%d\n", screen_width, screen_height);
+			// dbg(0, "navit_maps_dir=%s\n", navit_maps_dir);
+
+			p_screen.x = 0;
+			p_screen.y = 0;
+			transform_reverse(global_navit->trans, &p_screen, &c_screen);
+			transform_to_geo(projection_mg, &c_screen, &g_screen_lt);
+
+			p_screen.x = screen_width;
+			p_screen.y = 0;
+			transform_reverse(global_navit->trans, &p_screen, &c_screen);
+			transform_to_geo(projection_mg, &c_screen, &g_screen_rt);
+
+			p_screen.x = screen_width;
+			p_screen.y = screen_height;
+			transform_reverse(global_navit->trans, &p_screen, &c_screen);
+			transform_to_geo(projection_mg, &c_screen, &g_screen_rb);
+
+			// dbg(0, "bbox=%f %f %f %f %f %f\n", g_screen_lt.lat, g_screen_lt.lng, g_screen_rt.lat, g_screen_rt.lng, g_screen_rb.lat, g_screen_rb.lng);
+
+
+			if ((display_list->order > 5) || (global_show_maps_debug_view))
+			{
+				loop_mapnik_tiles(g_screen_lt.lat, g_screen_lt.lng, g_screen_rt.lat, g_screen_rt.lng, g_screen_rb.lat, g_screen_rb.lng, 12, navit_maps_dir, display_list);
+			}
+/*
+			else if (display_list->order > 4)
+			{
+				loop_mapnik_tiles(g_screen_lt.lat, g_screen_lt.lng, g_screen_rt.lat, g_screen_rt.lng, g_screen_rb.lat, g_screen_rb.lng, 6, navit_maps_dir, display_list);
+			}
+			else
+			{
+				loop_mapnik_tiles(g_screen_lt.lat, g_screen_lt.lng, g_screen_rt.lat, g_screen_rt.lng, g_screen_rb.lat, g_screen_rb.lng, 2, navit_maps_dir, display_list);
+			}
+*/
+			// MAPNIK -- MVT --
+			// MAPNIK -- MVT --
+			// MAPNIK -- MVT --
+		}
+	}
+
+
+
+
+
+
 	lays = l->layers;
 	while (lays)
 	{
@@ -4068,10 +4150,28 @@ __F_START__
 		lay = lays->data;
 		if (lay->active)
 		{
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
 			xdisplay_draw_layer(display_list, gra, lay, order);
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
+			//ZZZZZZZZZZZZZZZZZZZZZ//
 		}
 		lays = g_list_next(lays);
 	}
+
+
 
 	// reset value;
 	// cancel_drawing_global = 0;
@@ -4322,6 +4422,8 @@ __F_START__
 							mapset_need_draw = 0;
 						}
 					}
+
+/*
 					else if (strncmp("_ms_sdcard_map:/sdcard/zanavi/maps/coastline.bin", map_name_attr.u.str, 48) == 0)
 					{
 						if (draw_tile_map == 1)
@@ -4330,6 +4432,9 @@ __F_START__
 							mapset_need_draw = 0;
 						}
 					}
+*/
+
+
 #if 0
 					else if (strncmp("_ms_sdcard_map:-special-:worldmap6.txt", map_name_attr.u.str, 38) == 0)
 					{

@@ -62,6 +62,7 @@ import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Debug;
@@ -72,6 +73,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.FloatMath;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -83,6 +86,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
 
 import com.zoffcc.applications.zanavi.Navit.Navit_Address_Result_Struct;
@@ -109,6 +113,10 @@ public class NavitGraphics
 	static Boolean Global_Map_in_onDraw = false;
 
 	static int lower_than_center_percent = 0;
+
+	static int touch_pointerCount = 0;
+	static int touch_pointerCount_old = 0;
+	static boolean touch_pointerCount_passed_zero = true;
 
 	// static Boolean synch_drawing_for_map = false;
 	private static final Object synch_drawing_for_map = new Object();
@@ -143,9 +151,26 @@ public class NavitGraphics
 	private float view_srec_x = 0;
 	private float view_srec_y = 0;
 
+	static Path path_preview = new Path();
+	static Paint paint_preview = new Paint();
+	public static Canvas preview_canvas = null;
+	public static Bitmap preview_bitmap = null;
+	static int preview_map_width = 1200;
+	static int preview_map_height = 1200;
+	static float preview_map_my_lat = 0.0f;
+	static float preview_map_my_lon = 0.0f;
+	static int prev_pos_x;
+	static int prev_pos_y;
+	static int preview_map_last_pos_x = 0;
+	static int preview_map_last_pos_y = 0;
+	static float preview_coord_factor = 1.0f;
+	static boolean preview_map_drawn = false;
+	static int scroller_last = 0;
+	static int fling_damper_factor = 3;
+
 	static ZANaviOSDDebug01 debug_text_view = null;
 
-	public final int map_bg_color = Color.parseColor("#FEF9EE");
+	public static final int map_bg_color = Color.parseColor("#FEF9EE");
 	final Paint paint_bg_color = new Paint(Color.parseColor("#FEF9EE"));
 
 	public final static DashPathEffect dashed_map_lines__high = new DashPathEffect(new float[] { 4, 2 }, 1);
@@ -341,6 +366,11 @@ public class NavitGraphics
 	public static ImageButton whats_here_button_drive;
 	public static TextView whats_here_text;
 	// public static String whats_here_text_string = "";
+
+	Scroller mScroller = null;
+	int scroller_last_x = 0;
+	int scroller_last_y = 0;
+	boolean scroller_active = false;
 
 	public static NavitGlobalMap NavitGlobalMap_ = null;
 
@@ -669,6 +699,8 @@ public class NavitGraphics
 	@SuppressLint("NewApi")
 	public NavitGraphics(ActionBarActivity activity, int parent, int x, int y, int w, int h, int alpha, int wraparound, int use_camera)
 	{
+		mScroller = new Scroller(activity);
+
 		paint_maptile.setFilterBitmap(false);
 		paint_maptile.setAntiAlias(false);
 		paint_maptile.setDither(false);
@@ -682,6 +714,14 @@ public class NavitGraphics
 		STT_B_list[2] = null;
 		STT_B_list[3] = null;
 		STT_B_list[4] = null;
+
+		// paint_preview.setColor(Color.parseColor("#D2D2D2"));
+		paint_preview.setColor(Color.parseColor("#AA8E8E8E")); // semi-transparent gray
+		// paint_preview.setColor(Color.RED);
+		paint_preview.setAntiAlias(false);
+		paint_preview.setDither(false);
+		paint_preview.setStyle(Paint.Style.STROKE);
+		paint_preview.setStrokeWidth(dp_to_px(3));
 
 		// shadow for text on map --------------
 		s_factor = 1;
@@ -712,8 +752,27 @@ public class NavitGraphics
 		{
 			this.gr_type = 1;
 
+			int hh = Navit.metrics.heightPixels;
+			int ww = Navit.metrics.widthPixels;
+
+			preview_map_width = (int) ((float) ww * 0.6f);
+			if (hh > ww)
+			{
+				preview_map_width = (int) ((float) hh * 0.6f);
+			}
+			preview_map_height = preview_map_width;
+			System.out.println("preview_map[view] = " + ww + "x" + hh);
+			System.out.println("preview_map[fling] = " + preview_map_width + "x" + preview_map_height);
+
+			preview_bitmap = Bitmap.createBitmap(preview_map_width, preview_map_height, Bitmap.Config.ARGB_8888);
+			// preview_bitmap.setDensity(Global_want_dpi / 8);
+			preview_canvas = new Canvas(preview_bitmap);
+			// preview_canvas.setDensity(Global_want_dpi / 4);
+			System.out.println("Global_want_dpi=" + Global_want_dpi + ":" + Navit.metrics.densityDpi + ":" + NavitGraphics.Global_dpi_factor + ":" + NavitGraphics.Global_dpi_factor_better);
+			System.out.println("preview_coord_factor=" + preview_coord_factor);
+
 			this.activity = activity;
-			view = new View(activity)
+			view = (View) new view_map_custom(activity)
 			{
 				int touch_mode = NONE;
 				float oldDist = 0;
@@ -725,6 +784,17 @@ public class NavitGraphics
 				static final int DRAG = 1;
 				static final int ZOOM = 2;
 				static final int PRESS = 3;
+
+				Paint paint_fling_line = new Paint();
+				Paint paint_fling_line2 = new Paint();
+
+				boolean fling_start = false;
+
+				float a__;
+				float b__;
+
+				Message msg2 = new Message();
+				Bundle b2 = new Bundle();
 
 				//				public void surfaceCreated(SurfaceHolder holder)
 				//				{
@@ -770,6 +840,7 @@ public class NavitGraphics
 								//System.out.println("DO__DRAW:Java:reset factors");
 								draw_reset_factors = false;
 								pos_x = 0;
+								// System.out.println("px reset:001");
 								pos_y = 0;
 								ZOOM_MODE_ACTIVE = false;
 								ZOOM_MODE_SCALE = 1.0f;
@@ -819,6 +890,14 @@ public class NavitGraphics
 
 								//System.out.println("DO__DRAW:onDraw():drawBitmap start");
 								draw_canvas_screen2.drawColor(map_bg_color); // fill with yellow-ish bg color
+
+								// --------------- CLEAR MAP ---------------
+								// --------------- CLEAR MAP ---------------
+								//System.out.println("CLEAR MAP:001");
+								// draw_canvas_screen2.drawColor(Color.RED);
+								// --------------- CLEAR MAP ---------------
+								// --------------- CLEAR MAP ---------------
+
 								// draw_canvas_screen2.drawColor(Color.GREEN); // fill with yellow-ish bg color
 								// draw the bitmap in the offscreen buffer (offset 30 pixels to center!!)
 								draw_canvas_screen2.drawBitmap(draw_bitmap_screen, 0, 0, paint_for_map_display);
@@ -826,6 +905,13 @@ public class NavitGraphics
 
 								canvas.save();
 								canvas.drawColor(map_bg_color); // fill with yellow-ish bg color
+
+								// --------------- CLEAR MAP ---------------
+								// --------------- CLEAR MAP ---------------
+								//System.out.println("CLEAR MAP:002");
+								// canvas.drawColor(Color.GREEN);
+								// --------------- CLEAR MAP ---------------
+								// --------------- CLEAR MAP ---------------
 
 								// 3D modus -----------------
 								canvas.concat(cam_m);
@@ -866,11 +952,11 @@ public class NavitGraphics
 									{
 										// draw twilight
 										// elevation ->  -0.83 to -10.00
-										float a = h_scaled / 10f * (float) (-Navit.elevation);
-										float b = h_scaled / 10f * (float) ((-Navit.elevation / 2f) + 5);
-										canvas.drawRect(0, 0, this.getWidth(), a, paint_sky_twilight1);
-										canvas.drawRect(0, a, this.getWidth(), b, paint_sky_twilight2);
-										canvas.drawRect(0, b, this.getWidth(), h_scaled, paint_sky_twilight3);
+										a__ = h_scaled / 10f * (float) (-Navit.elevation);
+										b__ = h_scaled / 10f * (float) ((-Navit.elevation / 2f) + 5);
+										canvas.drawRect(0, 0, this.getWidth(), a__, paint_sky_twilight1);
+										canvas.drawRect(0, a__, this.getWidth(), b__, paint_sky_twilight2);
+										canvas.drawRect(0, b__, this.getWidth(), h_scaled, paint_sky_twilight3);
 									}
 									else
 									{
@@ -895,6 +981,233 @@ public class NavitGraphics
 							}
 							else
 							{
+								canvas.drawPaint(paint_bg_color);
+								// --------------- CLEAR MAP ---------------
+								// --------------- CLEAR MAP ---------------
+								//System.out.println("CLEAR MAP:003");
+								// canvas.drawColor(Color.BLUE);
+								// --------------- CLEAR MAP ---------------
+								// --------------- CLEAR MAP ---------------
+
+								preview_map_drawn = false;
+
+								// ----------------------------------------------------------------------------------
+								// ----------------------------------------------------------------------------------
+								// ----------------------------------------------------------------------------------
+								// scroller - fling ----
+								// scroller - fling ----
+								// scroller - fling ----
+								if (mScroller.computeScrollOffset())
+								{
+									if ((touch_mode != ZOOM) && (touch_pointerCount_passed_zero))
+									{
+										if (fling_start)
+										{
+											// System.out.println("FLING:" + "fling_start=true");
+
+											fling_start = false;
+											ClearPreview_bitmap();
+
+											preview_map_my_lat = 0.0f;
+											preview_map_my_lon = 0.0f;
+
+											prev_pos_x = pos_x;
+											prev_pos_y = pos_y;
+											// System.out.println("prev_pos_x=" + prev_pos_x + " prev_pos_y=" + prev_pos_y);
+											// System.out.println("prev_ fx=" + mScroller.getFinalX() + " fy=" + mScroller.getFinalY());
+
+											String lat_lon = NavitGraphics.CallbackGeoCalc(1, ((((float) this.getWidth() / 2) - (float) prev_pos_x + ((float) mScroller.getFinalX() / fling_damper_factor)) + (float) NavitGraphics.mCanvasWidth_overspill) * (float) NavitGraphics.Global_dpi_factor, ((((float) this.getHeight() / 2) - (float) prev_pos_y + ((float) mScroller.getFinalY() / fling_damper_factor)) + (float) NavitGraphics.mCanvasHeight_overspill) * (float) NavitGraphics.Global_dpi_factor);
+											try
+											{
+												String tmp[] = lat_lon.split(":", 2);
+												preview_map_my_lat = Float.parseFloat(tmp[0]);
+												preview_map_my_lon = Float.parseFloat(tmp[1]);
+											}
+											catch (Exception e)
+											{
+												e.printStackTrace();
+											}
+
+											// System.out.println("Navit.GlobalScaleLevel=" + Navit.GlobalScaleLevel);
+											if (Navit.GlobalScaleLevel > 3700)
+											{
+												// no preview map anymore!
+											}
+											else if (Navit.GlobalScaleLevel > 1200)
+											{
+												DrawLowqualMap_wrapper("" + preview_map_my_lat + "#" + preview_map_my_lon + "#" + 5, (int) (preview_map_width / preview_coord_factor), (int) (preview_map_height / preview_coord_factor), 11, Navit.GlobalScaleLevel, 80000);
+											}
+											else if (Navit.GlobalScaleLevel > 400)
+											{
+												DrawLowqualMap_wrapper("" + preview_map_my_lat + "#" + preview_map_my_lon + "#" + 6, (int) (preview_map_width / preview_coord_factor), (int) (preview_map_height / preview_coord_factor), 11, Navit.GlobalScaleLevel, 20000);
+											}
+											else if (Navit.GlobalScaleLevel > 140)
+											{
+												DrawLowqualMap_wrapper("" + preview_map_my_lat + "#" + preview_map_my_lon + "#" + 9, (int) (preview_map_width / preview_coord_factor), (int) (preview_map_height / preview_coord_factor), 11, Navit.GlobalScaleLevel, 5000);
+											}
+											else
+											{
+												DrawLowqualMap_wrapper("" + preview_map_my_lat + "#" + preview_map_my_lon + "#" + 15, (int) (preview_map_width / preview_coord_factor), (int) (preview_map_height / preview_coord_factor), 11, Navit.GlobalScaleLevel, 2000);
+											}
+										}
+
+										// System.out.println("FLING:004:" + mScroller.getCurrX() + ":" + mScroller.getCurrY() + ":" + pos_x + ":" + pos_y + ":" + ZOOM_MODE_ACTIVE);
+										if (touch_pointerCount < 2)
+										{
+											pos_x = pos_x - ((mScroller.getCurrX() - scroller_last_x) / fling_damper_factor);
+											pos_y = pos_y - ((mScroller.getCurrY() - scroller_last_y) / fling_damper_factor);
+											scroller_last_x = mScroller.getCurrX();
+											scroller_last_y = mScroller.getCurrY();
+											// scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
+											// touch_mode = NONE;
+
+											if (preview_bitmap != null)
+											{
+												// ORIG // canvas.drawBitmap(preview_bitmap, (0) + ((this.getWidth() / 2) + ((mScroller.getFinalX() - mScroller.getCurrX()) / fling_damper_factor)) - (preview_map_width / 2), (0) + ((this.getHeight() / 2) + ((mScroller.getFinalY() - mScroller.getCurrY()) / fling_damper_factor)) - (preview_map_height / 2), null);
+												preview_map_last_pos_x = ((this.getWidth() / 2) + (mScroller.getFinalX() / fling_damper_factor) + (pos_x - prev_pos_x)) - (preview_map_width / 2);
+												preview_map_last_pos_y = ((this.getHeight() / 2) + (mScroller.getFinalY() / fling_damper_factor) + (pos_y - prev_pos_y)) - (preview_map_height / 2);
+												canvas.drawBitmap(preview_bitmap, preview_map_last_pos_x, preview_map_last_pos_y, null);
+												////System.out.println("CLEAR MAP:006:FL");
+												preview_map_drawn = true;
+											}
+											// canvas.drawLine(this.getWidth() / 2, this.getHeight() / 2, (this.getWidth() / 2) + (mScroller.getFinalX() / fling_damper_factor), (this.getHeight() / 2) + (mScroller.getFinalY() / fling_damper_factor), paint_fling_line);
+											// ++ // canvas.drawLine(this.getWidth() / 2, this.getHeight() / 2, (this.getWidth() / 2) - (mScroller.getFinalX() / fling_damper_factor), (this.getHeight() / 2) - (mScroller.getFinalY() / fling_damper_factor), paint_fling_line2);
+
+											scroller_active = true;
+											this.postInvalidate();
+										}
+									}
+									else
+									{
+										scroller_active = false;
+										this.postInvalidate();
+									}
+								}
+								else
+								{
+									if (scroller_active)
+									{
+										cancel_preview_map_drawing();
+
+										if (touch_pointerCount_passed_zero)
+										{
+											// System.out.println("FLING:005aa:" + mScroller.getCurrX() + ":" + mScroller.getCurrY() + ":" + pos_x + ":" + pos_y + ":" + ZOOM_MODE_ACTIVE);
+
+											if (preview_bitmap != null)
+											{
+												preview_map_last_pos_x = ((this.getWidth() / 2) + (mScroller.getFinalX() / fling_damper_factor) + (pos_x - prev_pos_x)) - (preview_map_width / 2);
+												preview_map_last_pos_y = ((this.getHeight() / 2) + (mScroller.getFinalY() / fling_damper_factor) + (pos_y - prev_pos_y)) - (preview_map_height / 2);
+												canvas.drawBitmap(preview_bitmap, preview_map_last_pos_x, preview_map_last_pos_y, null);
+												//System.out.println("CLEAR MAP:007:FL");
+												preview_map_drawn = true;
+											}
+
+											scroller_last_x = 0;
+											scroller_last_y = 0;
+
+											MotionCallback(0, 0, pos_x, pos_y);
+											//System.out.println("FLING:005aa22:" + mScroller.getStartX() + ":" + mScroller.getStartY() + ":" + mScroller.getCurrX() + ":" + mScroller.getCurrY());
+
+											Global_Map_TransX = Global_Map_TransX + pos_x;
+											Global_Map_TransY = Global_Map_TransY + pos_y;
+											Global_Map_Rotationangle = 0f;
+											Global_Map_Zoomfactor = Global_Map_Zoomfactor * ZOOM_MODE_SCALE;
+											ZOOM_MODE_ACTIVE = false;
+											ZOOM_MODE_SCALE = 1.0f;
+
+											scroller_active = false;
+
+											try
+											{
+												if (DEBUG_TOUCH) Log.e("NavitGraphics", "sensor thread stop 9797X99");
+												//touch_sensor_thread.down();
+												touch_sensor_thread.stop_me();
+												// touch_sensor_thread.stop();
+											}
+											catch (Exception e)
+											{
+
+											}
+
+											Global_onTouch_fingerdown = false;
+											NavitGraphics.wait_for_redraw_map = false;
+
+											// allow all map drawing -----------
+											msg2 = new Message();
+											b2 = new Bundle();
+											b2.putInt("Callback", 70);
+											msg2.setData(b2);
+											try
+											{
+												callback_handler.sendMessage(msg2);
+											}
+											catch (Exception e)
+											{
+											}
+											// allow all map drawing -----------
+
+											pos_x = 0;
+											pos_y = 0;
+											this.postInvalidate();
+
+											scroller_last = 3;
+										}
+									}
+									else
+									// draw the preview map bitmap all the time (its crazy, i know)
+									{
+										//										if (preview_bitmap != null)
+										//										{
+										//											canvas.drawBitmap(preview_bitmap,
+										//													((this.getWidth() / 2) + (mScroller.getFinalX() /fling_damper_factor) + (pos_x - prev_pos_x) ) - (preview_map_width / 2),
+										//													((this.getHeight() / 2) + (mScroller.getFinalY() / fling_damper_factor) + (pos_y - prev_pos_y) ) - (preview_map_height / 2),
+										//													null);
+										//										}
+
+										// System.out.println("CLEAR MAP:008:FLx");
+									}
+								}
+
+								// System.out.println("CLEAR MAP:024:scroller_last=" + scroller_last);
+
+								if (scroller_last == 1)
+								{
+									ClearPreview_bitmap();
+									// System.out.println("CLEAR MAP:022:clear");
+								}
+
+								if (preview_map_drawn != true)
+								{
+									preview_map_drawn = false;
+									if (touch_mode != ZOOM)
+									{
+										if (preview_bitmap != null)
+										{
+											// ORIG // canvas.drawBitmap(preview_bitmap, (0) + ((this.getWidth() / 2) + ((mScroller.getFinalX() - mScroller.getCurrX()) / fling_damper_factor)) - (preview_map_width / 2), (0) + ((this.getHeight() / 2) + ((mScroller.getFinalY() - mScroller.getCurrY()) / fling_damper_factor)) - (preview_map_height / 2), null);
+											canvas.drawBitmap(preview_bitmap, preview_map_last_pos_x, preview_map_last_pos_y, null);
+											// canvas.drawColor(Color.GREEN);
+											//System.out.println("CLEAR MAP:009:FL");
+										}
+									}
+									else
+									{
+										ClearPreview_bitmap();
+										// System.out.println("CLEAR MAP:021:clear");
+									}
+								}
+
+								// scroller - fling ----
+								// scroller - fling ----
+								// scroller - fling ----
+								// ----------------------------------------------------------------------------------
+								// ----------------------------------------------------------------------------------
+								// ----------------------------------------------------------------------------------
+
+								if (scroller_last > 0)
+								{
+									scroller_last--;
+								}
+
 								// ---------- 2D map -----------------------------------
 								//
 								if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:onDraw:draw bitmap to SCREEN 2D -- START ------");
@@ -935,11 +1248,11 @@ public class NavitGraphics
 
 								//System.out.println("DO__DRAW:onDraw():drawBitmap2D start");
 								// canvas.drawColor(map_bg_color); // fill with yellow-ish bg color
-								canvas.drawPaint(paint_bg_color);
 								// draw bitmap to screen
 								// canvas.drawBitmap(draw_bitmap_screen, 0, 0, paint_for_map_display);
 								canvas.drawBitmap(draw_bitmap_screen, 0, 0, null);
 								//System.out.println("DO__DRAW:onDraw():drawBitmap2D end");
+								//System.out.println("CLEAR MAP:010:bs");
 
 								canvas.restore();
 								// if (DEBUG_SMOOTH_DRIVING) System.out.println("DEBUG_SMOOTH_DRIVING:onDraw:draw bitmap to SCREEN 2D -- READY ------");
@@ -952,11 +1265,44 @@ public class NavitGraphics
 							}
 
 							Global_Map_in_onDraw = false;
+
+							// ----------------------------------------------------------------------------------
+							// ----------------------------------------------------------------------------------
+							// ----------------------------------------------------------------------------------
+							// scroller - fling ----
+							// scroller - fling ----
+							// scroller - fling ----
+
+							// scroller - fling ----
+							// scroller - fling ----
+							// scroller - fling ----
+							// ----------------------------------------------------------------------------------
+							// ----------------------------------------------------------------------------------
+							// ----------------------------------------------------------------------------------
+
 						}
 						//System.out.println("DO__DRAW:onDraw():- end");
 					}
 
 					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+				}
+
+				@Override
+				public void init_view()
+				{
+					System.out.println("INIT Custom Map View");
+
+					paint_fling_line.setARGB(160, 120, 99, 99);
+					paint_fling_line.setStyle(Paint.Style.STROKE);
+					paint_fling_line.setStrokeWidth(dp_to_px(45));
+					paint_fling_line.setAntiAlias(true);
+					paint_fling_line.setDither(true);
+
+					paint_fling_line2.setARGB(200, 200, 99, 99);
+					paint_fling_line2.setStyle(Paint.Style.STROKE);
+					paint_fling_line2.setStrokeWidth(dp_to_px(30));
+					paint_fling_line2.setAntiAlias(true);
+					paint_fling_line2.setDither(true);
 				}
 
 				@SuppressLint("NewApi")
@@ -1281,6 +1627,13 @@ public class NavitGraphics
 					//draw_canvas_screen.setDensity(Global_want_dpi);					
 
 					draw_canvas_screen2 = new Canvas(draw_bitmap_screen2);
+
+					/*
+					 * draw_canvas.drawColor(Color.BLACK);
+					 * draw_canvas_screen.drawColor(Color.BLACK);
+					 * draw_canvas_screen2.drawColor(Color.BLACK);
+					 */
+
 					// DPI
 					//draw_canvas_screen2.setDensity(Global_want_dpi);
 					if (gr_type == 1)
@@ -1360,6 +1713,46 @@ public class NavitGraphics
 					}
 				}
 
+				GestureDetector mGD = new GestureDetector(getContext(), new SimpleOnGestureListener()
+				{
+
+					@Override
+					public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+					{
+						// beware, it can scroll to infinity
+						// scrollBy((int) distanceX, (int) distanceY);
+						//System.out.println("FLING:001:" + distanceX + ":" + distanceY);
+						return true;
+					}
+
+					@Override
+					public boolean onFling(MotionEvent e1, MotionEvent e2, float vX, float vY)
+					{
+						if (touch_mode != ZOOM)
+						{
+							//System.out.println("FLING:002:" + vX + ":" + vY);
+							mScroller.fling(getScrollX(), getScrollY(), -(int) vX, -(int) vY, -5000, 5000, -5000, 5000);
+							invalidate(); // don't remember if it's needed
+						}
+						else
+						{
+							mScroller.forceFinished(true);
+						}
+						return true;
+					}
+
+					@Override
+					public boolean onDown(MotionEvent e)
+					{
+						if (!mScroller.isFinished())
+						{
+							// is flinging
+							mScroller.forceFinished(true); // to stop flinging on touch
+						}
+						return true; // else won't work
+					}
+				});
+
 				@Override
 				public boolean onTouchEvent(MotionEvent event)
 				{
@@ -1368,11 +1761,12 @@ public class NavitGraphics
 					PointF touch_prev2 = null;
 					PointF touch_last_load_tiles2 = null;
 
+					super.onTouchEvent(event);
+
 					if (DEBUG_TOUCH) Log.e("NavitGraphics", "onTouchEvent");
 					if (DEBUG_TOUCH) Log.e("NavitGraphics", "systime1:" + System.currentTimeMillis());
 					if (DEBUG_TOUCH) Log.e("NavitGraphics", "eventtime1:" + event.getEventTime());
 
-					super.onTouchEvent(event);
 					int action = event.getAction();
 					int x = (int) event.getX();
 					int y = (int) event.getY();
@@ -1380,6 +1774,66 @@ public class NavitGraphics
 					int _ACTION_POINTER_UP_ = MotionEvent.ACTION_POINTER_UP;
 					int _ACTION_POINTER_DOWN_ = MotionEvent.ACTION_POINTER_DOWN;
 					int _ACTION_MASK_ = MotionEvent.ACTION_MASK;
+
+					// calculate value
+					int switch_value = (event.getAction() & _ACTION_MASK_);
+					// Log.e("NavitGraphics", "FLING:switch_value=" + switch_value);
+					// Log.e("NavitGraphics", "FLING:getAction=" + action);
+					// Log.e("NavitGraphics", "FLING:ACTION_CANCEL=" + MotionEvent.ACTION_CANCEL);
+					// Log.e("NavitGraphics", "FLING:_ACTION_MASK_=" + _ACTION_MASK_);
+					// if (DEBUG_TOUCH)
+					// calculate value
+
+					if (switch_value == 0)
+					{
+						touch_pointerCount_passed_zero = true;
+						// System.out.println("FLING:003:stat:RESET ************");
+					}
+					else
+					{
+						if (touch_pointerCount_passed_zero)
+						{
+							if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)
+							{
+								// System.out.println("FLING:003:stat:second pointer touched DOWN ============");
+								touch_pointerCount_passed_zero = false;
+							}
+						}
+					}
+
+					// System.out.println("FLING:003:stat:count_old=" + touch_pointerCount + ":count=" + event.getPointerCount() + ":action_index=" + event.getActionIndex() + ":passed_zero=" + touch_pointerCount_passed_zero);
+					touch_pointerCount_old = touch_pointerCount;
+					touch_pointerCount = event.getPointerCount();
+
+					if (touch_pointerCount_passed_zero)
+					{
+						boolean ret_2 = mGD.onTouchEvent(event);
+						if (ret_2)
+						{
+							if (touch_mode == ZOOM)
+							{
+								// dont use gesture while already zooming
+							}
+							else
+							{
+								// if gesture used, then don't do anything else						
+								if (mScroller.computeScrollOffset())
+								{
+									// System.out.println("FLING:003:xxxxxxxx ++FLING++ " + pos_x + ":" + pos_y);
+									fling_start = true;
+									return true;
+								}
+								else
+								{
+									//System.out.println("FLING:003:aa *GE touch* " + pos_x + ":" + pos_y);
+								}
+							}
+						}
+						else
+						{
+							//System.out.println("FLING:003:cc *normal touch* " + pos_x + ":" + pos_y);
+						}
+					}
 
 					//					if (NavitAndroidOverlay.voice_rec_bar_visible)
 					//					{
@@ -1434,14 +1888,6 @@ public class NavitGraphics
 					//						// dont do anything else with this event
 					//						return true;
 					//					}
-
-					// calculate value
-					int switch_value = (event.getAction() & _ACTION_MASK_);
-					if (DEBUG_TOUCH) Log.e("NavitGraphics", "switch_value=" + switch_value);
-					if (DEBUG_TOUCH) Log.e("NavitGraphics", "getAction=" + action);
-					if (DEBUG_TOUCH) Log.e("NavitGraphics", "ACTION_CANCEL=" + MotionEvent.ACTION_CANCEL);
-					if (DEBUG_TOUCH) Log.e("NavitGraphics", "_ACTION_MASK_=" + _ACTION_MASK_);
-					// calculate value
 
 					if (DEBUG_TOUCH) Log.e("NavitGraphics", "event x=" + event.getX() + " y=" + event.getY());
 
@@ -1992,6 +2438,7 @@ public class NavitGraphics
 
 							//System.out.println("DO__DRAW:Java:reset local factors");
 							pos_x = 0;
+							// System.out.println("px reset:003");
 							pos_y = 0;
 							ZOOM_MODE_ACTIVE = false;
 							ZOOM_MODE_SCALE = 1.0f;
@@ -2096,6 +2543,7 @@ public class NavitGraphics
 								}
 
 								pos_x = (int) (this.touch_now.x - this.touch_start.x);
+								// System.out.println("px set:004");
 								pos_y = (int) (this.touch_now.y - this.touch_start.y);
 								//**dl_thread[dl_thread_cur].add_lines2(null, null, 0, 0, 98);
 								//draw_map_one_shot = true;
@@ -2210,6 +2658,7 @@ public class NavitGraphics
 						NavitGraphics.wait_for_redraw_map = false;
 
 						pos_x = 0;
+						// System.out.println("px reset:005");
 						pos_y = 0;
 						ZOOM_MODE_ACTIVE = false;
 						ZOOM_MODE_SCALE = 1.0f;
@@ -2340,6 +2789,8 @@ public class NavitGraphics
 					// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 				}
 			};
+
+			((view_map_custom) view).init_view();
 
 			view.setFocusable(true);
 			view.setFocusableInTouchMode(true);
@@ -2830,6 +3281,7 @@ public class NavitGraphics
 			bitmap_w = w;
 			bitmap_h = h;
 			pos_x = x;
+			// System.out.println("px set:006");
 			pos_y = y;
 			pos_wraparound = wraparound;
 			draw_canvas = new Canvas(draw_bitmap);
@@ -3018,6 +3470,14 @@ public class NavitGraphics
 
 	public static native void SizeChangedCallbackReal(int w, int h, Bitmap main_map_bitmap);
 
+	// DrawLowqualMap_wrapper("" + my_lat + "#" + my_lon + "#" + 18, 400, 400, 11, 8192, 100000);
+	public static void DrawLowqualMap_wrapper(String latlonzoom, int w, int h, int fontsize, int scale, int selection_range)
+	{
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
+		Navit.cwthr.DrawLowqualMap_wrapper(latlonzoom, w, h, fontsize, scale, selection_range);
+		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
+	}
+
 	public static void SizeChangedCallback(int w, int h, Bitmap main_map_bitmap)
 	{
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
@@ -3073,6 +3533,8 @@ public class NavitGraphics
 	 * Navit.setKeypressCallback(id, this);
 	 * }
 	 */
+
+	public static native void DrawLowqualMap(String latlonzoom, int width, int height, int font_size, int scale, int sel_range);
 
 	public void NavitSetGrObj()
 	{
@@ -4155,6 +4617,205 @@ public class NavitGraphics
 	Paint paint_draw_polygon = new Paint();
 	int dr_poly_i;
 
+	void ClearPreview_bitmap()
+	{
+		if (preview_bitmap != null)
+		{
+			preview_canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+			//System.out.println("CLEAR MAP:011:clear preview map");
+		}
+	}
+
+	static void DrawPreview_polyline(int type, int c[], String type2)
+	{
+		if (preview_bitmap != null)
+		{
+			path_preview.reset();
+			path_preview.moveTo(c[0] * preview_coord_factor, c[1] * preview_coord_factor);
+			for (int i = 2; i < c.length; i += 2)
+			{
+				path_preview.lineTo(c[i] * preview_coord_factor, c[i + 1] * preview_coord_factor);
+			}
+
+			if ((type2.equals("street_0")) || (type2.equals("street_1_city")) || (type2.equals("street_1_land")))
+			{
+				//<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//<polyline color="#d2d2d2" width="132"/>
+				//<polyline color="#ffffff" width="126"/>
+
+				paint_preview.setColor(Color.parseColor("#FFD2D2D2"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFFFFFFF"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("street_pedestrian")) || (type2.equals("living_street")))
+			{
+				//<itemgra item_types="street_pedestrian,living_street" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//<polyline color="#d2d2d2" width="40"/>
+				//<polyline color="#dddddd" width="34"/>
+
+				paint_preview.setColor(Color.parseColor("#FFD2D2D2"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFdddddd"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("street_service")) || (type2.equals("street_parking_lane")))
+			{
+				//<itemgra item_types="street_service" order="13-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//<polyline color="#d2d2d2" width="7"/>
+				//<polyline color="#fefefe" width="5"/>
+				paint_preview.setColor(Color.parseColor("#FFd2d2d2"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFfefefe"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("street_2_city")) || (type2.equals("ramp_street_2_city")) || (type2.equals("street_2_land")))
+			{
+				//<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//<polyline color="#c0c0c0" width="19"/>
+				//<polyline color="#fefc8c" width="15"/>
+
+				paint_preview.setColor(Color.parseColor("#FFC0C0C0"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFFEFC8C"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("street_3_city")) || (type2.equals("ramp_street_3_city")) || (type2.equals("street_3_land")) || (type2.equals("roundabout")))
+			{
+				//			<itemgra item_types="street_3_city,ramp_street_3_city,street_3_land,roundabout" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//			<polyline color="#a0a0a0" width="40"/>
+				//			<polyline color="#fefc8c" width="34"/>
+
+				paint_preview.setColor(Color.parseColor("#FFa0a0a0"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFfefc8c"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("cycleway")))
+			{
+				//			<itemgra item_types="cycleway" order="14-15">
+				//			<polyline color="#0000ff" width="2" dash="6"/>
+
+				paint_preview.setColor(Color.parseColor("#FF0000FF"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("street_4_city")) || (type2.equals("ramp_street_4_city")) || (type2.equals("street_4_land")) || (type2.equals("street_n_lanes")))
+			{
+				//<itemgra item_types="street_4_city,ramp_street_4_city,street_4_land,street_n_lanes" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//<polyline color="#000000" width="24"/>
+				//<polyline color="#f8dc79" width="20"/>
+
+				paint_preview.setColor(Color.parseColor("#FF000000"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFf8dc79"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.equals("highway_city")) || (type2.equals("highway_land")) || (type2.equals("ramp_highway_land")))
+			{
+				//	<itemgra item_types="highway_city,highway_land,ramp_highway_land" order="{round(13-number($LAYOUT_001_ORDER_DELTA_1))}">
+				//<polyline color="#a8aab3" width="25"/>
+				//<polyline color="#fc843b" width="17"/>
+
+				paint_preview.setColor(Color.parseColor("#FFa8aab3"));
+				paint_preview.setStyle(Paint.Style.STROKE);
+				paint_preview.setStrokeWidth(dp_to_px(5));
+				preview_canvas.drawPath(path_preview, paint_preview);
+
+				paint_preview.setColor(Color.parseColor("#FFfc843b"));
+				paint_preview.setStrokeWidth(dp_to_px(3));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if (type2.equals("poly_water_tiled") || (type2.equals("poly_water_from_triang")))
+			{
+				paint_preview.setColor(Color.parseColor("#FF82C8EA"));
+				paint_preview.setStyle(Paint.Style.FILL);
+				paint_preview.setStrokeWidth(dp_to_px(0));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if (type2.equals("poly_wood_from_triang") || (type2.equals("poly_wood")))
+			{
+				paint_preview.setColor(Color.parseColor("#FF8ec78d"));
+				paint_preview.setStyle(Paint.Style.FILL);
+				paint_preview.setStrokeWidth(dp_to_px(0));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if (type2.equals("wood_from_relations"))
+			{
+				paint_preview.setColor(Color.parseColor("#FF478f46"));
+				paint_preview.setStyle(Paint.Style.FILL);
+				paint_preview.setStrokeWidth(dp_to_px(0));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if (type2.equals("poly_park") || (type2.equals("poly_playground")))
+			{
+				//<itemgra item_types="poly_park,poly_playground" order="{round(12-number($LAYOUT_001_ORDER_DELTA_1))}-">
+				//<polygon color="#7cc334"/>
+				//<text text_size="8"/>
+
+				paint_preview.setColor(Color.parseColor("#FF7cc334"));
+				paint_preview.setStyle(Paint.Style.FILL);
+				paint_preview.setStrokeWidth(dp_to_px(0));
+				preview_canvas.drawPath(path_preview, paint_preview);
+			}
+			else if ((type2.startsWith("poly")) && (Navit.GlobalScaleLevel > 10))
+			{
+				// !!!do nothing!!!
+			}
+			else
+			{
+				if (type2.startsWith("poly"))
+				{
+					// all the rest - polys
+					paint_preview.setColor(Color.parseColor("#AA8E8E8E")); // semi-transparent gray
+					paint_preview.setStyle(Paint.Style.FILL);
+					paint_preview.setStrokeWidth(dp_to_px(0));
+					preview_canvas.drawPath(path_preview, paint_preview);
+				}
+				else
+				{
+					// all the rest - lines
+					paint_preview.setColor(Color.parseColor("#AA8E8E8E")); // semi-transparent gray
+					paint_preview.setStyle(Paint.Style.STROKE);
+					paint_preview.setStrokeWidth(dp_to_px(2));
+					preview_canvas.drawPath(path_preview, paint_preview);
+				}
+			}
+
+			// System.out.println("DrawPreview_polyline:" + type2);
+		}
+	}
+
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
 	protected void draw_polygon(int c[], int width, int r, int g, int b, int a)
 	{
 		paint_draw_polygon.setARGB(a, r, g, b);
@@ -4163,8 +4824,9 @@ public class NavitGraphics
 
 		// Log.e("NavitGraphics", "polygon " + r + " " + g + " " + b + " " + a);
 
-		// b_paint_antialias = paint2.isAntiAlias();
-		paint_draw_polygon.setAntiAlias(Navit.p.PREF_use_anti_aliasing);
+		// paint_draw_polygon.setAntiAlias(Navit.p.PREF_use_anti_aliasing);
+		paint_draw_polygon.setAntiAlias(false); // nicer without anti aliasing, strange but true
+
 		b_paint_path.reset();
 		b_paint_path.moveTo(c[0], c[1]);
 		for (dr_poly_i = 2; dr_poly_i < c.length; dr_poly_i += 2)
@@ -4172,8 +4834,13 @@ public class NavitGraphics
 			b_paint_path.lineTo(c[dr_poly_i], c[dr_poly_i + 1]);
 		}
 		draw_canvas.drawPath(b_paint_path, paint_draw_polygon);
-		// paint2.setAntiAlias(b_paint_antialias);
 	}
+
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
+	// this is used to draw filled polygons ---------------------------------------------
 
 	protected void draw_polygon2(Paint paint, int c[], int order, int oneway)
 	{
@@ -4922,6 +5589,9 @@ public class NavitGraphics
 				draw_canvas_screen_s.drawBitmap(draw_bitmap_s, 0, 0, null);
 				//System.out.println("DO__DRAW:copy_map_buffer:drawBitmap end");
 
+				// draw_canvas_screen_s.drawColor(Color.MAGENTA);
+				//System.out.println("CLEAR MAP:004");
+
 				if (Navit.p.PREF_show_route_rects)
 				{
 					// System.out.println("route_rect::start");
@@ -4997,22 +5667,6 @@ public class NavitGraphics
 
 	static void copy_backwards_map_buffer()
 	{
-		// if (Navit.METHOD_DEBUG) Navit.my_func_name(0);
-
-		// draw_canvas_screen_s.drawColor(Color.parseColor("#FEF9EE")); // fill with yellow-ish bg color
-
-		//if (ZOOM_MODE_ACTIVE)
-		//{
-		//	draw_canvas_screen_s.save();
-		//	draw_canvas_screen_s.scale(ZOOM_MODE_SCALE, ZOOM_MODE_SCALE, touch_now_center.x, touch_now_center.y);
-		//}
-		//draw_canvas_screen_s.drawBitmap(draw_bitmap_screen_s, pos_x, pos_y, null);
-		//if (ZOOM_MODE_ACTIVE)
-		//{
-		//	draw_canvas_screen_s.restore();
-		//}
-
-		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
 
 	protected void draw_mode(int mode)
@@ -5049,6 +5703,7 @@ public class NavitGraphics
 
 		// Log.e("NavitGraphics","draw_drag"+pos_x+" "+pos_y+" "+x+" "+y);
 		pos_x = x;
+		// System.out.println("px set:006");
 		pos_y = y;
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
@@ -6044,6 +6699,8 @@ public class NavitGraphics
 					Navit.NavitAddressResultList_foundItems.add(tmp_addr);
 					Navit.Navit_Address_Result_double_index.add(hash_id);
 					//System.out.println("*add*=" + hash_id);
+
+					// System.out.println("search_result:N:" + Navit.NavitAddressResultList_foundItems.size() + ":" + tmp_addr.result_type + ":" + tmp_addr.lat + ":" + tmp_addr.lon + ":" + tmp_addr.addr);
 
 					if (tmp_addr.result_type.equals("TWN"))
 					{
@@ -7783,6 +8440,21 @@ public class NavitGraphics
 
 		// return (int) (((float) px / Global_dpi_factor_better) + 0.5f);
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px, Navit.getBaseContext_.getResources().getDisplayMetrics());
+	}
+
+	public static void cancel_preview_map_drawing()
+	{
+		// System.out.println("cancel_preview_map_drawing:001");
+
+		try
+		{
+			NavitGraphics.CallbackMessageChannelReal(113, "");
+			// System.out.println("cancel_preview_map_drawing:002");
+		}
+		catch (Exception e)
+		{
+			// System.out.println("cancel_preview_map_drawing:0EE");
+		}
 	}
 
 	static long last_map_postInvalidate = -1L;

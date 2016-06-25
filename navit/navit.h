@@ -180,6 +180,7 @@ extern int global_driven_away_from_route;
 extern int global_enhance_cycleway;
 extern int global_tracking_show_real_gps_pos;
 extern int global_show_maps_debug_view;
+extern int global_cancel_preview_map_drawing;
 
 
 #define MAX_DEBUG_COORDS 100

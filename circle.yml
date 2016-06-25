@@ -1,0 +1,500 @@
+machine:
+  timezone:
+    Europe/Vienna
+  environment:
+    ZEMU_: "zanavi23"
+    EMU_: "zanavi21"
+    XEMU_: "zanavi10"
+    Zsdpath: "/sdcard"
+    sdpath: "/storage/sdcard"
+    Xsdpath: "/mnt/sdcard"
+dependencies:
+  cache_directories:
+    - ~/.android
+    #- ~/maps
+  pre:
+    - sudo apt-get update > /dev/null 2> /dev/null
+    - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
+    - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
+    - sudo apt-get install libfreetype6-dev > /dev/null 2> /dev/null
+    - sudo apt-get install libdbus-glib-1-dev > /dev/null 2> /dev/null
+    - sudo apt-get install g++ > /dev/null 2> /dev/null
+    - sudo apt-get install gettext > /dev/null 2> /dev/null
+    - sudo apt-get install ant > /dev/null 2> /dev/null
+    - sudo apt-get install libsaxonb-java > /dev/null 2> /dev/null
+    - sudo apt-get install lib32stdc++6 > /dev/null 2> /dev/null
+    - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
+    - sudo apt-get install zip > /dev/null 2> /dev/null
+    - sudo apt-get install bc > /dev/null 2> /dev/null
+    - sudo apt-get install libfftw3-double3 > /dev/null 2> /dev/null
+    - sudo apt-get install libmagickcore5 > /dev/null 2> /dev/null
+    - sudo apt-get install perlmagick > /dev/null 2> /dev/null
+    - sudo apt-get install liblwp-useragent-determined-perl > /dev/null 2> /dev/null
+    - sudo apt-get install xvfb > /dev/null 2> /dev/null
+    - sudo apt-get install xdotool > /dev/null 2> /dev/null
+    - sudo apt-get install telnet > /dev/null 2> /dev/null
+    - sudo apt-get install x11-utils > /dev/null 2> /dev/null
+    - sudo apt-get install xvkbd > /dev/null 2> /dev/null
+    - echo y | android update sdk --no-ui --all --filter "tools"
+    - echo y | android update sdk --no-ui --all --filter build-tools-23.0.1
+    - echo y | android update sdk --no-ui --all --filter android-23
+    - echo y | android update sdk --no-ui --all --filter platform-tools-preview
+    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-23
+    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-addon-google_apis-google-23
+    - echo y | android update sdk --no-ui --all --filter addon-google_apis-google-23
+
+    - bash ~/zanavi/ci/do_android.sh
+
+    - ls -al ~/maps/ ; exit 0
+    - mkdir -p ~/maps/ ; exit 0
+    - ls -al ~/maps/
+
+    - mkdir ~/_downloadmaps_/
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin" ; touch ~/_downloadmaps_/005 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin" ; touch ~/_downloadmaps_/002 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin" ; touch ~/_downloadmaps_/010 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin" ; touch ~/_downloadmaps_/001 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin" ; touch ~/_downloadmaps_/003 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin" ; touch ~/_downloadmaps_/004 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin" ; touch ~/_downloadmaps_/006 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin" ; touch ~/_downloadmaps_/007 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin" ; touch ~/_downloadmaps_/008 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin" ; touch ~/_downloadmaps_/009 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin" ; touch ~/_downloadmaps_/011 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin" ; touch ~/_downloadmaps_/012 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin" ; touch ~/_downloadmaps_/013 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin" ; touch ~/_downloadmaps_/014 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin" ; touch ~/_downloadmaps_/015 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin" ; touch ~/_downloadmaps_/016 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin" ; touch ~/_downloadmaps_/017 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin" ; touch ~/_downloadmaps_/018 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin" ; touch ~/_downloadmaps_/019 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin" ; touch ~/_downloadmaps_/020 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_021.bin "http://ci.zanavi.cc/data/central_america.bin" ; touch ~/_downloadmaps_/021 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_022.bin "http://ci.zanavi.cc/data/south_america.bin" ; touch ~/_downloadmaps_/022 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_023.bin "http://ci.zanavi.cc/data/africa.bin" ; touch ~/_downloadmaps_/023 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_024.bin "http://ci.zanavi.cc/data/australia_oceania.bin" ; touch ~/_downloadmaps_/024 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_025.bin "http://ci.zanavi.cc/data/andorra.bin" ; touch ~/_downloadmaps_/025 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_026.bin "http://ci.zanavi.cc/data/belarus.bin" ; touch ~/_downloadmaps_/026 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_027.bin "http://ci.zanavi.cc/data/bosnia-herzegovina.bin" ; touch ~/_downloadmaps_/027 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_028.bin "http://ci.zanavi.cc/data/croatia.bin" ; touch ~/_downloadmaps_/028 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_029.bin "http://ci.zanavi.cc/data/cyprus.bin" ; touch ~/_downloadmaps_/029 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_030.bin "http://ci.zanavi.cc/data/czech_republic.bin" ; touch ~/_downloadmaps_/030 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_031.bin "http://ci.zanavi.cc/data/estonia.bin" ; touch ~/_downloadmaps_/031 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_032.bin "http://ci.zanavi.cc/data/hungary.bin" ; touch ~/_downloadmaps_/032 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_033.bin "http://ci.zanavi.cc/data/greece.bin" ; touch ~/_downloadmaps_/033 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_034.bin "http://ci.zanavi.cc/data/kosovo.bin" ; touch ~/_downloadmaps_/034 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_035.bin "http://ci.zanavi.cc/data/macedonia.bin" ; touch ~/_downloadmaps_/035 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_036.bin "http://ci.zanavi.cc/data/moldova.bin" ; touch ~/_downloadmaps_/036 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_037.bin "http://ci.zanavi.cc/data/denmark.bin" ; touch ~/_downloadmaps_/037 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_038.bin "http://ci.zanavi.cc/data/russia-european-part.bin" ; touch ~/_downloadmaps_/038 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_039.bin "http://ci.zanavi.cc/data/serbia.bin" ; touch ~/_downloadmaps_/039 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_040.bin "http://ci.zanavi.cc/data/slovakia.bin" ; touch ~/_downloadmaps_/040 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_041.bin "http://ci.zanavi.cc/data/slovenia.bin" ; touch ~/_downloadmaps_/041 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin" ; touch ~/_downloadmaps_/042 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin" ; touch ~/_downloadmaps_/043 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin" ; touch ~/_downloadmaps_/044 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_045.bin "http://ci.zanavi.cc/data/canada.bin" ; touch ~/_downloadmaps_/045 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_046.bin "http://ci.zanavi.cc/data/mexico.bin" ; touch ~/_downloadmaps_/046 :
+        background: true
+
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_001.bin.idx "http://ci.zanavi.cc/data/planet.bin.idx" ; touch ~/_downloadmaps_/i_001 :
+        background: true
+    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin" ; touch ~/_downloadmaps_/049 :
+        background: true
+
+    - files=48 ; have=0 ; while [ $have -lt $files ]; do ls -al ~/_downloadmaps_/ ; have=`ls -1 ~/_downloadmaps_/|wc -l|tr -d " "` ; echo "have=""$have" ; sleep 30  ; done
+
+    - ls -al ~/*txt ; exit 0
+    - rm -fv ~/stdout_wget_*.txt ; rm -fv ~/stderr_wget_*.txt ; exit 0
+    - ls -al $CIRCLE_ARTIFACTS ; exit 0
+    - rm -fv $CIRCLE_ARTIFACTS/stdout_wget_*.txt ; rm -fv $CIRCLE_ARTIFACTS/stderr_wget_*.txt ; exit 0
+
+test:
+  pre:
+    - mksdcard -l e 18000M sdcard.img
+    - echo 'mtools_skip_check=1' > ~/.mtoolsrc
+    - android list targets
+#
+    - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    #- if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    #- if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    #- if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+#
+    - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+#
+    - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1024MB#' ~/.android/avd/zanavi10.avd/config.ini ; cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+    - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+#
+    - echo "$EMU_"
+    - echo "$sdpath"
+  override:
+    - ls -al ~/android-build/navit/android/bin/
+    - ls -al $CIRCLE_ARTIFACTS/
+    #- fb-adb shell "df"
+    #- fb-adb shell "df $sdpath/"
+
+    - cd ~/maps/ ; du navitmap_0*bin|awk '{print $1 " + \\"}' > /tmp/sizes.txt ;echo -n "printf ' " > /tmp/calc.txt;cat /tmp/sizes.txt >> /tmp/calc.txt ; printf "0 \\\n' |bc\n" >> /tmp/calc.txt ; chmod u+x /tmp/calc.txt;eval /tmp/calc.txt > /tmp/res.txt ; printf "scale=2;`cat /tmp/res.txt` / 1024 / 1024 \n "|bc
+
+    - mmd -i ~/zanavi/sdcard.img "::Android"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi"
+    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+
+    - mdir -i ~/zanavi/sdcard.img "::"
+    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+
+    - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+
+    - import -window root $CIRCLE_ARTIFACTS/capture000a.png
+ 
+    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio:
+        background: true
+        parallel: true
+    - circle-android wait-for-boot
+
+    - xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
+    - sleep 210
+    - adb shell input keyevent 82
+    - sleep 10
+    - import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
+
+
+    - mkdir ~/yaml-tests/
+    #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
+    #- wget -t 10 -O ~/yaml-tests/yaml2.zip "https://github.com/zoff99/routing-qa/archive/master.zip"
+    #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/search-test001.zip"
+    - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/turn_tests_001.zip"
+    - cd ~/yaml-tests/ && unzip yaml1.zip && cd ~/ ; exit 0
+    - cd ~/yaml-tests/ && mv routing-qa-search-test001 routing-qa-master && cd ~/ ; exit 0
+    - cd ~/yaml-tests/ && mv routing-qa-turn_tests_001 routing-qa-master && cd ~/ ; exit 0
+    - cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
+    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; exit 0
+
+    # delete test files that give errors, for now *!*!
+    - cd ~/yaml-tests/routing-qa-master/ ; rm -v 002_missing_destination_name.yaml 003_highway_entrance.yaml 004_turn_restriction.yaml 005_car_forbidden_traffic.yaml Aalter_straight.yaml B2R_W.yaml Brugge.yaml Emmeloord_N.yaml Hamburg_Sued_S.yaml ; exit 0
+    - cd ~/yaml-tests/routing-qa-master/ ; rm -v Ichostrasse_S.yaml Imst_A12_E.yaml Imst_A12_W.yaml OSRM_issue_1645.yaml Oakland_highway_entrance.yaml RTE_Drongen_Deinze.yaml RTE_OSRM_issue_1794.yaml RTE_Tonisberg_1.yaml Sint-Niklaas.yaml no_HOV_1.yaml no_right_turn.yaml ; exit 0
+    - cd ~/yaml-tests/routing-qa-master/ ; rm -v A92.yaml Aalter_left.yaml Boulevard_Peripherique_1.yaml Ichostrasse_SE.yaml Vievis.yaml ; exit 0
+    - cd ~/
+    # delete test files that give errors, for now *!*!
+
+    - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
+
+    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
+    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
+
+    - fb-adb shell "cat /proc/meminfo" ; exit 0
+
+    #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+
+    - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
+
+
+    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
+    #- fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
+    - sleep 38
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 8
+    #- fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
+    - sleep 5
+    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
+
+
+    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
+    #- mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+
+    - adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
+        background: true
+
+
+    - sleep 120 # let app startup , it takes a while on the emulator
+
+
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+    - rm -fv ~/_done_.txt ; exit 0
+
+    - ready_="0" ;
+      count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+      counter=0;
+      while [ $ready_ == "0" ]; do
+      echo -n "running tests " ;
+      counter=$[ $counter + 1 ] ;
+      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      emu=`adb devices|grep -v 'List of devices attached'|grep -v '^$'|wc -l|tr -d ' '` ; if [ $emu -eq 0 ]; then echo "emulator crashed" ; ready_="1" ; fi ;
+      n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
+      echo "$n" "/" "$count_files"  ;
+      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
+      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
+      if [ $died_count -gt 1 ]; then
+      echo "com.zoffcc.applications.zanavi crashed";
+      cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
+      ready_="1" ;
+      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
+      fi ;
+      if [ ! -f ~/_done_.txt ]; then
+      import -window root $CIRCLE_ARTIFACTS/capture_tests_1_${counter}.png ;
+      sleep 180 ;
+      else ready_="1" ;
+      fi ;
+      done ;
+      exit 0
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+    - ready_="0" ;
+      count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+      counter=0;
+      while [ $ready_ == "0" ]; do
+      echo -n "running tests " ;
+      counter=$[ $counter + 1 ] ;
+      if [ $counter -eq 38 ] ; then exit 0 ; fi ;
+      emu=`adb devices|grep -v 'List of devices attached'|grep -v '^$'|wc -l|tr -d ' '` ; if [ $emu -eq 0 ]; then echo "emulator crashed" ; ready_="1" ; fi ;
+      n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
+      echo "$n" "/" "$count_files"  ;
+      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
+      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
+      if [ $died_count -gt 1 ]; then
+      echo "com.zoffcc.applications.zanavi crashed";
+      cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
+      ready_="1" ;
+      else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
+      fi ;
+      if [ ! -f ~/_done_.txt ]; then
+      import -window root $CIRCLE_ARTIFACTS/capture_tests_2_${counter}.png ;
+      sleep 180 ;
+      else ready_="1" ;
+      fi ;
+      done ;
+      exit 0
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+# ---------- waiting for tests to complete -------------
+
+
+    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
+    - sleep 20
+
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
+
+
+    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al" ; exit 0
+    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/" ; exit 0
+    - ls -al ~/debug_output/ ; exit 0
+
+    - mkdir ~/debug_results/ ; exit 0
+    - ls -al ~/debug_results/
+    - _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
+    - ls -al ~/debug_results/
+
+    - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
+    - cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
+
+    - mkdir -p ~/gpx2png/out
+    - mkdir -p ~/gpx2png/temp
+    - cd ~/gpx2png/
+    - wget -O ~/gpx2png/gpx2png.pl 'https://raw.githubusercontent.com/zoff99/gpx2png_perl/75abd95444385816e14c222272d971c5ac93fe2d/gpx2png.pl'
+    - chmod u+x ~/gpx2png/gpx2png.pl
+    - cd ~/gpx2png/temp/
+    - for i in `ls -1 ~/debug_results/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
+    - cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
+
+
+
+    - pkill -9 -u ubuntu -f emulator64-arm
+
+
+    #- Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
+    #    background: true
+
+    - ps auxwww ; exit 0
+
+    - rm -Rf ~/.mozilla ; exit 0
+    - sleep 1
+    - nohup firefox --setDefaultBrowser :
+        background: true
+    - sleep 20
+
+    - ps auxwww ; exit 0
+
+    - pkill -9 -u ubuntu -f firefox
+    - type -a firefox
+
+    - ps auxwww ; exit 0
+
+    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
+    - nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
+        background: true
+    - sleep 20
+
+    - ps auxwww ; exit 0
+
+    # - xdotool search --name "Mozilla Firefox" windowsize 1900 1060 # too big for screen now
+    - xdotool search --name "Mozilla Firefox" windowsize 1280 900
+    - xdotool search --name "Mozilla Firefox" windowsize 1280 900
+    - sleep 2
+
+    - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/*._SUCCESS_.result.txt`; do
+      echo "file=$i";
+      url1=`cat "$i"|grep 'URL1'|cut -d":" -f2-` ; echo "$url1" ;
+      url2=`cat "$i"|grep 'URL2'|cut -d":" -f2-` ; echo "$url2" ;
+      url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
+      url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
+      if [ "$url1""x" != "x" ]; then
+      firefox --setDefaultBrowser "$url1" >/dev/null 2>/dev/null ;
+      sleep 10;
+      import -window root ~/capture001.png ;
+      out=`basename "$i" \.txt`;
+      cp -v ~/capture001.png ~/debug_results/"$out"._URL1_.png ;
+      rm -fv ~/capture001.png ;
+      fi ;
+      if [ "$url2""x" != "x" ]; then
+      firefox --setDefaultBrowser "$url2" >/dev/null 2>/dev/null ;
+      sleep 10;
+      import -window root ~/capture001.png ;
+      out=`basename "$i" \.txt`;
+      cp -v ~/capture001.png ~/debug_results/"$out"._URL2_.png ;
+      rm -fv ~/capture001.png ;
+      fi ;
+      if [ "$url3_orig""x" != "x" ]; then
+      firefox --setDefaultBrowser "$url3" >/dev/null 2>/dev/null ;
+      sleep 10;
+      import -window root ~/capture001.png ;
+      out=`basename "$i" \.txt`;
+      cp -v ~/capture001.png ~/debug_results/"$out"._URL3_.png ;
+      rm -fv ~/capture001.png ;
+      fi ;
+      done ;
+      exit 0
+
+    - pkill -9 -u ubuntu -f firefox
+
+    - cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
+    - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
+    - cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/0000__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/0000__reports/
+
+    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
+    - cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt
+
+    # -- count erros ----------------------------------
+    # -- count erros ----------------------------------
+    - mkdir -p $CIRCLE_TEST_REPORTS/0000__zanavi-runner/
+
+    - ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+      echo $count_files ; cd ~ ; ls -al ./debug_results/ ; cd ~/yaml-tests/routing-qa-master/ ;
+      for i in `ls -1 *.yaml` ;
+      do f="./debug_results/$i"'._SUCCESS_.result.txt' ; cd ~ ; echo "f=""$f" ;
+      ls -al "$f" ; if [ -f "$f" ]; then echo "OK" ; else echo "FAIL" ; ju_fail=$[ $ju_fail + 1 ] ; fi ;
+      done ;
+      . ~/zanavi/ci/junit_start.sh ~/ju_res.xml "$count_files" "$ju_fail" ;
+      cd ~/yaml-tests/routing-qa-master/ ;
+      for i in `ls -1 *.yaml` ;
+      do f="./debug_results/$i"'._SUCCESS_.result.txt' ; cd ~ ;
+      rtime=`cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt | grep "$i" 2> /dev/null | cut -d":" -f2 2>/dev/null | tr -d " " 2>/dev/null` ;
+      if [ -f "$f" ]; then echo "OK2" ;
+      ls -al "$f" ; . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 0 "$i" "status" "OK" "$rtime"; else echo "FAIL2" ;
+      . ~/zanavi/ci/junit_add.sh ~/ju_res.xml 1 "$i" "status" "FAILED" "$rtime"; fi ;
+      done ;
+      . ~/zanavi/ci/junit_end.sh ~/ju_res.xml ; exit 0
+
+    - cp -v ~/ju_res.xml $CIRCLE_TEST_REPORTS/0000__zanavi-runner/tests.xml
+    # -- count erros ----------------------------------
+    # -- count erros ----------------------------------
+
+    - cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ; exit 0
+
+    #- cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* ~/yaml-tests/routing-qa-master/*.yaml && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av results.zip $CIRCLE_TEST_REPORTS/0000__packed/
+    - cd $CIRCLE_TEST_REPORTS/ && zip -r ~/results.zip * && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av ~/results.zip $CIRCLE_TEST_REPORTS/0000__packed/
+
+    # throw error if some tests failed
+    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'RES:ERR' ; ex=$? ; ex2=$[ 1 - $ex ] ; exit $ex2
+
+    # throw error if count of tests <> count of yaml files
+    - count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 ; else echo "COUNT OK" ; fi
+
+    # ------ kill ----------------
+    #- ps -fu ubuntu
+    #- adb -s emulator-5555 emu kill ; exit 0
+    #- adb -s emulator-5554 emu kill ; exit 0
+    #- ps -fu ubuntu
+    #- sleep 10
+    #- pkill -9 -u ubuntu -f java
+    #- sleep 10
+    #- ps -fu ubuntu
+    # ------ kill ----------------
+
+
