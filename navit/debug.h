@@ -142,6 +142,7 @@ extern int debug_level;
 #define dbg(level,...) { if (debug_level >= level) debug_printf(level,dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),1,__VA_ARGS__); }
 #define dbg_func(level,indent,...) { if (debug_level >= level) debug_printf_func(level,indent,dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),1,__VA_ARGS__); }
 #define dbg_assert(expr) ((expr) ? (void) 0 : debug_assert_fail(dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),__FILE__,__LINE__,dbg_str1(expr)))
+#define tests_dbg(level,...) debug_for_tests_printf(level,__VA_ARGS__);
 
 #else
 
@@ -151,6 +152,7 @@ extern int debug_level;
 #define dbg(level,...) #level
 #define dbg_func(level,indent,...) #level
 #define dbg_assert(expr) ((expr) ? (void) 0 : (void) 0)
+#define tests_dbg(level,...) #level
 
 #endif
 
@@ -189,6 +191,7 @@ int debug_level_get(const char *name);
 void debug_vprintf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap);
 void debug_vprintf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap);
 void debug_printf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...);
+void debug_for_tests_printf(int level, const char *fmt, ...);
 void debug_printf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...);
 void debug_assert_fail(const char *module, const int mlen, const char *function, const int flen, const char *file, int line, const char *expr);
 void debug_destroy(void);
