@@ -1899,6 +1899,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					System.out.println("XXXX:2:1:" + "");
 
 					Navit.CI_TEST_CASE_NUM++;
+					Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + "\n" + text;
 					try
 					{
 						NavitGraphics.CallbackMessageChannelReal(114, "" + Navit.CI_TEST_CASE_NUM);
