@@ -32,7 +32,7 @@ echo "================================="
 # type -a ccache
 # echo "================================="
 
-# patch Navit.java for circleCI -------------
+# patch for circleCI -------------
 pwd
 ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
 sed -i -e 's#static final int CIDEBUG =.*#static final int CIDEBUG = 1;#' navit/android/src/com/zoffcc/applications/zanavi/Navit.java
@@ -41,13 +41,13 @@ ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
 # ============
 ls -al navit/debug.h
 sed -i -e 'sc// #define _CIDEBUG_BUILD_ 1c#define _CIDEBUG_BUILD_ 1c' navit/debug.h
-cat navit/debug.h | grep 'static final int CIDEBUG'
+cat navit/debug.h | grep 'CIDEBUG_BUILD'
 ls -al navit/debug.h
-# patch Navit.java for circleCI -------------
+# patch for circleCI -------------
 
 
-rm navit/maptool/poly2tri-c/001/seidel-1.0/triangulate && \
-rm pngout-static && \
+rm navit/maptool/poly2tri-c/001/seidel-1.0/triangulate
+rm pngout-static
 echo '#! /bin/bash' > pngout-static && \
 echo 'echo $*' >> pngout-static && \
 chmod u+rx pngout-static
