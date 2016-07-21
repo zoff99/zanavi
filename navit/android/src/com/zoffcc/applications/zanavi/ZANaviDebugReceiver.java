@@ -793,6 +793,15 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 										try
 										{
+											out.write(Navit.CI_TEST_CASE_TEXT);
+										}
+										catch (Exception e)
+										{
+											System.out.println("_DREX_:046freetext" + e.getMessage());
+										}
+
+										try
+										{
 											out.flush();
 											out.close();
 											outf.flush();
@@ -1899,7 +1908,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					System.out.println("XXXX:2:1:" + "");
 
 					Navit.CI_TEST_CASE_NUM++;
-					Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + "\n" + text;
+					Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + "\n" + "===========" + Navit.CI_TEST_CASE_NUM + "===========";
 					try
 					{
 						NavitGraphics.CallbackMessageChannelReal(114, "" + Navit.CI_TEST_CASE_NUM);
@@ -1942,6 +1951,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					duration_string = duration_string + yamlfile.getName() + ":" + (difference / 1000.0f) + "\n";
 					System.out.println("XXXX:2:6:" + "=======  END  ======= duration: " + (difference / 1000.0f) + " secs.");
 					System.out.println("XXXX:2:7:" + "");
+					Navit.CI_TEST_CASE_TEXT = "";
 					System.out.println("XXXX:2:8:" + "");
 
 					//xy//Thread.sleep(1500);
