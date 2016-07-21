@@ -231,6 +231,7 @@ int global_enhance_cycleway = 0;
 int global_tracking_show_real_gps_pos = 0;
 int global_show_maps_debug_view = 0;
 int global_cancel_preview_map_drawing = 0;
+int global_test_number = -1;
 
 GList *global_all_cbs = NULL;
 
