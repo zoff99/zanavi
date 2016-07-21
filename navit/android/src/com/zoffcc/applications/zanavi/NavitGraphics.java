@@ -7034,7 +7034,7 @@ public class NavitGraphics
 		}
 		else if (id == 32) // return debug text for tests
 		{
-			Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + "\n" + text;
+			Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + text + "\n";
 		}
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
