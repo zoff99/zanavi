@@ -62,6 +62,12 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static int yaml_sum = 0;
 	static int yaml_err = 0;
 
+	static double lat_pos = 0.0;
+	static double lon_pos = 0.0;
+	static double lat_dst = 0.0;
+	static double lon_dst = 0.0;
+	static double heading_pos = 0.0;
+
 	/*
 	 * 
 	 * Examples:
@@ -256,12 +262,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		skip_count = 0;
 		System.out.println("ZANaviDebugReceiver:" + "skip");
 	}
-
-	static double lat_pos = 0.0;
-	static double lon_pos = 0.0;
-	static double lat_dst = 0.0;
-	static double lon_dst = 0.0;
-	static double heading_pos = 0.0;
 
 	static void DR_replay_yaml_file(String filename, final String date)
 	{
@@ -1897,6 +1897,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					temp_work_thread.join();
 
 					System.out.println("XXXX:2:1:" + "");
+
+					Navit.CI_TEST_CASE_NUM++;
+					try
+					{
+						NavitGraphics.CallbackMessageChannelReal(114, "" + Navit.CI_TEST_CASE_NUM);
+					}
+					catch (Exception e)
+					{
+					}
+
 					System.out.println("XXXX:2:2:" + "");
 					System.out.println("XXXX:2:3:" + "======= START =======");
 					long startTime = System.currentTimeMillis();
