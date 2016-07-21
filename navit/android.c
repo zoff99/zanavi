@@ -2595,6 +2595,13 @@ __F_START__
 			navit_zoom_out_cursor(global_navit, 2);
 			// navit_zoom_out_cursor(attr.u.navit, 2);
 		}
+		else if (i == 114)
+		{
+			// set test number
+			s = (*env)->GetStringUTFChars(env, str, NULL);
+			global_test_number = atoi(s);
+			(*env)->ReleaseStringUTFChars(env, str, s);
+		}
 		else if (i == 113)
 		{
 			// cancel preview map drawing
