@@ -3260,6 +3260,8 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	dbg(0, "STRAI:000:\n");
 	dbg(0, "STRAI:000:======================================\n");
 
+	tests_dbg(0, "=== maneuver_required2 [ENTER] ===");
+
 	// ---------------------------
 	//
 	// HINT: angle < 0 --> left
@@ -4071,6 +4073,8 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	{
 		*reason = r;
 	}
+
+	tests_dbg(0, "=== maneuver_required2 [Exit] ===");
 
 	return ret;
 }
