@@ -142,7 +142,6 @@ extern int debug_level;
 #define dbg(level,...) { if (debug_level >= level) debug_printf(level,dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),1,__VA_ARGS__); }
 #define dbg_func(level,indent,...) { if (debug_level >= level) debug_printf_func(level,indent,dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),1,__VA_ARGS__); }
 #define dbg_assert(expr) ((expr) ? (void) 0 : debug_assert_fail(dbg_module,strlen(dbg_module),__PRETTY_FUNCTION__, strlen(__PRETTY_FUNCTION__),__FILE__,__LINE__,dbg_str1(expr)))
-#define tests_dbg(level,...) debug_for_tests_printf(level,__VA_ARGS__);
 
 #else
 
@@ -152,9 +151,19 @@ extern int debug_level;
 #define dbg(level,...) #level
 #define dbg_func(level,indent,...) #level
 #define dbg_assert(expr) ((expr) ? (void) 0 : (void) 0)
-#define tests_dbg(level,...) #level
 
 #endif
+
+
+// #define _CIDEBUG_BUILD_ 1
+
+
+#ifdef _CIDEBUG_BUILD_
+#define tests_dbg(level,...) debug_for_tests_printf(level,__VA_ARGS__);
+#else
+#define tests_dbg(level,...) #level
+#endif
+
 
 
 

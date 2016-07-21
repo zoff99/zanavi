@@ -38,6 +38,11 @@ ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
 sed -i -e 's#static final int CIDEBUG =.*#static final int CIDEBUG = 1;#' navit/android/src/com/zoffcc/applications/zanavi/Navit.java
 cat navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'static final int CIDEBUG'
 ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+# ============
+ls -al navit/debug.h
+sed -i -e 'sc// #define _CIDEBUG_BUILD_ 1c#define _CIDEBUG_BUILD_ 1c' navit/debug.h
+cat navit/debug.h | grep 'static final int CIDEBUG'
+ls -al navit/debug.h
 # patch Navit.java for circleCI -------------
 
 

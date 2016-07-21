@@ -371,7 +371,7 @@ void debug_vprintf_func(int level, int indent, const char *module, const int mle
 
 void debug_for_tests_vprintf(int level, const char *fmt, va_list ap)
 {
-#ifdef _DEBUG_BUILD_
+#ifdef _CIDEBUG_BUILD_
 #ifdef HAVE_API_ANDROID
 	char *xbuffer = g_malloc(40960);
 	xbuffer[0] = '\0';
@@ -385,7 +385,7 @@ void debug_for_tests_vprintf(int level, const char *fmt, va_list ap)
 
 void debug_for_tests_printf(int level, const char *fmt, ...)
 {
-#ifdef _DEBUG_BUILD_
+#ifdef _CIDEBUG_BUILD_
 #ifdef HAVE_API_ANDROID
 	va_list ap;
 	va_start(ap, fmt);
