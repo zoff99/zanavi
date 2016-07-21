@@ -9039,6 +9039,12 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				// cancel preview map drawing
 				NavitGraphics.CallbackMessageChannel(113, "x");
 			}
+			else if (msg.getData().getInt("Callback") == 114)
+			{
+				// set debug test number
+				String s = msg.getData().getString("s");
+				NavitGraphics.CallbackMessageChannel(114, s);
+			}
 			else if (msg.getData().getInt("Callback") == 9901)
 			{
 				// if follow mode is on, then dont show freeview streetname
