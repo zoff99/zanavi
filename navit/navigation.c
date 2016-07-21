@@ -3775,7 +3775,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 						{
 							ret = 1;
 							r = "yes: we are going straight and some other way is very close to it (same or higher cat)";
-							tests_dbg(0, "yes: we are going straight and some other way is very close to it (same or higher cat)");"
+							tests_dbg(0, "yes: we are going straight and some other way is very close to it (same or higher cat)");
 							dbg(0, "STRAI:011.07:7 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 						}
 						else if ((abs(d) > 0) && (new_angle_abs_min_allowed < abs(d)))
