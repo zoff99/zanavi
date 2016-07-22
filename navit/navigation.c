@@ -3273,6 +3273,9 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	d = angle_delta(old->angle_end, new->way.angle2);
 	original_d = d;
 
+	tests_dbg(0, "delta=%d delta_real=%d d=%d", *delta, *delta_real, d);
+	tests_dbg(0, "old->angle_end=%d new->way.angle2=%d", old->angle_end, new->way.angle2);
+
 	//long long wayid_old = navigation_item_get_wayid(&(old->way));
 	//long long wayid_new = navigation_item_get_wayid(&(new->way));
 	//dbg(0, "Enter d=%d old->angle_end=%d new->way.angle2=%d old_way_id=%lld new_way_id=%lld\n", d, old->angle_end, new->way.angle2, wayid_old, wayid_new);
@@ -3320,6 +3323,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	int no_correction = 0;
 
 	dbg(0, "STRAI:001:d=%d original_d=%d\n", old_angle_abs, original_d);
+	tests_dbg(0, "STRAI:001:d=%d original_d=%d\n", old_angle_abs, original_d);
 
 	while (w22)
 	{
