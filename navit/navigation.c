@@ -3260,7 +3260,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	dbg(0, "STRAI:000:\n");
 	dbg(0, "STRAI:000:======================================\n");
 
-	tests_dbg(0, "=== maneuver_required2 [ENTER] ===");
+	tests_dbg(0, "\n=== maneuver_required2 [ENTER] ===");
 
 	// ---------------------------
 	//
@@ -3329,7 +3329,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	int no_correction = 0;
 
 	dbg(0, "STRAI:001:d=%d original_d=%d\n", old_angle_abs, original_d);
-	tests_dbg(0, "STRAI:001:d=%d original_d=%d\n", old_angle_abs, original_d);
+	tests_dbg(0, "STRAI:001:d=%d original_d=%d", old_angle_abs, original_d);
 
 	while (w22)
 	{
