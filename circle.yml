@@ -43,6 +43,10 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-addon-google_apis-google-23
     - echo y | android update sdk --no-ui --all --filter addon-google_apis-google-23
 
+    - mkdir ~/cov_scan/
+    - wget https://scan.coverity.com/download/linux-64 --post-data "token=$COVERITY_TOKEN&project=zoff99%2Fzanavi" -O ~/cov_scan/coverity_tool.tgz
+    - wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz
+
     - bash ~/zanavi/ci/do_android.sh
 
     - ls -al ~/maps/ ; exit 0
