@@ -3364,7 +3364,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 				tests_dbg(0, "new_angle_real=%d new_angle_abs=%d is allowed=%d", new_angle_real, new_angle_abs, is_way_allowed(nav, w22, 1));
 				tests_dbg(0, "old->angle_end=%d w22->angle2=%d", old->angle_end, w22->angle2);
-				tests_dbg(0, "new_angle_abs_min=%d", new_angle_abs_min;
+				tests_dbg(0, "new_angle_abs_min=%d", new_angle_abs_min);
 				tests_dbg(0, "other type=%s is_ramp=%d", item_to_name(w22->item.type), item_is_ramp(w22->item));
 
 				if (is_way_allowed(nav, w22, 1))
