@@ -46,8 +46,13 @@ dependencies:
     - mkdir ~/cov_scan/
     - wget https://scan.coverity.com/download/linux-64 --post-data "token=$COVERITY_TOKEN&project=zoff99%2Fzanavi" -O ~/cov_scan/coverity_tool.tgz
     - wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz
+    - cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz
+    # export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:$PATH ; 
 
     - bash ~/zanavi/ci/do_android.sh
+    - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:$PATH ; cd ~/android-build/ ; make clean ; cov-build --dir cov-int make
+
+    - exit 1
 
     - ls -al ~/maps/ ; exit 0
     - mkdir -p ~/maps/ ; exit 0
