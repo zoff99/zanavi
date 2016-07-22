@@ -47,10 +47,10 @@ dependencies:
     - wget https://scan.coverity.com/download/linux-64 --post-data "token=$COVERITY_TOKEN&project=zoff99%2Fzanavi" -O ~/cov_scan/coverity_tool.tgz
     - wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz
     - cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz
-    # export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:$PATH ; 
 
     - bash ~/zanavi/ci/do_android.sh
-    - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:$PATH ; cd ~/android-build/ ; make clean ; cov-build --dir cov-int make
+
+    - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/ ; cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc ; make clean ; cov-build --dir cov-int make
 
     - exit 1
 
