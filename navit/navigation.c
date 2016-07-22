@@ -3331,6 +3331,8 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	dbg(0, "STRAI:001:d=%d original_d=%d\n", old_angle_abs, original_d);
 	tests_dbg(0, "STRAI:001:d=%d original_d=%d", old_angle_abs, original_d);
 
+	tests_dbg(0, "\n-- other ways START --");
+
 	while (w22)
 	{
 
@@ -3359,6 +3361,11 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 				{
 					new_angle_abs_min = new_angle_abs;
 				}
+
+				tests_dbg(0, "new_angle_real=%d new_angle_abs=%d is allowed=%d", new_angle_real, new_angle_abs, is_way_allowed(nav, w22, 1));
+				tests_dbg(0, "old->angle_end=%d w22->angle2=%d", old->angle_end, w22->angle2);
+				tests_dbg(0, "new_angle_abs_min=%d", new_angle_abs_min;
+				tests_dbg(0, "other type=%s is_ramp=%d", item_to_name(w22->item.type), item_is_ramp(w22->item));
 
 				if (is_way_allowed(nav, w22, 1))
 				{
@@ -3399,12 +3406,19 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 				dbg(0, "STRAI:003:new angle abs=%d min_allowed=%d have_more_than_one_way_to_turn=%d new_angle_closest_to_cur=%d d=%d\n", new_angle_abs, new_angle_abs_min_allowed, have_more_than_one_way_to_turn, new_angle_closest_to_cur, d);
 
+				tests_dbg(0, "STRAI:003:new angle abs=%d min_allowed=%d have_more_than_one_way_to_turn=%d new_angle_closest_to_cur=%d d=%d", new_angle_abs, new_angle_abs_min_allowed, have_more_than_one_way_to_turn, new_angle_closest_to_cur, d);
+
+
 			}
 		}
 		w22 = w22->next;
 	}
 
 	dbg(0, "STRAI:004 new_angle_abs_min=%d new_angle_abs_min_allowed=%d\n", new_angle_abs_min, new_angle_abs_min_allowed);
+	tests_dbg(0, "STRAI:004 new_angle_abs_min=%d new_angle_abs_min_allowed=%d", new_angle_abs_min, new_angle_abs_min_allowed);
+
+	tests_dbg(0, "-- other ways  END  --\n");
+
 
 	if ((new_angle_abs_min_allowed > ROAD_ANGLE_IS_STRAIGHT_ABS) && (old_angle_abs <= ROAD_ANGLE_IS_STRAIGHT_ABS))
 	{
@@ -3415,6 +3429,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	}
 
 	dbg(0, "STRAI:005a:d=%d\n", d);
+	tests_dbg(0, "STRAI:005a:d=%d", d);
 
 	if (!r)
 	{
