@@ -3278,7 +3278,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	tests_dbg(0, "angle < 0 --> left");
 	struct coord_geo g22;
 	transform_to_geo(projection_mg, &old->last, &g22);
-	tests_dbg(0, "lat,lon: %f,%f", g22.lat, g22.lng);
+	tests_dbg(0, "http://www.openstreetmap.org/search?query=%f%20%f#map=17/%f/%f", g22.lat, g22.lng, g22.lat, g22.lng);
 
 	tests_dbg(0, "delta=%d delta_real=%d d=%d", *delta, *delta_real, d);
 	tests_dbg(0, "old->angle_end=%d new->way.angle2=%d", old->angle_end, new->way.angle2);
