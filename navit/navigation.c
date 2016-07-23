@@ -3274,12 +3274,17 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 	original_d = d;
 
 
-	tests_dbg(0, "lat,lon: %f,%f", 16.35f, 48.12f);
+
+	tests_dbg(0, "angle < 0 --> left");
+	struct coord_geo g22;
+	transform_to_geo(projection_mg, &old->last, &g22);
+	tests_dbg(0, "lat,lon: %f,%f", g22.lat, g22.lng);
 
 	tests_dbg(0, "delta=%d delta_real=%d d=%d", *delta, *delta_real, d);
 	tests_dbg(0, "old->angle_end=%d new->way.angle2=%d", old->angle_end, new->way.angle2);
 	tests_dbg(0, "from type=%s", item_to_name(old->way.item.type));
 	tests_dbg(0, "to type=%s", item_to_name(new->way.item.type));
+
 
 
 	//long long wayid_old = navigation_item_get_wayid(&(old->way));
