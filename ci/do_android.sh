@@ -82,7 +82,12 @@ if [ "$COVERITY_BUILD_""x" == "1x" ]; then
         export DO_RELEASE_BUILD=1 && \
         export DO_PNG_BUILD=1 && \
         export NDK_CCACHE="" && \
- export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/ ; cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc ; make clean ; cov-build --dir cov-int make
+ export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH
+ cd ~/android-build/
+ # cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
+ cov-configure --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc -- -march=armv5te -msoft-float -mthumb
+ make clean
+ cov-build --dir cov-int make
 
  ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
  ls -al /home/ubuntu/android-build/navit/.libs/navit2
