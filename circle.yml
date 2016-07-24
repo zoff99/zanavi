@@ -50,17 +50,14 @@ dependencies:
 
     - bash -c 'export COVERITY_BUILD_=1 ; chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
 
-#    - ls -al /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
-    - sudo rm -f /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
-    - sudo ln -s /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld.bfd /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
-#    - ls -al /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
+#    - sudo rm -f /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
+#    - sudo ln -s /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld.bfd /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
 
     - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/ ; cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc ; make clean ; cov-build --dir cov-int make
-#    - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/navit/ ; cov-build --dir cov-int make navit
 
     - ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so ; exit 0
-    - ls -al /home/ubuntu/android-build/navit/navit ; exit 0
-    - ldd /home/ubuntu/android-build/navit/navit ; exit 0
+    - ls -al /home/ubuntu/android-build/navit/.libs/navit2 ; exit 0
+    - ls -al /home/ubuntu/android-build/navit/navit2 ; exit 0
     - ls -al /home/ubuntu/android-build/cov-int/
     - cp -v /home/ubuntu/android-build/cov-int/build-log.txt $CIRCLE_ARTIFACTS/
     - tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz /home/ubuntu/android-build/cov-int
