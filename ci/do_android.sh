@@ -66,8 +66,6 @@ CCACHE=""
 conf_addon=''
 
 if [ "$COVERITY_BUILD_""x" == "1x" ]; then
- #sed -i -e 's#bin_navit=no#bin_navit=yes#g' ../zanavi/configure
- #cat ../zanavi/configure | grep 'bin_navit='
  sed -i -e 's#LIBS="$LIBS -rdynamic"#ABCDD="aaaabbb"#g' ../zanavi/configure
  cat ../zanavi/configure | grep 'rdynamic'
  cat ../zanavi/configure | grep 'aaaabbb'
@@ -79,8 +77,24 @@ DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-st
 ../zanavi/configure RANLIB=arm-linux-androideabi-ranlib AR=arm-linux-androideabi-ar CC="$CCACHE arm-linux-androideabi-gcc -O2 $DEBUG_ -L. -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " CXX="$CCACHE arm-linux-androideabi-g++ -O2 -fno-rtti -fno-exceptions -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " --host=arm-eabi-linux_android --enable-avoid-float --enable-avoid-unaligned --disable-glib --disable-gmodule --disable-vehicle-gpsd $conf_addon --enable-vehicle-demo --disable-binding-dbus --disable-speech-cmdline --disable-gui-gtk --disable-font-freetype --disable-fontconfig --disable-graphics-qt-qpainter --disable-graphics-gtk-drawing-area --disable-maptool --enable-cache-size=20971520 --enable-svg2png-scaling=8,16,32,48,64,96,192,384 --enable-svg2png-scaling-nav=48,64,59,96,192,384 --enable-svg2png-scaling-flag=32 --with-xslts=android,plugin_menu --with-saxon=saxonb-xslt --enable-transformation-roll --with-android-project="android-21"  > /dev/null 2> /dev/null
 
 if [ "$COVERITY_BUILD_""x" == "1x" ]; then
- :
- # cat navit/Makefile | grep -i navit | grep -i bin
+ export AND_API_LEVEL_C=14 && \
+        export NDK=$_NDK_ && \
+        export DO_RELEASE_BUILD=1 && \
+        export DO_PNG_BUILD=1 && \
+        export NDK_CCACHE="" && \
+ export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/ ; cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc ; make clean ; cov-build --dir cov-int make
+
+ ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
+ ls -al /home/ubuntu/android-build/navit/.libs/navit2
+ ls -al /home/ubuntu/android-build/navit/navit2
+
+ make clean
+ conf_addon=''
+ sed -i -e 's#ABCDD="aaaabbb"#LIBS="$LIBS -rdynamic"#g' ../zanavi/configure
+ cat ../zanavi/configure | grep 'rdynamic'
+ cat ../zanavi/configure | grep 'aaaabbb'
+ ../zanavi/configure RANLIB=arm-linux-androideabi-ranlib AR=arm-linux-androideabi-ar CC="$CCACHE arm-linux-androideabi-gcc -O2 $DEBUG_ -L. -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " CXX="$CCACHE arm-linux-androideabi-g++ -O2 -fno-rtti -fno-exceptions -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " --host=arm-eabi-linux_android --enable-avoid-float --enable-avoid-unaligned --disable-glib --disable-gmodule --disable-vehicle-gpsd $conf_addon --enable-vehicle-demo --disable-binding-dbus --disable-speech-cmdline --disable-gui-gtk --disable-font-freetype --disable-fontconfig --disable-graphics-qt-qpainter --disable-graphics-gtk-drawing-area --disable-maptool --enable-cache-size=20971520 --enable-svg2png-scaling=8,16,32,48,64,96,192,384 --enable-svg2png-scaling-nav=48,64,59,96,192,384 --enable-svg2png-scaling-flag=32 --with-xslts=android,plugin_menu --with-saxon=saxonb-xslt --enable-transformation-roll --with-android-project="android-21"  > /dev/null 2> /dev/null
+
 fi
 
 export AND_API_LEVEL_C=14 && \
