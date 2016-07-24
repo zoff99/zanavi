@@ -30,6 +30,8 @@ BUILT_SOURCES = version.h navit_config.h
 
 if BIN_NAVIT
   bin_PROGRAMS = navit
+else
+  bin_PROGRAMS = navit2
 endif
 
 if SHARED_LIBNAVIT
@@ -300,6 +302,19 @@ navit_SOURCES = start.c
 navit_LDADD = lib@LIBNAVIT@.la
 
 endif
+
+
+	
+if SUPPORT_ANDROID
+
+navit2_SOURCES = navit2.c
+navit2_LDADD = lib@LIBNAVIT@.la
+navit2_LDADD += @NAVIT_LIBS@ @WORDEXP_LIBS@ @ZLIB_LIBS@ @CRYPTO_LIBS@ @INTLLIBS@
+navit2_LDFLAGS = -static -lc
+navit2_LINK = $(LIBTOOL) --tag=CC --mode=link $(CC) -o navit2 -lc --sysroot=$(NDK)/platforms/android-$(AND_API_LEVEL_C)/arch-arm
+
+endif
+
 
 if EVENT_GLIB
   lib@LIBNAVIT@_la_SOURCES += event_glib.c
