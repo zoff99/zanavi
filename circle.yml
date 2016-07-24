@@ -60,7 +60,7 @@ dependencies:
     - ls -al /home/ubuntu/android-build/navit/navit2 ; exit 0
     - ls -al /home/ubuntu/android-build/cov-int/
     - cp -v /home/ubuntu/android-build/cov-int/build-log.txt $CIRCLE_ARTIFACTS/
-    - tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz /home/ubuntu/android-build/cov-int
+    - cd /home/ubuntu/android-build/ ; tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz cov-int
 
     - ls -al ~/maps/ ; exit 0
     - mkdir -p ~/maps/ ; exit 0
