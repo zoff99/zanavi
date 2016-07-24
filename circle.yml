@@ -48,7 +48,7 @@ dependencies:
     - wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz
     - cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz
 
-    - bash ~/zanavi/ci/do_android.sh
+    - export COVERITY_SCAN_=1 ; bash ~/zanavi/ci/do_android.sh
 
 #    - ls -al /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
     - sudo rm -f /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ld
