@@ -52,20 +52,7 @@ dependencies:
 
     - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/ ; cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc ; make clean ; cov-build --dir cov-int make
     - export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH ; cd ~/android-build/navit/ ;
-      arm-linux-androideabi-gcc -O2 -fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-strict-aliasing \
-      -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ \
-      -Wno-psabi -march=armv5te -msoft-float -mthumb -finline-limit=64 -DHAVE_API_ANDROID -DANDROID \
-      -Wa,--noexecstack -I/usr/local/android-ndk//platforms/android-14/arch-arm/usr/include \
-      -nostdlib -Wl,-rpath-link=/usr/local/android-ndk//platforms/android-14/arch-arm/usr/lib \
-      -g -O2 -Wall -Wcast-align -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wpointer-arith \
-      -Wreturn-type -D_GNU_SOURCE -ffast-math -I../intl/ -o navit -rdynamic -Wl,--export-dynamic \
-      -fuse-ld=bfd \
-      -L/usr/local/android-ndk//platforms/android-14/arch-arm/usr/lib -L/home/ubuntu/android-build/navit \
-      -L/usr/local/android-ndk//toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.8/ \
-      -L/home/ubuntu/android-build/navit/support/glib /home/ubuntu/android-build/navit/support/glib/.libs/libsupport_glib.a \
-      -L/home/ubuntu/android-build/navit/support/ezxml /home/ubuntu/android-build/navit/support/ezxml/.libs/libsupport_ezxml.a \
-      -ldl -L/home/ubuntu/android-build/navit/support/wordexp /home/ubuntu/android-build/navit/support/wordexp/.libs/libsupport_wordexp.a \
-      -lgcc -ljnigraphics -lz ../intl//libintl.a -lm
+      arm-linux-androideabi-gcc -O2 -fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-strict-aliasing -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -Wno-psabi -march=armv5te -msoft-float -mthumb -finline-limit=64 -DHAVE_API_ANDROID -DANDROID -Wa,--noexecstack -I/usr/local/android-ndk//platforms/android-14/arch-arm/usr/include -nostdlib -Wl,-rpath-link=/usr/local/android-ndk//platforms/android-14/arch-arm/usr/lib -g -O2 -Wall -Wcast-align -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wpointer-arith -Wreturn-type -D_GNU_SOURCE -ffast-math -I../intl/ -o navit -rdynamic -Wl,--export-dynamic -fuse-ld=bfd -L/usr/local/android-ndk//platforms/android-14/arch-arm/usr/lib -L/home/ubuntu/android-build/navit -L/usr/local/android-ndk//toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.8/ -L/home/ubuntu/android-build/navit/support/glib /home/ubuntu/android-build/navit/support/glib/.libs/libsupport_glib.a -L/home/ubuntu/android-build/navit/support/ezxml /home/ubuntu/android-build/navit/support/ezxml/.libs/libsupport_ezxml.a -ldl -L/home/ubuntu/android-build/navit/support/wordexp /home/ubuntu/android-build/navit/support/wordexp/.libs/libsupport_wordexp.a -lgcc -ljnigraphics -lz ../intl//libintl.a -lm
 
     - ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so ; exit 0
     - ls -al /home/ubuntu/android-build/navit/navit ; exit 0
