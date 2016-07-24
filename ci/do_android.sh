@@ -85,7 +85,7 @@ if [ "$COVERITY_BUILD_""x" == "1x" ]; then
  export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH
  cd ~/android-build/
  # cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
- cov-configure --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc -- -march=armv5te -msoft-float -mthumb
+ cov-configure -co arm-linux-androideabi-gcc -- -march=armv5te -msoft-float -mthumb
  make clean
  cov-build --dir cov-int make
 
