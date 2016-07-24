@@ -66,10 +66,9 @@ CCACHE=""
 conf_addon=''
 
 if [ "$COVERITY_BUILD_""x" == "1x" ]; then
- cat ../zanavi/configure | grep 'bin_navit='
- sed -i -e 's#bin_navit=no#bin_navit=yes#g' ../zanavi/configure
+ #sed -i -e 's#bin_navit=no#bin_navit=yes#g' ../zanavi/configure
+ #cat ../zanavi/configure | grep 'bin_navit='
  sed -i -e 's#LIBS="$LIBS -rdynamic"#ABCDD="aaaabbb"#g' ../zanavi/configure
- cat ../zanavi/configure | grep 'bin_navit='
  cat ../zanavi/configure | grep 'rdynamic'
  cat ../zanavi/configure | grep 'aaaabbb'
  conf_addon=' --disable-shared '
@@ -93,6 +92,11 @@ export AND_API_LEVEL_C=14 && \
         pwd && \
         cd navit
         make apkg-release 2>&1 | grep '\[javac\]' || pwd
+
+ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
+ls -al /home/ubuntu/android-build/navit/.libs/navit2
+ls -al /home/ubuntu/android-build/navit/navit2
+
 
 cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
