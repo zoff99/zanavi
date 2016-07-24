@@ -63,7 +63,7 @@ cd $BUILD_PATH
 # echo "... done"
 CCACHE=""
 
-if [ "$COVERITY_BUILD_"""x" == "1x" ]; then
+if [ "$COVERITY_BUILD_""x" == "1x" ]; then
  cat ../zanavi/configure | grep 'bin_navit='
  sed -i -e 's#bin_navit=no#bin_navit=yes#g' ../zanavi/configure
  cat ../zanavi/configure | grep 'bin_navit='
