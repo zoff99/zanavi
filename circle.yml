@@ -16,7 +16,7 @@ machine:
     sdpath_23: "/sdcard"
     sdpath_24: "/sdcard"
 #
-    EMU_API: "23"
+    EMU_API: "24"
 ###############################
 
 ###### custom 2 ######
