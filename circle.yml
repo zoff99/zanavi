@@ -14,7 +14,7 @@ machine:
     sdpath_10: "/mnt/sdcard"
     sdpath_21: "/storage/sdcard"
     sdpath_23: "/sdcard"
-    sdpath_24: '/storage/[0-9]*'
+    sdpath_24: "/storage/emulated/0"
 #
     EMU_API: "24"
 ###############################
