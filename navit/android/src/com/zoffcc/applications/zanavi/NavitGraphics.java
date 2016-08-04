@@ -173,6 +173,9 @@ public class NavitGraphics
 	public static final int map_bg_color = Color.parseColor("#FEF9EE");
 	final Paint paint_bg_color = new Paint(Color.parseColor("#FEF9EE"));
 
+	public static final int map_bg_color_nightmode = Color.parseColor("#666666");
+	final Paint paint_bg_color_nightmode = new Paint(Color.parseColor("#666666"));
+
 	public final static DashPathEffect dashed_map_lines__high = new DashPathEffect(new float[] { 4, 2 }, 1);
 	public final static DashPathEffect dashed_map_lines__low = new DashPathEffect(new float[] { 15, 11 }, 1);
 	public final static DashPathEffect dashed_map_lines__no_dash = null;
@@ -215,6 +218,7 @@ public class NavitGraphics
 	Matrix matrix_maptile = new Matrix();
 
 	static Paint strokeTextPaint = new Paint();
+	static Paint strokeTextPaint_nightmode = new Paint();
 	static double s_factor = 1;
 	static int s_strokTextSize = 8;
 	static int s_strokTextSize_min = 3;
@@ -709,6 +713,10 @@ public class NavitGraphics
 		paint_bg_color.setAntiAlias(false);
 		paint_bg_color.setDither(false);
 
+		paint_bg_color_nightmode.setColor(Color.parseColor("#666666"));
+		paint_bg_color_nightmode.setAntiAlias(false);
+		paint_bg_color_nightmode.setDither(false);
+
 		STT_B_list[0] = null;
 		STT_B_list[1] = null;
 		STT_B_list[2] = null;
@@ -739,13 +747,22 @@ public class NavitGraphics
 		s_strokTextSize_min = dp_to_px(2);
 		// width of the text shadow for strings on map -----------
 
-		strokeTextPaint.setARGB(255, 255, 255, 255);
+		strokeTextPaint.setARGB(255, 255, 255, 255); // white
 		strokeTextPaint.setTextAlign(android.graphics.Paint.Align.LEFT);
 		strokeTextPaint.setStyle(Paint.Style.STROKE);
 		strokeTextPaint.setStrokeWidth(s_strokTextSize);
 		strokeTextPaint.setFilterBitmap(false);
 		strokeTextPaint.setAntiAlias(true);
 		strokeTextPaint.setDither(false);
+
+		strokeTextPaint_nightmode.setARGB(255, 164, 164, 164); // grey
+		strokeTextPaint_nightmode.setTextAlign(android.graphics.Paint.Align.LEFT);
+		strokeTextPaint_nightmode.setStyle(Paint.Style.STROKE);
+		strokeTextPaint_nightmode.setStrokeWidth(s_strokTextSize);
+		strokeTextPaint_nightmode.setFilterBitmap(false);
+		strokeTextPaint_nightmode.setAntiAlias(true);
+		strokeTextPaint_nightmode.setDither(false);
+
 		// shadow for text on map --------------
 
 		if (parent == 0)
@@ -889,7 +906,15 @@ public class NavitGraphics
 								}
 
 								//System.out.println("DO__DRAW:onDraw():drawBitmap start");
-								draw_canvas_screen2.drawColor(map_bg_color); // fill with yellow-ish bg color
+
+								if (Navit.night_mode)
+								{
+									draw_canvas_screen2.drawColor(map_bg_color_nightmode); // fill with grey-ish bg color (NIGHT MODE)
+								}
+								else
+								{
+									draw_canvas_screen2.drawColor(map_bg_color); // fill with yellow-ish bg color
+								}
 
 								// --------------- CLEAR MAP ---------------
 								// --------------- CLEAR MAP ---------------
@@ -904,7 +929,15 @@ public class NavitGraphics
 								//System.out.println("DO__DRAW:onDraw():drawBitmap end");
 
 								canvas.save();
-								canvas.drawColor(map_bg_color); // fill with yellow-ish bg color
+
+								if (Navit.night_mode)
+								{
+									canvas.drawColor(map_bg_color_nightmode); // fill with grey-ish bg color (NIGHT MODE)
+								}
+								else
+								{
+									canvas.drawColor(map_bg_color); // fill with yellow-ish bg color
+								}
 
 								// --------------- CLEAR MAP ---------------
 								// --------------- CLEAR MAP ---------------
@@ -981,7 +1014,15 @@ public class NavitGraphics
 							}
 							else
 							{
-								canvas.drawPaint(paint_bg_color);
+								if (Navit.night_mode)
+								{
+									canvas.drawPaint(paint_bg_color_nightmode);
+								}
+								else
+								{
+									canvas.drawPaint(paint_bg_color);
+								}
+
 								// --------------- CLEAR MAP ---------------
 								// --------------- CLEAR MAP ---------------
 								//System.out.println("CLEAR MAP:003");
@@ -1145,6 +1186,20 @@ public class NavitGraphics
 											{
 											}
 											// allow all map drawing -----------
+
+											// -- show streetname of current map center ---											
+											if (!Navit.p.PREF_follow_gps)
+											{
+												if (Navit.GFX_OVERSPILL)
+												{
+													Navit.cwthr.CallbackGeoCalc2(1, 0, NavitGraphics.Global_dpi_factor * (mCanvasWidth / 2 + NavitGraphics.mCanvasWidth_overspill), NavitGraphics.Global_dpi_factor * (mCanvasHeight / 2 + NavitGraphics.mCanvasHeight_overspill));
+												}
+												else
+												{
+													Navit.cwthr.CallbackGeoCalc2(1, 0, NavitGraphics.Global_dpi_factor * mCanvasWidth / 2, NavitGraphics.Global_dpi_factor * mCanvasHeight / 2);
+												}
+											}
+											// -- show streetname of current map center ---											
 
 											pos_x = 0;
 											pos_y = 0;
@@ -4648,7 +4703,14 @@ public class NavitGraphics
 				paint_preview.setStrokeWidth(dp_to_px(5));
 				preview_canvas.drawPath(path_preview, paint_preview);
 
-				paint_preview.setColor(Color.parseColor("#FFFFFFFF"));
+				if (Navit.night_mode)
+				{
+					paint_preview.setColor(Color.parseColor("#FFBDBDBD"));
+				}
+				else
+				{
+					paint_preview.setColor(Color.parseColor("#FFFFFFFF"));
+				}
 				paint_preview.setStrokeWidth(dp_to_px(3));
 				preview_canvas.drawPath(path_preview, paint_preview);
 			}
@@ -4692,7 +4754,14 @@ public class NavitGraphics
 				paint_preview.setStrokeWidth(dp_to_px(5));
 				preview_canvas.drawPath(path_preview, paint_preview);
 
-				paint_preview.setColor(Color.parseColor("#FFFEFC8C"));
+				if (Navit.night_mode)
+				{
+					paint_preview.setColor(Color.parseColor("#FFBDBDBD"));
+				}
+				else
+				{
+					paint_preview.setColor(Color.parseColor("#FFFEFC8C"));
+				}
 				paint_preview.setStrokeWidth(dp_to_px(3));
 				preview_canvas.drawPath(path_preview, paint_preview);
 			}
@@ -5088,6 +5157,7 @@ public class NavitGraphics
 				try
 				{
 					strokeTextPaint.setTypeface(Navit.NavitStreetnameFont);
+					strokeTextPaint_nightmode.setTypeface(Navit.NavitStreetnameFont);
 					paint_draw_text.setTypeface(Navit.NavitStreetnameFont);
 					// System.out.println("Calling setTypeface");
 				}
@@ -5102,6 +5172,7 @@ public class NavitGraphics
 			if (paint_draw_text.getTypeface() != null)
 			{
 				strokeTextPaint.setTypeface(null);
+				strokeTextPaint_nightmode.setTypeface(Navit.NavitStreetnameFont);
 				paint_draw_text.setTypeface(null);
 			}
 		}
@@ -5113,10 +5184,12 @@ public class NavitGraphics
 		if (paint_draw_text.getTextSize() < 30)
 		{
 			strokeTextPaint.setStrokeWidth(s_strokTextSize_min);
+			strokeTextPaint_nightmode.setStrokeWidth(s_strokTextSize_min);
 		}
 		else
 		{
 			strokeTextPaint.setStrokeWidth(s_strokTextSize);
+			strokeTextPaint_nightmode.setStrokeWidth(s_strokTextSize);
 		}
 
 		paint_draw_text.setTextAlign(android.graphics.Paint.Align.LEFT);
@@ -5124,7 +5197,15 @@ public class NavitGraphics
 		if (dx == 0x10000 && dy == 0)
 		{
 			strokeTextPaint.setTextSize(paint_draw_text.getTextSize());
-			draw_canvas.drawText(text, x, y, strokeTextPaint);
+			strokeTextPaint_nightmode.setTextSize(paint_draw_text.getTextSize());
+			if (Navit.night_mode)
+			{
+				draw_canvas.drawText(text, x, y, strokeTextPaint_nightmode);
+			}
+			else
+			{
+				draw_canvas.drawText(text, x, y, strokeTextPaint);
+			}
 			draw_canvas.drawText(text, x, y, paint_draw_text);
 		}
 		else
@@ -5134,8 +5215,16 @@ public class NavitGraphics
 			b_paint_path.rLineTo(dx, dy);
 
 			strokeTextPaint.setTextSize(paint_draw_text.getTextSize());
+			strokeTextPaint_nightmode.setTextSize(paint_draw_text.getTextSize());
 			// draw shadow ---
-			draw_canvas.drawTextOnPath(text, b_paint_path, 0, 0, strokeTextPaint);
+			if (Navit.night_mode)
+			{
+				draw_canvas.drawTextOnPath(text, b_paint_path, 0, 0, strokeTextPaint_nightmode);
+			}
+			else
+			{
+				draw_canvas.drawTextOnPath(text, b_paint_path, 0, 0, strokeTextPaint);
+			}
 			// draw shadow ---
 
 			// draw normal text ---
@@ -7031,6 +7120,10 @@ public class NavitGraphics
 			catch (Exception e)
 			{
 			}
+		}
+		else if (id == 32) // return debug text for tests
+		{
+			Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + text + "\n";
 		}
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);

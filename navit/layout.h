@@ -64,6 +64,7 @@ struct element
 			int offset;
 			//unsigned char dash_table[4];
 			short dash_table[4];
+			struct color nightcol;
 		} polyline;
 		struct element_polygon
 		{

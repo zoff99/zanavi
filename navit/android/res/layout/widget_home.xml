@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/icon_widget_home"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         android:src="@drawable/icon" >
@@ -17,10 +17,11 @@
 
     <TextView
         android:id="@+id/text_widget_home"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="1dp"
-        android:text="drive Home"
-        android:textSize="13sp" />
+        android:gravity="center"
+        android:text="Home"
+        android:textSize="14sp" />
 
 </LinearLayout>

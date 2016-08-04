@@ -35,6 +35,10 @@
 ====================================================================
 */
 
+typedef unsigned char uint8_t;
+typedef unsigned int uint32_t;
+
+
 struct __attribute__((__packed__)) zvt_header
 {
 	uint8_t signature[3];
@@ -42,7 +46,7 @@ struct __attribute__((__packed__)) zvt_header
 };
 
 
-struct __attribute__((__packed__)) wkb_header
+struct wkb_header
 {
 	// uint8_t is_little_endian; // 0 or 1
 	uint8_t type;
@@ -60,12 +64,20 @@ struct mapnik_tile
 	int y;
 };
 
+void loop_mapnik_tiles(double lat_lt, double lon_lt, double lat_cn, double lon_cn, double lat_rb, double lon_rb, int mapnik_zoom, const char* basedir, struct displaylist *display_list);
+void get_mapnik_tilenumber(struct mapnik_tile *mt, double lat, double lon, int mapnik_zoom);
+void get_mapniktile_2_geo(int tile_x, int tile_y, int zoom, struct coord_geo *g);
+void draw_water_tile_new(int mapnik_zoom, int tile_x, int tile_y, struct displaylist *display_list);
+
+
 
 /*
 ====================================================================
 */
 
 #ifdef _MVT_LITTLEENDIAN_
+
+#if 0
 uint32_t swap_endian32(uint32_t num)
 {
 	return ((num>>24)&0xff) | // move byte 3 to byte 0
@@ -87,6 +99,8 @@ uint64_t swap_endian64(uint64_t x)
 	 | (((x) & 0x00000000000000ffull) << 56));
 }
 
+#endif
+
 #else
 #define swap_endian32(x) x
 #define swap_endian64(x) x
@@ -101,13 +115,13 @@ uint64_t swap_endian64(uint64_t x)
 const char *wkb_feature_type[] =
 {
 "Geometry", // 0
-"Point",
+"Point", // 1
 "LineString",
 "Polygon", // 3
-"MultiPoint",
+"MultiPoint", // 4
 "MultiLineString",
 "MultiPolygon", // 6
-"GeometryCollection",
+"GeometryCollection", // 7
 "CircularString",
 "CompoundCurve",
 "CurvePolygon", // 10
@@ -152,8 +166,8 @@ void get_mapnik_tilenumber(struct mapnik_tile *mt, double lat, double lon, int m
 void get_mapniktile_2_geo(int tile_x, int tile_y, int zoom, struct coord_geo *g)
 {
 	float n;
-	double lat;
-	double lon;
+	// double lat;
+	// double lon;
 	n = pow(2, zoom);
 	g->lng = tile_x / n * 360.0 - 180.0;
 	g->lat = MVT_RAD_TO_DEG * ( atan( sinh( MVT_M_PI * ( 1 - 2 * tile_y / n ))));
@@ -204,51 +218,65 @@ void draw_water_tile_new(int mapnik_zoom, int tile_x, int tile_y, struct display
 	count = transform(global_navit->trans, projection_mg, c_ring, p_ring, count, 0, 0, NULL);
 	gra->meth.draw_polygon(gra->priv, gra->gc[0]->priv, p_ring, count);
 
+}
 
+
+
+
+
+// vXolatile 
+// __aXttribute__((optimize("O0"))) 
+
+void dummy_sub_against_crash(volatile uint32_t *x, volatile int *a)
+{
+	*a = (int)*x;
 }
 
 
 void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize, int mapnik_zoom, int tile_x, int tile_y, struct displaylist *display_list)
 {
 
-	// dbg(0,"decode_mvt_tile:--ENTER--\n");
+	dbg(0,"decode_mvt_tile:--ENTER--(tilex=%d,tiley=%d)\n", tile_x, tile_y);
 
 	struct wkb_header *buffer_wkb_header = NULL;
-	void *buffer_compressed = NULL;
-	Bytef *buffer_uncpr = NULL;
+	volatile char *buffer_compressed = NULL;
+	volatile char *buffer_uncpr = NULL;
+	// Bytef *buffer_uncpr = NULL;
+
 	uLongf buffer_uncpr_len = -1;
-	unsigned long buffer_uncpr_end = -1;
+	// unsigned long buffer_uncpr_end = -1;
 	int res = -1;
 	uint32_t *feature_count = NULL;
 	// uint32_t *feature_len = NULL;
 	uint32_t numrings = -1;
-	uint32_t numpolys = -1;
-	Bytef *buffer_uncpr_pos = NULL;
-	Bytef *buffer_uncpr_pos_save = NULL;
+	// uint32_t numpolys = -1;
+
+	volatile char *buffer_uncpr_pos = NULL;
+	// void *buffer_uncpr_pos_save = NULL;
+	// Bytef *buffer_uncpr_pos = NULL;
+	// Bytef *buffer_uncpr_pos_save = NULL;
+
 	int i = -1;
 	int j = -1;
 	int k = -1;
 	int l = -1;
 	int num_coords = 0;
 	uint32_t *n = NULL;
-	double lat = 0;
-	uint64_t *lat_p = NULL;
-	double lon = 0;
-	uint64_t *lon_p = NULL;
-	struct wkb_point *point1 = NULL;
-	struct coord point2;
+	// double lat = 0;
+	// uint64_t *lat_p = NULL;
+	// double lon = 0;
+	// uint64_t *lon_p = NULL;
+	volatile struct wkb_point *point1 = NULL;
+	// struct coord point2;
 
-
-	{
-		{
 
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
-			struct point *p_ring = malloc(sizeof(struct point) * 20000); // 20000 points in 1 polygon max ?!
-			struct coord *c_ring = malloc(sizeof(struct coord) * 20000); // 20000 coords in 1 polygon max ?!
-			struct coord *c_temp = c_ring;
-			struct coord_geo g_temp;
+			volatile struct point *p_ring = g_malloc0(sizeof(struct point) * 20000); // 20000 points in 1 polygon max ?!
+			volatile struct coord *c_ring = g_malloc0(sizeof(struct coord) * 20000); // 20000 coords in 1 polygon max ?!
+			volatile struct coord *c_temp = c_ring;
+			// struct coord_geo g_temp;
 			struct graphics *gra = display_list->dc.gra;
 			// struct graphics_gc *gc = display_list->dc.gc;
 			struct color custom_color;
@@ -263,17 +291,26 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
 
-			// dbg(0, "compressed len:%ld\n", (long)compr_tilesize);
+			dbg(0, "compressed len:%ld\n", (long)compr_tilesize);
 			// fprintf(stderr, "0x%08x\n", compr_tilesize);
 
-			buffer_compressed = malloc((size_t)compr_tilesize);
+			buffer_compressed = g_malloc0((size_t)compr_tilesize);
 			fread(buffer_compressed, compr_tilesize, 1, mapfile);
 
 			buffer_uncpr_len = compr_tilesize * 20;
-			buffer_uncpr_end = buffer_uncpr + buffer_uncpr_len;
-			buffer_uncpr = malloc((size_t)buffer_uncpr_len);
+			// buffer_uncpr_end = buffer_uncpr + buffer_uncpr_len;
+			buffer_uncpr = g_malloc0((size_t)buffer_uncpr_len);
 
-			res = uncompress(buffer_uncpr, &buffer_uncpr_len, buffer_compressed, compr_tilesize);
+			// int uncompress(Bytef * dest, uLongf * destLen, const Bytef * source, uLong sourceLen);
+			res = uncompress((Bytef *)buffer_uncpr, &buffer_uncpr_len, (const Bytef *)buffer_compressed, compr_tilesize);
+
+			// use different buffer ----------
+			char *buffer_uncpr_2 = g_malloc0((size_t)buffer_uncpr_len);
+			memcpy(buffer_uncpr_2, buffer_uncpr, (size_t)buffer_uncpr_len);
+			g_free(buffer_uncpr);
+			buffer_uncpr = buffer_uncpr_2;
+			// use different buffer ----------
+
 
 			if (res == Z_BUF_ERROR)
 			{
@@ -293,14 +330,15 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 			}
 			else
 			{
-				// dbg(0, "res=%d\n", res);
+				dbg(0, "res=%d\n", res);
 
-				// dbg(0, "un-compressed len:%ld\n", (long)buffer_uncpr_len);
+				dbg(0, "un-compressed len:%ld\n", (long)buffer_uncpr_len);
 
 				// dbg(0, "001\n");
 				buffer_uncpr_pos = buffer_uncpr;
 				buffer_uncpr_pos = buffer_uncpr_pos + 1; // skip to count
 				// dbg(0, "002\n");
+				// feature_count = (uint32_t *)buffer_uncpr_pos;
 				feature_count = (void *)buffer_uncpr_pos;
 				// dbg(0, "003\n");
 				// ZZZ // *feature_count = swap_endian32(*feature_count);
@@ -309,39 +347,42 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 				// dbg(0, "0x%08x\n", *feature_count);
 				buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
 				// dbg(0, "004\n");
-				// dbg(0, "geometry_count:%d\n", (int)*feature_count);
+				dbg(0, "geometry_count:%d\n", (int)*feature_count);
 				// dbg(0, "005\n");
 				// fprintf(stderr, "sizeof feature_count:%d\n", sizeof(uint32_t));
 
-				int ff_count = (int)*feature_count;
+				int ff_count = (int)(*feature_count);
 
 				// loop through geometries
 				for(i=0;i<ff_count;i++)
 				{
-					// dbg(0, "feature#:%d\n", i);
+					dbg(0, "feature#:%d\n", i);
 
 /*
 					feature_len = (void *)buffer_uncpr_pos;
 					// ZZZ // *feature_len = swap_endian32(*feature_len);
 					fprintf(stderr, "0x%08x\n", *feature_len);
 					buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
-					// dbg(0, "  feature_len:%d\n", (int)*feature_len);
+					dbg(0, "  feature_len:%d\n", (int)*feature_len);
 */
 
 
 					// =======================
-					buffer_uncpr_pos_save = buffer_uncpr_pos; // save position
+					// buffer_uncpr_pos_save = (void *)buffer_uncpr_pos; // save position
 					// =======================
 
 
 					// dbg(0, "006\n");
-					buffer_wkb_header = (void *)buffer_uncpr_pos;
+					buffer_wkb_header = (struct wkb_header *)buffer_uncpr_pos;
 					// dbg(0, "  is_little_endian:%d\n", (int)buffer_wkb_header->is_little_endian);
 					// fprintf(stderr, "  0x%08x\n", (Bytef)buffer_wkb_header->is_little_endian);
 
-					buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_header);
 
-						// dbg(0, "  feature type:%d\n", (int)buffer_wkb_header->type);
+						// dbg(0, "bupp:001:buffer_uncpr_pos=%p so=%d\n", buffer_uncpr_pos, sizeof(struct wkb_header));
+					buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_header);
+						// dbg(0, "bupp:002:buffer_uncpr_pos=%p\n", buffer_uncpr_pos);
+
+						dbg(0, "  feature type:%d\n", (int)buffer_wkb_header->type);
 						// dbg(0, "  feature type:%s\n", wkb_feature_type[(int)buffer_wkb_header->type]);
 
 
@@ -350,12 +391,27 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 							// Polygon --------------------------------------------
 							// Polygon --------------------------------------------
 							// Polygon --------------------------------------------
+							// n = (uint32_t *)buffer_uncpr_pos;
 							n = (void *)buffer_uncpr_pos;
 							numrings = *n;
-							// dbg(0, "  numRings:%d\n", (int)*n);
+
+							// dbg(0, "  xxxxx\n");
+							// dbg(0, "  xxxxx\n");
+
+							dbg(0, "  numRings(1):%d\n", (int)*n);
+
+							// dbg(0, "  xxxxx\n");
+							// dbg(0, "  xxxxx\n");
+							// dbg(0, "  xxxxx\n");
+
+						// dbg(0, "bupp:003a:so=%d\n", sizeof(uint32_t));
+						// dbg(0, "bupp:003b:buffer_uncpr_pos=%p so=%d\n", buffer_uncpr_pos, sizeof(uint32_t));
 							buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+						// dbg(0, "bupp:004:buffer_uncpr_pos=%p\n", buffer_uncpr_pos);
 
 
+
+							// dbg(0, "006aa.001\n");
 
 
 							// -------------- GFX -----------------
@@ -371,6 +427,8 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 
 							custom_color.a = 0xffff;
 
+							// dbg(0, "006aa.002\n");
+
 							// graphics_gc_set_foreground(gra->gc[0], &custom_color);
 							gra->gc[0]->meth.gc_set_foreground(gra->gc[0]->priv, &custom_color);
 							// -------------- GFX -----------------
@@ -378,26 +436,36 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 							// -------------- GFX -----------------
 
 
+							// dbg(0, "006aa.003\n");
 
 							for(k=0;k<numrings;k++)
 							{
 
+								// dbg(0, "006aa.004:%d\n", k);
+
+
+								// n = (uint32_t *)buffer_uncpr_pos;
 								n = (void *)buffer_uncpr_pos;
-								num_coords = (int)*n;
+							// dbg(0, "006aa.005\n");
+								num_coords = (int)(*n);
+							// dbg(0, "006aa.006\n");
 								buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+							// dbg(0, "006aa.007\n");
 
 
 								// -------------- GFX -----------------
 								// -------------- GFX -----------------
 								// -------------- GFX -----------------
 								count = 0;
+							// dbg(0, "006aa.008\n");
 								c_temp = c_ring;
+							// dbg(0, "006aa.009\n");
 								// -------------- GFX -----------------
 								// -------------- GFX -----------------
 								// -------------- GFX -----------------
 
 
-								// dbg(0, "  num of coords:%d\n", num_coords);
+								dbg(0, "  num of coords:%d\n", num_coords);
 
 								for(j=0;j<num_coords;j++)
 								{
@@ -454,12 +522,218 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 							// Polygon --------------------------------------------
 							// Polygon --------------------------------------------
 						}
+						else if (buffer_wkb_header->type == 7)
+						{
+							// GeometryCollection ---------------------------------
+							// GeometryCollection ---------------------------------
+							// GeometryCollection ---------------------------------
+
+
+							// inside:
+							//		Point:1 --> *ignore*
+							//		Polygon:3 --> process
+
+							int numgeoms; dummy_sub_against_crash((void *) buffer_uncpr_pos, &numgeoms);
+
+							dbg(0, "  numgeoms:%d\n", numgeoms);
+							buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+
+
+							int ge;
+							for(ge=0;ge<numgeoms;ge++)
+							{
+								dbg(0, "  geom#:%d\n", ge);
+
+								struct wkb_header *buffer_wkb_header = NULL;
+								buffer_wkb_header = (struct wkb_header *)buffer_uncpr_pos;
+								dbg(0, "  geom type:%d\n", (int)buffer_wkb_header->type);
+
+								buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_header);
+
+								if (buffer_wkb_header->type == 3)
+								{
+									// Polygon --------------------------------------------
+									// Polygon --------------------------------------------
+									// Polygon --------------------------------------------
+									// n = (uint32_t *)buffer_uncpr_pos;
+									n = (void *)buffer_uncpr_pos;
+									numrings = *n;
+
+									// dbg(0, "  xxxxx\n");
+									// dbg(0, "  xxxxx\n");
+
+									dbg(0, "  numRings(1):%d\n", (int)*n);
+
+									// dbg(0, "  xxxxx\n");
+									// dbg(0, "  xxxxx\n");
+									// dbg(0, "  xxxxx\n");
+
+								// dbg(0, "bupp:003a:so=%d\n", sizeof(uint32_t));
+								// dbg(0, "bupp:003b:buffer_uncpr_pos=%p so=%d\n", buffer_uncpr_pos, sizeof(uint32_t));
+									buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+								// dbg(0, "bupp:004:buffer_uncpr_pos=%p\n", buffer_uncpr_pos);
+
+
+
+									// dbg(0, "006aa.001\n");
+
+
+									// -------------- GFX -----------------
+									// -------------- GFX -----------------
+									// -------------- GFX -----------------
+									count = 0;
+
+									// water color:	#82c8ea
+									//				130, 200, 234
+									custom_color.r = 130 << 8;
+									custom_color.g = 200 << 8;
+									custom_color.b = 234 << 8;
+
+									custom_color.a = 0xffff;
+
+									// dbg(0, "006aa.002\n");
+
+									// graphics_gc_set_foreground(gra->gc[0], &custom_color);
+									gra->gc[0]->meth.gc_set_foreground(gra->gc[0]->priv, &custom_color);
+									// -------------- GFX -----------------
+									// -------------- GFX -----------------
+									// -------------- GFX -----------------
+
+
+									// dbg(0, "006aa.003\n");
+
+									for(k=0;k<numrings;k++)
+									{
+
+										// dbg(0, "006aa.004:%d\n", k);
+
+
+										// n = (uint32_t *)buffer_uncpr_pos;
+										n = (void *)buffer_uncpr_pos;
+									// dbg(0, "006aa.005\n");
+										num_coords = (int)(*n);
+									// dbg(0, "006aa.006\n");
+										buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+									// dbg(0, "006aa.007\n");
+
+
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+										count = 0;
+									// dbg(0, "006aa.008\n");
+										c_temp = c_ring;
+									// dbg(0, "006aa.009\n");
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+
+
+										dbg(0, "  num of coords:%d\n", num_coords);
+
+										for(j=0;j<num_coords;j++)
+										{
+											// fprintf(stderr, "  size of double:%d\n", sizeof(lat));
+
+											point1 = (void *)buffer_uncpr_pos;
+											c_temp->x = point1->x;
+											c_temp->y = point1->y;
+											// ** // mvt_merc2lonlat(&point2);
+											buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_point);
+
+											// dbg(0, "  lat,lon [%d] %lf %lf\n", j, point2.x, point2.y);
+											//fprintf(stderr, "%016llx\n", (long long unsigned int)point1->x);
+											//mvt_print_binary_64((uint32_t)point1->x);
+											//fprintf(stderr, "%016llx\n", (long long unsigned int)point1->y);
+											//mvt_print_binary_64((uint32_t)point1->y);
+
+											// -------------- GFX -----------------
+											// -------------- GFX -----------------
+											// -------------- GFX -----------------
+											// ** // g_temp.lat = point2.y;
+											// ** // g_temp.lng = point2.x;
+											// ** // transform_from_geo(projection_mg, &g_temp, c_temp);
+											count++;
+											c_temp++;
+											// -------------- GFX -----------------
+											// -------------- GFX -----------------
+											// -------------- GFX -----------------
+
+
+										}
+
+
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+										if (count > 0)
+										{
+											count = transform(global_navit->trans, projection_mg, c_ring, p_ring, count, 0, 0, NULL);
+
+											//Z//graphics_draw_polygon_clipped(gra, display_list->dc.gc, p_ring, count);
+											gra->meth.draw_polygon(gra->priv, gra->gc[0]->priv, p_ring, count);
+											//Z//gra->meth.draw_polygon(gra, display_list->dc.gc, p_ring, count);
+										}
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+										// -------------- GFX -----------------
+
+
+
+									}
+
+									// Polygon --------------------------------------------
+									// Polygon --------------------------------------------
+									// Polygon --------------------------------------------
+								}
+								else if (buffer_wkb_header->type == 1)
+								{
+									// Point -> *ignore* (skip over)
+									buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t); // dummy value
+									buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_point); // coordinate
+								}
+
+							}
+
+							// GeometryCollection ---------------------------------
+							// GeometryCollection ---------------------------------
+							// GeometryCollection ---------------------------------
+						}
+						else if (buffer_wkb_header->type == 4)
+						{
+							// Multipoint -----------------------------------------
+							// Multipoint -----------------------------------------
+							// Multipoint -----------------------------------------
+
+							// *ignore*
+
+							int num_m_points; dummy_sub_against_crash((void *) buffer_uncpr_pos, &num_m_points);
+							dbg(0, "  num_m_points:%d\n", num_m_points);
+							buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+
+							int l1;
+							for(l1=0;l1<num_m_points;l1++)
+							{
+									dbg(0, "  point#:%d\n", l1);
+									buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_point); // coordinate
+							}
+
+							// Multipoint -----------------------------------------
+							// Multipoint -----------------------------------------
+							// Multipoint -----------------------------------------
+						}
 						else if (buffer_wkb_header->type == 6)
 						{
-							// MultiPolygon
-							n = (void *)buffer_uncpr_pos;
-							numpolys = *n;
-							// dbg(0, "  numpolys:%d\n", (int)*n);
+							// MultiPolygon ---------------------------------------
+							// MultiPolygon ---------------------------------------
+							// MultiPolygon ---------------------------------------
+
+							// n = (void *)buffer_uncpr_pos;
+							// numpolys = *n;
+
+							int numpolys; dummy_sub_against_crash((void *) buffer_uncpr_pos, &numpolys);
+
+							dbg(0, "  numpolys:%d\n", numpolys);
 							buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
 
 
@@ -486,9 +760,10 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 							for(l=0;l<numpolys;l++)
 							{
 
-								// dbg(0, "  poly#:%d\n", l);
+								dbg(0, "  poly#:%d\n", l);
 
-								buffer_wkb_header = (void *)buffer_uncpr_pos;
+								// *unused* // buffer_wkb_header = (void *)buffer_uncpr_pos;
+
 								// dbg(0, "  is_little_endian:%d\n", (int)buffer_wkb_header->is_little_endian);
 								// fprintf(stderr, "  0x%08x\n", (Bytef)buffer_wkb_header->is_little_endian);
 
@@ -497,19 +772,32 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 								// Polygon --------------------------------------------
 								// Polygon --------------------------------------------
 								// Polygon --------------------------------------------
-								n = (void *)buffer_uncpr_pos;
-								numrings = *n;
-								// dbg(0, "  numRings:%d\n", (int)*n);
+
+								// uint32_t *n3 = NULL;
+								// n3 = (void *)buffer_uncpr_pos;
+								// numrings = (int) *n3;
+
+								int numrings; dummy_sub_against_crash((void *) buffer_uncpr_pos, &numrings);
+
+								dbg(0, "  numRings(2):%d\n", numrings);
+								// dbg(0, "0077aa.001\n");
 								buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
+								// dbg(0, "0077aa.002 %p\n", buffer_uncpr_pos);
+
+								// dbg(0, "xxaa\n");
 
 								for(k=0;k<numrings;k++)
 								{
+
+								// dbg(0, "0077aa.003 %d\n", k);
 
 									// -------------- GFX -----------------
 									// -------------- GFX -----------------
 									// -------------- GFX -----------------
 									count = 0;
 									c_temp = c_ring;
+
+								// dbg(0, "0077aa.004\n");
 
 									if (k == 0)
 									{
@@ -524,11 +812,22 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 									}
 									else
 									{
-										// bg color:	#fef9ee
-										//				254, 249, 238
-										custom_color.r = 254 << 8;
-										custom_color.g = 249 << 8;
-										custom_color.b = 238 << 8;
+										if (global_night_mode == 1)
+										{
+											// bg color:	#666666
+											//				102, 102, 102
+											custom_color.r = 102 << 8;
+											custom_color.g = 102 << 8;
+											custom_color.b = 102 << 8;
+										}
+										else
+										{
+											// bg color:	#fef9ee
+											//				254, 249, 238
+											custom_color.r = 254 << 8;
+											custom_color.g = 249 << 8;
+											custom_color.b = 238 << 8;
+										}
 
 										// graphics_gc_set_foreground(gra->gc[0], &custom_color);
 										gra->gc[0]->meth.gc_set_foreground(gra->gc[0]->priv, &custom_color);
@@ -538,11 +837,28 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 									// -------------- GFX -----------------
 									// -------------- GFX -----------------
 
-									n = (void *)buffer_uncpr_pos;
-									num_coords = (int)*n;
+								// dbg(0, "0077aa.006 %p\n", buffer_uncpr_pos);
+									// uint32_t *n2 = NULL;
+									// n2 = buffer_uncpr_pos;
+
+// #define X_DEBUG_BUILD_ 222
+
+								// dbg(0, "0077aa.007 %p\n", buffer_uncpr_pos);
+								// dbg(0, "0077aa.007a %d\n", *n2);
+
+
+									int num_coords; dummy_sub_against_crash((void *) buffer_uncpr_pos, &num_coords);
+									// int num_coords = 2;
+
+									// num_coords = (int)*n2;
+
+								// dbg(0, "0077aa.008 num_coords=%d\n", num_coords);
+
 									buffer_uncpr_pos = buffer_uncpr_pos + sizeof(uint32_t);
 
-									// dbg(0, "  num of coords:%d\n", num_coords);
+									// dbg(0, "0077aa.009 %p\n", buffer_uncpr_pos);
+
+									dbg(0, "  num of coords:%d\n", num_coords);
 
 									for(j=0;j<num_coords;j++)
 									{
@@ -553,6 +869,7 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 										c_temp->y = point1->y;
 										// ** // mvt_merc2lonlat(&point2);
 										buffer_uncpr_pos = buffer_uncpr_pos + sizeof(struct wkb_point);
+
 
 										// dbg(0, "  lat,lon [%d] %d %d\n", j, (int)point1->x, (int)point1->y);
 
@@ -597,63 +914,59 @@ void decode_mvt_tile(const char* basedir, FILE *mapfile, uint32_t compr_tilesize
 								// Polygon --------------------------------------------
 
 
-									// dbg(0, "  XX6\n");
+									//dbg(0, "  XX6\n");
 							}
 
-									// dbg(0, "  XX7\n");
+									//dbg(0, "  XX7\n");
+
+							// MultiPolygon ---------------------------------------
+							// MultiPolygon ---------------------------------------
+							// MultiPolygon ---------------------------------------
+
 						}
-									// dbg(0, "  XX8\n");
 
-
-
-					// dbg(0, "  XX8a\n");
+					dbg(0, "  XX8a\n");
 
 					// =======================
 					// buffer_uncpr_pos = buffer_uncpr_pos_save + (long)*feature_len; // use save position as start here
 					// =======================
 
-					// dbg(0, "  XX8b\n");
+					//dbg(0, "  XX8b\n");
 
 				}
 
-									// dbg(0, "  XX9\n");
+				dbg(0, "  XX9\n");
 
 			}
 
-			// dbg(0, "  XX10\n");
+			dbg(0, "  XX10\n");
 
-			free(buffer_compressed);
+			g_free(buffer_compressed);
 			buffer_compressed = NULL;
 
-			// dbg(0, "  XX11\n");
+			dbg(0, "  XX11\n");
 
-			free(buffer_uncpr);
+			g_free(buffer_uncpr);
 			buffer_uncpr = NULL;
 
-			// dbg(0, "  XX12\n");
+			dbg(0, "  XX12\n");
 
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
-			free(p_ring);
-			// dbg(0, "  XX13\n");
-			free(c_ring);
-			// dbg(0, "  XX14\n");
+			g_free(p_ring);
+			//dbg(0, "  XX13\n");
+			g_free(c_ring);
+			//dbg(0, "  XX14\n");
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
 			// -------------- GFX -----------------
 
 			
-		}
-
-			// dbg(0, "  XX15\n");
-
-	}
-
-			// dbg(0, "  XX16\n");
 
 
-	// dbg(0,"decode_mvt_tile:--LEAVE--\n");
+	dbg(0,"decode_mvt_tile:--LEAVE--\n");
+
 
 }
 
@@ -711,11 +1024,9 @@ void loop_mapnik_tiles(double lat_lt, double lon_lt, double lat_cn, double lon_c
 
 			buffer = malloc(sizeof(struct zvt_header));
 			fread(buffer, sizeof(struct zvt_header), 1, mapfile_zvt);
-
 			// buffer2 = buffer;
 			// buffer2[sizeof(struct zvt_header)] = '\0';
 			// dbg(0, "header=%s\n", buffer2);
-
 			free(buffer);
 
 
@@ -734,11 +1045,6 @@ void loop_mapnik_tiles(double lat_lt, double lon_lt, double lat_cn, double lon_c
 				dbg(0, "transform_get_size:%d %d %d %d\n", r->rl.x, r->rl.y, r->lu.x, r->lu.y);
 			}
 		*/
-
-
-
-
-
 
 
 			d_lat = (mnt_lt.y) - (mnt_cn.y);
@@ -865,6 +1171,7 @@ void loop_mapnik_tiles(double lat_lt, double lon_lt, double lat_cn, double lon_c
 	}
 }
 
+/*
 void mvt_print_binary_64(uint64_t n)
 {
 	int c;
@@ -884,6 +1191,7 @@ void mvt_print_binary_64(uint64_t n)
 	}
 	fprintf(stderr, "\n");
 }
+*/
 
 
 /*

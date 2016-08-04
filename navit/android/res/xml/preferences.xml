@@ -233,6 +233,30 @@
             android:summary="always show top status bar"
             android:title="top status bar" />
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="auto_night_mode"
+            android:summary="automatically swtich between day and night mode"
+            android:title="auto night mode" />
+
+        <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="9"
+            android:dialogMessage="1:night mode lux"
+            android:key="night_mode_lux"
+            android:max="160"
+            android:summary="value when night mode is switched on"
+            android:text=""
+            android:title="night mode lux" />
+
+        <fr.atcm.carpooling.views.utils.SeekBarPreference
+            android:defaultValue="19"
+            android:dialogMessage="1:night mode buffer"
+            android:key="night_mode_buffer"
+            android:max="50"
+            android:summary="buffer between night and day mode"
+            android:text=""
+            android:title="buffer night mode" />
+        
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="show_3d_map"
             android:summary="show map in 3D [BETA]"

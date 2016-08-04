@@ -8,6 +8,12 @@ machine:
     Zsdpath: "/sdcard"
     sdpath: "/storage/sdcard"
     Xsdpath: "/mnt/sdcard"
+###############################
+#   0 -> no
+#   1 -> C
+#   2 -> Java
+    COVERITY_BUILD_: 0
+###############################
 dependencies:
   cache_directories:
     - ~/.android
@@ -43,7 +49,16 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-addon-google_apis-google-23
     - echo y | android update sdk --no-ui --all --filter addon-google_apis-google-23
 
-    - bash ~/zanavi/ci/do_android.sh
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then mkdir ~/cov_scan/ && wget https://scan.coverity.com/download/linux-64 --post-data "token=$COVERITY_TOKEN&project=zoff99%2Fzanavi" -O ~/cov_scan/coverity_tool.tgz && wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz && cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz ; fi
+
+    - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
+
+    - ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so ; exit 0
+    - ls -al /home/ubuntu/android-build/navit/.libs/navit2 ; exit 0
+    - ls -al /home/ubuntu/android-build/navit/navit2 ; exit 0
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then ls -al /home/ubuntu/android-build/cov-int/ ; exit 0 ; fi
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then cp -v /home/ubuntu/android-build/cov-int/build-log.txt $CIRCLE_ARTIFACTS/ ; fi
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then cd /home/ubuntu/android-build/ ; tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz cov-int ; fi
 
     - ls -al ~/maps/ ; exit 0
     - mkdir -p ~/maps/ ; exit 0
@@ -496,5 +511,6 @@ test:
     #- sleep 10
     #- ps -fu ubuntu
     # ------ kill ----------------
+
 
 

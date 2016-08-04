@@ -181,6 +181,8 @@ extern int global_enhance_cycleway;
 extern int global_tracking_show_real_gps_pos;
 extern int global_show_maps_debug_view;
 extern int global_cancel_preview_map_drawing;
+extern int global_night_mode;
+extern int global_test_number;
 
 
 #define MAX_DEBUG_COORDS 100

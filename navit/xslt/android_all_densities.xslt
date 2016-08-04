@@ -714,23 +714,23 @@
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="13-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="17"/>
-					<polyline color="#ffffff" width="13"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="13"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="18"/>
-					<polyline color="#ffffff" width="14"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="14"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="30"/>
-					<polyline color="#ffffff" width="26"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="26"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="67"/>
-					<polyline color="#ffffff" width="61"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="61"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="132"/>
-					<polyline color="#ffffff" width="126"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="126"/>
 				</itemgra>
 
 
@@ -740,23 +740,23 @@
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="13-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="13"/>
-					<polyline color="#fefc8c" width="11"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="11"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="19"/>
-					<polyline color="#fefc8c" width="15"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="15"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="30"/>
-					<polyline color="#fefc8c" width="26"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="26"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="63"/>
-					<polyline color="#fefc8c" width="57"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="57"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="100"/>
-					<polyline color="#fefc8c" width="90"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="90"/>
 				</itemgra>
 
 				<xsl:text>&#x0A;        </xsl:text>
@@ -1129,23 +1129,23 @@
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="13-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="17"/>
-					<polyline color="#ffffff" width="13"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="13"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="18"/>
-					<polyline color="#ffffff" width="14"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="14"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="30"/>
-					<polyline color="#ffffff" width="26"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="26"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="67"/>
-					<polyline color="#ffffff" width="61"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="61"/>
 				</itemgra>
 				<itemgra item_types="street_0,street_1_city,street_1_land" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#d2d2d2" width="132"/>
-					<polyline color="#ffffff" width="126"/>
+					<polyline color="#ffffff" nightcol="#bdbdbd" width="126"/>
 				</itemgra>
 
 
@@ -1155,23 +1155,23 @@
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="13-{round(14-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="13"/>
-					<polyline color="#fefc8c" width="11"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="11"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(15-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="19"/>
-					<polyline color="#fefc8c" width="15"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="15"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(16-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="30"/>
-					<polyline color="#fefc8c" width="26"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="26"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(17-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="63"/>
-					<polyline color="#fefc8c" width="57"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="57"/>
 				</itemgra>
 				<itemgra item_types="street_2_city,ramp_street_2_city,street_2_land,ramp" order="{round(18-number($LAYOUT_001_ORDER_DELTA_1))}">
 					<polyline color="#c0c0c0" width="100"/>
-					<polyline color="#fefc8c" width="90"/>
+					<polyline color="#fefc8c" nightcol="#bdbdbd" width="90"/>
 				</itemgra>
 
 				<xsl:text>&#x0A;        </xsl:text>

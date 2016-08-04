@@ -189,7 +189,7 @@ import de.oberoner.gpx2navit_txt.MainFrame;
 
 public class Navit extends ActionBarActivity implements Handler.Callback, SensorEventListener
 {
-	public static final String VERSION_TEXT_LONG_INC_REV = "3891";
+	public static final String VERSION_TEXT_LONG_INC_REV = "3981";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
 	public static String NavitAppVersion_string = "0";
@@ -228,7 +228,8 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	static final boolean DEBUG_DRAW_VEHICLE = true; // if "false" then dont draw green vehicle, set this to "true" on release builds!!
 	static final boolean NAVIT_ALWAYS_UNPACK_XMLFILE = false; // always unpacks the navit.xml file, set this to "false" on release builds!!
 	static final boolean NAVIT_DEBUG_TEXT_VIEW = false; // show overlay with debug messages, set this to "false" on release builds!!
-	static final boolean GFX_OVERSPILL = true; // make gfx canvas bigger for rotation and zoom smoothness
+	static final boolean GFX_OVERSPILL = true; // make gfx canvas bigger for rotation and zoom smoothness, set this to "true" on release builds!!
+	static final boolean DEBUG_LUX_VALUE = false; // show lux values, set to "false" on release builds!!
 	// ----------------- DEBUG ----------------
 	// ----------------- DEBUG ----------------
 	// ----------------- DEBUG ----------------
@@ -238,6 +239,8 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	static final boolean FDBL = false;
 	static final int CIDEBUG = 0;
 	static boolean CIRUN = false;
+	static int CI_TEST_CASE_NUM = -1;
+	static String CI_TEST_CASE_TEXT = "";
 	// ----------------------------------------
 	// ----------------------------------------
 
@@ -607,6 +610,12 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 	static Typeface NavitStreetnameFont = null;
 
 	public SensorManager sensorManager = null;
+	public static float lightsensor_max_value = -1;
+	// static final float lux_darkness_value = 4;
+	Sensor lightSensor = null;
+	SensorEventListener lightSensorEventListener = null;
+	public static boolean night_mode = false;
+	public static float debug_cur_lux_value = -1;
 	//private static SensorManager sensorManager_ = null;
 
 	public static Context getBaseContext_ = null;
@@ -1555,7 +1564,6 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 
 		// ---------- downloader threads ----------------
-		NavitMapDownloader.MULTI_NUM_THREADS = 1;
 		PackageInfo pkgInfo;
 		Navit_DonateVersion_Installed = false;
 		try
@@ -1957,6 +1965,91 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		//		}
 		//sensorManager_ = sensorManager;
 
+		// light sensor -------------------
+		try
+		{
+			lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+			lightsensor_max_value = lightSensor.getMaximumRange();
+			lightSensorEventListener = new SensorEventListener()
+			{
+				@Override
+				public void onAccuracyChanged(Sensor sensor, int accuracy)
+				{
+				}
+
+				@Override
+				public void onSensorChanged(SensorEvent event)
+				{
+					try
+					{
+						if (p.PREF_auto_night_mode)
+						{
+							if (event.sensor.getType() == Sensor.TYPE_LIGHT)
+							{
+
+								if (Navit.DEBUG_LUX_VALUE)
+								{
+									debug_cur_lux_value = event.values[0];
+									NavitGraphics.NavitAOverlay_s.postInvalidate();
+								}
+
+								// System.out.println("Current Reading(Lux): cur=" + event.values[0] + " max=" + lightsensor_max_value);
+
+								if (night_mode == false)
+								{
+									if (event.values[0] < p.PREF_night_mode_lux)
+									{
+										night_mode = true;
+										set_night_mode(1);
+										draw_map();
+									}
+								}
+								else if (night_mode == true)
+								{
+									if (event.values[0] > (p.PREF_night_mode_lux + p.PREF_night_mode_buffer))
+									{
+										night_mode = false;
+										set_night_mode(0);
+										draw_map();
+									}
+								}
+							}
+						}
+						else
+						{
+							try
+							{
+								sensorManager.unregisterListener(lightSensorEventListener);
+								System.out.println("stop lightsensor");
+							}
+							catch (Exception e)
+							{
+							}
+
+							try
+							{
+								night_mode = false;
+								set_night_mode(0);
+								draw_map();
+							}
+							catch (Exception e)
+							{
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						// e.printStackTrace();
+					}
+				}
+
+			};
+		}
+		catch (Exception e)
+		{
+		}
+		// light sensor -------------------
+
 		generic_alert_box = new AlertDialog.Builder(this);
 		/*
 		 * show info box for first time users
@@ -2135,17 +2228,22 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 				TextView tv_i1 = (TextView) dialog_info_popup.findViewById(R.id.text_i1);
 				final String ZANAVI_MSG_PLUGIN_MARKET_LINK = "https://play.google.com/store/apps/details?id=com.zoffcc.applications.zanavi_msg";
-				final String ZANAVI_UDONATE_LINK = "http://more.zanavi.cc/donate/";
+				final String ZANAVI_MSG_PLUGIN_FD_LINK = "https://static.zanavi.cc/app/zanavi_plugin_latest.apk";
+
+				// final String ZANAVI_UDONATE_LINK = "http://more.zanavi.cc/donate/";
 				final String ZANAVI_HOWTO_DEBUG_LINK = "http://static.zanavi.cc/be-a-testdriver/be-a-testdriver.html";
 				final String ZANAVI_HOWTO_UDONTATE_FREE_LINK = "http://static.zanavi.cc/activate-udonate/activate-udonate.html";
 
 				if (FDBL)
 				{
-					tv_i1.setText(Html.fromHtml("\n<br>Help us to improve ZANavi, be a Testdriver and send in your route debug information.<br>\n<a href=\"" + ZANAVI_HOWTO_DEBUG_LINK + "\">HowTo be a Testdriver</a><br>\n<br>\n" + "And get the uDonate Version for free.<br>\n<a href=\"" + ZANAVI_HOWTO_UDONTATE_FREE_LINK + "\">get free uDonate version</a>\n" + "\n<br>\n<br>"));
+					tv_i1.setText(Html.fromHtml("\n<br>Help us to improve ZANavi, be a Testdriver and send in your route debug information.<br>\n<a href=\"" + ZANAVI_HOWTO_DEBUG_LINK + "\">HowTo be a Testdriver</a><br>\n<br>\n" + "And get the uDonate Version for free.<br>\n<a href=\"" + ZANAVI_HOWTO_UDONTATE_FREE_LINK + "\">get free uDonate version</a>\n" + "\n<br>\n<br>" + "Install the ZANavi Plugin and always know when updated maps are available.<br>\n<a href=\"" + ZANAVI_MSG_PLUGIN_FD_LINK
+							+ "\">download here</a><br>\n"));
 				}
 				else
 				{
-					tv_i1.setText(Html.fromHtml("\n<br>Help us to improve ZANavi, be a Testdriver and send in your route debug information.<br>\n<a href=\"" + ZANAVI_HOWTO_DEBUG_LINK + "\">HowTo be a Testdriver</a><br>\n<br>\n" + "And get the uDonate Version for free.<br>\n<a href=\"" + ZANAVI_HOWTO_UDONTATE_FREE_LINK + "\">get free uDonate version</a>\n" + "\n<br>\n<br>"));
+					tv_i1.setText(Html.fromHtml("\n<br>Help us to improve ZANavi, be a Testdriver and send in your route debug information.<br>\n<a href=\"" + ZANAVI_HOWTO_DEBUG_LINK + "\">HowTo be a Testdriver</a><br>\n<br>\n" + "And get the uDonate Version for free.<br>\n<a href=\"" + ZANAVI_HOWTO_UDONTATE_FREE_LINK + "\">get free uDonate version</a>\n" + "\n<br>\n<br>" + "Install the ZANavi Plugin and always know when updated maps are available.<br>\n<a href=\""
+							+ ZANAVI_MSG_PLUGIN_MARKET_LINK + "\">download here</a><br>\n"));
+
 					// tv_i1.setText(Html.fromHtml("\n<br>Try the Donate Version and help us keep the mapservers running.<br>\nyou will activate the super fast index search.\n" + "<br><a href=\"" + ZANAVI_UDONATE_LINK + "\">get the donate version</a>\n<br>\n<br>"));
 					// tv_i1.setText(Html.fromHtml("\n<br>Try the new Plugin to be notified when there are updates to your downloaded maps.\n" + "<br><a href=\"" + ZANAVI_MSG_PLUGIN_MARKET_LINK + "\">install Plugin</a>\n<br>\n<br>" + "Probier das neue Plugin damit du immer benachrichtigt wirst wenn es Kartenupdates gibt.\n<br>" + "<a href=\"" + ZANAVI_MSG_PLUGIN_MARKET_LINK + "\">Plugin installieren</a>\n<br>"));
 				}
@@ -3213,6 +3311,14 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 		// System.gc();
 		super.onResume();
+
+		try
+		{
+			sensorManager.registerListener(lightSensorEventListener, lightSensor, (int) (8 * 1000000)); // updates approx. every 8 seconds
+		}
+		catch (Exception e)
+		{
+		}
 
 		// get the intent fresh !! ----------
 		startup_intent = this.getIntent();
@@ -4406,6 +4512,14 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		// if COMM stuff is running, stop it!
 		ZANaviDebugReceiver.stop_me = true;
 
+		try
+		{
+			sensorManager.unregisterListener(lightSensorEventListener);
+		}
+		catch (Exception e)
+		{
+		}
+
 		// ---- DEBUG ----
 		// ---- DEBUG ----
 		// ---- DEBUG ----
@@ -5083,16 +5197,29 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			// ------------
 			// ------------
 			// share the current location with your friends
-			location_coords cur_target = null;
+			location_coords cur_target = new location_coords();
 			try
 			{
 				geo_coord tmp = get_current_vehicle_position();
 				cur_target.lat = tmp.Latitude;
 				cur_target.lon = tmp.Longitude;
-				// cur_target = NavitVehicle.get_last_known_pos();
+
+				if ((cur_target.lat == 0.0) && (cur_target.lon == 0.0))
+				{
+					cur_target = NavitVehicle.get_last_known_pos();
+				}
 			}
 			catch (Exception e)
 			{
+				cur_target = null;
+				try
+				{
+					cur_target = NavitVehicle.get_last_known_pos();
+				}
+				catch (Exception e2)
+				{
+					cur_target = null;
+				}
 			}
 
 			if (cur_target == null)
@@ -7736,7 +7863,10 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 							if (l8.type == 1)
 							{
 								Navit.OSD_nextturn.nextturn_streetname_systematic = "";
+								// System.out.println("street name(1)");
 								Navit.OSD_nextturn.nextturn_streetname = NavitGraphics.CallbackGeoCalc(8, l8.b, l8.c);
+								// System.out.println("street name(2):" + Navit.OSD_nextturn.nextturn_streetname);
+
 								if (p.PREF_item_dump)
 								{
 									// -------- DEBUG ------- DEBUG ---------
@@ -9037,6 +9167,18 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				// cancel preview map drawing
 				NavitGraphics.CallbackMessageChannel(113, "x");
 			}
+			else if (msg.getData().getInt("Callback") == 114)
+			{
+				// set night mode 0|1
+				String s = msg.getData().getString("s");
+				NavitGraphics.CallbackMessageChannel(114, s);
+			}
+			else if (msg.getData().getInt("Callback") == 115)
+			{
+				// set debug test number
+				String s = msg.getData().getString("s");
+				NavitGraphics.CallbackMessageChannel(115, s);
+			}
 			else if (msg.getData().getInt("Callback") == 9901)
 			{
 				// if follow mode is on, then dont show freeview streetname
@@ -9095,6 +9237,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 				catch (Exception e)
 				{
 				}
+
 
 				// exit_code=0 -> OK, map was downloaded fine
 				if (msg.getData().getInt("exit_code") == 0)
@@ -10591,6 +10734,8 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		p.PREF_use_agps = prefs.getBoolean("use_agps", true);
 		p.PREF_enable_debug_functions = prefs.getBoolean("enable_debug_functions", false);
 		p.PREF_show_turn_restrictions = prefs.getBoolean("show_turn_restrictions", false);
+		p.PREF_auto_night_mode = prefs.getBoolean("auto_night_mode", true);
+		// System.out.println("night mode=" + p.PREF_auto_night_mode);
 
 		try
 		{
@@ -10653,6 +10798,8 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		p.PREF_road_priority_002 = (prefs.getInt("road_priority_002", (329 - 10)) + 10); // must ADD minimum value!!
 		p.PREF_road_priority_003 = (prefs.getInt("road_priority_003", (5000 - 10)) + 10); // must ADD minimum value!!
 		p.PREF_road_priority_004 = (prefs.getInt("road_priority_004", (5 - 0)) + 0); // must ADD minimum value!!
+		p.PREF_night_mode_lux = (prefs.getInt("night_mode_lux", (10 - 1)) + 1); // must ADD minimum value!!
+		p.PREF_night_mode_buffer = (prefs.getInt("night_mode_buffer", (20 - 1)) + 1); // must ADD minimum value!!
 
 		// p.PREF_road_prio_weight_street_1_city = (prefs.getInt("road_prio_weight_street_1_city", (30 - 10)) + 10); // must ADD minimum value!!
 
@@ -13171,6 +13318,10 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 			Navit_index_on_but_no_idx_files = false;
 			return false;
 		}
+		else
+		{
+			Log.e("Navit", "donate version IS installed");
+		}
 
 		boolean ret = false;
 
@@ -13220,7 +13371,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 									// index for this map is missing. hack MD5 file so we can download it again
 									md5_file = new File(Navit.MAPMD5_FILENAME_PATH + "/" + servername + ".md5");
 
-									// System.out.println("FFNN:hack MD5:" + md5_file.getAbsolutePath() + " s=" + servername);
+									System.out.println("FFNN:hack MD5:" + md5_file.getAbsolutePath() + " s=" + servername);
 
 									if ((md5_file.exists()) && (md5_file.canWrite()))
 									{
@@ -16030,4 +16181,16 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 		}
 	}
 
+	public static void set_night_mode(int i)
+	{
+		try
+		{
+			// i==0 --> day mode
+			// i==1 --> night mode
+			NavitGraphics.CallbackMessageChannelReal(114, "" + i);
+		}
+		catch (Exception e)
+		{
+		}
+	}
 }

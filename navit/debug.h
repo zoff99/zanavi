@@ -155,6 +155,17 @@ extern int debug_level;
 #endif
 
 
+// #define _CIDEBUG_BUILD_ 1
+
+
+#ifdef _CIDEBUG_BUILD_
+#define tests_dbg(level,...) debug_for_tests_printf(level,__VA_ARGS__);
+#else
+#define tests_dbg(level,...) #level
+#endif
+
+
+
 
 //#ifdef DEBUG_MALLOC
 // ----------------
@@ -189,6 +200,8 @@ int debug_level_get(const char *name);
 void debug_vprintf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap);
 void debug_vprintf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap);
 void debug_printf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...);
+void debug_for_tests_vprintf(int level, const char *fmt, va_list ap);
+void debug_for_tests_printf(int level, const char *fmt, ...);
 void debug_printf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...);
 void debug_assert_fail(const char *module, const int mlen, const char *function, const int flen, const char *file, int line, const char *expr);
 void debug_destroy(void);
@@ -347,4 +360,5 @@ gint g_vasprintf_custom(gchar **string, gchar const *format, va_list args);
 #endif
 
 #endif
+
 

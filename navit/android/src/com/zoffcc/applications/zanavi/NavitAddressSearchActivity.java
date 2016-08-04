@@ -665,6 +665,7 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 
 		// full file checkbox
 		ff_checkbox = (CheckBox) findViewById(R.id.cb_full_file);
+
 		if (!Navit.use_index_search)
 		{
 			ff_checkbox.setText(Navit.get_text("search full mapfile [BETA]")); //TRANS
@@ -771,6 +772,47 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 		if (Navit.use_index_search)
 		{
 
+			// hide duplicates
+			hdup_checkbox.setOnClickListener(new OnClickListener()
+			{
+
+				@Override
+				public void onClick(View v)
+				{
+					if (((CheckBox) v).isChecked())
+					{
+						Navit.search_hide_duplicates = true;
+					}
+					else
+					{
+						Navit.search_hide_duplicates = false;
+					}
+
+					// checkbox has changed state
+					try
+					{
+						if (searchresultsThreadNew_offline == null)
+						{
+							Log.e("Navit", "SearchResults NEW:001:HN");
+
+							searchresultsThreadNew_offline = new SearchResultsThreadNew();
+							searchresultsThreadNew_offline.start();
+						}
+						else
+						{
+							Log.e("Navit", "SearchResults NEW:002:HN");
+
+							searchresultsThreadNew_offline.change_search();
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+
+				}
+			});
+
 			// house number string
 			try
 			{
@@ -791,20 +833,27 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 					public void afterTextChanged(Editable arg0)
 					{
 						// address text has changed
-						if (searchresultsThreadNew_offline == null)
+						try
 						{
-							Log.e("Navit", "SearchResults NEW:001:HN");
+							if (searchresultsThreadNew_offline == null)
+							{
+								Log.e("Navit", "SearchResults NEW:001:HN");
 
-							searchresultsThreadNew_offline = new SearchResultsThreadNew();
-							Navit.Navit_last_address_hn_string = arg0.toString();
-							searchresultsThreadNew_offline.start();
+								searchresultsThreadNew_offline = new SearchResultsThreadNew();
+								Navit.Navit_last_address_hn_string = arg0.toString();
+								searchresultsThreadNew_offline.start();
+							}
+							else
+							{
+								Log.e("Navit", "SearchResults NEW:002:HN");
+
+								searchresultsThreadNew_offline.set_search_strings(Navit.Navit_last_address_search_string, arg0.toString());
+								searchresultsThreadNew_offline.change_search();
+							}
 						}
-						else
+						catch (Exception e)
 						{
-							Log.e("Navit", "SearchResults NEW:002:HN");
-
-							searchresultsThreadNew_offline.set_search_strings(Navit.Navit_last_address_search_string, arg0.toString());
-							searchresultsThreadNew_offline.change_search();
+							e.printStackTrace();
 						}
 					}
 
@@ -867,32 +916,39 @@ public class NavitAddressSearchActivity extends ActionBarActivity
 				@Override
 				public void afterTextChanged(Editable arg0)
 				{
-					if (arg0.length() > 2)
+					try
 					{
-						// address text has changed
-						if (searchresultsThreadNew_offline == null)
+						if (arg0.length() > 2)
 						{
-							Log.e("Navit", "SearchResults NEW:001");
+							// address text has changed
+							if (searchresultsThreadNew_offline == null)
+							{
+								Log.e("Navit", "SearchResults NEW:001");
 
-							searchresultsThreadNew_offline = new SearchResultsThreadNew();
-							Navit.Navit_last_address_search_string = arg0.toString();
-							searchresultsThreadNew_offline.start();
+								searchresultsThreadNew_offline = new SearchResultsThreadNew();
+								Navit.Navit_last_address_search_string = arg0.toString();
+								searchresultsThreadNew_offline.start();
+							}
+							else
+							{
+								Log.e("Navit", "SearchResults NEW:002");
+
+								searchresultsThreadNew_offline.set_search_strings(arg0.toString(), Navit.Navit_last_address_hn_string);
+								searchresultsThreadNew_offline.change_search();
+							}
 						}
 						else
 						{
-							Log.e("Navit", "SearchResults NEW:002");
-
-							searchresultsThreadNew_offline.set_search_strings(arg0.toString(), Navit.Navit_last_address_hn_string);
-							searchresultsThreadNew_offline.change_search();
+							if (searchresultsThreadNew_offline != null)
+							{
+								Log.e("Navit", "SearchResults NEW:003");
+								searchresultsThreadNew_offline.cancel_search();
+							}
 						}
 					}
-					else
+					catch (Exception e)
 					{
-						if (searchresultsThreadNew_offline != null)
-						{
-							Log.e("Navit", "SearchResults NEW:003");
-							searchresultsThreadNew_offline.cancel_search();
-						}
+						e.printStackTrace();
 					}
 				}
 

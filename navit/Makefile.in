@@ -43,6 +43,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 @PLUGINS_FALSE@am__append_3 = .
 @MAPTOOL_TRUE@am__append_4 = maptool
 @BUILD_SAMPLEMAP_TRUE@am__append_5 = maps
+@BIN_NAVIT_FALSE@bin_PROGRAMS = navit2$(EXEEXT)
 @BIN_NAVIT_TRUE@bin_PROGRAMS = navit$(EXEEXT)
 @SUPPORT_WIN32CE_TRUE@am__append_6 = -Lsupport/libc -lsupport_libc
 @SUPPORT_ANDROID_TRUE@am__append_7 =  \
@@ -178,6 +179,10 @@ navit_OBJECTS = $(am_navit_OBJECTS)
 navit_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(navit_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__navit2_SOURCES_DIST = navit2.c
+@SUPPORT_ANDROID_TRUE@am_navit2_OBJECTS = navit2.$(OBJEXT)
+navit2_OBJECTS = $(am_navit2_OBJECTS)
+@SUPPORT_ANDROID_TRUE@navit2_DEPENDENCIES = lib@LIBNAVIT@.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -191,9 +196,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(lib@LIBNAVIT@_la_SOURCES) $(navit_SOURCES)
+SOURCES = $(lib@LIBNAVIT@_la_SOURCES) $(navit_SOURCES) \
+	$(navit2_SOURCES)
 DIST_SOURCES = $(am__lib@LIBNAVIT@_la_SOURCES_DIST) \
-	$(am__navit_SOURCES_DIST)
+	$(am__navit_SOURCES_DIST) $(am__navit2_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -553,6 +559,12 @@ lib@LIBNAVIT@_la_SOURCES = announcement.c atom.c attr.c cache.c \
 # v_name = "1.0.0-"$$(LANG=C svnversion $(top_srcdir) 2> /dev/null|tr -d ":A-Z" 2> /dev/null)
 @SUPPORT_ANDROID_TRUE@v_name = $$(cat $(srcdir)/android/Android_Market_Version_int.txt|grep v_name|cut -d ":" -f 2)
 @SUPPORT_ANDROID_TRUE@b_arch = $(shell if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86"; elif [ "$(DO_ARMV7_BUILD)" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
+@SUPPORT_ANDROID_TRUE@navit2_SOURCES = navit2.c
+@SUPPORT_ANDROID_TRUE@navit2_LDADD = lib@LIBNAVIT@.la @NAVIT_LIBS@ \
+@SUPPORT_ANDROID_TRUE@	@WORDEXP_LIBS@ @ZLIB_LIBS@ @CRYPTO_LIBS@ \
+@SUPPORT_ANDROID_TRUE@	@INTLLIBS@ $(am__empty)
+@SUPPORT_ANDROID_TRUE@navit2_LDFLAGS = -static -lc
+@SUPPORT_ANDROID_TRUE@navit2_LINK = $(LIBTOOL) --tag=CC --mode=link $(CC) -o navit2 -lc --sysroot=$(NDK)/platforms/android-$(AND_API_LEVEL_C)/arch-arm
 navit_LDFLAGS = -export-dynamic
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -677,6 +689,9 @@ clean-binPROGRAMS:
 navit$(EXEEXT): $(navit_OBJECTS) $(navit_DEPENDENCIES) 
 	@rm -f navit$(EXEEXT)
 	$(navit_LINK) $(navit_OBJECTS) $(navit_LDADD) $(LIBS)
+navit2$(EXEEXT): $(navit2_OBJECTS) $(navit2_DEPENDENCIES) 
+	@rm -f navit2$(EXEEXT)
+	$(navit2_LINK) $(navit2_OBJECTS) $(navit2_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -721,6 +736,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/miniz.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navigation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navit2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osd_core.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/param.Plo@am__quote@

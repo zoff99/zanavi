@@ -65,6 +65,10 @@ static gchar *gdb_program;
 
 static FILE *debug_fp;
 
+// func def ------ this is bad!!
+void android_send_generic_text(int id, char *text);
+// func def ------ this is bad!!
+
 #if defined(_WIN32) || defined(__CEGCC__)
 
 static void sigsegv(int sig)
@@ -365,6 +369,31 @@ void debug_vprintf_func(int level, int indent, const char *module, const int mle
 }
 
 
+void debug_for_tests_vprintf(int level, const char *fmt, va_list ap)
+{
+#ifdef _CIDEBUG_BUILD_
+#ifdef HAVE_API_ANDROID
+	char *xbuffer = g_malloc(40960);
+	xbuffer[0] = '\0';
+	vsprintf(xbuffer, fmt, ap);
+	android_send_generic_text(32, xbuffer);
+	g_free(xbuffer);
+#endif
+#endif
+}
+
+
+void debug_for_tests_printf(int level, const char *fmt, ...)
+{
+#ifdef _CIDEBUG_BUILD_
+#ifdef HAVE_API_ANDROID
+	va_list ap;
+	va_start(ap, fmt);
+	debug_for_tests_vprintf(level, fmt, ap);
+	va_end(ap);
+#endif
+#endif
+}
 
 void debug_printf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...)
 {
@@ -604,4 +633,5 @@ void debug_finished(void)
 	g_hash_table_destroy(debug_hash);
 	debug_destroy();
 }
+
 

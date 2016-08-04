@@ -102,8 +102,8 @@ public class NavitMapDownloader
 	// ------- DEBUG DEBUG SETTINGS --------
 	// ------- DEBUG DEBUG SETTINGS --------
 
-	static int MULTI_NUM_THREADS_MAX = 4;
-	static int MULTI_NUM_THREADS = 1; // how many download streams for a file
+	static int MULTI_NUM_THREADS_MAX = 5;
+	static int MULTI_NUM_THREADS = 2; // how many download streams for a file
 	static int MULTI_NUM_THREADS_LOCAL = 1; // how many download streams for the current file from the current server
 
 	public static class zanavi_osm_map_values
@@ -1179,28 +1179,35 @@ public class NavitMapDownloader
 
 	public static void init_cat_file()
 	{
+		Log.v("NavitMapDownloader", "init_cat_file");
+
 		// read the file from sdcard
 		read_cat_file();
 		// make a copy
 		List<String> temp_list = new ArrayList<String>();
 		temp_list.clear();
 		Iterator<String> k = map_catalogue.listIterator();
+
 		while (k.hasNext())
 		{
 			temp_list.add(k.next());
 		}
+
 		int temp_list_prev_size = temp_list.size();
 		Boolean[] bits = new Boolean[temp_list_prev_size];
+
 		for (int h = 0; h < temp_list_prev_size; h++)
 		{
 			bits[h] = false;
 		}
+
 		// compare it with directory contents
 		File map_dir = new File(Navit.MAP_FILENAME_PATH);
 		File map_file_absolute_path = null;
 		String dateInUTC = "";
 		SimpleDateFormat lv_formatter = new SimpleDateFormat("yyyyMMddHHmm", Locale.US);
 		lv_formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
 		if (map_dir.isDirectory())
 		{
 			String[] files_in_mapdir = map_dir.list();
@@ -1226,6 +1233,7 @@ public class NavitMapDownloader
 									Boolean found_in_maplist = false;
 									Iterator<String> j = temp_list.listIterator();
 									int t = 0;
+
 									while (j.hasNext())
 									{
 										String st = j.next();
@@ -1257,6 +1265,11 @@ public class NavitMapDownloader
 											System.out.println("adding to maplist: " + files_in_mapdir[i] + ":" + "borders.bin");
 											temp_list.add(files_in_mapdir[i] + ":" + "borders.bin");
 										}
+										else if (files_in_mapdir[i].equals("coastline.bin"))
+										{
+											System.out.println("adding to maplist: " + files_in_mapdir[i] + ":" + "coastline.bin");
+											temp_list.add(files_in_mapdir[i] + ":" + "coastline.bin");
+										}
 										else
 										{
 											System.out.println("adding to maplist: " + files_in_mapdir[i] + ":" + MAP_URL_NAME_UNKNOWN);
@@ -1270,6 +1283,7 @@ public class NavitMapDownloader
 				}
 			}
 		}
+
 		// check for all maps that are in the maplist, but are missing from sdcard
 		// use prev size, because values have been added to the end of the list!!
 		for (int h = 0; h < temp_list_prev_size; h++)
@@ -1287,13 +1301,16 @@ public class NavitMapDownloader
 				}
 			}
 		}
+
 		// use the corrected copy
 		map_catalogue.clear();
 		Iterator<String> m = temp_list.listIterator();
+
 		while (m.hasNext())
 		{
 			map_catalogue.add(m.next());
 		}
+
 		// write the corrected file back to sdcard
 		write_cat_file();
 	}
@@ -1318,6 +1335,8 @@ public class NavitMapDownloader
 
 	public static void init_cat_file_maps_timestamps()
 	{
+		Log.v("NavitMapDownloader", "init_cat_file_maps_timestamps");
+
 		map_catalogue_date.clear();
 		// make a copy of current map_catalogue
 		List<String> temp_list = new ArrayList<String>();
@@ -1399,6 +1418,8 @@ public class NavitMapDownloader
 
 	public static void read_cat_file()
 	{
+		Log.v("NavitMapDownloader", "read_cat_file");
+
 		//Get the text file
 		File file = new File(Navit.CFG_FILENAME_PATH + CAT_FILE);
 
@@ -1417,6 +1438,14 @@ public class NavitMapDownloader
 				{
 					if (line != null)
 					{
+						if (line.startsWith("coastline.bin:"))
+						{
+							line="coastline.bin:coastline.bin";
+						}
+						else if (line.startsWith("borders.bin:"))
+						{
+							line="borders.bin:borders.bin";							
+						}
 						map_catalogue.add(line);
 						System.out.println("line=" + line);
 					}
@@ -1438,6 +1467,8 @@ public class NavitMapDownloader
 	@SuppressLint("NewApi")
 	public static void write_cat_file()
 	{
+		Log.v("NavitMapDownloader", "write_cat_file");
+
 		//Get the text file
 		File file = new File(Navit.CFG_FILENAME_PATH + CAT_FILE);
 		FileOutputStream fOut = null;
@@ -1506,6 +1537,8 @@ public class NavitMapDownloader
 
 	public static void add_to_cat_file(String disk_name, String server_name)
 	{
+		Log.v("NavitMapDownloader", "add_to_cat_file");
+
 		System.out.println("adding: " + disk_name + ":" + server_name);
 		map_catalogue.add(disk_name + ":" + server_name);
 		write_cat_file();
@@ -1573,6 +1606,8 @@ public class NavitMapDownloader
 
 	public static String is_in_cat_file_disk_name(String name)
 	{
+		Log.v("NavitMapDownloader", "is_in_cat_file_disk_name");
+
 		String is_here = null;
 		Iterator<String> i = map_catalogue.listIterator();
 		while (i.hasNext())
@@ -1590,6 +1625,8 @@ public class NavitMapDownloader
 
 	public static String is_in_cat_file_server_name(String name)
 	{
+		Log.v("NavitMapDownloader", "is_in_cat_file_server_name");
+
 		String is_here = null;
 		Iterator<String> i = map_catalogue.listIterator();
 		while (i.hasNext())
@@ -1803,11 +1840,13 @@ public class NavitMapDownloader
 
 					for (int j = 0; j < z_OSM_MAPS.length; j++)
 					{
+						// Log.v("NavitMapDownloader", "u=" + z_OSM_MAPS[j].url + " m=" + z_OSM_MAPS[j].url + " t=" + t + " st=" + st);
 						if (z_OSM_MAPS[j].url.equals(t))
 						{
 							OSM_MAP_NAME_LIST_ondisk[c] = z_OSM_MAPS[j].map_name;
 						}
 					}
+
 					if (OSM_MAP_NAME_LIST_ondisk[c] == null)
 					{
 						// for unkown maps
@@ -2400,7 +2439,10 @@ public class NavitMapDownloader
 			if ((Navit.Navit_DonateVersion_Installed) || (Navit.Navit_Largemap_DonateVersion_Installed))
 			{
 				index_file_download = true;
+				Log.d("NavitMapDownloader", "index_file_download(a)=" + index_file_download);
 			}
+
+			Log.d("NavitMapDownloader", "index_file_download(2)=" + index_file_download);
 
 			if (index_file_download == true)
 			{
@@ -3209,9 +3251,11 @@ public class NavitMapDownloader
 	{
 		String md5sum = null;
 		final int sleep_millis = 0;
-		final int sleep_millis_long = 60;
+		final int sleep_millis_long = 0; // 60;
 		final int looper_mod = 100;
 		int looper_count = 0;
+		int old_percent_ = -1;
+		int percent_ = -2;
 
 		if (size > MAX_SINGLE_BINFILE_SIZE)
 		{
@@ -3272,6 +3316,9 @@ public class NavitMapDownloader
 
 					if (!no_more_parts)
 					{
+						old_percent_ = -1;
+						percent_ = -2;
+
 						byte[] buffer = new byte[1024 * MD5_CALC_BUFFER_KB];
 						int numRead = 0;
 						do
@@ -3316,33 +3363,41 @@ public class NavitMapDownloader
 								cur_pos = cur_pos + numRead;
 							}
 
-							msg = handler.obtainMessage();
-							b = new Bundle();
-							msg.what = 1;
-							b.putInt("max", size2);
-							b.putInt("cur", (int) (cur_pos / 1000));
-							b.putInt("dialog_num", my_dialog_num);
-							b.putString("title", Navit.get_text("Mapdownload")); //TRANS
-							b.putString("text", Navit.get_text("generating MD5 checksum")); //TRANS
-							msg.setData(b);
-							handler.sendMessage(msg);
+							// do not update notification too often
+							old_percent_ = percent_;
+							percent_ = calc_percent((int) (cur_pos / 1000), size2);
 
-							try
+							if (percent_ != old_percent_)
 							{
-								ZANaviMapDownloaderService.set_noti_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
-								ZANaviMapDownloaderService.set_large_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+								msg = handler.obtainMessage();
+								b = new Bundle();
+								msg.what = 1;
+								b.putInt("max", size2);
+								b.putInt("cur", (int) (cur_pos / 1000));
+								b.putInt("dialog_num", my_dialog_num);
+								b.putString("title", Navit.get_text("Mapdownload")); //TRANS
+								b.putString("text", Navit.get_text("generating MD5 checksum")); //TRANS
+								msg.setData(b);
+								handler.sendMessage(msg);
 
-								// update progressbar
-								Message msg_prog = new Message();
-								Bundle b_prog = new Bundle();
-								b_prog.putInt("pg", calc_percent((int) (cur_pos / 1000), size2));
-								msg_prog.what = 2;
-								msg_prog.setData(b_prog);
-								ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
+								try
+								{
+									ZANaviMapDownloaderService.set_noti_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+									ZANaviMapDownloaderService.set_large_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+
+									// update progressbar
+									Message msg_prog = new Message();
+									Bundle b_prog = new Bundle();
+									b_prog.putInt("pg", calc_percent((int) (cur_pos / 1000), size2));
+									msg_prog.what = 2;
+									msg_prog.setData(b_prog);
+									ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+								}
+								catch (Exception e)
+								{
+									e.printStackTrace();
+								}
+
 							}
 
 						}
@@ -3487,6 +3542,9 @@ public class NavitMapDownloader
 				e.printStackTrace();
 			}
 
+			old_percent_ = -1;
+			percent_ = -2;
+
 			byte[] buffer = new byte[1024 * MD5_CALC_BUFFER_KB];
 			int numRead = 0;
 			do
@@ -3531,34 +3589,41 @@ public class NavitMapDownloader
 					cur_pos = cur_pos + numRead;
 				}
 
-				msg = handler.obtainMessage();
-				b = new Bundle();
-				msg.what = 1;
-				b.putInt("max", size2);
-				b.putInt("cur", (int) (cur_pos / 1000));
-				b.putInt("dialog_num", my_dialog_num);
-				b.putString("title", Navit.get_text("Mapdownload")); //TRANS
-				b.putString("text", Navit.get_text("generating MD5 checksum")); //TRANS
-				msg.setData(b);
-				handler.sendMessage(msg);
+				// do not update notification too often
+				old_percent_ = percent_;
+				percent_ = calc_percent((int) (cur_pos / 1000), size2);
 
-				try
+				if (percent_ != old_percent_)
 				{
-					ZANaviMapDownloaderService.set_noti_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
-					ZANaviMapDownloaderService.set_large_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+					msg = handler.obtainMessage();
+					b = new Bundle();
+					msg.what = 1;
+					b.putInt("max", size2);
+					b.putInt("cur", (int) (cur_pos / 1000));
+					b.putInt("dialog_num", my_dialog_num);
+					b.putString("title", Navit.get_text("Mapdownload")); //TRANS
+					b.putString("text", Navit.get_text("generating MD5 checksum")); //TRANS
+					msg.setData(b);
+					handler.sendMessage(msg);
 
-					// update progressbar
-					Message msg_prog = new Message();
-					Bundle b_prog = new Bundle();
-					b_prog.putInt("pg", calc_percent((int) (cur_pos / 1000), size2));
-					msg_prog.what = 2;
-					msg_prog.setData(b_prog);
-					ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+					try
+					{
+						ZANaviMapDownloaderService.set_noti_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
+						ZANaviMapDownloaderService.set_large_text(Navit.get_text("checking") + ": " + calc_percent((int) (cur_pos / 1000), size2) + "%");
 
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
+						// update progressbar
+						Message msg_prog = new Message();
+						Bundle b_prog = new Bundle();
+						b_prog.putInt("pg", calc_percent((int) (cur_pos / 1000), size2));
+						msg_prog.what = 2;
+						msg_prog.setData(b_prog);
+						ZANaviDownloadMapCancelActivity.canceldialog_handler.sendMessage(msg_prog);
+
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 
 			}

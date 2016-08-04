@@ -62,6 +62,12 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 	static int yaml_sum = 0;
 	static int yaml_err = 0;
 
+	static double lat_pos = 0.0;
+	static double lon_pos = 0.0;
+	static double lat_dst = 0.0;
+	static double lon_dst = 0.0;
+	static double heading_pos = 0.0;
+
 	/*
 	 * 
 	 * Examples:
@@ -256,12 +262,6 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		skip_count = 0;
 		System.out.println("ZANaviDebugReceiver:" + "skip");
 	}
-
-	static double lat_pos = 0.0;
-	static double lon_pos = 0.0;
-	static double lat_dst = 0.0;
-	static double lon_dst = 0.0;
-	static double heading_pos = 0.0;
 
 	static void DR_replay_yaml_file(String filename, final String date)
 	{
@@ -789,6 +789,15 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 										catch (Exception e)
 										{
 											System.out.println("_DREX_:046" + e.getMessage());
+										}
+
+										try
+										{
+											out.write(Navit.CI_TEST_CASE_TEXT);
+										}
+										catch (Exception e)
+										{
+											System.out.println("_DREX_:046freetext" + e.getMessage());
 										}
 
 										try
@@ -1897,6 +1906,17 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					temp_work_thread.join();
 
 					System.out.println("XXXX:2:1:" + "");
+
+					Navit.CI_TEST_CASE_NUM++;
+					Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + "\n" + "===========" + Navit.CI_TEST_CASE_NUM + "===========" + "\n";
+					try
+					{
+						NavitGraphics.CallbackMessageChannelReal(115, "" + Navit.CI_TEST_CASE_NUM);
+					}
+					catch (Exception e)
+					{
+					}
+
 					System.out.println("XXXX:2:2:" + "");
 					System.out.println("XXXX:2:3:" + "======= START =======");
 					long startTime = System.currentTimeMillis();
@@ -1931,6 +1951,7 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 					duration_string = duration_string + yamlfile.getName() + ":" + (difference / 1000.0f) + "\n";
 					System.out.println("XXXX:2:6:" + "=======  END  ======= duration: " + (difference / 1000.0f) + " secs.");
 					System.out.println("XXXX:2:7:" + "");
+					Navit.CI_TEST_CASE_TEXT = "";
 					System.out.println("XXXX:2:8:" + "");
 
 					//xy//Thread.sleep(1500);
@@ -2373,3 +2394,4 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 	}
 }
+

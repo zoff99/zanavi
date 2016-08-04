@@ -144,6 +144,10 @@ static pthread_mutex_t uiConditionMutex = PTHREAD_MUTEX_INITIALIZER;
 #define ORDER_LEVEL_FOR_STREET_SIMPLIFY 9
 #define STREET_SIMPLIFY	24
 
+#define X_COLOR_BACKGROUND_NM 0x6666, 0x6666, 0x6666, 0xffff
+struct color background_night_mode = { X_COLOR_BACKGROUND_NM };
+
+
 struct graphics
 {
 	struct graphics_priv *priv;
@@ -240,7 +244,7 @@ static void graphics_draw_polygon_clipped(struct graphics *gra, struct graphics_
 // ------------- TILES -------------
 // ------------- TILES -------------
 // ------------- TILES -------------
-#include "mvt_tiles.h";
+#include "mvt_tiles.h"
 // ------------- TILES -------------
 // ------------- TILES -------------
 // ------------- TILES -------------
@@ -468,10 +472,15 @@ static void graphics_gc_init(struct graphics *this_)
 	struct color background = { COLOR_BACKGROUND_ };
 	struct color black = { COLOR_BLACK_ };
 	struct color white = { COLOR_WHITE_ };
+
 	if (!this_->gc[0] || !this_->gc[1] || !this_->gc[2])
+	{
 		return;
+	}
+
 	graphics_gc_set_background(this_->gc[0], &background);
 	graphics_gc_set_foreground(this_->gc[0], &background);
+
 	graphics_gc_set_background(this_->gc[1], &black);
 	graphics_gc_set_foreground(this_->gc[1], &white);
 	graphics_gc_set_background(this_->gc[2], &white);
@@ -489,11 +498,16 @@ static void graphics_gc_init(struct graphics *this_)
 void graphics_init(struct graphics *this_)
 {
 	if (this_->gc[0])
+	{
 		return;
+	}
+
 	this_->gc[0] = graphics_gc_new(this_);
 	this_->gc[1] = graphics_gc_new(this_);
 	this_->gc[2] = graphics_gc_new(this_);
+
 	graphics_gc_init(this_);
+
 	graphics_background_gc(this_, this_->gc[0]);
 }
 
@@ -552,7 +566,10 @@ struct graphics_font * graphics_named_font_new(struct graphics *gra, char *font,
 void graphics_free(struct graphics *gra)
 {
 	if (!gra)
+	{
 		return;
+	}
+
 	gra->meth.graphics_destroy(gra->priv);
 	g_free(gra->default_font);
 	graphics_font_destroy_all(gra);
@@ -572,7 +589,10 @@ void graphics_font_destroy_all(struct graphics *gra)
 	for (i = 0; i < gra->font_len; i++)
 	{
 		if (!gra->font[i])
+		{
 			continue;
+		}
+
 		gra->font[i]->meth.font_destroy(gra->font[i]->priv);
 		gra->font[i] = NULL;
 	}
@@ -609,30 +629,39 @@ void graphics_gc_destroy(struct graphics_gc *gc)
 static void graphics_convert_color(struct graphics *gra, struct color *in, struct color *out)
 {
 	*out = *in;
+
 	if (gra->brightness)
 	{
 		out->r += gra->brightness;
 		out->g += gra->brightness;
 		out->b += gra->brightness;
 	}
+
 	if (gra->contrast != 65536)
 	{
 		out->r = out->r * gra->contrast / 65536;
 		out->g = out->g * gra->contrast / 65536;
 		out->b = out->b * gra->contrast / 65536;
 	}
+
 	if (out->r < 0)
 		out->r = 0;
+
 	if (out->r > 65535)
 		out->r = 65535;
+
 	if (out->g < 0)
 		out->g = 0;
+
 	if (out->g > 65535)
 		out->g = 65535;
+
 	if (out->b < 0)
 		out->b = 0;
+
 	if (out->b > 65535)
 		out->b = 65535;
+
 	if (gra->gamma != 65536)
 	{
 		out->r = pow(out->r / 65535.0, gra->gamma / 65536.0) * 65535.0;
@@ -1179,8 +1208,13 @@ static void label_line(struct graphics *gra, struct graphics_gc *fg, struct grap
 		lsq = dx * dx + dy * dy;
 		if (lsq > tlsq)
 		{
+
+
+			// warning: suggest parentheses around '&&' within '||' [-Wparentheses]
 			if (((int) lsq > MIN_LINE_LENGTH_FOR_TEXT_MIDDLE_2) || (((i == 0) || (i == (count - 2)) && ((int) lsq > (int) MIN_LINE_LENGTH_FOR_TEXT_2))))
 			{
+
+
 				// segments in the middle of the "way" need to be longer for streetname to be drawn
 				// l -> line length
 				l = (int) sqrtf_fast2(lsq);
@@ -2412,7 +2446,23 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		if (!gc)
 		{
 			gc = graphics_gc_new(gra);
-			graphics_gc_set_foreground(gc, &e->color);
+
+			if (dc->e->type == element_polyline)
+			{
+				if (global_night_mode == 1)
+				{
+					graphics_gc_set_foreground(gc, &e->u.polyline.nightcol);
+					// dbg(0, "nightcol set draw fg %d %d %d\n", e->u.polyline.nightcol.r , e->u.polyline.nightcol.g, e->u.polyline.nightcol.b);
+				}
+				else
+				{
+					graphics_gc_set_foreground(gc, &e->color);
+				}
+			}
+			else
+			{
+				graphics_gc_set_foreground(gc, &e->color);
+			}
 			dc->gc = gc;
 		}
 
@@ -2576,7 +2626,14 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 						}
 						else
 						{
-							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, 0);
+							if (global_night_mode == 1)
+							{
+								graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->u.polyline.nightcol, 0);
+							}
+							else
+							{
+								graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, 0);
+							}
 						}
 					}
 					// change color of route if in bicycle-route-mode and we want to drive against the oneway street
@@ -2612,7 +2669,14 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 					}
 					else // all other ways
 					{
-						graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, mark_way);
+						if (global_night_mode == 1)
+						{
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->u.polyline.nightcol, mark_way);
+						}
+						else
+						{
+							graphics_draw_polyline_clipped(gra, gc, pa, count, width, 1, poly, order, oneway, e->u.polyline.dash_num, &e->color, mark_way);
+						}
 					}
 				}
 
@@ -5122,8 +5186,17 @@ __F_START__
 	// FIXME find a better place to set the background color
 	if (l)
 	{
-		graphics_gc_set_background(gra->gc[0], &l->color);
-		graphics_gc_set_foreground(gra->gc[0], &l->color);
+
+		if (global_night_mode == 1)
+		{
+			graphics_gc_set_background(gra->gc[0], &background_night_mode);
+			graphics_gc_set_foreground(gra->gc[0], &background_night_mode);
+		}
+		else
+		{
+			graphics_gc_set_background(gra->gc[0], &l->color);
+			graphics_gc_set_foreground(gra->gc[0], &l->color);
+		}
 		gra->default_font = g_strdup(l->font);
 	}
 

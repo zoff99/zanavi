@@ -492,6 +492,28 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			e.printStackTrace();
 		}
 
+		try
+		{
+			Preference a = findPreference("night_mode_lux");
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("night_mode_lux", (10 - 1)) + 1;
+			a.setSummary(a.getSummary() + " [" + read_value + "]");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			Preference a = findPreference("night_mode_buffer");
+			int read_value = PreferenceManager.getDefaultSharedPreferences(this).getInt("night_mode_buffer", (20 - 1)) + 1;
+			a.setSummary(a.getSummary() + " [" + read_value + "]");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		disable_pref("roadspeed_warning", false, false);
 		disable_pref("lane_assist", false, false);
 
@@ -765,6 +787,36 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			{
 				Preference a = findPreference("traffic_speed_factor");
 				int read_value = sharedPreferences.getInt("traffic_speed_factor", (83 - 20)) + 20;
+				int pos_start = a.getSummary().toString().lastIndexOf("[");
+				a.setSummary(a.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("night_mode_lux"))
+			{
+				Preference a = findPreference("night_mode_lux");
+				int read_value = sharedPreferences.getInt("night_mode_lux", (10 - 1)) + 1;
+				int pos_start = a.getSummary().toString().lastIndexOf("[");
+				a.setSummary(a.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			if (key.equals("night_mode_buffer"))
+			{
+				Preference a = findPreference("night_mode_buffer");
+				int read_value = sharedPreferences.getInt("night_mode_buffer", (20 - 1)) + 1;
 				int pos_start = a.getSummary().toString().lastIndexOf("[");
 				a.setSummary(a.getSummary().subSequence(0, pos_start - 1) + " [" + read_value + "]");
 			}

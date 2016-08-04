@@ -74,6 +74,9 @@ public class ZANaviPrefs
 	int PREF_traffic_speed_factor = 83;
 	boolean PREF_show_maps_debug_view = false;
 	boolean PREF_show_turn_restrictions = false;
+	boolean PREF_auto_night_mode = true;
+	int PREF_night_mode_lux = 10;
+	int PREF_night_mode_buffer = 20;
 
 	static void deep_copy(ZANaviPrefs src, ZANaviPrefs dst)
 	{
@@ -147,6 +150,9 @@ public class ZANaviPrefs
 		dst.PREF_traffic_speed_factor = src.PREF_traffic_speed_factor;
 		dst.PREF_show_maps_debug_view = src.PREF_show_maps_debug_view;
 		dst.PREF_show_turn_restrictions = src.PREF_show_turn_restrictions;
+		dst.PREF_auto_night_mode = src.PREF_auto_night_mode;
+		dst.PREF_night_mode_lux = src.PREF_night_mode_lux;
+		dst.PREF_night_mode_buffer = src.PREF_night_mode_buffer;
 
 		int j = 0;
 		for (j = 0; j < src.PREF_StreetSearchStrings.length; j++)

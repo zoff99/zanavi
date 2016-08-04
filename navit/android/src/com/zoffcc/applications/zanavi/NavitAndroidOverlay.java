@@ -895,6 +895,23 @@ public class NavitAndroidOverlay extends View
 			}
 		}
 
+		if (Navit.DEBUG_LUX_VALUE)
+		{
+			// ------- DEBUG --------------
+			// ------- DEBUG --------------
+			// ------- DEBUG --------------
+			Paint paint_lux = new Paint(0);
+			paint_lux.setAntiAlias(true);
+			paint_lux.setColor(Color.BLUE);
+			paint_lux.setAlpha(240);
+			paint_lux.setStrokeWidth(6);
+			paint_lux.setTextSize(NavitGraphics.dp_to_px(60));
+			c.drawText(" " + Navit.debug_cur_lux_value, (int)((float)NavitGraphics.mCanvasWidth / 2.5f), (int) ((float) NavitGraphics.mCanvasHeight / 2.0f), paint_lux);
+			// ------- DEBUG --------------
+			// ------- DEBUG --------------
+			// ------- DEBUG --------------
+		}
+
 		if (Navit.p.PREF_item_dump)
 		{
 			if (!Navit.debug_item_dump.equals(""))

@@ -53,20 +53,26 @@ struct layout * layout_new(struct attr *parent, struct attr **attrs)
 	if (!(name_attr = attr_search(attrs, NULL, attr_name)))
 	{
 		return NULL;
-	} l = g_new0(struct layout, 1);
+	}
+
+	l = g_new0(struct layout, 1);
 	l->name = g_strdup(name_attr->u.str);
+
 	if ((font_attr = attr_search(attrs, NULL, attr_font)))
 	{
 		l->font = g_strdup(font_attr->u.str);
 	}
+
 	if ((day_attr = attr_search(attrs, NULL, attr_daylayout)))
 	{
 		l->dayname = g_strdup(day_attr->u.str);
 	}
+
 	if ((night_attr = attr_search(attrs, NULL, attr_nightlayout)))
 	{
 		l->nightname = g_strdup(night_attr->u.str);
 	}
+
 	if ((color_attr = attr_search(attrs, NULL, attr_color)))
 	{
 		l->color = *color_attr->u.color;
@@ -75,14 +81,17 @@ struct layout * layout_new(struct attr *parent, struct attr **attrs)
 	{
 		l->color = def_color;
 	}
+
 	if ((order_delta_attr = attr_search(attrs, NULL, attr_order_delta)))
 	{
 		l->order_delta = order_delta_attr->u.num;
 	}
+
 	if ((active_attr = attr_search(attrs, NULL, attr_active)))
 	{
 		l->active = active_attr->u.num;
 	}
+
 	return l;
 }
 
@@ -401,7 +410,27 @@ static void element_set_color(struct element *e, struct attr **attrs)
 	struct attr *color;
 	color = attr_search(attrs, NULL, attr_color);
 	if (color)
+	{
 		e->color = *color->u.color;
+	}
+}
+
+static void element_set_nightcol_color(struct color *c, struct color *c2, struct attr **attrs)
+{
+	struct attr *color;
+	color = attr_search(attrs, NULL, attr_nightcol);
+	if (color)
+	{
+		*c = *color->u.color;
+		dbg(0, "nightcol set %d %d %d\n", c->r, c->g, c->b);
+	}
+	else
+	{
+		if (c2)
+		{
+			*c = *c2;
+		}
+	}
 }
 
 static void element_set_background_color(struct color *c, struct attr **attrs)
@@ -409,15 +438,20 @@ static void element_set_background_color(struct color *c, struct attr **attrs)
 	struct attr *color;
 	color = attr_search(attrs, NULL, attr_background_color);
 	if (color)
+	{
 		*c = *color->u.color;
+	}
 }
 
 static void element_set_text_size(struct element *e, struct attr **attrs)
 {
 	struct attr *text_size;
 	text_size = attr_search(attrs, NULL, attr_text_size);
+
 	if (text_size)
+	{
 		e->text_size = text_size->u.num;
+	}
 }
 
 static void element_set_polyline_width(struct element *e, struct attr **attrs)
@@ -514,6 +548,7 @@ polyline_new(struct attr *parent, struct attr **attrs)
 	e = g_new0(struct element, 1);
 	e->type = element_polyline;
 	element_set_color(e, attrs);
+	element_set_nightcol_color(&e->u.polyline.nightcol, &e->color, attrs);
 	element_set_polyline_width(e, attrs);
 	element_set_polyline_directed(e, attrs);
 	element_set_polyline_dash(e, attrs);
