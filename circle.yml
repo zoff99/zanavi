@@ -14,7 +14,7 @@ machine:
     sdpath_10: "/mnt/sdcard"
     sdpath_21: "/storage/sdcard"
     sdpath_23: "/sdcard"
-    sdpath_24: "/storage/1A08-2804"
+    sdpath_24: "/storage/eee"
 #
     EMU_API: "24"
 ###############################
@@ -294,6 +294,9 @@ test:
     - adb shell input keyevent 82
     - sleep 10
     - import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
+
+
+    - if [ "$EMU_API}""x" == "24x" ]; then printf 'su\n ls -al /storage/\nln -sf /storage/[0-9]* /storage/eee; chgrp -h sdcard_rw /storage/eee ; ls -al /storage/'|adb shell ; fi
 
 
     - mkdir ~/yaml-tests/
