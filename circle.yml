@@ -329,7 +329,7 @@ test:
     - sleep 8
 
     - echo "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><map><string name=\"storage_directory\">2</string></map>" > ~/com.zoffcc.applications.zanavi_preferences.xml
-    - adb push ~/com.zoffcc.applications.zanavi_preferences.xml /sdcard/ ; printf 'su\ncp -av /sdcard/com.zoffcc.applications.zanavi_preferences.xml /data/data/; ls -al /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml' | adb shell
+    - adb push ~/com.zoffcc.applications.zanavi_preferences.xml /sdcard/ ; printf 'su\ncp -av /sdcard/com.zoffcc.applications.zanavi_preferences.xml /data/data/; ls -al /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml ; cat /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml'  | adb shell
     - sleep 5
 
 
