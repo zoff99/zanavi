@@ -6,6 +6,7 @@ machine:
   environment:
 ###############################
 # run emulator on this API [10,21,23,24]
+#
     EMU_10: "zanavi10"
     EMU_21: "zanavi21"
     EMU_23: "zanavi23"
@@ -15,7 +16,7 @@ machine:
     sdpath_23: "/sdcard"
     sdpath_24: "/sdcard"
 #
-    EMU_API: 23
+    EMU_API: "23"
 ###############################
 
 ###### custom 2 ######
@@ -76,7 +77,7 @@ dependencies:
     - sudo apt-get install bc > /dev/null 2> /dev/null
 
     - gradle -v # display gradle version
-    - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then cd ~ ; wget https://services.gradle.org/distributions/gradle-2.10-bin.zip ; fi
+    - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then cd ~ ; wget 'https://services.gradle.org/distributions/gradle-2.10-bin.zip' ; fi
     - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then mkdir ~/g ; cd ~/g ; unzip ~/gradle-2.10-bin.zip ; fi
     - gradle -v # display gradle version
 
@@ -109,7 +110,7 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-addon-google_apis-google-23 > /dev/null 2> /dev/null
     - echo y | android update sdk --no-ui --all --filter addon-google_apis-google-23 > /dev/null 2> /dev/null
 
-    - if [ "$COVERITY_BUILD_""x" == "1x" ]; then mkdir ~/cov_scan/ && wget https://scan.coverity.com/download/linux-64 --post-data "token=$COVERITY_TOKEN&project=$COV_PROJ" -O ~/cov_scan/coverity_tool.tgz && wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz && cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz ; fi
+    - if [ "$COVERITY_BUILD_""x" == "1x" ]; then mkdir ~/cov_scan/ && wget 'https://scan.coverity.com/download/linux-64' --post-data "token=$COVERITY_TOKEN&project=$COV_PROJ" -O ~/cov_scan/coverity_tool.tgz && wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz && cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz ; fi
 
     - pwd ; ls -al
 
@@ -119,6 +120,7 @@ dependencies:
     - ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so ; exit 0
     - ls -al /home/ubuntu/android-build/navit/.libs/navit2 ; exit 0
     - ls -al /home/ubuntu/android-build/navit/navit2 ; exit 0
+
     - if [ "$COVERITY_BUILD_""x" == "1x" ]; then ls -al /home/ubuntu/android-build/cov-int/ ; exit 0 ; fi
     - if [ "$COVERITY_BUILD_""x" == "1x" ]; then cp -v /home/ubuntu/android-build/cov-int/build-log.txt $CIRCLE_ARTIFACTS/ ; fi
     - if [ "$COVERITY_BUILD_""x" == "1x" ]; then cd /home/ubuntu/android-build/ ; tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz cov-int ; fi
@@ -245,30 +247,23 @@ test:
     - echo 'mtools_skip_check=1' > ~/.mtoolsrc
     - android list targets
 #
-    - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA720" ; fi
-    - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    #- if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    #- if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    #- if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi24" ]; then echo "no" | android create avd -n zanavi24 -f -t android-24 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi24" ]; then cat ~/.android/avd/zanavi24.avd/config.ini ; fi
 #
-    - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA720" ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
 #
-    - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1024MB#' ~/.android/avd/zanavi10.avd/config.ini ; cat ~/.android/avd/zanavi10.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
 #
-    - echo "$EMU_"
-    - echo "$sdpath"
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+#
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; echo "$EMU_"
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; echo "$sdpath"
   override:
     - ls -al ~/android-build/navit/android/bin/
     - ls -al $CIRCLE_ARTIFACTS/
-    #- fb-adb shell "df"
-    #- fb-adb shell "df $sdpath/"
 
     - cd ~/maps/ ; du navitmap_0*bin|awk '{print $1 " + \\"}' > /tmp/sizes.txt ;echo -n "printf ' " > /tmp/calc.txt;cat /tmp/sizes.txt >> /tmp/calc.txt ; printf "0 \\\n' |bc\n" >> /tmp/calc.txt ; chmod u+x /tmp/calc.txt;eval /tmp/calc.txt > /tmp/res.txt ; printf "scale=2;`cat /tmp/res.txt` / 1024 / 1024 \n "|bc
 
@@ -289,7 +284,7 @@ test:
 
     - import -window root $CIRCLE_ARTIFACTS/capture000a.png
  
-    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio:
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; emulator -avd "$EMU_" -sdcard sdcard.img -no-audio:
         background: true
         parallel: true
     - circle-android wait-for-boot
@@ -310,7 +305,7 @@ test:
     - cd ~/yaml-tests/ && mv routing-qa-search-test001 routing-qa-master && cd ~/ ; exit 0
     - cd ~/yaml-tests/ && mv routing-qa-turn_tests_001 routing-qa-master && cd ~/ ; exit 0
     - cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
-    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; exit 0
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; exit 0
 
     # delete test files that give errors, for now *!*!
     - cd ~/yaml-tests/routing-qa-master/ ; rm -v 002_missing_destination_name.yaml 003_highway_entrance.yaml 004_turn_restriction.yaml 005_car_forbidden_traffic.yaml Aalter_straight.yaml B2R_W.yaml Brugge.yaml Emmeloord_N.yaml Hamburg_Sued_S.yaml ; exit 0
@@ -319,32 +314,24 @@ test:
     - cd ~/
     # delete test files that give errors, for now *!*!
 
-    - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
 
-    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
-    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
 
     - fb-adb shell "cat /proc/meminfo" ; exit 0
-
-    #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
 
     - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
 
 
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
-    #- fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
     - sleep 38
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 8
-    #- fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
     - sleep 5
     - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
 
-
-    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
-    #- mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
         background: true
@@ -359,7 +346,7 @@ test:
 # ---------- waiting for tests to complete -------------
     - rm -fv ~/_done_.txt ; exit 0
 
-    - ready_="0" ;
+    - ready_="0" ; export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ;
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       counter=0;
       while [ $ready_ == "0" ]; do
@@ -393,7 +380,7 @@ test:
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
-    - ready_="0" ;
+    - ready_="0" ; export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ;
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       counter=0;
       while [ $ready_ == "0" ]; do
@@ -427,20 +414,20 @@ test:
     - fb-adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 20
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
 
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al" ; exit 0
-    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/" ; exit 0
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al" ; exit 0
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/" ; exit 0
     - ls -al ~/debug_output/ ; exit 0
 
     - mkdir ~/debug_results/ ; exit 0
     - ls -al ~/debug_results/
-    - _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
     - ls -al ~/debug_results/
 
-    - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
-    - cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
+    - export EMU_=`echo 'EMU_'"${EMU_API}"` ; export sdpath=`echo 'sdpath_'"${EMU_API}"` ; cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
 
     - mkdir -p ~/gpx2png/out
     - mkdir -p ~/gpx2png/temp
