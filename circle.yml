@@ -14,7 +14,7 @@ machine:
     sdpath_10: "/mnt/sdcard"
     sdpath_21: "/storage/sdcard"
     sdpath_23: "/sdcard"
-    sdpath_24: "/storage/emulated/0"
+    sdpath_24: "/storage/1A08-2804"
 #
     EMU_API: "24"
 ###############################
@@ -327,6 +327,12 @@ test:
     - sleep 38
     - adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 8
+
+    - echo "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><map><string name=\"storage_directory\">2</string></map>" > ~/com.zoffcc.applications.zanavi_preferences.xml
+    - adb push ~/com.zoffcc.applications.zanavi_preferences.xml /sdcard/ ; printf 'su\ncp -av /sdcard/com.zoffcc.applications.zanavi_preferences.xml /data/data/; ls -al /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml' | adb shell
+    - sleep 5
+
+
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
     - sleep 5
