@@ -282,7 +282,7 @@ test:
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - if [ "$EMU_API""x" == "24x" ]; then cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps" ; else cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps" ; fi
+    - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - import -window root $CIRCLE_ARTIFACTS/capture000a.png
