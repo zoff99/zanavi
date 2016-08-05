@@ -365,7 +365,7 @@ test:
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
       died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
-      if [ $died_count -gt 1 ]; then
+      if [ $died_count -gt 0 ]; then
       echo "com.zoffcc.applications.zanavi crashed";
       cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
       ready_="1" ;
@@ -399,7 +399,7 @@ test:
       echo "$n" "/" "$count_files"  ;
       adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
       died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
-      if [ $died_count -gt 1 ]; then
+      if [ $died_count -gt 0 ]; then
       echo "com.zoffcc.applications.zanavi crashed";
       cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
       ready_="1" ;
