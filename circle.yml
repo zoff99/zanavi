@@ -430,7 +430,7 @@ test:
 
     - mkdir ~/debug_results/ ; exit 0
     - ls -al ~/debug_results/
-    - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir"
+    - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir" ./
     - ls -al ~/debug_results/
 
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  mkdir ~/debug_summary/ && cd ~/debug_summary/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
