@@ -12208,7 +12208,7 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 		if (Navit_storage_directory_select_i > 0)
 		{
-			File f3 = new File(NavitDataStorageDirs[Navit_storage_directory_select_i - 1].getAbsolutePath() + "/zanavi/maps/");
+			File f3 = new File(NavitDataStorageDirs[Navit_storage_directory_select_i - 1].getAbsolutePath() + "/zanavi/maps/zanavi/maps/");
 			
 			try
 			{
