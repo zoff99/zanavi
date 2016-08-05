@@ -114,9 +114,9 @@ dependencies:
 
     - pwd ; ls -al
 
-    #- if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
-    #- if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "2"#' ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
-    #- if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    - if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "2"#' ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
+    - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
 
     - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
 
@@ -332,9 +332,9 @@ test:
     - adb shell am force-stop com.zoffcc.applications.zanavi
     - sleep 8
 
-    - echo "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><map><string name=\"storage_directory\">2</string></map>" > ~/com.zoffcc.applications.zanavi_preferences.xml
-    - adb push ~/com.zoffcc.applications.zanavi_preferences.xml /sdcard/ ; printf 'su\n mkdir -p /data/data/com.zoffcc.applications.zanavi/shared_prefs/ \n cp -av /sdcard/com.zoffcc.applications.zanavi_preferences.xml /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml \n ls -al /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml \n cat /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml \n'  | adb shell
-    - sleep 5
+    #- echo "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><map><string name=\"storage_directory\">2</string></map>" > ~/com.zoffcc.applications.zanavi_preferences.xml
+    #- adb push ~/com.zoffcc.applications.zanavi_preferences.xml /sdcard/ ; printf 'su\n mkdir -p /data/data/com.zoffcc.applications.zanavi/shared_prefs/ \n cp -av /sdcard/com.zoffcc.applications.zanavi_preferences.xml /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml \n ls -al /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml \n cat /data/data/com.zoffcc.applications.zanavi/shared_prefs/com.zoffcc.applications.zanavi_preferences.xml \n'  | adb shell
+    #- sleep 5
 
 
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
