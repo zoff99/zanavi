@@ -114,9 +114,9 @@ dependencies:
 
     - pwd ; ls -al
 
-    - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
-    - if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "2"#' ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
-    - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    #- if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    #- if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "2"#' ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
+    #- if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
 
     - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
 
@@ -282,7 +282,7 @@ test:
     - mdir -i ~/zanavi/sdcard.img "::"
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
-    - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - if [ "$EMU_API""x" == "24x" ]; then cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps" ; else cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps" ; fi
     - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
 
     - import -window root $CIRCLE_ARTIFACTS/capture000a.png
