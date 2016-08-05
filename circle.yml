@@ -294,6 +294,7 @@ test:
 
     - xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
     - sleep 210
+    - if [ "$EMU_API""x" == "24x" ]; then sleep 210 ; fi
     - adb shell input keyevent 82
     - sleep 10
     - import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
