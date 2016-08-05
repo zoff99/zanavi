@@ -114,6 +114,9 @@ dependencies:
 
     - pwd ; ls -al
 
+    - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    - if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "2"#' ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
+    - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
 
     - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
 
