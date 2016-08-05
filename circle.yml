@@ -295,9 +295,7 @@ test:
     - sleep 10
     - import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
 
-
-    - if [ "$EMU_API}""x" == "24x" ]; then printf 'su\n ls -al /storage/\nln -sf /storage/[0-9]* /storage/eee; chgrp -h sdcard_rw /storage/eee ; ls -al /storage/'|adb shell ; fi
-
+    - if [ "$EMU_API""x" == "24x" ]; then printf 'su\n ls -al /storage/\nln -sf /storage/[0-9]* /storage/eee; chgrp -h sdcard_rw /storage/eee ; ls -al /storage/'|adb shell ; fi
 
     - mkdir ~/yaml-tests/
     #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
