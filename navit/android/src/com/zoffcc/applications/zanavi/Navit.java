@@ -12208,6 +12208,14 @@ public class Navit extends ActionBarActivity implements Handler.Callback, Sensor
 
 		if (Navit_storage_directory_select_i > 0)
 		{
+			try
+			{
+				NavitDataStorageDirs[Navit_storage_directory_select_i - 1].mkdirs();
+			}
+			catch(Exception eee)
+			{
+				System.out.println("DataStorageDir:" + Navit_storage_directory_select_i + ":-> Error mkdirs");
+			}
 			NavitDataDirectory_Maps = NavitDataStorageDirs[Navit_storage_directory_select_i - 1].getAbsolutePath();
 		}
 		System.out.println("DataStorageDir[*in use*]=" + NavitDataDirectory_Maps);
