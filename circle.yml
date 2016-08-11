@@ -16,7 +16,7 @@ machine:
     sdpath_23: "/sdcard"
     sdpath_24: "/storage/eee"
 #
-    EMU_API: "24"
+    EMU_API: "21"
 ###############################
 
 ###### custom 2 ######
@@ -124,9 +124,9 @@ dependencies:
     - ls -al /home/ubuntu/android-build/navit/.libs/navit2 ; exit 0
     - ls -al /home/ubuntu/android-build/navit/navit2 ; exit 0
 
-    - if [ "$COVERITY_BUILD_""x" == "1x" ]; then ls -al /home/ubuntu/android-build/cov-int/ ; exit 0 ; fi
-    - if [ "$COVERITY_BUILD_""x" == "1x" ]; then cp -v /home/ubuntu/android-build/cov-int/build-log.txt $CIRCLE_ARTIFACTS/ ; fi
-    - if [ "$COVERITY_BUILD_""x" == "1x" ]; then cd /home/ubuntu/android-build/ ; tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz cov-int ; fi
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then ls -al /home/ubuntu/android-build/cov-int/ ; exit 0 ; fi
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then cp -v /home/ubuntu/android-build/cov-int/build-log.txt $CIRCLE_ARTIFACTS/ ; fi
+    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then cd /home/ubuntu/android-build/ ; tar -czvf $CIRCLE_ARTIFACTS/covint.tar.gz cov-int ; fi
 
     - ls -al ~/maps/ ; exit 0
     - mkdir -p ~/maps/ ; exit 0
@@ -261,6 +261,7 @@ test:
 #
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+#
 #
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  echo "$EMU_"
     - export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  echo "$sdpath"
