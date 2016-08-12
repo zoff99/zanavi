@@ -12,8 +12,8 @@ machine:
     EMU_23: "zanavi23"
     EMU_24: "zanavi24"
     sdpath_10: "/mnt/sdcard"
-    sdpath_21: "/storage/sdcard"
-    sdpath_23: "/sdcard"
+    sdpath_21: "/sdcard"
+    sdpath_23: "/storage/eee"
     sdpath_24: "/storage/eee"
 #
     EMU_API: "21"
