@@ -51,6 +51,7 @@ dependencies:
     - ~/.gradle
   pre:
     - cat /etc/lsb*
+    - uname -a
     - exit 1
 
 
