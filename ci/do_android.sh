@@ -9,6 +9,8 @@ export _NDK_="$ANDROID_NDK"
 export ANDROID_SDK="/usr/local/android-sdk-linux/"
 export _SDK_="$ANDROID_SDK"
 
+export __FULL_LOG__="1"
+
 export BUILD_PATH="$START_PATH""/android-build"
 mkdir -p $BUILD_PATH
 
@@ -102,7 +104,18 @@ if [ "$COVERITY_BUILD_""x" == "1x" ]; then
 
 fi
 
-export AND_API_LEVEL_C=14 && \
+if [ "$__FULL_LOG__""x" == "1x" ]; then
+   export AND_API_LEVEL_C=14 && \
+        export NDK=$_NDK_ && \
+        export DO_RELEASE_BUILD=1 && \
+        export DO_PNG_BUILD=1 && \
+        export NDK_CCACHE="" && \
+        make && \
+        pwd && \
+        cd navit
+        make apkg-release || pwd
+else
+   export AND_API_LEVEL_C=14 && \
         export NDK=$_NDK_ && \
         export DO_RELEASE_BUILD=1 && \
         export DO_PNG_BUILD=1 && \
@@ -111,24 +124,38 @@ export AND_API_LEVEL_C=14 && \
         pwd && \
         cd navit
         make apkg-release 2>&1 | grep '\[javac\]' || pwd
+fi
 
 ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
 ls -al /home/ubuntu/android-build/navit/.libs/navit2
 ls -al /home/ubuntu/android-build/navit/navit2
 
-
+# ---- fix path ----
 cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
         mv l.txt local.properties && \
         cat local.properties
-
 cd ../android
+# ---- fix path ----
+
+# ---- fix path ----
+cd android-about-page && \
+        cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+        mv l.txt local.properties && \
+        cat local.properties
+cd ../android
+# ---- fix path ----
+
 
 pwd
 cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
 mv l.txt AndroidManifest.xml
 
-ant release 2>&1 | grep '\[javac\]' # > /dev/null 2> /dev/null
+if [ "$__FULL_LOG__""x" == "1x" ]; then
+    ant release
+else
+    ant release 2>&1 | grep '\[javac\]' # > /dev/null 2> /dev/null
+fi
 
 ######  --------------- delete debug signing-key ---------------
 ### rm -f ~/.android/debug.keystore
