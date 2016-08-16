@@ -135,7 +135,7 @@ cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
         mv l.txt local.properties && \
         cat local.properties
-cd ../android
+cd ../
 # ---- fix path ----
 
 # ---- fix path ----
@@ -143,9 +143,10 @@ cd android-about-page && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
         mv l.txt local.properties && \
         cat local.properties
-cd ../android
+cd ../
 # ---- fix path ----
 
+cd ./android
 
 pwd
 cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
