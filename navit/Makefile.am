@@ -180,7 +180,7 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 #	android update lib-project -t @ANDROID_PROJECT@ -p $(builddir)/android-support-v7-appcompat
 	echo "XXXXXXXXXX YYZZ 001"
 	pwd
-	android update lib-project -p android-about-page -l ../android-support-v7-appcompat
+	android update project -p android-about-page -l ../android-support-v7-appcompat
 	echo "XXXXXXXXXX YYZZ 002"
 	pwd
 	android update project -t @ANDROID_PROJECT@ -p android -l ../android-support-v7-appcompat
