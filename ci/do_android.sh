@@ -148,6 +148,32 @@ cd ../
 
 cd ./android
 
+if [ "$__FULL_LOG__""x" == "1x" ]; then
+
+echo -n "---------------------------------"
+echo "default.properties"
+cat default.properties
+echo -n "---------------------------------"
+echo "project.properties"
+cat project.properties
+echo -n "---------------------------------"
+echo "local.properties"
+cat local.properties
+echo -n "---------------------------------"
+echo "build.properties"
+cat build.properties
+echo -n "---------------------------------"
+echo "ant.properties"
+cat ant.properties
+echo -n "---------------------------------"
+echo "build.xml"
+cat build.xml
+echo -n "---------------------------------"
+echo ""
+
+fi
+
+
 pwd
 cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
 mv l.txt AndroidManifest.xml
