@@ -180,16 +180,9 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 #	android update lib-project -t @ANDROID_PROJECT@ -p $(builddir)/android-support-v7-appcompat
 	echo "XXXXXXXXXX YYZZ 001"
 	pwd
-	cd ../android-about-page
+	android update lib-project -p android-about-page -l ../android-support-v7-appcompat
 	echo "XXXXXXXXXX YYZZ 002"
 	pwd
-	android update project -t @ANDROID_PROJECT@ -p ./ -l ../android-support-v7-appcompat
-	echo "XXXXXXXXXX YYZZ 003"
-	pwd
-	cd ../
-	echo "XXXXXXXXXX YYZZ 004"
-	pwd
-
 	android update project -t @ANDROID_PROJECT@ -p android -l ../android-support-v7-appcompat
 	android update project -t @ANDROID_PROJECT@ -p android -l ../android-about-page
 	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
