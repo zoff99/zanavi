@@ -160,12 +160,51 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 #	android update project -t @ANDROID_PROJECT@ -p android -l ../actionbarsherlock
 #	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
 
+#####################
+#####################
+#####################
+#####################
+
+	mkdir -p $(builddir)/android-support-animated-vector-drawable/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-animated-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-animated-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-animated-vector-drawable/* $(builddir)/android-support-animated-vector-drawable/; fi
+	touch $(srcdir)/android-support-animated-vector-drawable/dummy.txt
+	touch $(builddir)/android-support-animated-vector-drawable/dummy.txt
+
+	mkdir -p $(builddir)/android-support-annotations/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-annotations/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-annotations/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-annotations/* $(builddir)/android-support-annotations/; fi
+	touch $(srcdir)/android-support-annotations/dummy.txt
+	touch $(builddir)/android-support-annotations/dummy.txt
+
+	mkdir -p $(builddir)/android-support-v4/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-v4/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-v4/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-v4/* $(builddir)/android-support-v4/; fi
+	touch $(srcdir)/android-support-v4/dummy.txt
+	touch $(builddir)/android-support-v4/dummy.txt
+
 	mkdir -p $(builddir)/android-support-v7-appcompat/src/
 	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-v7-appcompat/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-v7-appcompat/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-v7-appcompat/* $(builddir)/android-support-v7-appcompat/; fi
 	touch $(srcdir)/android-support-v7-appcompat/dummy.txt
 	touch $(builddir)/android-support-v7-appcompat/dummy.txt
+
+	mkdir -p $(builddir)/android-support-vector-drawable/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-vector-drawable/* $(builddir)/android-support-vector-drawable/; fi
+	touch $(srcdir)/android-support-vector-drawable/dummy.txt
+	touch $(builddir)/android-support-vector-drawable/dummy.txt
+
+#####################
+#####################
+#####################
+#####################
+
 
 	mkdir -p $(builddir)/android-about-page/src/
 	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-about-page/src/; fi
@@ -177,14 +216,9 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	if [ "$(builddir)" != "$(srcdir)" ]; then mkdir -p $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(builddir)/android/aidl/com/zoffcc/applications/zanavi_msg/*.aidl $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
 
-#	android update lib-project -t @ANDROID_PROJECT@ -p $(builddir)/android-support-v7-appcompat
 	echo "XXXXXXXXXX YYZZ 001"
 	pwd
-	android update project -p android-about-page -l ../android-support-v7-appcompat
-	echo "XXXXXXXXXX YYZZ 002"
-	pwd
 	android update project -t @ANDROID_PROJECT@ -p android -l ../android-support-v7-appcompat
-	android update project -t @ANDROID_PROJECT@ -p android -l ../android-about-page
 	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
 
 

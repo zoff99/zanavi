@@ -130,7 +130,36 @@ ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applicati
 ls -al /home/ubuntu/android-build/navit/.libs/navit2
 ls -al /home/ubuntu/android-build/navit/navit2
 
+
 # ---- fix path ----
+cd android-support-animated-vector-drawable && \
+        cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+        mv l.txt local.properties && \
+        cat local.properties
+cd ../
+# ---- fix path ----
+
+# ---- fix path ----
+cd android-support-annotations && \
+        cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+        mv l.txt local.properties && \
+        cat local.properties
+cd ../
+# ---- fix path ----
+
+# ---- fix path ----
+echo "+++++++++++++++---------------------------------------+++++++++++++++"
+echo ""
+cd android-support-v4 && \
+        cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+        mv l.txt local.properties && \
+        cat local.properties
+cd ../
+# ---- fix path ----
+
+# ---- fix path ----
+echo "+++++++++++++++---------------------------------------+++++++++++++++"
+echo ""
 cd android-support-v7-appcompat && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
         mv l.txt local.properties && \
@@ -139,6 +168,18 @@ cd ../
 # ---- fix path ----
 
 # ---- fix path ----
+echo "+++++++++++++++---------------------------------------+++++++++++++++"
+echo ""
+cd android-support-vector-drawable && \
+        cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+        mv l.txt local.properties && \
+        cat local.properties
+cd ../
+# ---- fix path ----
+
+# ---- fix path ----
+echo "+++++++++++++++---------------------------------------+++++++++++++++"
+echo ""
 cd android-about-page && \
         cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
         mv l.txt local.properties && \
@@ -150,25 +191,25 @@ cd ./android
 
 if [ "$__FULL_LOG__""x" == "1x" ]; then
 
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo "default.properties"
 cat default.properties
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo "project.properties"
 cat project.properties
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo "local.properties"
 cat local.properties
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo "build.properties"
 cat build.properties
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo "ant.properties"
 cat ant.properties
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo "build.xml"
 cat build.xml
-echo -n "---------------------------------"
+echo "---------------------------------"
 echo ""
 
 fi
