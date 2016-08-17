@@ -213,12 +213,12 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	touch $(srcdir)/android-about-page/dummy.txt
 	touch $(builddir)/android-about-page/dummy.txt
 
-	mkdir -p $(builddir)/material-info/src/
-	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/material-info/src/; fi
-	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/material-info/src/; fi
-	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/material-info/* $(builddir)/material-info/; fi
-	touch $(srcdir)/material-info/dummy.txt
-	touch $(builddir)/material-info/dummy.txt
+	mkdir -p $(builddir)/material-intro/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/material-intro/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/material-intro/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/material-intro/* $(builddir)/material-intro/; fi
+	touch $(srcdir)/material-intro/dummy.txt
+	touch $(builddir)/material-intro/dummy.txt
 
 	if [ "$(builddir)" != "$(srcdir)" ]; then mkdir -p $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(builddir)/android/aidl/com/zoffcc/applications/zanavi_msg/*.aidl $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
@@ -226,7 +226,7 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	echo "XXXXXXXXXX YYZZ 001"
 	pwd
 	android update project -t @ANDROID_PROJECT@ -p android -l ../android-support-v7-appcompat
-	android update project -t @ANDROID_PROJECT@ -p android -l ../material-info
+	android update project -t @ANDROID_PROJECT@ -p android -l ../material-intro
 	android update project -t @ANDROID_PROJECT@ -p android -l ../android-about-page
 	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
 
