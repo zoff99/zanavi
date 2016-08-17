@@ -31,11 +31,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.TintCheckBox;
-import android.support.v7.widget.TintCheckedTextView;
-import android.support.v7.widget.TintEditText;
-import android.support.v7.widget.TintRadioButton;
-import android.support.v7.widget.TintSpinner;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.Toolbar.LayoutParams;
 import android.util.AttributeSet;
@@ -226,31 +221,31 @@ public class NavitPreferences extends PreferenceActivity implements OnSharedPref
 			return result;
 		}
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-		{
-			// If we're running pre-L, we need to 'inject' our tint aware Views in place of the
-			// standard framework versions
-			if (name.compareTo("EditText") == 0)
-			{
-				return new TintEditText(this, attrs);
-			}
-			else if (name.compareTo("Spinner") == 0)
-			{
-				return new TintSpinner(this, attrs);
-			}
-			else if (name.compareTo("CheckBox") == 0)
-			{
-				return new TintCheckBox(this, attrs);
-			}
-			else if (name.compareTo("RadioButton") == 0)
-			{
-				return new TintRadioButton(this, attrs);
-			}
-			else if (name.compareTo("CheckedTextView") == 0)
-			{
-				return new TintCheckedTextView(this, attrs);
-			}
-		}
+		//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		//		{
+		//			// If we're running pre-L, we need to 'inject' our tint aware Views in place of the
+		//			// standard framework versions
+		//			if (name.compareTo("EditText") == 0)
+		//			{
+		//				return new TintEditText(this, attrs);
+		//			}
+		//			else if (name.compareTo("Spinner") == 0)
+		//			{
+		//				return new TintSpinner(this, attrs);
+		//			}
+		//			else if (name.compareTo("CheckBox") == 0)
+		//			{
+		//				return new TintCheckBox(this, attrs);
+		//			}
+		//			else if (name.compareTo("RadioButton") == 0)
+		//			{
+		//				return new TintRadioButton(this, attrs);
+		//			}
+		//			else if (name.compareTo("CheckedTextView") == 0)
+		//			{
+		//				return new TintCheckedTextView(this, attrs);
+		//			}
+		//		}
 
 		return null;
 	}
