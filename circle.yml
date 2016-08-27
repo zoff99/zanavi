@@ -50,6 +50,13 @@ dependencies:
     - ~/.android
     - ~/.gradle
   pre:
+    - pwd
+    - cd /
+    - pwd
+    - exit 1
+
+
+
     - sudo apt-get update > /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
     - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
