@@ -65,6 +65,9 @@ dependencies:
     - sudo dpkg -s libgdiplus
     - sudo apt-cache showpkg libgdiplus
 
+    - dpkg --print-foreign-architectures ; exit 0
+    - cat /etc/dpkg/dpkg.cfg.d/multiarch ; exit 0
+    - ls -al /etc/dpkg/ ; exit 0
 
     - cat /etc/apt/sources.list
     - ls -al /etc/apt/
