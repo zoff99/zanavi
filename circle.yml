@@ -50,13 +50,21 @@ dependencies:
     - ~/.android
     - ~/.gradle
   pre:
+    - sudo apt-get update
     - cat /etc/lsb* ; exit 0
     - uname -a
     - dpkg -l | awk '{print $2}'
     
     - sudo apt-get install libtiff5
     
+    - sudo dpkg -s libtiff5
+    - sudo apt-cache showpkg libtiff5
+    - cat /etc/apt/sources.list
+    - ls -al /etc/apt/
+
+
     - exit 1
+
 
 
     - sudo apt-get update > /dev/null 2> /dev/null
