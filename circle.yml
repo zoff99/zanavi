@@ -52,14 +52,10 @@ dependencies:
   pre:
     - cat /etc/lsb* ; exit 0
     - uname -a
-    - ls -ald /usr/local/android-sdk-linux
-    - ls -al /usr/local/android-sdk-linux
-    - find /usr/local/android-sdk-linux
-    - cat /etc/passwd
-    - cat /etc/group
-    - id -a
-    - pwd
     - dpkg -l | awk '{print $2}'
+    
+    - sudo apt-get install libtiff5
+    
     - exit 1
 
 
