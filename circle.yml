@@ -55,13 +55,23 @@ dependencies:
     - uname -a
     - dpkg -l | awk '{print $2}'
     
-    - sudo apt-get install libtiff5
+    - sudo apt-get install libtiff5 ; exit 0
     
     - sudo dpkg -s libtiff5
     - sudo apt-cache showpkg libtiff5
+
+    - sudo apt-get install libgdiplus ; exit 0
+
+    - sudo dpkg -s libgdiplus
+    - sudo apt-cache showpkg libgdiplus
+
+
     - cat /etc/apt/sources.list
     - ls -al /etc/apt/
 
+    - ls -al /etc/apt/sources.list.d
+    
+    - for i in `ls -1 /etc/apt/sources.list.d/*`; do echo;echo;echo "==============" ; cat "$i" ; echo "==============";echo;echo ; done ; exit 0
 
     - exit 1
 
