@@ -121,9 +121,8 @@ dependencies:
 ###    - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
     - bash -c 'chmod a+rx ~/zanavi/ci/do_android_gradle.sh ; ~/zanavi/ci/do_android_gradle.sh'
 
-
 ### ----------- gradle -----------
-
+    - cd navit ; gradle build --stacktrace --info --no-daemon
 ### ----------- gradle -----------
 
 
