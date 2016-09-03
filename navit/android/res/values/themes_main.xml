@@ -21,11 +21,13 @@
         <item name="windowActionBar">false</item>
     </style>
 
+<!--
     <color name="black001">#000000</color>
     <color name="custom_theme_color">#000000</color>
     <color name="green">#00ff00</color>
     <color name="red">#ff0000</color>
-    
+-->
+
     <!-- ActionBar styles -->
     <style name="MyActionBarM"
            parent="@style/Widget.AppCompat.ActionBar.Solid">
