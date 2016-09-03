@@ -50,13 +50,6 @@ dependencies:
     - ~/.android
     - ~/.gradle
   pre:
-    - pwd
-    - cd /
-    - pwd
-    - exit 1
-
-
-
     - sudo apt-get update > /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
     - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
@@ -125,7 +118,15 @@ dependencies:
     - if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "2"#' ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
     - if [ "$EMU_API""x" == "24x" ]; then cat ~/zanavi/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
 
-    - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
+###    - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
+    - bash -c 'chmod a+rx ~/zanavi/ci/do_android_gradle.sh ; ~/zanavi/ci/do_android_gradle.sh'
+
+
+### ----------- gradle -----------
+
+### ----------- gradle -----------
+
+
 
     - ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so ; exit 0
     - ls -al /home/ubuntu/android-build/navit/.libs/navit2 ; exit 0
