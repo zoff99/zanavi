@@ -20,9 +20,9 @@ machine:
 ###############################
 
 ###### custom 2 ######
-    XGRADLE_HOME: ~/g/gradle-2.10
-    XPATH: ~/g/gradle-2.10/bin:$PATH
-    GRADLE_CUSTOM_VERSION: N
+    GRADLE_HOME: ~/g/gradle-2.10
+    PATH: ~/g/gradle-2.10/bin:$PATH
+    GRADLE_CUSTOM_VERSION: Y
 ###### custom 2 ######
 
 ###### custom 3 ######
