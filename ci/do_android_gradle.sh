@@ -160,6 +160,11 @@ cp navit_android_ldpi.xml android/res/raw/navitldpi.xml
 cp navit_android_hdpi.xml android/res/raw/navithdpi.xml
 find . -type d -name '\.svn' -exec rm -Rf {} \; ; fi; echo "ignore the find errors!!"
 
+cp -v "$SOURCE_PATH"/navit/build.gradle ./
+cp -v "$SOURCE_PATH"/navit/settings.gradle ./
+pwd
+ls -al ./
+ls -al android/
 ## -------------------------
 
 cd ./android
