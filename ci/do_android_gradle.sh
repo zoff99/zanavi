@@ -114,7 +114,7 @@ ls -al /home/ubuntu/android-build/navit/.libs/navit2
 ls -al /home/ubuntu/android-build/navit/navit2
 
 ## -------------------------
-b_arch = $(if [ "$DO_X86_BUILD" == "1" ]; then echo "x86"; elif [ "$DO_ARMV7_BUILD" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
+b_arch=$(if [ "$DO_X86_BUILD" == "1" ]; then echo "x86"; elif [ "$DO_ARMV7_BUILD" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
 make android/AndroidManifest.xml
 make android/build.xml
 
