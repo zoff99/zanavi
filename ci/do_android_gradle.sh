@@ -115,6 +115,7 @@ ls -al /home/ubuntu/android-build/navit/navit2
 
 ## -------------------------
 b_arch=$(if [ "$DO_X86_BUILD" == "1" ]; then echo "x86"; elif [ "$DO_ARMV7_BUILD" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
+cd navit
 make android/AndroidManifest.xml
 make android/build.xml
 
@@ -158,7 +159,7 @@ for i in $(cd ../po && echo *.mo); do cp ../po/"$i" android/res/raw/$( echo "$i"
 cp navit_android_mdpi.xml android/res/raw/navitmdpi.xml
 cp navit_android_ldpi.xml android/res/raw/navitldpi.xml
 cp navit_android_hdpi.xml android/res/raw/navithdpi.xml
-find . -type d -name '\.svn' -exec rm -Rf {} \; ; fi; echo "ignore the find errors!!"
+find . -type d -name '\.svn' -exec rm -Rf {} \;
 
 cp -v "$SOURCE_PATH"/navit/build.gradle ./
 cp -v "$SOURCE_PATH"/navit/settings.gradle ./
