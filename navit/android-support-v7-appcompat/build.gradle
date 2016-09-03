@@ -1,0 +1,16 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 20
+    }
+}
+
+dependencies {
+    // compile 'ch.acra:acra:4.8.5'
+}
