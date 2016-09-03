@@ -114,12 +114,12 @@ ls -al /home/ubuntu/android-build/navit/.libs/navit2
 ls -al /home/ubuntu/android-build/navit/navit2
 
 ## -------------------------
-b_arch = $(if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86"; elif [ "$(DO_ARMV7_BUILD)" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
+b_arch = $(if [ "$DO_X86_BUILD" == "1" ]; then echo "x86"; elif [ "$DO_ARMV7_BUILD" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
 make android/AndroidManifest.xml
 make android/build.xml
 
-mkdir -p android/libs/$(b_arch)
-cp .libs/*.so android/libs/$(b_arch)/libnavit.so
+mkdir -p android/libs/$b_arch
+cp .libs/*.so android/libs/$b_arch/libnavit.so
 for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' < "$i" > android/libs/$b_arch/$(basename "$i"); done
 
         mkdir -p android/res/drawable-ldpi
@@ -134,24 +134,24 @@ for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zan
 
 
 
-ls -al android/libs/$(b_arch)/lib*.so
-rm -f android/libs/$(b_arch)/libgraphics_android.so
-rm -f android/libs/$(b_arch)/libgraphics_null.so
-rm -f android/libs/$(b_arch)/libgui_internal.so
-rm -f android/libs/$(b_arch)/libmap_binfile.so
-rm -f android/libs/$(b_arch)/libmap_csv.so
-rm -f android/libs/$(b_arch)/libmap_filter.so
-rm -f android/libs/$(b_arch)/libmap_mg.so
-rm -f android/libs/$(b_arch)/libmap_shapefile.so
-rm -f android/libs/$(b_arch)/libmap_textfile.so
-rm -f android/libs/$(b_arch)/libosd_core.so
-rm -f android/libs/$(b_arch)/libspeech_android.so
-rm -f android/libs/$(b_arch)/libvehicle_android.so
-rm -f android/libs/$(b_arch)/libvehicle_demo.so
-rm -f android/libs/$(b_arch)/libvehicle_file.so
-rm -f android/libs/$(b_arch)/libvehicle_pipe.so
-rm -f android/libs/$(b_arch)/libvehicle_serial.so
-rm -f android/libs/$(b_arch)/libvehicle_socket.so
+ls -al android/libs/$b_arch/lib*.so
+rm -f android/libs/$b_arch/libgraphics_android.so
+rm -f android/libs/$b_arch/libgraphics_null.so
+rm -f android/libs/$b_arch/libgui_internal.so
+rm -f android/libs/$b_arch/libmap_binfile.so
+rm -f android/libs/$b_arch/libmap_csv.so
+rm -f android/libs/$b_arch/libmap_filter.so
+rm -f android/libs/$b_arch/libmap_mg.so
+rm -f android/libs/$b_arch/libmap_shapefile.so
+rm -f android/libs/$b_arch/libmap_textfile.so
+rm -f android/libs/$b_arch/libosd_core.so
+rm -f android/libs/$b_arch/libspeech_android.so
+rm -f android/libs/$b_arch/libvehicle_android.so
+rm -f android/libs/$b_arch/libvehicle_demo.so
+rm -f android/libs/$b_arch/libvehicle_file.so
+rm -f android/libs/$b_arch/libvehicle_pipe.so
+rm -f android/libs/$b_arch/libvehicle_serial.so
+rm -f android/libs/$b_arch/libvehicle_socket.so
 
 mkdir -p android/res/raw
 for i in $(cd ../po && echo *.mo); do cp ../po/"$i" android/res/raw/$( echo "$i" | tr "[A-Z]" "[a-z]") ; done
