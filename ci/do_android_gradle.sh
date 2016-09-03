@@ -113,6 +113,8 @@ ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applicati
 ls -al /home/ubuntu/android-build/navit/.libs/navit2
 ls -al /home/ubuntu/android-build/navit/navit2
 
+make android/AndroidManifest.xml
+make android/build.xml
 
 cd ./android
 
