@@ -478,9 +478,9 @@ test:
 
 
 # --------- capture screen ---------
-    - . ~/_bt2;sudo ln -sf /usr/bin/avconv /usr/bin/ffmpeg ; exit 0
-    - . ~/_bt2;timeout --signal=SIGKILL "70.0m" ffmpeg -f x11grab -s `xdpyinfo | grep 'dimensions:'|awk '{print $2}'` -r 20 -i "$DISPLAY" -preset veryfast -maxrate 250k -bufsize 1300k -vf "scale=1024:-1,format=yuv420p" $CIRCLE_ARTIFACTS/screen_capture_video.mpg >/dev/null 2>/dev/null :
-        background: true
+    #- . ~/_bt2;sudo ln -sf /usr/bin/avconv /usr/bin/ffmpeg ; exit 0
+    #- . ~/_bt2;timeout --signal=SIGKILL "70.0m" ffmpeg -f x11grab -s `xdpyinfo | grep 'dimensions:'|awk '{print $2}'` -r 20 -i "$DISPLAY" -preset veryfast -maxrate 250k -bufsize 1300k -vf "scale=1024:-1,format=yuv420p" $CIRCLE_ARTIFACTS/screen_capture_video.mpg >/dev/null 2>/dev/null :
+    #    background: true
 # --------- capture screen ---------
 
 
@@ -837,8 +837,8 @@ test:
     - . ~/_bt3;count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 ; else echo "COUNT OK" ; fi
 
 
-    - ps -fu ubuntu ; exit 0
-    - pkill --signal SIGINT -u ubuntu -f ffmpeg ; exit 0
+    #- ps -fu ubuntu ; exit 0
+    #- pkill --signal SIGINT -u ubuntu -f ffmpeg ; exit 0
     #- sleep 10
     #- pkill -9 -u ubuntu -f ffmpeg ; exit 0
     - ps -fu ubuntu ; exit 0
