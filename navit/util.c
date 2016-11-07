@@ -165,6 +165,17 @@ char *stristr(const char *String, const char *Pattern)
 #endif
 
 
+
+#if 1==1
+#ifndef ANDROID_ARM64
+
+/*
+ * ssize_t  getdelim(char ** __restrict, size_t * __restrict, int,
+            FILE * __restrict);
+   ssize_t  getline(char ** __restrict, size_t * __restrict, FILE * __restrict);
+ *
+ */
+
 /**
  * Read the part of a file up to a delimiter to a string.
  * <p> 
@@ -258,6 +269,11 @@ getline (char **lineptr, size_t *n, FILE *stream)
 {
   return getdelim (lineptr, n, '\n', stream);
 }
+
+#endif
+#endif
+
+
 
 #if defined(_UNICODE)
 wchar_t* newSysString(const char *toconvert)

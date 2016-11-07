@@ -171,25 +171,26 @@
                     android:paddingTop="10dp"
                     android:progressDrawable="@drawable/red_green_yellow_progressbar" />
 
-                <TextView
-                    android:id="@+id/mapdownload_speed_text_t006"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="10dp"
-                    android:paddingTop="2dp"
-                    android:textColor="#88FFFFFF"
-                    android:textSize="13sp" >
-                </TextView>
+                <!-- <TextView -->
+                <!-- android:id="@+id/mapdownload_speed_text_t006" -->
+                <!-- android:layout_width="match_parent" -->
+                <!-- android:layout_height="wrap_content" -->
+                <!-- android:paddingLeft="10dp" -->
+                <!-- android:paddingTop="2dp" -->
+                <!-- android:textColor="#88FFFFFF" -->
+                <!-- android:textSize="13sp" > -->
+                <!-- </TextView> -->
 
-                <ProgressBar
-                    android:id="@+id/mapdownload_speed_bar_t006"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="50dp"
-                    android:paddingTop="10dp"
-                    android:progressDrawable="@drawable/red_green_yellow_progressbar" />
+
+                <!-- <ProgressBar -->
+                <!-- android:id="@+id/mapdownload_speed_bar_t006" -->
+                <!-- style="?android:attr/progressBarStyleHorizontal" -->
+                <!-- android:layout_width="match_parent" -->
+                <!-- android:layout_height="wrap_content" -->
+                <!-- android:paddingLeft="10dp" -->
+                <!-- android:paddingRight="50dp" -->
+                <!-- android:paddingTop="10dp" -->
+                <!-- android:progressDrawable="@drawable/red_green_yellow_progressbar" /> -->
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

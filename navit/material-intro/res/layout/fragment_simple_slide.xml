@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="false"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="2dp" >
+
+    <ImageView
+        android:id="@id/mi_image"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="5.5"
+        android:adjustViewBounds="true"
+        android:gravity="center"
+        android:padding="1dp"
+        tools:ignore="ContentDescription"
+        tools:src="@android:drawable/sym_action_call" />
+
+    <TextView
+        android:id="@id/mi_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="1dp"
+        android:layout_weight="0.7"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        tools:ignore="UnusedAttribute"
+        tools:text="Lorem ipsum" />
+
+    <TextView
+        android:id="@id/mi_description"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="1dp"
+        android:layout_weight="4.0"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
+
+</LinearLayout>

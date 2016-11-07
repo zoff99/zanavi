@@ -1,0 +1,73 @@
+apply plugin: 'com.android.library'
+
+def versionMajor = 1
+def versionMinor = 5
+def versionPatch = 7
+def versionBuild = 0 // bump for dogfood builds, public betas, etc.
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion '24.0.2'
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}" + (versionPatch == 0 ? "" : ".${versionPatch}")
+
+        vectorDrawables.useSupportLibrary = true
+        // generatedDensities = []
+
+    }
+
+    // aaptOptions {
+    //      additionalParameters "--no-version-vectors"
+    //}
+
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+       }
+    }
+
+}
+
+configurations {
+    javadocDeps
+}
+
+dependencies {
+    compile project(':android-support-v7-appcompat')
+    compile project(':android-support-compat')
+    compile project(':android-support-fragment')
+    compile project(':android-support-core-ui')
+    compile project(':android-support-core-utils')
+    compile project(':android-support-design')
+    compile project(':android-support-vector-drawable')
+
+    // compile 'com.android.support:support-annotations:24.2.0'
+    compile project(':android-support-annotations')
+
+    // javadocDeps 'com.android.support:support-annotations:24.2.0'
+    javadocDeps project(':android-support-annotations')
+
+}
+

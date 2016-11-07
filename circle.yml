@@ -1,57 +1,270 @@
 machine:
   timezone:
     Europe/Vienna
+  java:
+    version: oraclejdk8
   environment:
-    ZEMU_: "zanavi23"
-    EMU_: "zanavi21"
-    XEMU_: "zanavi10"
-    Zsdpath: "/sdcard"
-    sdpath: "/storage/sdcard"
-    Xsdpath: "/mnt/sdcard"
+###############################
+# run emulator on this API [09,10,14,21,23,24]
+#
+    EMU_09: "zanavi09"
+    EMU_10: "zanavi10"
+    EMU_14: "zanavi14"
+    EMU_21: "zanavi21"
+    EMU_23: "zanavi23"
+    EMU_24: "zanavi24"
+    sdpath_09: "/mnt/sdcard"
+    sdpath_10: "/mnt/sdcard"
+    sdpath_14: "/mnt/sdcard"
+    sdpath_21: "/sdcard"
+    sdpath_23: "/storage/eee"
+    sdpath_24: "/storage/eee"
+#
+    EMU_API: "21"
+###############################
+
+###############################
+#   create new emu on every run:
+#
+#   0 -> NO
+#   1 -> YES
+#
+    _ALWAYS_NEW_EMU_: 1
+###############################
+
+###############################
+#   build type:
+#
+#   0 -> *not used now*
+#   1 -> build
+#   2 -> build + run
+#   3 -> build + run + tests
+#
+    _BUILD_TYPE_: 3
+###############################
+
+###### custom 2 ######
+    GRADLE_HOME: ~/g/gradle-custom
+    PATH: ~/g/gradle-custom/bin:$PATH
+#
+#   GRADLE_CUSTOM_VERSION -> [0, 1]
+#   GRADLE_CUSTOM_VNUM -> what version?
+#
+    GRADLE_CUSTOM_VERSION: 1
+    GRADLE_CUSTOM_VNUM: 3.1
+    # ANDROID_DAILY_OVERRIDE: "d349fb0bfb70be0d783e6c79454a5ceb276095ed"
+###### custom 2 ######
+
+###### custom 3 ######
+    CLASS_P: com.zoffcc.applications.zanavi
+    START_INTENT_P: .Navit
+# switch glibc to a memory conserving mode
+    # MALLOC_ARENA_MAX: "2"
+###### custom 3 ######
+
 ###############################
 #   0 -> no
 #   1 -> C
 #   2 -> Java
+#
     COVERITY_BUILD_: 0
+    COV_PROJ: zoff99%2Fzanavi
 ###############################
+
+    ANDROID_HOME: /usr/local/android-sdk-linux
+    ANDROID_SDK: /usr/local/android-sdk-linux/
+    _SDK_: /usr/local/android-sdk-linux/
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1600m -XX:+HeapDumpOnOutOfMemoryError" -Dorg.gradle.daemon=false'
+    MOZ_CRASHREPORTER_DISABLE: 1
+    FULL_LOG: 1
+
 dependencies:
   cache_directories:
     - ~/.android
-    #- ~/maps
+    - ~/.gradle
+    - ~/maps
   pre:
-    - sudo apt-get update > /dev/null 2> /dev/null
-    - sudo apt-get install libpng12-dev > /dev/null 2> /dev/null
-    - sudo apt-get install librsvg2-bin > /dev/null 2> /dev/null
-    - sudo apt-get install libfreetype6-dev > /dev/null 2> /dev/null
-    - sudo apt-get install libdbus-glib-1-dev > /dev/null 2> /dev/null
-    - sudo apt-get install g++ > /dev/null 2> /dev/null
-    - sudo apt-get install gettext > /dev/null 2> /dev/null
-    - sudo apt-get install ant > /dev/null 2> /dev/null
-    - sudo apt-get install libsaxonb-java > /dev/null 2> /dev/null
-    - sudo apt-get install lib32stdc++6 > /dev/null 2> /dev/null
-    - sudo apt-get install lib32z1 > /dev/null 2> /dev/null
-    - sudo apt-get install zip > /dev/null 2> /dev/null
-    - sudo apt-get install bc > /dev/null 2> /dev/null
-    - sudo apt-get install libfftw3-double3 > /dev/null 2> /dev/null
-    - sudo apt-get install libmagickcore5 > /dev/null 2> /dev/null
-    - sudo apt-get install perlmagick > /dev/null 2> /dev/null
-    - sudo apt-get install liblwp-useragent-determined-perl > /dev/null 2> /dev/null
-    - sudo apt-get install xvfb > /dev/null 2> /dev/null
-    - sudo apt-get install xdotool > /dev/null 2> /dev/null
-    - sudo apt-get install telnet > /dev/null 2> /dev/null
-    - sudo apt-get install x11-utils > /dev/null 2> /dev/null
-    - sudo apt-get install xvkbd > /dev/null 2> /dev/null
+
+    ### ------- DO NOT EDIT -------
+    ### ------- scripts for _BUILD_TYPE_ type check -------
+    - echo 'if [ $_BUILD_TYPE_ -lt 1 ]; then echo "=BT=:SKIP [""$_BUILD_TYPE_""]" ; exit 0 ; else echo "=BT=:""$_BUILD_TYPE_" ; fi' > ~/_bt1 ; chmod a+rx ~/_bt1
+    - echo 'if [ $_BUILD_TYPE_ -lt 2 ]; then echo "=BT=:SKIP [""$_BUILD_TYPE_""]" ; exit 0 ; else echo "=BT=:""$_BUILD_TYPE_" ; fi' > ~/_bt2 ; chmod a+rx ~/_bt2
+    - echo 'if [ $_BUILD_TYPE_ -lt 3 ]; then echo "=BT=:SKIP [""$_BUILD_TYPE_""]" ; exit 0 ; else echo "=BT=:""$_BUILD_TYPE_" ; fi' > ~/_bt3 ; chmod a+rx ~/_bt3
+
+    - echo 'if [ $_BUILD_TYPE_ -gt 1 ]; then echo "=BT=:SKIP [""$_BUILD_TYPE_""]" ; exit 0 ; else echo "=BT=:""$_BUILD_TYPE_" ; fi' > ~/_xbt1 ; chmod a+rx ~/_xbt1
+    - echo 'if [ $_BUILD_TYPE_ -gt 2 ]; then echo "=BT=:SKIP [""$_BUILD_TYPE_""]" ; exit 0 ; else echo "=BT=:""$_BUILD_TYPE_" ; fi' > ~/_xbt2 ; chmod a+rx ~/_xbt2
+    - echo 'if [ $_BUILD_TYPE_ -gt 3 ]; then echo "=BT=:SKIP [""$_BUILD_TYPE_""]" ; exit 0 ; else echo "=BT=:""$_BUILD_TYPE_" ; fi' > ~/_xbt3 ; chmod a+rx ~/_xbt3
+
+    - wget 'https://raw.githubusercontent.com/zoff99/android_sdk_install_wrapper/master/__sdk_update__.sh' -O ~/__sdk_update__.sh
+    - chmod a+rx ~/__sdk_update__.sh
+    ### ------- scripts for _BUILD_TYPE_ type check -------
+    ### ------- DO NOT EDIT -------
+
+    - sudo apt-get update #> /dev/null 2> /dev/null
+    - sudo apt-get install libpng12-dev #> /dev/null 2> /dev/null
+    - sudo apt-get install librsvg2-bin #> /dev/null 2> /dev/null
+    - sudo apt-get install g++ #> /dev/null 2> /dev/null
+    - sudo apt-get install gettext #> /dev/null 2> /dev/null
+    - sudo apt-get install ant #> /dev/null 2> /dev/null
+    - sudo apt-get install libsaxonb-java #> /dev/null 2> /dev/null
+    - sudo apt-get install lib32stdc++6 #> /dev/null 2> /dev/null
+    - sudo apt-get install lib32z1 #> /dev/null 2> /dev/null
+    - sudo apt-get install zip #> /dev/null 2> /dev/null
+    - sudo apt-get install bc #> /dev/null 2> /dev/null
+    - sudo apt-get install mtools #> /dev/null 2> /dev/null
+    - sudo apt-get install perlmagick #> /dev/null 2> /dev/null
+    - sudo apt-get install liblwp-useragent-determined-perl #> /dev/null 2> /dev/null
+    - sudo apt-get install xvfb #> /dev/null 2> /dev/null
+    - sudo apt-get install xdotool #> /dev/null 2> /dev/null
+    - sudo apt-get install autoconf #> /dev/null 2> /dev/null
+    - sudo apt-get install telnet #> /dev/null 2> /dev/null
+    - sudo apt-get install x11-utils #> /dev/null 2> /dev/null
+    - sudo apt-get install xvkbd #> /dev/null 2> /dev/null
+    - sudo apt-get install qrencode #> /dev/null 2> /dev/null
+    - sudo apt-get install firefox
+
+    - sudo apt-get install libav-tools #> /dev/null 2> /dev/null
+
+    - gradle -v # display gradle version
+    - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then cd ~ ; wget 'https://services.gradle.org/distributions/gradle-'"$GRADLE_CUSTOM_VNUM"'-bin.zip' ; fi
+    - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then mkdir ~/g ; cd ~/g ; unzip ~/gradle-"$GRADLE_CUSTOM_VNUM"-bin.zip ; fi
+    - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then cd ~/g ; mv -v ./gradle-"$GRADLE_CUSTOM_VNUM" ./gradle-custom ; fi
+    - gradle -v # display gradle version
+
+
     - echo y | android update sdk --no-ui --all --filter "tools"
-    - echo y | android update sdk --no-ui --all --filter build-tools-23.0.1
-    - echo y | android update sdk --no-ui --all --filter android-23
-    - echo y | android update sdk --no-ui --all --filter platform-tools-preview
-    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-23
-    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-addon-google_apis-google-23
-    - echo y | android update sdk --no-ui --all --filter addon-google_apis-google-23
+    - android list sdk --all | grep -i tools
+    - android list sdk --all --extended
 
-    - if [ "$COVERITY_BUILD_""x" != "0x" ]; then mkdir ~/cov_scan/ && wget https://scan.coverity.com/download/linux-64 --post-data "token=$COVERITY_TOKEN&project=zoff99%2Fzanavi" -O ~/cov_scan/coverity_tool.tgz && wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz && cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz ; fi
+    - ~/__sdk_update__.sh build-tools-22.0.0
+    - ~/__sdk_update__.sh build-tools-22.0.1
+    - ~/__sdk_update__.sh build-tools-23.0.1
+    - ~/__sdk_update__.sh build-tools-23.0.2
+    - ~/__sdk_update__.sh build-tools-23.0.3
+    - ~/__sdk_update__.sh build-tools-24.0.0
+    - ~/__sdk_update__.sh build-tools-24.0.2
+#    - ~/__sdk_update__.sh build-tools-24.0.3
+    - echo y | android update sdk --no-ui --all --filter build-tools-24.0.3 > /dev/null 2> /dev/null # license
+    - ~/__sdk_update__.sh android-7
+    - ~/__sdk_update__.sh android-14
+    - ~/__sdk_update__.sh android-19
+    - ~/__sdk_update__.sh android-21
+    - ~/__sdk_update__.sh android-22
+    - ~/__sdk_update__.sh android-23
+    - ~/__sdk_update__.sh android-24
+    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-14
+    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-19
+    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-21
+    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-23
+    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-24
+    - echo y | android update sdk --no-ui --all --filter platform-tools > /dev/null 2> /dev/null
+    - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-m2repository #> /dev/null 2> /dev/null
+    - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-google-m2repository #> /dev/null 2> /dev/null
+    - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-support #> /dev/null 2> /dev/null
 
-    - bash -c 'chmod a+rx ~/zanavi/ci/do_android.sh ; ~/zanavi/ci/do_android.sh'
+    - if [ "$COVERITY_BUILD_""x" == "1x" ]; then mkdir ~/cov_scan/ && wget 'https://scan.coverity.com/download/linux-64' --post-data "token=$COVERITY_TOKEN&project=$COV_PROJ" -O ~/cov_scan/coverity_tool.tgz && wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz && cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz ; fi
+
+    - pwd ; ls -al
+
+    - . ~/_bt3;if [ "$EMU_API""x" == "24x" ]; then cat ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    - . ~/_bt3;if [ "$EMU_API""x" == "24x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "1"#' ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
+    - . ~/_bt3;if [ "$EMU_API""x" == "24x" ]; then cat ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+
+    - . ~/_bt3;if [ "$EMU_API""x" == "23x" ]; then cat ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+    - . ~/_bt3;if [ "$EMU_API""x" == "23x" ]; then sed -i -e 's#prefs.getString("storage_directory", "-1"#prefs.getString("storage_directory", "1"#' ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java ; fi
+    - . ~/_bt3;if [ "$EMU_API""x" == "23x" ]; then cat ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'storage_directory", ' ; fi
+
+
+    - . ~/_xbt2; cat ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep ' -MAT-INTRO-'
+    - . ~/_xbt2; sed -i -e 's#if (Navit.CIDEBUG == 0) // -MAT-INTRO-#//if (Navit.CIDEBUG == 0) // -MAT-INTRO-#' ~/"$CIRCLE_PROJECT_REPONAME"/navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+
+    - if [ ! -e ~/zanavi/ ]; then pwd; curdir=`pwd` ; ln -s "$curdir" ~/zanavi ; ls -al ; ls -al ~ ; fi
+
+    - . ~/_bt2;cd ~/zanavi ;ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+    - . ~/_bt2;cd ~/zanavi ;sed -i -e 's#static final boolean CI_ALLOWCRASHREPORTS.*#static final boolean CI_ALLOWCRASHREPORTS = false;#' navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+    - . ~/_bt2;cd ~/zanavi ;cat navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'final boolean CI_ALLOWCRASHREPORTS'
+    - . ~/_bt2;cd ~/zanavi ;ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+
+    - . ~/_bt3;cd ~/zanavi ;ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+    - . ~/_bt3;cd ~/zanavi ;sed -i -e 's#static final int CIDEBUG =.*#static final int CIDEBUG = 1;#' navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+    - . ~/_bt3;cd ~/zanavi ;cat navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'static final int CIDEBUG'
+    - . ~/_bt3;cd ~/zanavi ;ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
+
+    - . ~/_bt3;cd ~/zanavi ;ls -al navit/debug.h
+    - . ~/_bt3;cd ~/zanavi ;sed -i -e 'sc// \#define _CIDEBUG_BUILD_ 1c\#define _CIDEBUG_BUILD_ 1c' navit/debug.h
+    - . ~/_bt3;cd ~/zanavi ;cat navit/debug.h | grep 'CIDEBUG_BUILD'
+    - . ~/_bt3;cd ~/zanavi ;ls -al navit/debug.h
+
+
+##### ------------ BUILD ------------
+    ## ----- GRADLE -----
+    - bash -c 'chmod a+rx ~/zanavi/ci/do_android_gradle.sh ; cd ~/ ; ~/zanavi/ci/do_android_gradle.sh'
+    - ps aux
+    - cd ~/android-build/navit ; if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then gradle wrapper --no-daemon --gradle-version "$GRADLE_CUSTOM_VNUM" --info ; else gradle wrapper --no-daemon --info ; fi ; exit 0
+    - ps aux
+    - mkdir $CIRCLE_ARTIFACTS/gradle_wrapper ; exit 0
+    - cd ~/android-build/navit ; cp -av gradle gradlew gradlew.bat $CIRCLE_ARTIFACTS/gradle_wrapper/ ; exit 0
+    - cd ~/android-build/navit ; gradle -q :android:dependencies --no-daemon ; exit 0
+    - ps aux
+    # - cd ~/android-build/navit ; gradle :android:lint --no-daemon --info ; exit 0
+    # - cd ~/android-build/navit ; ./gradlew check --no-daemon --info ; exit 0
+    - ps aux
+    - cd ~/android-build/navit ; ./gradlew tasks --no-daemon ; exit 0
+    - ps aux
+    - cd ~/android-build/navit ; ./gradlew :android:assembleRelease --stacktrace --info --no-daemon -x lint
+    - ps aux
+    ## ----- GRADLE -----
+
+    - find ../ -name '*.apk' ; exit 0
+##### ------------ BUILD ------------
+
+
+##### ------------ COPY APP to standard DIR ------------
+    - mkdir -p app/build/outputs/apk/
+    - cp -av `find ../ -name '*.apk' 2> /dev/null | tail -1 2> /dev/null` app/build/outputs/apk/app-debug-unaligned.apk
+    - /usr/local/android-sdk-linux/build-tools/23.0.2/aapt d permissions app/build/outputs/apk/app-debug-unaligned.apk ; exit 0
+##### ------------ COPY APP to standard DIR ------------
+
+##### ------------ COPY LIBS to ARTIFACTS DIR ----------
+    - zip -r $CIRCLE_ARTIFACTS/zanavi_binary_libs.zip ~/android-build/navit/android/libs ; exit 0
+    - mkdir -p $CIRCLE_ARTIFACTS/libs/ ; exit 0
+    - cp -av ~/android-build/navit/android/libs/* $CIRCLE_ARTIFACTS/libs/ ; exit 0
+##### ------------ COPY LIBS to ARTIFACTS DIR ----------
+
+##### ------------ COPY "raw" to ARTIFACTS DIR ---------
+    - zip -r $CIRCLE_ARTIFACTS/raw_dir.zip ~/android-build/navit/android/res/raw ; exit 0
+    - mkdir -p $CIRCLE_ARTIFACTS/raw_dir/ ; exit 0
+    - cp -av ~/android-build/navit/android/res/raw/* $CIRCLE_ARTIFACTS/raw_dir/ ; exit 0
+##### ------------ COPY "raw" to ARTIFACTS DIR ---------
+
+
+##### ------------ SIGN APP (again) and copy to ARTIFACTS DIR ------------
+    - zip -d app/build/outputs/apk/app-debug-unaligned.apk META-INF/\* ; exit 0  # remove signature (only if it's unsigned) !!
+    - cp -av app/build/outputs/apk/app-debug-unaligned.apk ~/app.apk
+    - cd ~/ ;
+      echo xxxxxxrm -f ~/.android/debug.keystore ;
+      ls -al ~/.android/debug.keystore ;
+      if [ ! -f ~/.android/debug.keystore ]; then echo "*** generating new signer key ***" ;
+      echo "*** generating new signer key ***";
+      echo "*** generating new signer key ***";
+      keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -keyalg RSA -keysize 2048 -validity 10000 -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" ;
+      fi ;
+      ls -al ~/ ;
+      jarsigner -verbose -keystore ~/.android/debug.keystore -storepass android -keypass android -sigalg SHA1withRSA -digestalg SHA1 -sigfile CERT -signedjar app-signed.apk app.apk androiddebugkey ;
+      ls -al ~/ ;
+      $_SDK_/build-tools/23.0.1/zipalign -v 4 app-signed.apk app-signed-aligned.apk ;
+      ls -al ~/ ;
+      pwd ;
+      ls -al ;
+      cp -av app-signed-aligned.apk $CIRCLE_ARTIFACTS/${CIRCLE_PROJECT_REPONAME}_circleci_$CIRCLE_SHA1.apk || exit 1
+##### ------------ SIGN APP (again) and copy to ARTIFACTS DIR ------------
+
+
+##### ------------ GERNATE QR CODE ------------
+    - qrencode -o $CIRCLE_ARTIFACTS/QR_apk.png 'https://circle-artifacts.com/gh/'${CIRCLE_PROJECT_USERNAME}'/'${CIRCLE_PROJECT_REPONAME}'/'${CIRCLE_BUILD_NUM}'/artifacts/'${CIRCLE_NODE_INDEX}'/tmp/'`basename $CIRCLE_ARTIFACTS`'/'"${CIRCLE_PROJECT_REPONAME}_circleci_$CIRCLE_SHA1.apk" ; exit 0
+    - qrencode -o $CIRCLE_ARTIFACTS/QR_artifacts.png 'https://circleci.com/gh/'${CIRCLE_PROJECT_USERNAME}'/'${CIRCLE_PROJECT_REPONAME}'/'${CIRCLE_BUILD_NUM}'#artifacts' ; exit 0
+##### ------------ GERNATE QR CODE ------------
+
 
     - ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so ; exit 0
     - ls -al /home/ubuntu/android-build/navit/.libs/navit2 ; exit 0
@@ -63,113 +276,123 @@ dependencies:
     - ls -al ~/maps/ ; exit 0
     - mkdir -p ~/maps/ ; exit 0
     - ls -al ~/maps/
+    - rm -f ~/_dl_error_.txt ; exit 0
+
+##### ---------- download script ----------
+    - echo '#! /bin/bash' > ~/download_my_file.sh
+    - echo 'url="$1" ; file=$2 ; touch_file=$3 ; tries=3 ; wait_=300 ; cur_try=0 ; while [ $cur_try -lt $tries ]; do cur_try=$[ $cur_try + 1 ] ; wget --no-check-certificate --retry-connrefused --wait=5 -c -t 100 -O $file "$url" ; res=$? ; if [ $res -eq 0 ]; then touch $touch_file ; exit 0 ; else sleep "$wait_" ; fi ; done ; touch ~/_dl_error_.txt' >> ~/download_my_file.sh
+    - chmod a+rx ~/download_my_file.sh
+##### ---------- download script ----------
 
     - mkdir ~/_downloadmaps_/
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_005.bin "http://ci.zanavi.cc/data/france.bin" ; touch ~/_downloadmaps_/005 :
+
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/france.bin' ~/maps/navitmap_001.bin ~/_downloadmaps_/001 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_002.bin "http://ci.zanavi.cc/data/germany.bin" ; touch ~/_downloadmaps_/002 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/germany.bin' ~/maps/navitmap_002.bin ~/_downloadmaps_/002 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_010.bin "http://ci.zanavi.cc/data/great_britain.bin" ; touch ~/_downloadmaps_/010 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/great_britain.bin' ~/maps/navitmap_003.bin ~/_downloadmaps_/003 :
         background: true
 
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_001.bin "http://ci.zanavi.cc/data/austria.bin" ; touch ~/_downloadmaps_/001 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/austria.bin' ~/maps/navitmap_004.bin ~/_downloadmaps_/004 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_003.bin "http://ci.zanavi.cc/data/netherlands.bin" ; touch ~/_downloadmaps_/003 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/netherlands.bin' ~/maps/navitmap_005.bin ~/_downloadmaps_/005 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_004.bin "http://ci.zanavi.cc/data/belgium.bin" ; touch ~/_downloadmaps_/004 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/belgium.bin' ~/maps/navitmap_006.bin ~/_downloadmaps_/006 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_006.bin "http://ci.zanavi.cc/data/italy.bin" ; touch ~/_downloadmaps_/006 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/italy.bin' ~/maps/navitmap_007.bin ~/_downloadmaps_/007 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_007.bin "http://ci.zanavi.cc/data/liechtenstein.bin" ; touch ~/_downloadmaps_/007 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/liechtenstein.bin' ~/maps/navitmap_008.bin ~/_downloadmaps_/008 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_008.bin "http://ci.zanavi.cc/data/luxembourg.bin" ; touch ~/_downloadmaps_/008 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/luxembourg.bin' ~/maps/navitmap_009.bin ~/_downloadmaps_/009 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_009.bin "http://ci.zanavi.cc/data/switzerland.bin" ; touch ~/_downloadmaps_/009 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/switzerland.bin' ~/maps/navitmap_010.bin ~/_downloadmaps_/010 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_011.bin "http://ci.zanavi.cc/data/ireland.bin" ; touch ~/_downloadmaps_/011 :
-        background: true
-
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_012.bin "http://ci.zanavi.cc/data/lithuania.bin" ; touch ~/_downloadmaps_/012 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_013.bin "http://ci.zanavi.cc/data/poland.bin" ; touch ~/_downloadmaps_/013 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_014.bin "http://ci.zanavi.cc/data/spain.bin" ; touch ~/_downloadmaps_/014 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_015.bin "http://ci.zanavi.cc/data/portugal.bin" ; touch ~/_downloadmaps_/015 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/ireland.bin' ~/maps/navitmap_011.bin ~/_downloadmaps_/011 :
         background: true
 
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_016.bin "http://ci.zanavi.cc/data/us-midwest.bin" ; touch ~/_downloadmaps_/016 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/lithuania.bin' ~/maps/navitmap_012.bin ~/_downloadmaps_/012 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_017.bin "http://ci.zanavi.cc/data/us-northeast.bin" ; touch ~/_downloadmaps_/017 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/poland.bin' ~/maps/navitmap_013.bin ~/_downloadmaps_/013 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_018.bin "http://ci.zanavi.cc/data/us-pacific.bin" ; touch ~/_downloadmaps_/018 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/spain.bin' ~/maps/navitmap_014.bin ~/_downloadmaps_/014 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_019.bin "http://ci.zanavi.cc/data/us-south.bin" ; touch ~/_downloadmaps_/019 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_020.bin "http://ci.zanavi.cc/data/us-west.bin" ; touch ~/_downloadmaps_/020 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/portugal.bin' ~/maps/navitmap_015.bin ~/_downloadmaps_/015 :
         background: true
 
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_021.bin "http://ci.zanavi.cc/data/central_america.bin" ; touch ~/_downloadmaps_/021 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/us-midwest.bin' ~/maps/navitmap_016.bin ~/_downloadmaps_/016 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_022.bin "http://ci.zanavi.cc/data/south_america.bin" ; touch ~/_downloadmaps_/022 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/us-northeast.bin' ~/maps/navitmap_017.bin ~/_downloadmaps_/017 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_023.bin "http://ci.zanavi.cc/data/africa.bin" ; touch ~/_downloadmaps_/023 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/us-pacific.bin' ~/maps/navitmap_018.bin ~/_downloadmaps_/018 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_024.bin "http://ci.zanavi.cc/data/australia_oceania.bin" ; touch ~/_downloadmaps_/024 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/us-south.bin' ~/maps/navitmap_019.bin ~/_downloadmaps_/019 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_025.bin "http://ci.zanavi.cc/data/andorra.bin" ; touch ~/_downloadmaps_/025 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_026.bin "http://ci.zanavi.cc/data/belarus.bin" ; touch ~/_downloadmaps_/026 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_027.bin "http://ci.zanavi.cc/data/bosnia-herzegovina.bin" ; touch ~/_downloadmaps_/027 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_028.bin "http://ci.zanavi.cc/data/croatia.bin" ; touch ~/_downloadmaps_/028 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_029.bin "http://ci.zanavi.cc/data/cyprus.bin" ; touch ~/_downloadmaps_/029 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/us-west.bin' ~/maps/navitmap_020.bin ~/_downloadmaps_/020 :
         background: true
 
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_030.bin "http://ci.zanavi.cc/data/czech_republic.bin" ; touch ~/_downloadmaps_/030 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/central_america.bin' ~/maps/navitmap_021.bin ~/_downloadmaps_/021 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_031.bin "http://ci.zanavi.cc/data/estonia.bin" ; touch ~/_downloadmaps_/031 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/south_america.bin' ~/maps/navitmap_022.bin ~/_downloadmaps_/022 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_032.bin "http://ci.zanavi.cc/data/hungary.bin" ; touch ~/_downloadmaps_/032 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/africa.bin' ~/maps/navitmap_023.bin ~/_downloadmaps_/023 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_033.bin "http://ci.zanavi.cc/data/greece.bin" ; touch ~/_downloadmaps_/033 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/australia_oceania.bin' ~/maps/navitmap_024.bin ~/_downloadmaps_/024 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_034.bin "http://ci.zanavi.cc/data/kosovo.bin" ; touch ~/_downloadmaps_/034 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/andorra.bin' ~/maps/navitmap_025.bin ~/_downloadmaps_/025 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_035.bin "http://ci.zanavi.cc/data/macedonia.bin" ; touch ~/_downloadmaps_/035 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/belarus.bin' ~/maps/navitmap_026.bin ~/_downloadmaps_/026 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_036.bin "http://ci.zanavi.cc/data/moldova.bin" ; touch ~/_downloadmaps_/036 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/bosnia-herzegovina.bin' ~/maps/navitmap_027.bin ~/_downloadmaps_/027 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_037.bin "http://ci.zanavi.cc/data/denmark.bin" ; touch ~/_downloadmaps_/037 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/croatia.bin' ~/maps/navitmap_028.bin ~/_downloadmaps_/028 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_038.bin "http://ci.zanavi.cc/data/russia-european-part.bin" ; touch ~/_downloadmaps_/038 :
-        background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_039.bin "http://ci.zanavi.cc/data/serbia.bin" ; touch ~/_downloadmaps_/039 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/cyprus.bin' ~/maps/navitmap_029.bin ~/_downloadmaps_/029 :
         background: true
 
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_040.bin "http://ci.zanavi.cc/data/slovakia.bin" ; touch ~/_downloadmaps_/040 :
+
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/czech_republic.bin' ~/maps/navitmap_030.bin ~/_downloadmaps_/030 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_041.bin "http://ci.zanavi.cc/data/slovenia.bin" ; touch ~/_downloadmaps_/041 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/estonia.bin' ~/maps/navitmap_031.bin ~/_downloadmaps_/031 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_042.bin "http://ci.zanavi.cc/data/sweden.bin" ; touch ~/_downloadmaps_/042 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/hungary.bin' ~/maps/navitmap_032.bin ~/_downloadmaps_/032 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_043.bin "http://ci.zanavi.cc/data/turkey.bin" ; touch ~/_downloadmaps_/043 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/greece.bin' ~/maps/navitmap_033.bin ~/_downloadmaps_/033 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_044.bin "http://ci.zanavi.cc/data/cuba.bin" ; touch ~/_downloadmaps_/044 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/kosovo.bin' ~/maps/navitmap_034.bin ~/_downloadmaps_/034 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_045.bin "http://ci.zanavi.cc/data/canada.bin" ; touch ~/_downloadmaps_/045 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/macedonia.bin' ~/maps/navitmap_035.bin ~/_downloadmaps_/035 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_046.bin "http://ci.zanavi.cc/data/mexico.bin" ; touch ~/_downloadmaps_/046 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/moldova.bin' ~/maps/navitmap_036.bin ~/_downloadmaps_/036 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/denmark.bin' ~/maps/navitmap_037.bin ~/_downloadmaps_/037 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/russia-european-part.bin' ~/maps/navitmap_038.bin ~/_downloadmaps_/038 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/serbia.bin' ~/maps/navitmap_039.bin ~/_downloadmaps_/039 :
         background: true
 
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_001.bin.idx "http://ci.zanavi.cc/data/planet.bin.idx" ; touch ~/_downloadmaps_/i_001 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/slovakia.bin' ~/maps/navitmap_040.bin ~/_downloadmaps_/040 :
         background: true
-    - wget --no-check-certificate -t 100 -O ~/maps/navitmap_049.bin "http://ci.zanavi.cc/data/restl_welt.bin" ; touch ~/_downloadmaps_/049 :
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/slovenia.bin' ~/maps/navitmap_041.bin ~/_downloadmaps_/041 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/sweden.bin' ~/maps/navitmap_042.bin ~/_downloadmaps_/042 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/turkey.bin' ~/maps/navitmap_043.bin ~/_downloadmaps_/043 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/cuba.bin' ~/maps/navitmap_044.bin ~/_downloadmaps_/044 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/canada.bin' ~/maps/navitmap_045.bin ~/_downloadmaps_/045 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/mexico.bin' ~/maps/navitmap_046.bin ~/_downloadmaps_/046 :
         background: true
 
-    - files=48 ; have=0 ; while [ $have -lt $files ]; do ls -al ~/_downloadmaps_/ ; have=`ls -1 ~/_downloadmaps_/|wc -l|tr -d " "` ; echo "have=""$have" ; sleep 30  ; done
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/restl_welt.bin' ~/maps/navitmap_047.bin ~/_downloadmaps_/047 :
+        background: true
+    - . ~/_bt3; ~/download_my_file.sh 'http://ci.zanavi.cc/data/planet.bin.idx' ~/maps/navitmap_001.bin.idx ~/_downloadmaps_/i_001 :
+        background: true
+
+
+    - . ~/_bt3;files=48 ; have=0 ; while [ $have -lt $files ]; do if [ -e ~/_dl_error_.txt ]; then echo "ERROR while downloading" ; exit 1 ; else ls -al ~/_downloadmaps_/ ; have=`ls -1 ~/_downloadmaps_/|wc -l|tr -d " "` ; echo "have=""$have" ; sleep 30 ; fi ; done
 
     - ls -al ~/*txt ; exit 0
     - rm -fv ~/stdout_wget_*.txt ; rm -fv ~/stderr_wget_*.txt ; exit 0
@@ -178,125 +401,211 @@ dependencies:
 
 test:
   pre:
-    - mksdcard -l e 18000M sdcard.img
-    - echo 'mtools_skip_check=1' > ~/.mtoolsrc
-    - android list targets
+    - . ~/_bt2;mksdcard -l e 18000M sdcard.img
+    - . ~/_bt2;echo 'mtools_skip_check=1' > ~/.mtoolsrc
+    - . ~/_bt2;android list targets
+
+    - . ~/_bt2; if [ "$_ALWAYS_NEW_EMU_""x" == "1x" ]; then ls -al ~/.android ; rm -Rf ~/.android/avd ; ls -al ~/.android ; fi
+
 #
-    - if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA720" ; fi
-    - if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    #- if [ "$EMU_" == "zanavi23" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    #- if [ "$EMU_" == "zanavi23" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi23.avd/config.ini ; cat ~/.android/avd/zanavi23.avd/config.ini ; fi
-    #- if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi24" ]; then echo "no" | android create avd -n zanavi24 -f -t android-24 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi24" ]; then cat ~/.android/avd/zanavi24.avd/config.ini ; fi
 #
-    - if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA720" ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1014MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then echo "more HEAP" ; sed -i -e 's#.*vm.heapSize=.*#vm.heapSize=64MB#' ~/.android/avd/zanavi21.avd/config.ini ; cat ~/.android/avd/zanavi21.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi23" ]; then echo "no" | android create avd -n zanavi23 -f -t android-23 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi23" ]; then cat ~/.android/avd/zanavi23.avd/config.ini ; fi
 #
-    - if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then echo "more RAM" ; sed -i -e 's#.*hw.ramSize=.*#hw.ramSize=1024MB#' ~/.android/avd/zanavi10.avd/config.ini ; cat ~/.android/avd/zanavi10.avd/config.ini ; fi
-    - if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi21" ]; then echo "no" | android create avd -n zanavi21 -f -t android-21 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi21" ]; then cat ~/.android/avd/zanavi21.avd/config.ini ; fi
 #
-    - echo "$EMU_"
-    - echo "$sdpath"
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi14" ]; then echo "no" | android create avd -n zanavi14 -f -t android-14 --abi default/armeabi-v7a --skin "WXGA720" ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi14" ]; then cat ~/.android/avd/zanavi14.avd/config.ini ; fi
+#
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi10" ]; then echo "no" | android create avd -n zanavi10 -f -t android-10 --abi default/armeabi --skin "WQVGA432" ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi10" ]; then cat ~/.android/avd/zanavi10.avd/config.ini ; fi
+#
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi09" ]; then echo "no" | android create avd -n zanavi09 -f -t android-9 --abi default/armeabi --skin "WQVGA432" ; fi
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  if [ "$EMU_" == "zanavi09" ]; then cat ~/.android/avd/zanavi09.avd/config.ini ; fi
+#
+
+    - cat ~/.android/avd/zanavi09.avd/config.ini ; exit 0
+    - cat ~/.android/avd/zanavi09.avd/config.ini | grep -v 'vm.heapSize' | grep -v 'hw.ramSize' > /tmp/zanavi09.avd_ini ; cp -v /tmp/zanavi09.avd_ini ~/.android/avd/zanavi09.avd/config.ini ; rm -f /tmp/zanavi09.avd_ini ; exit 0
+    - echo 'vm.heapSize=64' >> ~/.android/avd/zanavi09.avd/config.ini ; exit 0
+    - echo 'hw.ramSize=2048' >> ~/.android/avd/zanavi09.avd/config.ini ; exit 0
+    - cat ~/.android/avd/zanavi09.avd/config.ini | sort | uniq > /tmp/zanavi09.avd_ini ; cp -v /tmp/zanavi09.avd_ini ~/.android/avd/zanavi09.avd/config.ini ; rm -f /tmp/zanavi09.avd_ini ; exit 0
+    - cat ~/.android/avd/zanavi09.avd/config.ini | sort | uniq
+    - cat ~/.android/avd/zanavi09.avd/config.ini ; exit 0
+
+    - cat ~/.android/avd/zanavi24.avd/config.ini ; exit 0
+    - cat ~/.android/avd/zanavi24.avd/config.ini | grep -v 'vm.heapSize' | grep -v 'hw.ramSize' > /tmp/zanavi24.avd_ini ; cp -v /tmp/zanavi24.avd_ini ~/.android/avd/zanavi24.avd/config.ini ; rm -f /tmp/zanavi24.avd_ini ; exit 0
+    - echo 'vm.heapSize=64' >> ~/.android/avd/zanavi24.avd/config.ini ; exit 0
+    - echo 'hw.ramSize=2048' >> ~/.android/avd/zanavi24.avd/config.ini ; exit 0
+    - cat ~/.android/avd/zanavi24.avd/config.ini | sort | uniq > /tmp/zanavi24.avd_ini ; cp -v /tmp/zanavi24.avd_ini ~/.android/avd/zanavi24.avd/config.ini ; rm -f /tmp/zanavi24.avd_ini ; exit 0
+    - cat ~/.android/avd/zanavi24.avd/config.ini | sort | uniq
+    - cat ~/.android/avd/zanavi24.avd/config.ini ; exit 0
+
+#
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  echo "$EMU_"
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  echo "$sdpath"
+
   override:
-    - ls -al ~/android-build/navit/android/bin/
-    - ls -al $CIRCLE_ARTIFACTS/
-    #- fb-adb shell "df"
-    #- fb-adb shell "df $sdpath/"
+    - . ~/_bt2;ls -al ~/android-build/navit/android/bin/ ; exit 0
+    - . ~/_bt2;ls -al $CIRCLE_ARTIFACTS/
 
-    - cd ~/maps/ ; du navitmap_0*bin|awk '{print $1 " + \\"}' > /tmp/sizes.txt ;echo -n "printf ' " > /tmp/calc.txt;cat /tmp/sizes.txt >> /tmp/calc.txt ; printf "0 \\\n' |bc\n" >> /tmp/calc.txt ; chmod u+x /tmp/calc.txt;eval /tmp/calc.txt > /tmp/res.txt ; printf "scale=2;`cat /tmp/res.txt` / 1024 / 1024 \n "|bc
+    - . ~/_bt2;cd ~/maps/ ; du navitmap_0*bin|awk '{print $1 " + \\"}' > /tmp/sizes.txt ;echo -n "printf ' " > /tmp/calc.txt;cat /tmp/sizes.txt >> /tmp/calc.txt ; printf "0 \\\n' |bc\n" >> /tmp/calc.txt ; chmod u+x /tmp/calc.txt;eval /tmp/calc.txt > /tmp/res.txt ; printf "scale=2;`cat /tmp/res.txt` / 1024 / 1024 \n "|bc
 
-    - mmd -i ~/zanavi/sdcard.img "::Android"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi"
-    - mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - . ~/_bt2;mmd -i ~/zanavi/sdcard.img "::Android"
+    - . ~/_bt2;mmd -i ~/zanavi/sdcard.img "::Android/data"
+    - . ~/_bt2;mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi"
+    - . ~/_bt2;mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files"
+    - . ~/_bt2;mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi"
+    - . ~/_bt2;mmd -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps"
 
-    - mdir -i ~/zanavi/sdcard.img "::"
-    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - . ~/_bt2;mdir -i ~/zanavi/sdcard.img "::"
+    - . ~/_bt2;mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps"
 
-    - cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
-    - mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - . ~/_bt3;if [ "$EMU_API""x" != "24x" ]; then if [ "$EMU_API""x" != "23x" ]; then cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps" ; fi ; fi
 
-    - import -window root $CIRCLE_ARTIFACTS/capture000a.png
+    #- . ~/_bt3;if [ "$EMU_API""x" == "23x" ]; then cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files" ; fi
+    #- . ~/_bt3;if [ "$EMU_API""x" == "24x" ]; then cd ~/maps/ ; mcopy -v -i ~/zanavi/sdcard.img navitmap_*.bin* "::Android/data/com.zoffcc.applications.zanavi/files" ; fi
+
+
+    - . ~/_bt2;mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps"
+    - . ~/_bt2;mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files"
+
+    - . ~/_bt2;import -window root $CIRCLE_ARTIFACTS/capture000a.png
+
+
+# --------- capture screen ---------
+    - . ~/_bt2;sudo ln -sf /usr/bin/avconv /usr/bin/ffmpeg ; exit 0
+    - . ~/_bt2;timeout --signal=SIGKILL "70.0m" ffmpeg -f x11grab -s `xdpyinfo | grep 'dimensions:'|awk '{print $2}'` -r 20 -i "$DISPLAY" -preset veryfast -maxrate 250k -bufsize 1300k -vf "scale=1024:-1,format=yuv420p" $CIRCLE_ARTIFACTS/screen_capture_video.mpg >/dev/null 2>/dev/null :
+        background: true
+# --------- capture screen ---------
+
+
  
-    - emulator -avd "$EMU_" -sdcard sdcard.img -no-audio:
+    - . ~/_bt2;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ; emulator -avd "$EMU_" -sdcard sdcard.img :
         background: true
         parallel: true
-    - circle-android wait-for-boot
-
-    - xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
-    - sleep 210
-    - adb shell input keyevent 82
-    - sleep 10
-    - import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
+    - . ~/_bt2;circle-android wait-for-boot
 
 
-    - mkdir ~/yaml-tests/
+    - . ~/_bt2;xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
+    - . ~/_bt2;sleep 210
+
+    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then sleep 210 ; fi
+    - . ~/_bt2;if [ "$EMU_API""x" == "23x" ]; then sleep 210 ; fi
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 360 ; fi
+
+
+    - . ~/_bt2;adb shell input keyevent 82
+    - . ~/_bt2;sleep 10
+    - . ~/_bt2;import -window root $CIRCLE_ARTIFACTS/capture_emulator_running.png
+
+    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then printf 'su\nid\nls -al /storage/\nln -sf /storage/[0-9]* /storage/eee\nchgrp -h sdcard_rw /storage/eee\nls -al /storage/\nexit\nexit\n'|adb shell ; fi
+
+    - . ~/_bt2;if [ "$EMU_API""x" == "23x" ]; then printf 'su\nid\nls -al /storage/\nln -sf /storage/[0-9]* /storage/eee\nchgrp -h sdcard_rw /storage/eee\nls -al /storage/\nexit\nexit\n'|adb shell ; fi
+
+
+    - . ~/_bt2;mkdir ~/yaml-tests/
     #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/navit-gps/routing-qa/archive/master.zip"
     #- wget -t 10 -O ~/yaml-tests/yaml2.zip "https://github.com/zoff99/routing-qa/archive/master.zip"
     #- wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/search-test001.zip"
-    - wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/turn_tests_001.zip"
-    - cd ~/yaml-tests/ && unzip yaml1.zip && cd ~/ ; exit 0
-    - cd ~/yaml-tests/ && mv routing-qa-search-test001 routing-qa-master && cd ~/ ; exit 0
-    - cd ~/yaml-tests/ && mv routing-qa-turn_tests_001 routing-qa-master && cd ~/ ; exit 0
-    - cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
-    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; exit 0
+    - . ~/_bt3;wget -t 10 -O ~/yaml-tests/yaml1.zip "https://github.com/zoff99/routing-qa/archive/turn_tests_001.zip"
+    - . ~/_bt3;cd ~/yaml-tests/ && unzip yaml1.zip && cd ~/ ; exit 0
+    - . ~/_bt3;cd ~/yaml-tests/ && mv routing-qa-search-test001 routing-qa-master && cd ~/ ; exit 0
+    - . ~/_bt3;cd ~/yaml-tests/ && mv routing-qa-turn_tests_001 routing-qa-master && cd ~/ ; exit 0
+    - . ~/_bt3;cd ~/yaml-tests/ && unzip yaml2.zip && cd ~/ ; exit 0
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/" ; exit 0
 
     # delete test files that give errors, for now *!*!
-    - cd ~/yaml-tests/routing-qa-master/ ; rm -v 002_missing_destination_name.yaml 003_highway_entrance.yaml 004_turn_restriction.yaml 005_car_forbidden_traffic.yaml Aalter_straight.yaml B2R_W.yaml Brugge.yaml Emmeloord_N.yaml Hamburg_Sued_S.yaml ; exit 0
-    - cd ~/yaml-tests/routing-qa-master/ ; rm -v Ichostrasse_S.yaml Imst_A12_E.yaml Imst_A12_W.yaml OSRM_issue_1645.yaml Oakland_highway_entrance.yaml RTE_Drongen_Deinze.yaml RTE_OSRM_issue_1794.yaml RTE_Tonisberg_1.yaml Sint-Niklaas.yaml no_HOV_1.yaml no_right_turn.yaml ; exit 0
-    - cd ~/yaml-tests/routing-qa-master/ ; rm -v A92.yaml Aalter_left.yaml Boulevard_Peripherique_1.yaml Ichostrasse_SE.yaml Vievis.yaml ; exit 0
-    - cd ~/
+    - . ~/_bt3;cd ~/yaml-tests/routing-qa-master/ ; rm -v 002_missing_destination_name.yaml 003_highway_entrance.yaml 004_turn_restriction.yaml 005_car_forbidden_traffic.yaml Aalter_straight.yaml B2R_W.yaml Brugge.yaml Emmeloord_N.yaml Hamburg_Sued_S.yaml ; exit 0
+    - . ~/_bt3;cd ~/yaml-tests/routing-qa-master/ ; rm -v Ichostrasse_S.yaml Imst_A12_E.yaml Imst_A12_W.yaml OSRM_issue_1645.yaml Oakland_highway_entrance.yaml RTE_Drongen_Deinze.yaml RTE_OSRM_issue_1794.yaml RTE_Tonisberg_1.yaml Sint-Niklaas.yaml no_HOV_1.yaml no_right_turn.yaml ; exit 0
+    - . ~/_bt3;cd ~/yaml-tests/routing-qa-master/ ; rm -v A92.yaml Aalter_left.yaml Boulevard_Peripherique_1.yaml Ichostrasse_SE.yaml Vievis.yaml ; exit 0
     # delete test files that give errors, for now *!*!
 
-    - for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do fb-adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/" ; done
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  for i in `ls -1 ~/yaml-tests/routing-qa-master/*.yaml` ; do adb push "$i" "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/" ; done
 
-    - fb-adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
-    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/" ; exit 0
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "mkdir -p $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps" ; exit 0
 
-    - fb-adb shell "cat /proc/meminfo" ; exit 0
+# -------------- info --------------
+    - . ~/_bt2;adb shell "ls /" ; exit 0
+    - . ~/_bt2;adb shell "ls /sdcard/" ; exit 0
+    - . ~/_bt2;adb shell "ls /mnt/sdcard/" ; exit 0
+    - . ~/_bt2;adb shell "ls /mnt/sdcard/Android/" ; exit 0
+    - . ~/_bt2;adb shell "ls -al /mnt/sdcard/Android/" ; exit 0
+    - . ~/_bt2;adb shell "ls /storage/" ; exit 0
+# -------------- info --------------
 
-    #- fb-adb push -p ~/navitmap_001.bin "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/"
+    - . ~/_bt3;adb shell 'ls -al /storage/eee/Android/data' ; exit 0
+    #- . ~/_bt3;adb shell 'cp -v /storage/eee/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/* /storage/eee/Android/data/debug/' ; exit 0
+    #- . ~/_bt3;adb shell 'cp -v /storage/eee/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/../yamltests/* /storage/eee/Android/data/yamltests/' ; exit 0
 
-    - adb install $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk
-
-
-    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
-    #- fb-adb shell "ls -alR $sdpath/Android/data/com.zoffcc.applications.zanavi/" ; exit 0
-    - sleep 38
-    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
-    - sleep 8
-    #- fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm -Rf 201?-??-*"
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -al " ; exit 0
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
-    - sleep 5
-    - fb-adb shell am start -n com.zoffcc.applications.zanavi/com.zoffcc.applications.zanavi.Navit
+    - . ~/_bt2;adb shell "cat /proc/meminfo" ; exit 0
 
 
-    #- fb-adb shell "ls -al $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/" ; exit 0
-    #- mdir -i ~/zanavi/sdcard.img "::Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps"
+    - . ~/_bt2;adb install ~/app-signed-aligned.apk > $CIRCLE_ARTIFACTS/app_install.log 2>&1 ; cat $CIRCLE_ARTIFACTS/app_install.log | grep 'Failure' ; res=$? ; if [ $res -ne 0 ]; then echo "OK" ; else echo "ERROR" ; exit 1 ; fi
+    - . ~/_bt2;cat $CIRCLE_ARTIFACTS/app_install.log ; exit 0
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 210 ; fi
 
-    - adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
+    - . ~/_bt2;echo adb shell am start -n $CLASS_P/$START_INTENT_P ; adb shell am start -n $CLASS_P/$START_INTENT_P
+    - . ~/_bt2;sleep 90
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 210 ; fi
+
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then adb shell ps | grep "$CLASS_P" ; pr_id=`adb shell ps | grep "$CLASS_P" | awk '{print $2}'` ; echo "$pr_id" ; printf 'su\nid\nps\nkill '"$pr_id"'\nexit\nexit\n'|adb shell ; fi
+    - . ~/_bt2;adb shell am force-stop $CLASS_P
+
+    - . ~/_bt2;sleep 10
+
+
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.WRITE_EXTERNAL_STORAGE
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.WAKE_LOCK ; exit 0
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.READ_EXTERNAL_STORAGE
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.READ_LOGS ; exit 0
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.ACCESS_FINE_LOCATION
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.ACCESS_COARSE_LOCATION
+    - . ~/_bt2;adb shell pm grant $CLASS_P android.permission.ACCESS_LOCATION_EXTRA_COMMANDS ; exit 0
+
+
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -al " ; exit 0
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; rm 201?-??-*/* ; rmdir 201?-??-* " ; exit 0
+    - . ~/_bt3;sleep 5
+
+
+    - . ~/_bt2;adb logcat -v time -d > $CIRCLE_ARTIFACTS/adb_out_prerun.txt 2>&1 ; exit 0
+    - . ~/_bt2;sleep 2
+    - . ~/_bt2;adb logcat -c
+    - . ~/_bt2;adb logcat -v time > $CIRCLE_ARTIFACTS/adb_out.txt 2>&1 :
         background: true
 
 
-    - sleep 120 # let app startup , it takes a while on the emulator
+    - . ~/_bt2;adb shell am start -n $CLASS_P/$START_INTENT_P
+
+
+    - . ~/_bt2;sleep 120 # let app startup , it takes a while on the emulator
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 210 ; fi # even more time on older systems
+    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then sleep 360 ; fi # still even more time on API24
+
+    - . ~/_bt2;adb shell dumpsys meminfo $CLASS_P; exit 0
+
+    - . ~/_bt2;import -window root $CIRCLE_ARTIFACTS/capture_app_running.png # get proof that the app is running
+    - . ~/_bt2;adb shell screencap -p | sed 's/\r$//' > $CIRCLE_ARTIFACTS/capture_app_running_2.png
+
+    - . ~/_bt2;cat $CIRCLE_ARTIFACTS/adb_out.txt | grep 'CI:'
+
+    - . ~/_bt2;sleep 240 # wait for crash to show in logs
+    - . ~/_bt2;died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'Process. '"$CLASS_P"', PID.'|wc -l|tr -d ' '` ; if [ $died_count -gt 0 ]; then echo "app crashed"; exit 1; fi
+    - . ~/_bt2;cat $CIRCLE_ARTIFACTS/adb_out.txt |grep "$CLASS_P"|grep 'has died'; died_count=$? ; if [ $died_count -eq 0 ]; then echo "app crashed"; exit 1; fi
+
+    - . ~/_bt2;cat $CIRCLE_ARTIFACTS/adb_out.txt | grep 'CI:'
 
 
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
-    - rm -fv ~/_done_.txt ; exit 0
+    - . ~/_bt2;rm -fv ~/_done_.txt ; exit 0
 
-    - ready_="0" ;
+    - . ~/_bt3;ready_="0" ; export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ; 
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       counter=0;
       while [ $ready_ == "0" ]; do
@@ -306,10 +615,11 @@ test:
       emu=`adb devices|grep -v 'List of devices attached'|grep -v '^$'|wc -l|tr -d ' '` ; if [ $emu -eq 0 ]; then echo "emulator crashed" ; ready_="1" ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
-      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
-      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
-      if [ $died_count -gt 1 ]; then
-      echo "com.zoffcc.applications.zanavi crashed";
+      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
+      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep "$CLASS_P"|grep 'died'|wc -l|tr -d ' '` ;
+      cat $CIRCLE_ARTIFACTS/adb_out.txt |grep "$CLASS_P"|grep 'has died' >/dev/null 2>/dev/null ; died_count2=$? ;
+      if [ $died_count -gt 0 ] || [ $died_count2 -eq 0 ]; then
+      echo "$CLASS_P"" crashed";
       cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
       ready_="1" ;
       else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
@@ -326,11 +636,12 @@ test:
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 
+
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
 # ---------- waiting for tests to complete -------------
-    - ready_="0" ;
+    - . ~/_bt3;ready_="0" ; export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ; 
       count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       counter=0;
       while [ $ready_ == "0" ]; do
@@ -340,10 +651,11 @@ test:
       emu=`adb devices|grep -v 'List of devices attached'|grep -v '^$'|wc -l|tr -d ' '` ; if [ $emu -eq 0 ]; then echo "emulator crashed" ; ready_="1" ; fi ;
       n=`cat $CIRCLE_ARTIFACTS/adb_out.txt | grep ".yaml" | grep "file=" | wc -l` ;
       echo "$n" "/" "$count_files"  ;
-      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
-      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep 'com.zoffcc.applications.zanavi'|grep 'died'|wc -l|tr -d ' '` ;
-      if [ $died_count -gt 1 ]; then
-      echo "com.zoffcc.applications.zanavi crashed";
+      adb pull "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/_XX_XX_SUMMARY_XX_XX_.txt" ~/_done_.txt > /dev/null 2> /dev/null ;
+      died_count=`cat $CIRCLE_ARTIFACTS/adb_out.txt|grep "$CLASS_P"|grep 'died'|wc -l|tr -d ' '` ;
+      cat $CIRCLE_ARTIFACTS/adb_out.txt |grep "$CLASS_P"|grep 'has died' >/dev/null 2>/dev/null ; died_count2=$? ;
+      if [ $died_count -gt 0 ] || [ $died_count2 -eq 0 ]; then
+      echo "$CLASS_P"" crashed";
       cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' | tail -1 ;
       ready_="1" ;
       else cat $CIRCLE_ARTIFACTS/adb_out.txt|grep '=MEM='|sed -e 's#.*ZANaviDebugReceiver:##' |tail -1 ;
@@ -361,76 +673,97 @@ test:
 # ---------- waiting for tests to complete -------------
 
 
-    - fb-adb shell am force-stop com.zoffcc.applications.zanavi
-    - sleep 20
+    - . ~/_bt3;adb shell am force-stop $CLASS_P
+    - . ~/_bt3;sleep 20
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/ ; ls -d 201?-??-*" > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo $_dir
+    #- . ~/_bt3;adb shell 'cp -av /storage/eee/Android/data/yamltests/* /storage/eee/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/' ; exit 0
+    #- . ~/_bt3;adb shell 'cp -av /storage/eee/Android/data/debug/* /storage/eee/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/debug/' ; exit 0
+
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*" | tr -d '\r'| tr -d '\n' > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo 'XX'$_dir'YY'
 
 
-    - fb-adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/ ; ls -al" ; exit 0
-    - mkdir ~/debug_output/ && cd ~/debug_output/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/zanavi/maps/../../debug/" ; exit 0
-    - ls -al ~/debug_output/ ; exit 0
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/debug/ ; ls -al" ; exit 0
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  mkdir ~/debug_output/ && cd ~/debug_output/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/debug/" ; exit 0
+    - . ~/_bt3;ls -al ~/debug_output/ ; exit 0
 
-    - mkdir ~/debug_results/ ; exit 0
-    - ls -al ~/debug_results/
-    - _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/$_dir/"
-    - ls -al ~/debug_results/
-
-    - mkdir ~/debug_summary/ && cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
-    - cd ~/debug_summary/ && fb-adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/_XX_XX_DURATION_XX_XX_.txt"
-
-    - mkdir -p ~/gpx2png/out
-    - mkdir -p ~/gpx2png/temp
-    - cd ~/gpx2png/
-    - wget -O ~/gpx2png/gpx2png.pl 'https://raw.githubusercontent.com/zoff99/gpx2png_perl/75abd95444385816e14c222272d971c5ac93fe2d/gpx2png.pl'
-    - chmod u+x ~/gpx2png/gpx2png.pl
-    - cd ~/gpx2png/temp/
-    - for i in `ls -1 ~/debug_results/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
-    - cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
+    - . ~/_bt3;mkdir ~/debug_results/ ; exit 0
+    - . ~/_bt3;ls -al ~/debug_results/
 
 
 
-    - pkill -9 -u ubuntu -f emulator64-arm
+
+
+
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && adb shell ls "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/"
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && echo adb shell ls "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/$_dir"
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && adb shell ls "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/$_dir"
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  _dir=`cat ~/tmp.txt` ; cd ~/debug_results/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/$_dir" ./
+
+
+
+
+
+
+    - . ~/_bt3;ls -al ~/debug_results/
+    - . ~/_bt3;mv -v ~/debug_results/20*/* ~/debug_results/ ; exit 0
+    - . ~/_bt3;rmdir ~/debug_results/20* ; exit 0
+    - . ~/_bt3;ls -al ~/debug_results/
+
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  mkdir ~/debug_summary/ && cd ~/debug_summary/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/_XX_XX_SUMMARY_XX_XX_.txt"
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  cd ~/debug_summary/ && adb pull -p "$sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/_XX_XX_DURATION_XX_XX_.txt"
+
+    - . ~/_bt3;mkdir -p ~/gpx2png/out
+    - . ~/_bt3;mkdir -p ~/gpx2png/temp
+    - . ~/_bt3;cd ~/gpx2png/
+    - . ~/_bt3;wget -O ~/gpx2png/gpx2png.pl 'https://raw.githubusercontent.com/zoff99/gpx2png_perl/75abd95444385816e14c222272d971c5ac93fe2d/gpx2png.pl'
+    - . ~/_bt3;chmod u+x ~/gpx2png/gpx2png.pl
+    - . ~/_bt3;cd ~/gpx2png/temp/
+    - . ~/_bt3;for i in `ls -1 ~/debug_results/*.gpx`; do f=`basename "$i" \.gpx`; perl ~/gpx2png/gpx2png.pl -o ~/gpx2png/out/"$f""_GPX_.png" "$i"; cp -av ~/gpx2png/out/"$f""_GPX_.png" ~/debug_output/; done ; exit 0
+    - . ~/_bt3;cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
+
+
+    - . ~/_bt3;pkill -9 -u ubuntu -f emulator64-arm
 
 
     #- Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
     #    background: true
 
-    - ps auxwww ; exit 0
+    - . ~/_bt3;ps auxwww ; exit 0
 
-    - rm -Rf ~/.mozilla ; exit 0
-    - sleep 1
-    - nohup firefox --setDefaultBrowser :
+    - . ~/_bt3;rm -Rf ~/.mozilla ; exit 0
+    - . ~/_bt3;sleep 1
+    - . ~/_bt3;nohup firefox -silent -setDefaultBrowser 'about:' :
         background: true
-    - sleep 20
+    - . ~/_bt3;sleep 20
 
-    - ps auxwww ; exit 0
+    - . ~/_bt3;ps auxwww ; exit 0
 
-    - pkill -9 -u ubuntu -f firefox
-    - type -a firefox
+    - . ~/_bt3;pkill -9 -u ubuntu -f crashreporter; exit 0
+    - . ~/_bt3;pkill -9 -u ubuntu -f firefox; exit 0
+    - . ~/_bt3;type -a firefox
 
-    - ps auxwww ; exit 0
+    - . ~/_bt3;ps auxwww ; exit 0
 
-    - cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
-    - nohup firefox --setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 :
+    - . ~/_bt3;cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
+    - . ~/_bt3;while [ 1 == 1 ]; do nohup firefox -silent -setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 ; pkill -u ubuntu -f crashreporter ; done :
         background: true
-    - sleep 20
+    - . ~/_bt3;sleep 20
 
-    - ps auxwww ; exit 0
+    - . ~/_bt3;ps auxwww ; exit 0
 
     # - xdotool search --name "Mozilla Firefox" windowsize 1900 1060 # too big for screen now
-    - xdotool search --name "Mozilla Firefox" windowsize 1280 900
-    - xdotool search --name "Mozilla Firefox" windowsize 1280 900
-    - sleep 2
+    - . ~/_bt3;xdotool search --name "Mozilla Firefox" windowsize 1280 900
+    - . ~/_bt3;xdotool search --name "Mozilla Firefox" windowsize 1280 900
+    - . ~/_bt3;sleep 2
 
-    - _dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/*._SUCCESS_.result.txt`; do
+    - . ~/_bt3;_dir=`cat ~/tmp.txt` ; for i in `ls -1 ~/debug_results/*._SUCCESS_.result.txt`; do
       echo "file=$i";
       url1=`cat "$i"|grep 'URL1'|cut -d":" -f2-` ; echo "$url1" ;
       url2=`cat "$i"|grep 'URL2'|cut -d":" -f2-` ; echo "$url2" ;
       url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
       url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
       if [ "$url1""x" != "x" ]; then
-      firefox --setDefaultBrowser "$url1" >/dev/null 2>/dev/null ;
+      firefox -silent -setDefaultBrowser "$url1";
       sleep 10;
       import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
@@ -438,7 +771,7 @@ test:
       rm -fv ~/capture001.png ;
       fi ;
       if [ "$url2""x" != "x" ]; then
-      firefox --setDefaultBrowser "$url2" >/dev/null 2>/dev/null ;
+      firefox -silent -setDefaultBrowser "$url2";
       sleep 10;
       import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
@@ -446,7 +779,7 @@ test:
       rm -fv ~/capture001.png ;
       fi ;
       if [ "$url3_orig""x" != "x" ]; then
-      firefox --setDefaultBrowser "$url3" >/dev/null 2>/dev/null ;
+      firefox -silent -setDefaultBrowser "$url3";
       sleep 10;
       import -window root ~/capture001.png ;
       out=`basename "$i" \.txt`;
@@ -456,20 +789,20 @@ test:
       done ;
       exit 0
 
-    - pkill -9 -u ubuntu -f firefox
+    - . ~/_bt3;pkill -9 -u ubuntu -f firefox
 
-    - cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
-    - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
-    - cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/0000__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/0000__reports/
+    - . ~/_bt3;cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
+    - . ~/_bt3;cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
+    - . ~/_bt3;cd ~/debug_summary/ && mkdir -p $CIRCLE_TEST_REPORTS/0000__reports/ && cp -av ./* $CIRCLE_TEST_REPORTS/0000__reports/
 
-    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
-    - cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt
+    - . ~/_bt3;cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt
+    - . ~/_bt3;cat ~/debug_summary/_XX_XX_DURATION_XX_XX_.txt
 
     # -- count erros ----------------------------------
     # -- count erros ----------------------------------
-    - mkdir -p $CIRCLE_TEST_REPORTS/0000__zanavi-runner/
+    - . ~/_bt3;mkdir -p $CIRCLE_TEST_REPORTS/0000__zanavi-runner/
 
-    - ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
+    - . ~/_bt3;ju_fail=0 ; _dir=`cat ~/tmp.txt` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ;
       echo $count_files ; cd ~ ; ls -al ./debug_results/ ; cd ~/yaml-tests/routing-qa-master/ ;
       for i in `ls -1 *.yaml` ;
       do f="./debug_results/$i"'._SUCCESS_.result.txt' ; cd ~ ; echo "f=""$f" ;
@@ -486,20 +819,27 @@ test:
       done ;
       . ~/zanavi/ci/junit_end.sh ~/ju_res.xml ; exit 0
 
-    - cp -v ~/ju_res.xml $CIRCLE_TEST_REPORTS/0000__zanavi-runner/tests.xml
+    - . ~/_bt3;cp -v ~/ju_res.xml $CIRCLE_TEST_REPORTS/0000__zanavi-runner/tests.xml
     # -- count erros ----------------------------------
     # -- count erros ----------------------------------
 
-    - cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ; exit 0
+    - . ~/_bt3;cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ; exit 0
 
     #- cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* ~/yaml-tests/routing-qa-master/*.yaml && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av results.zip $CIRCLE_TEST_REPORTS/0000__packed/
-    - cd $CIRCLE_TEST_REPORTS/ && zip -r ~/results.zip * && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av ~/results.zip $CIRCLE_TEST_REPORTS/0000__packed/
+    - . ~/_bt3;cd $CIRCLE_TEST_REPORTS/ && zip -r ~/results.zip * && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av ~/results.zip $CIRCLE_TEST_REPORTS/0000__packed/
 
     # throw error if some tests failed
-    - cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'RES:ERR' ; ex=$? ; ex2=$[ 1 - $ex ] ; exit $ex2
+    - . ~/_bt3;cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'RES:ERR' ; ex=$? ; ex2=$[ 1 - $ex ] ; exit $ex2
 
     # throw error if count of tests <> count of yaml files
-    - count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 ; else echo "COUNT OK" ; fi
+    - . ~/_bt3;count_done=`cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'tests:' | cut -d ':' -f 2 | tr -d " "` ; count_files=`ls -1 ~/yaml-tests/routing-qa-master/*.yaml|wc -l|tr -d " "` ; if [ $count_done != $count_files ]; then echo "COUNT ERR"; exit 1 ; else echo "COUNT OK" ; fi
+
+
+    - ps -fu ubuntu ; exit 0
+    - pkill --signal SIGINT -u ubuntu -f ffmpeg ; exit 0
+    - sleep 10
+    - pkill -9 -u ubuntu -f ffmpeg ; exit 0
+    - ps -fu ubuntu ; exit 0
 
     # ------ kill ----------------
     #- ps -fu ubuntu
@@ -511,6 +851,5 @@ test:
     #- sleep 10
     #- ps -fu ubuntu
     # ------ kill ----------------
-
 
 

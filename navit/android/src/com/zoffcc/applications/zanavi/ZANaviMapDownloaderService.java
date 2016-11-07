@@ -25,9 +25,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v7.app.NotificationCompat;
 
 import com.zoffcc.applications.zanavi.NavitMapDownloader.ProgressThread;
 
@@ -43,6 +46,8 @@ public class ZANaviMapDownloaderService extends Service
 	private static PendingIntent p_activity = null;
 	private static Intent notificationIntent = null;
 
+	private static NotificationCompat.Builder builder_ = null;
+
 	private static ProgressThread progressThread_pri = null;
 	public static boolean service_running = false;
 	private static ZANaviMapDownloaderService my_object = null;
@@ -57,14 +62,38 @@ public class ZANaviMapDownloaderService extends Service
 
 		con = this;
 
-		nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notification = new Notification(R.drawable.icon, Navit.get_text("downloading, please wait ..."), System.currentTimeMillis());
-		notification.flags = Notification.FLAG_NO_CLEAR;
-		notificationIntent = new Intent(con, ZANaviDownloadMapCancelActivity.class);
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		p_activity = PendingIntent.getActivity(con, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		Notification notification = null;
 
-		notification.setLatestEventInfo(con, Notification_header, Notification_text, p_activity);
+		try
+		{
+			nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			notificationIntent = new Intent(con, ZANaviDownloadMapCancelActivity.class);
+			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			p_activity = PendingIntent.getActivity(con, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			builder_ = new NotificationCompat.Builder(con);
+			builder_.setAutoCancel(false);
+			builder_.setOngoing(true);
+			builder_.setSmallIcon(R.drawable.icon);
+			//			if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+			//			{
+			//				builder_.setColor(Color.TRANSPARENT);
+			//			}
+			builder_.setContentTitle("ZANavi");
+			builder_.setProgress(100, 0, true);
+			builder_.setContentText(Notification_text);
+			builder_.setContentTitle(Notification_header);
+			builder_.setContentIntent(p_activity);
+			Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+			builder_.setLargeIcon(bm);
+			notification = builder_.build();
+			notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+			System.out.println("Notifi:006:ok");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.out.println("Notifi:006:Ex=" + e.getMessage());
+		}
 
 		try
 		{
@@ -73,16 +102,18 @@ public class ZANaviMapDownloaderService extends Service
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			System.out.println("Notifi:003:Ex=" + e.getMessage() + "nm=" + nm + " notification=" + notification);
 
 			try
 			{
 				p_activity = PendingIntent.getActivity(con, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-				notification.setLatestEventInfo(con, Notification_header, Notification_text, p_activity);
+				// notification.setLatestEventInfo(con, Notification_header, Notification_text, p_activity);
 				nm.notify(NOTIFICATION_ID__DUMMY, notification);
 			}
 			catch (Exception e2)
 			{
 				e2.printStackTrace();
+				System.out.println("Notifi:004:Ex=" + e2.getMessage());
 			}
 		}
 
@@ -114,17 +145,32 @@ public class ZANaviMapDownloaderService extends Service
 		}
 	}
 
-	public static void set_noti_text(String text)
+	public static void set_noti_text(String text, int percent)
 	{
 		try
 		{
 			// System.out.println("ZANaviMapDownloaderService: !!!!!!!!! NOTIFY !!!!!!!!!" + " text=" + text + " con=" + con + " p_activity=" + p_activity);
+			// System.out.println("Notifi:002:" + "nm=" + nm + " text=" + text + " con=" + con + " p_activity=" + p_activity);
 			Notification_text = text;
-			notification.setLatestEventInfo(con, Notification_header, Notification_text, p_activity);
+			builder_.setContentTitle("");
+			if (percent > 0)
+			{
+				builder_.setProgress(100, percent, false);
+			}
+			else
+			{
+				builder_.setProgress(100, 0, true);
+			}
+			builder_.setContentText(Notification_text);
+			builder_.setOngoing(true);
+
+			Notification notification = builder_.build();
+			notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
 			nm.notify(NOTIFICATION_ID__DUMMY, notification);
 		}
 		catch (Exception e)
 		{
+			System.out.println("Notifi:001:Ex=" + e.getMessage());
 		}
 	}
 

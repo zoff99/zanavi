@@ -146,6 +146,7 @@ extern int route_status_previous;
 extern long long global_route_memory_size;
 extern int global_old_vehicle_speed;
 extern int global_old_vehicle_speed_for_autozoom;
+extern long global_scale;
 
 extern int global_avoid_sharp_turns_flag;
 extern int global_avoid_sharp_turns_min_angle;

@@ -1,0 +1,12 @@
+Build:2.0.53,253
+    commit=35
+    prebuild=chmod a+rx ci/fdroid_prebuild.sh && ci/fdroid_prebuild.sh
+    update=no
+    scanignore=navit/android/res/raw/borders_simple.bin
+    build=chmod a+rx ci/fdroid.sh && \
+        export _SDK_=$$SDK$$ && \
+        export _NDK_=$$NDK$$ && \
+        ci/fdroid.sh
+    output=./android-build/navit/android/build/outputs/apk/android-release-unsigned.apk
+
+

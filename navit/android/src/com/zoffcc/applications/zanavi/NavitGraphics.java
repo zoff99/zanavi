@@ -69,8 +69,7 @@ import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.speech.RecognizerIntent;
-import android.support.v7.app.ActionBarActivity;
-import android.util.FloatMath;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -111,6 +110,10 @@ public class NavitGraphics
 	static Boolean draw_map_one_shot = false;
 	static Boolean draw_reset_factors = false;
 	static Boolean Global_Map_in_onDraw = false;
+
+	static boolean DOUBLE_TAP_ON = false;
+	static float DOUBLE_TAP_ZOOM_IN_FACTOR = 2.0f;
+	static float DOUBLE_TAP_ZOOM_IN_STEP = 1.0905077f; // hardcoded for DOUBLE_TAP_ZOOM_IN_FACTOR=2.0f !!!
 
 	static int lower_than_center_percent = 0;
 
@@ -317,7 +320,7 @@ public class NavitGraphics
 	View view;
 	RelativeLayout relativelayout;
 	// --obsolote --- // NavitCamera camera;
-	ActionBarActivity activity;
+	AppCompatActivity activity;
 
 	private Bitmap bigmap_bitmap_temp = null;
 	private Matrix matrix_oneway_arrows = null;
@@ -701,7 +704,7 @@ public class NavitGraphics
 	}
 
 	@SuppressLint("NewApi")
-	public NavitGraphics(ActionBarActivity activity, int parent, int x, int y, int w, int h, int alpha, int wraparound, int use_camera)
+	public NavitGraphics(AppCompatActivity activity, int parent, int x, int y, int w, int h, int alpha, int wraparound, int use_camera)
 	{
 		mScroller = new Scroller(activity);
 
@@ -1770,6 +1773,7 @@ public class NavitGraphics
 
 				GestureDetector mGD = new GestureDetector(getContext(), new SimpleOnGestureListener()
 				{
+					boolean force_finish_doubletap_zoom = false;
 
 					@Override
 					public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
@@ -1777,6 +1781,154 @@ public class NavitGraphics
 						// beware, it can scroll to infinity
 						// scrollBy((int) distanceX, (int) distanceY);
 						//System.out.println("FLING:001:" + distanceX + ":" + distanceY);
+						return true;
+					}
+
+					@Override
+					public boolean onDoubleTap(MotionEvent e)
+					{
+						System.out.println("Gesture:" + "onDoubleTap");
+
+						DOUBLE_TAP_ON = true;
+
+						force_finish_doubletap_zoom = false;
+						final MotionEvent e2 = e;
+
+						// ------------- start --------------
+						// ------------- start --------------
+						// ------------- start --------------
+						Global_onTouch_fingerdown = true;
+						d_pos_x_old = pos_x;
+						d_pos_y_old = pos_y;
+						// cancel previous map drawing
+						CallbackMessageChannelReal(50, "");
+						// hold all map drawing -----------
+						Message msg = new Message();
+						Bundle b = new Bundle();
+						b.putInt("Callback", 69);
+						msg.setData(b);
+						try
+						{
+							callback_handler.sendMessage(msg);
+						}
+						catch (Exception e3)
+						{
+						}
+						// hold all map drawing -----------
+						// ------------- start --------------
+						// ------------- start --------------
+						// ------------- start --------------
+
+						final Thread doubletap_zoom = new Thread()
+						{
+							int count = 0;
+							final int sleep_millis = 30;
+							final int max_count = (int) ((float) 250.0 / (float) sleep_millis);
+
+							final float scale_zoom_in = DOUBLE_TAP_ZOOM_IN_FACTOR;
+							float scale = 1.0f;
+							float scale_step = DOUBLE_TAP_ZOOM_IN_STEP; // last resort value if calc of n-th root fails
+
+							@Override
+							public void run()
+							{
+								try
+								{
+									scale_step = (float) Math.pow((double) scale_zoom_in, (double) 1.0d / (double) max_count); // calc of n-th root fails
+								}
+								catch (Exception e2)
+								{
+								}
+
+								System.out.println("Gesture:" + "scale_step=" + scale_step);
+
+								Navit.NG__map_main.touch_now_center = new PointF(e2.getX(0), e2.getY(0));// calc_center(e2); // new PointF(500, 500); // calc_center(event);
+								// System.out.println("Gesture:" + "zoom point:" + Navit.NG__map_main.touch_now_center.x + "," + Navit.NG__map_main.touch_now_center.y);
+								force_finish_doubletap_zoom = false;
+
+								while ((count < max_count) && (force_finish_doubletap_zoom == false))
+								{
+									// simulate pinch zoom step -------------
+									scale = scale * scale_step;
+									ZOOM_MODE_SCALE = scale;
+									ZOOM_MODE_ACTIVE = true;
+									Navit.N_NavitGraphics.view.postInvalidate();
+									// System.out.println("Gesture:" + "zoom step #" + count + " scale=" + scale);
+									// simulate pinch zoom step -------------
+									try
+									{
+										Thread.sleep((sleep_millis - 5));
+									}
+									catch (Exception e)
+									{
+									}
+									count++;
+								}
+
+								Message msg = new Message();
+								Bundle b = new Bundle();
+								b.putInt("Callback", 61);
+								Navit.GlobalScaleLevel = (int) (Navit.GlobalScaleLevel / scale);
+
+								if (Navit.GFX_OVERSPILL)
+								{
+									b.putString("s", (int) ((Navit.NG__map_main.touch_now_center.x + mCanvasWidth_overspill) * Global_dpi_factor) + "#" + (int) ((Navit.NG__map_main.touch_now_center.y + mCanvasHeight_overspill) * Global_dpi_factor) + "#" + Integer.toString(Navit.GlobalScaleLevel));
+								}
+								else
+								{
+									b.putString("s", (int) ((Navit.NG__map_main.touch_now_center.x) * Global_dpi_factor) + "#" + (int) ((Navit.NG__map_main.touch_now_center.y) * Global_dpi_factor) + "#" + Integer.toString(Navit.GlobalScaleLevel));
+								}
+								msg.setData(b);
+								try
+								{
+									callback_handler.sendMessage(msg);
+								}
+								catch (Exception e)
+								{
+								}
+
+								// ------------------ reset ----------------
+								// ------------------ reset ----------------
+								// ------------------ reset ----------------
+								Global_Map_TransX = Global_Map_TransX + pos_x;
+								Global_Map_TransY = Global_Map_TransY + pos_y;
+								Global_Map_Rotationangle = 0f;
+								Global_Map_Zoomfactor = Global_Map_Zoomfactor * ZOOM_MODE_SCALE;
+								pos_x = 0;
+								pos_y = 0;
+								ZOOM_MODE_ACTIVE = false;
+								ZOOM_MODE_SCALE = 1.0f;
+								try
+								{
+									if (DEBUG_TOUCH) Log.e("NavitGraphics", "sensor thread stop final88");
+									touch_sensor_thread.stop_me();
+								}
+								catch (Exception e)
+								{
+								}
+								Global_onTouch_fingerdown = false;
+								// allow all map drawing -----------
+								Message msg2 = new Message();
+								Bundle b2 = new Bundle();
+								b2.putInt("Callback", 70);
+								msg2.setData(b2);
+								try
+								{
+									callback_handler.sendMessage(msg2);
+								}
+								catch (Exception e)
+								{
+								}
+								// allow all map drawing -----------
+								// ------------------ reset ----------------
+								// ------------------ reset ----------------
+								// ------------------ reset ----------------
+
+								DOUBLE_TAP_ON = false;
+							}
+						};
+						doubletap_zoom.start();
+
 						return true;
 					}
 
@@ -1804,6 +1956,9 @@ public class NavitGraphics
 							// is flinging
 							mScroller.forceFinished(true); // to stop flinging on touch
 						}
+
+						force_finish_doubletap_zoom = false;
+
 						return true; // else won't work
 					}
 				});
@@ -2477,52 +2632,57 @@ public class NavitGraphics
 						// on final "UP" action, always reset the display center
 						if (switch_value == MotionEvent.ACTION_UP)
 						{
-							// pos_x = d_pos_x_old; // wait for redraw !!
-							// pos_y = d_pos_y_old; // wait for redraw !!
 
-							//Log.e("NavitGraphics", "DO__DRAW:Java:Final Up action");
-							//copy_backwards_map_buffer();
-							//draw_reset_factors = true;
-							//this.invalidate();
-
-							//System.out.println("DO__DRAW:Java:xchange global factors");
-							Global_Map_TransX = Global_Map_TransX + pos_x;
-							Global_Map_TransY = Global_Map_TransY + pos_y;
-							Global_Map_Rotationangle = 0f;
-							Global_Map_Zoomfactor = Global_Map_Zoomfactor * ZOOM_MODE_SCALE;
-
-							//System.out.println("DO__DRAW:Java:reset local factors");
-							pos_x = 0;
-							// System.out.println("px reset:003");
-							pos_y = 0;
-							ZOOM_MODE_ACTIVE = false;
-							ZOOM_MODE_SCALE = 1.0f;
-
-							try
+							if (!DOUBLE_TAP_ON)
 							{
-								if (DEBUG_TOUCH) Log.e("NavitGraphics", "sensor thread stop final88");
-								touch_sensor_thread.stop_me();
-							}
-							catch (Exception e)
-							{
+								// pos_x = d_pos_x_old; // wait for redraw !!
+								// pos_y = d_pos_y_old; // wait for redraw !!
+
+								//Log.e("NavitGraphics", "DO__DRAW:Java:Final Up action");
+								//copy_backwards_map_buffer();
+								//draw_reset_factors = true;
+								//this.invalidate();
+
+								// System.out.println("DO__DRAW:Java:xchange global factors");
+								Global_Map_TransX = Global_Map_TransX + pos_x;
+								Global_Map_TransY = Global_Map_TransY + pos_y;
+								Global_Map_Rotationangle = 0f;
+								Global_Map_Zoomfactor = Global_Map_Zoomfactor * ZOOM_MODE_SCALE;
+
+								//System.out.println("DO__DRAW:Java:reset local factors");
+								pos_x = 0;
+								// System.out.println("px reset:003");
+								pos_y = 0;
+								ZOOM_MODE_ACTIVE = false;
+								ZOOM_MODE_SCALE = 1.0f;
+
+								try
+								{
+									if (DEBUG_TOUCH) Log.e("NavitGraphics", "sensor thread stop final88");
+									touch_sensor_thread.stop_me();
+								}
+								catch (Exception e)
+								{
+
+								}
+
+								Global_onTouch_fingerdown = false;
+
+								// allow all map drawing -----------
+								Message msg2 = new Message();
+								Bundle b2 = new Bundle();
+								b2.putInt("Callback", 70);
+								msg2.setData(b2);
+								try
+								{
+									callback_handler.sendMessage(msg2);
+								}
+								catch (Exception e)
+								{
+								}
+								// allow all map drawing -----------
 
 							}
-
-							Global_onTouch_fingerdown = false;
-
-							// allow all map drawing -----------
-							Message msg2 = new Message();
-							Bundle b2 = new Bundle();
-							b2.putInt("Callback", 70);
-							msg2.setData(b2);
-							try
-							{
-								callback_handler.sendMessage(msg2);
-							}
-							catch (Exception e)
-							{
-							}
-							// allow all map drawing -----------
 						}
 
 						//System.out.println("DO__DRAW:Java:ACTION UP end");
@@ -2750,7 +2910,7 @@ public class NavitGraphics
 				{
 					float x = a.x - b.x;
 					float y = a.y - b.y;
-					return FloatMath.sqrt(x * x + y * y);
+					return (float) Math.sqrt(x * x + y * y);
 				}
 
 				public PointF calc_center(MotionEvent event)
@@ -2819,7 +2979,7 @@ public class NavitGraphics
 						x = 0;
 						y = 0;
 					}
-					return FloatMath.sqrt(x * x + y * y);
+					return (float) Math.sqrt(x * x + y * y);
 				}
 
 				@Override
@@ -5545,10 +5705,24 @@ public class NavitGraphics
 						// System.out.println("load image: " + Navit.OSD_nextturn.nextturn_image_filename);
 						String x = Navit.OSD_nextturn.nextturn_image_filename.substring(13).replace(".png", "");
 						// System.out.println("load image: " + x);
-						int ResId = Navit.res_.getIdentifier("com.zoffcc.applications.zanavi:drawable/" + x, null, null);
-						// System.out.println("ResId: " + ResId);
-						Navit.OSD_nextturn.nextturn_image = BitmapFactory.decodeResource(Navit.res_, ResId);
-						Navit.OSD_nextturn.nextturn_image_valid = true;
+						try
+						{
+							int ResId = Navit.res_.getIdentifier("com.zoffcc.applications.zanavi:drawable/" + x, null, null);
+
+							// *TODO*
+							if (ResId == 0)
+							{
+								System.out.println("NavitGraphics:" + "== missing nav icon(1) ==:" + "drawable/" + x);
+							}
+
+							// System.out.println("ResId: " + ResId);
+							Navit.OSD_nextturn.nextturn_image = BitmapFactory.decodeResource(Navit.res_, ResId);
+							Navit.OSD_nextturn.nextturn_image_valid = true;
+						}
+						catch (Exception e_image)
+						{
+							System.out.println("NavitGraphics:" + "== missing nav icon(2) ==:" + "drawable/" + x);
+						}
 					}
 
 					ZANaviLinearLayout.redraw_OSD(3);
@@ -7101,6 +7275,8 @@ public class NavitGraphics
 						TextView no_maps_text = (TextView) Navit.Global_Navit_Object.findViewById(R.id.no_maps_text);
 						no_maps_text.setText("\n\n\n" + Navit.get_text("Some Maps are too old!") + "\n" + Navit.get_text("Please update your maps") + "\n\n");
 
+						// *TODO*
+
 						NavitGraphics.no_maps_container.setVisibility(View.VISIBLE);
 						try
 						{
@@ -8230,7 +8406,7 @@ public class NavitGraphics
 				ZANaviBusySpinner.cancelAnim();
 				busyspinner_.setVisibility(View.INVISIBLE);
 				busyspinnertext_.setVisibility(View.INVISIBLE);
-				busyspinnertext_.setText("");
+				busyspinnertext_.setText2("");
 				Navit.set_debug_messages1("");
 				// DEBUG: clear route rectangle list
 				route_rects.clear();
@@ -8238,7 +8414,7 @@ public class NavitGraphics
 			else if (i == 1)
 			{
 				ZANaviBusySpinner.active = true;
-				busyspinnertext_.setText(Navit.get_text("Destination set")); // TRANS
+				busyspinnertext_.setText2(Navit.get_text("Destination set")); // TRANS
 				busyspinner_.setVisibility(View.VISIBLE);
 				busyspinnertext_.setVisibility(View.VISIBLE);
 				//System.out.println("invalidate 017");
@@ -8250,7 +8426,7 @@ public class NavitGraphics
 				ZANaviBusySpinner.active = true;
 				ZANaviBusySpinner.cancelAnim();
 				busyspinner_.setVisibility(View.VISIBLE);
-				busyspinnertext_.setText(Navit.get_text("No route found / Route blocked")); // TRANS
+				busyspinnertext_.setText2(Navit.get_text("No route found / Route blocked")); // TRANS
 				busyspinnertext_.setVisibility(View.VISIBLE);
 				Navit.set_debug_messages1("No route found / Route blocked");
 			}
@@ -8261,7 +8437,7 @@ public class NavitGraphics
 				busyspinner_.setVisibility(View.VISIBLE);
 				//System.out.println("invalidate 018");
 				busyspinner_.postInvalidate();
-				busyspinnertext_.setText(Navit.get_text("Building route path")); // TRANS
+				busyspinnertext_.setText2(Navit.get_text("Building route path")); // TRANS
 				busyspinnertext_.setVisibility(View.VISIBLE);
 				Navit.set_debug_messages1("Building route path");
 			}
@@ -8271,7 +8447,7 @@ public class NavitGraphics
 				busyspinner_.setVisibility(View.VISIBLE);
 				//System.out.println("invalidate 019");
 				busyspinner_.postInvalidate();
-				busyspinnertext_.setText(Navit.get_text("Building route graph")); // TRANS
+				busyspinnertext_.setText2(Navit.get_text("Building route graph")); // TRANS
 				busyspinnertext_.setVisibility(View.VISIBLE);
 				Navit.set_debug_messages1("Building route graph");
 			}
@@ -8280,7 +8456,7 @@ public class NavitGraphics
 				ZANaviBusySpinner.active = false;
 				ZANaviBusySpinner.cancelAnim();
 				busyspinner_.setVisibility(View.INVISIBLE);
-				busyspinnertext_.setText("");
+				busyspinnertext_.setText2("");
 				busyspinnertext_.setVisibility(View.INVISIBLE);
 				Navit.set_debug_messages1("Route found");
 			}
@@ -8289,7 +8465,7 @@ public class NavitGraphics
 				ZANaviBusySpinner.active = false;
 				ZANaviBusySpinner.cancelAnim();
 				busyspinner_.setVisibility(View.INVISIBLE);
-				busyspinnertext_.setText("");
+				busyspinnertext_.setText2("");
 				busyspinnertext_.setVisibility(View.INVISIBLE);
 				Navit.set_debug_messages1("Route found");
 			}
@@ -8486,6 +8662,18 @@ public class NavitGraphics
 
 	public static ArrayList<route_rect> route_rects = new ArrayList<route_rect>();
 
+	public static void send_alert_to_java(int id, String text)
+	{
+		if (id == 1)
+		{
+			System.out.println("NavitGraphics:" + "== missing icon ==:" + text);
+		}
+		else
+		{
+			System.out.println("NavitGraphics:" + "generic-info:" + text);			
+		}
+	}
+
 	// values are NOT in pixels!! they need to be converted to pixels before drawing
 	public static void send_route_rect_to_java(int x1, int y1, int x2, int y2, int order)
 	{
@@ -8517,6 +8705,11 @@ public class NavitGraphics
 		rr.y2 = y2;
 		rr.order = order;
 		route_rects.add(rr);
+	}
+
+	public static int sp_to_px(int sp)
+	{
+		return (int) ((float) sp * Navit.metrics.scaledDensity);
 	}
 
 	public static int dp_to_px(int dp)

@@ -19,6 +19,8 @@
 
 package com.zoffcc.applications.zanavi;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -26,8 +28,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.Toolbar.LayoutParams;
 import android.view.Display;
@@ -43,7 +47,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class NavitMapPreviewActivity extends ActionBarActivity
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+@SuppressLint("NewApi")
+public class NavitMapPreviewActivity extends AppCompatActivity
 {
 	int selected_id;
 	private ImageView view = null;

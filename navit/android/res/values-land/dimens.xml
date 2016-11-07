@@ -28,4 +28,12 @@
     <!-- x============x -->
     <dimen name="margin_bottom_speeding">8dp</dimen>
     <dimen name="margin_left_speeding">62dp</dimen>
-</resources>
+
+    
+    <!-- x====== Intro ======x -->
+    <integer name="icon_image_weight_horizonztal">6</integer>
+    <integer name="icon_image_weight_mediumtext_horizonztal">4</integer>
+    <integer name="icon_image_weight_longtext_horizonztal">3</integer>
+    <integer name="icon_image_weight_verylongtext_horizonztal">2</integer>
+    <!-- x====== Intro ======x -->
+</resources>

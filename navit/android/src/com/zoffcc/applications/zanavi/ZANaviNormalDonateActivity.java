@@ -19,18 +19,23 @@
 
 package com.zoffcc.applications.zanavi;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ZANaviNormalDonateActivity extends ActionBarActivity
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+@SuppressLint("NewApi")
+public class ZANaviNormalDonateActivity extends AppCompatActivity
 {
 
 	static boolean on_amazon_device = false;

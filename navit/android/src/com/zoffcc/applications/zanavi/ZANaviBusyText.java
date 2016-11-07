@@ -21,32 +21,71 @@ package com.zoffcc.applications.zanavi;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
-import android.view.Gravity;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.TextView;
 
 public class ZANaviBusyText extends TextView
 {
-	final int text_size = 18;
+	final int text_size = 23;
 
 	public ZANaviBusyText(Context context)
 	{
 		super(context);
-		this.setGravity(Gravity.CENTER);
-		this.setPadding(0, 0, 0, (ZANaviBusySpinner.spinner_size * 2) + (2 * text_size) + 5); // place text above spinner
+		this.setPadding(0, 0, 0, (ZANaviBusySpinner.spinner_size * 2) + (2 * NavitGraphics.sp_to_px(text_size)) + 5); // place text above spinner
 		this.setText("");
-		this.setTextColor(Color.parseColor("#FF0000CF"));
-		this.setTextSize(text_size);
+		this.setTextColor(Color.parseColor("#0000CC"));
+		// this.setBackgroundColor(Color.parseColor("#00eeeeee"));
+		this.setTextSize(TypedValue.COMPLEX_UNIT_SP, text_size);
+		// this.setShadowLayer(2, 2, NavitGraphics.dp_to_px(1), Color.TRANSPARENT);
 	}
 
 	public ZANaviBusyText(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		this.setGravity(Gravity.CENTER);
-		this.setPadding(0, 0, 0, (ZANaviBusySpinner.spinner_size * 2) + (2 * text_size) + 5); // place text above spinner
+		this.setPadding(0, 0, 0, (ZANaviBusySpinner.spinner_size * 2) + (2 * NavitGraphics.sp_to_px(text_size)) + 5); // place text above spinner
 		this.setText("");
-		this.setTextColor(Color.parseColor("#FF0000CF"));
-		this.setTextSize(text_size);
+		this.setTextColor(Color.parseColor("#0000CC"));
+		// this.setBackgroundColor(Color.parseColor("#00eeeeee"));
+		this.setTextSize(TypedValue.COMPLEX_UNIT_SP, text_size);
+		// this.setShadowLayer(2, 2, NavitGraphics.dp_to_px(1), Color.TRANSPARENT);
+	}
+
+	public static Handler UIHandler;
+	static
+	{
+		UIHandler = new Handler(Looper.getMainLooper());
+	}
+
+	public static void runOnUI(Runnable runnable)
+	{
+		UIHandler.post(runnable);
+	}
+
+	public void setText2(String t)
+	{
+		// System.out.println("ZANaviBusyText:" + "setText2 t=" + t);
+		final String t2 = t;
+
+		try
+		{
+			runOnUI(new Runnable()
+			{
+				public void run()
+				{
+					setVisibility(View.VISIBLE);
+					bringToFront();
+					setText(t2);
+				}
+			});
+		}
+		catch (Exception e)
+		{
+			System.out.println("ZANaviBusyText:" + "EX:" + e.getMessage());
+		}
 	}
 
 	public void onSizeChanged(int w, int h, int oldw, int oldh)

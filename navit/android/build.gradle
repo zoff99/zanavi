@@ -1,0 +1,109 @@
+
+buildscript {
+   repositories {
+       jcenter()
+   }
+}
+
+apply plugin: 'com.android.application'
+// -------QC-------
+// apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'net.ltgt.apt'
+apply from: '../config/quality.gradle'
+apply plugin: 'spoon'
+// -------QC-------
+
+repositories {
+    jcenter()
+
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+    // dependencies for app building
+
+    compile project(':android-about-page')
+
+    compile fileTree(dir: 'lib', include: '*.jar')
+    compile project(':android-support-v7-appcompat')
+    compile project(':android-support-annotations')
+    compile project(':android-support-vector-drawable')
+
+    // androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+
+}
+
+
+tasks.withType(Test) {
+    // increased logging for tests
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 23
+
+        jackOptions {
+            enabled true
+        }
+
+        vectorDrawables.useSupportLibrary = true
+        // generatedDensities = []
+
+    }
+
+    aaptOptions {
+          additionalParameters "--no-version-vectors"
+    }
+
+
+    dexOptions {
+          javaMaxHeapSize "1.6g"
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
+        }
+
+    }
+
+    compileOptions {
+        encoding "UTF-8"
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+// -------QC-------
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+// -------QC-------
+    }
+
+}
+
+

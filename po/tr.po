@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-14 16:05+0200\n"
+"POT-Creation-Date: 2016-11-06 15:26+0100\n"
 "PO-Revision-Date: 2014-08-21 07:45+0000\n"
 "Last-Translator: zoff99 <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-06-21 19:16+0000\n"
-"X-Generator: Launchpad (build 18097)\n"
+"X-Launchpad-Export-Date: 2016-11-06 14:48+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
 #: popup.c:325 popup.c:394
@@ -31,430 +31,425 @@ msgstr "Hedef olarak ayarla"
 msgid "Add as bookmark"
 msgstr "Yer imi olarak ayarla"
 
-#. TRANSLATORS: the following counts refer to streets (example: turn right after the zeroth street)
-#: navigation.c:561
-msgid "zeroth"
-msgstr "sıfırıncı"
-
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the first street)
-#: navigation.c:569
+#: navigation.c:717 navigation.c:725
 msgid "first"
 msgstr "birinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the second street)
-#: navigation.c:577
+#: navigation.c:733
 msgid "second"
 msgstr "ikinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the third street)
-#: navigation.c:585
+#: navigation.c:741
 msgid "third"
 msgstr "üçüncü"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the fourth street)
-#: navigation.c:593
+#: navigation.c:749
 msgid "fourth"
 msgstr "dördüncü"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the fifth street)
-#: navigation.c:601
+#: navigation.c:757
 msgid "fifth"
 msgstr "beşinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the sixth street)
-#: navigation.c:609
+#: navigation.c:765
 msgid "sixth"
 msgstr "altıncı"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the seventh street)
-#: navigation.c:617
+#: navigation.c:773
 msgid "seventh"
 msgstr "yedinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the eighth street)
-#: navigation.c:625
+#: navigation.c:781
 msgid "eighth"
 msgstr "sekizinci"
 
 #. TRANSLATORS: the following counts refer to streets (example: turn right after the ninth street)
-#: navigation.c:633
+#: navigation.c:789
 msgid "ninth"
 msgstr "dokuzuncu"
 
-#. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the zeroth exit)
-#: navigation.c:650
-msgid "zeroth exit"
-msgstr "sıfırıncı çıkış"
-
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the first exit)
-#: navigation.c:658
+#: navigation.c:806 navigation.c:814
 msgid "first exit"
 msgstr "ilk çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the second exit)
-#: navigation.c:666
+#: navigation.c:822
 msgid "second exit"
 msgstr "ikinci çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the third exit)
-#: navigation.c:674
+#: navigation.c:830
 msgid "third exit"
 msgstr "üçüncü çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fourth exit)
-#: navigation.c:682
+#: navigation.c:838
 msgid "fourth exit"
 msgstr "dördüncü çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the fifth exit)
-#: navigation.c:690
+#: navigation.c:846
 msgid "fifth exit"
 msgstr "beşinci çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the sixth exit)
-#: navigation.c:698
+#: navigation.c:854
 msgid "sixth exit"
 msgstr "altıncı çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the seventh exit)
-#: navigation.c:706
+#: navigation.c:862
 msgid "seventh exit"
 msgstr "yedinci çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the eighth exit)
-#: navigation.c:714
+#: navigation.c:870
 msgid "eighth exit"
 msgstr "sekizinci çıkış"
 
 #. TRANSLATORS: the following counts refer to roundabout exits (example: leave the roundabout at the ninth exit)
-#: navigation.c:722
+#: navigation.c:878
 msgid "ninth exit"
 msgstr "dokuzuncu çıkış"
 
-#: navigation.c:842
+#: navigation.c:998
 #, c-format
 msgid "%d m"
 msgstr "%d m"
 
-#: navigation.c:851
+#: navigation.c:1007
 #, c-format
 msgid "in %d m"
 msgstr "%d m sonra"
 
-#: navigation.c:902
+#: navigation.c:1058
 #, c-format
 msgid "%d feet"
 msgstr ""
 
-#: navigation.c:911
+#: navigation.c:1067
 #, c-format
 msgid "in %d feet"
 msgstr ""
 
-#: navigation.c:930
+#: navigation.c:1086
 #, c-format
 msgid "%d meters"
 msgstr "%d metre"
 
-#: navigation.c:942
+#: navigation.c:1098
 #, c-format
 msgid "in %d meters"
 msgstr "%d metrede"
 
-#: navigation.c:972
+#: navigation.c:1128
 #, c-format
 msgid "%d.%d miles"
 msgstr ""
 
-#: navigation.c:983
+#: navigation.c:1139
 #, c-format
 msgid "in %d.%d miles"
 msgstr ""
 
-#: navigation.c:995
+#: navigation.c:1151
 #, c-format
 msgid "%d.%d kilometers"
 msgstr "%d.%d kilometre"
 
-#: navigation.c:1004
+#: navigation.c:1160
 #, c-format
 msgid "in %d.%d kilometers"
 msgstr "%d.%d kilometrede"
 
-#: navigation.c:1014
+#: navigation.c:1170
 #, c-format
 msgid "one mile"
 msgid_plural "%d miles"
 msgstr[0] ""
 msgstr[1] ""
 
-#: navigation.c:1020
+#: navigation.c:1176
 #, c-format
 msgid "in one mile"
 msgid_plural "in %d miles"
 msgstr[0] ""
 msgstr[1] ""
 
-#: navigation.c:1032
+#: navigation.c:1188
 #, c-format
 msgid "one kilometer"
 msgid_plural "%d kilometers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: navigation.c:1041
+#: navigation.c:1197
 #, c-format
 msgid "in one kilometer"
 msgid_plural "in %d kilometers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: navigation.c:3881
+#: navigation.c:4307
 msgid "exit"
 msgstr "çıkış"
 
-#: navigation.c:3913
+#: navigation.c:4339
 msgid "into the ramp"
 msgstr "rampada"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name
-#: navigation.c:3994
+#: navigation.c:4420
 #, c-format
 msgid "%sinto the street %s%s%s"
 msgstr "%sCaddesi'ne %s%s%s"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Male form. The stuff after | doesn't have to be included
-#: navigation.c:4015
+#: navigation.c:4441
 #, c-format
 msgid "%sinto the %s%s%s|male form"
 msgstr "%scaddesine %s%s%s|male form"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Female form. The stuff after | doesn't have to be included
-#: navigation.c:4036
+#: navigation.c:4462
 #, c-format
 msgid "%sinto the %s%s%s|female form"
 msgstr "%scaddesine %s%s%s|female form"
 
 #. TRANSLATORS: Arguments: 1: Prefix (Space if required) 2: Street Name 3: Separator (Space if required), 4: Systematic Street Name. Neutral form. The stuff after | doesn't have to be included
-#: navigation.c:4057
+#: navigation.c:4483
 #, c-format
 msgid "%sinto the %s%s%s|neutral form"
 msgstr "%scaddesine %s%s%s|neutral form"
 
 #. TRANSLATORS: gives the name of the next road to turn into (into the E17)
-#: navigation.c:4077
+#: navigation.c:4503
 #, c-format
 msgid "%sinto the %s"
 msgstr "%s%s yoluna"
 
 #. TRANSLATORS: right, as in 'Turn right'
-#: navigation.c:4106 navigation.c:4494 navigation.c:5983
+#: navigation.c:4538 navigation.c:5046 navigation.c:7074
 msgid "right"
 msgstr "Sağa"
 
 #. TRANSLATORS: left, as in 'Turn left'
-#: navigation.c:4194 navigation.c:4588 navigation.c:5989
+#: navigation.c:4650 navigation.c:5156 navigation.c:7080
 msgid "left"
 msgstr "Sola"
 
+#: navigation.c:4664 navigation.c:5176
+msgid "straight"
+msgstr ""
+
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn slight right
-#: navigation.c:4204 navigation.c:4630
+#: navigation.c:4677 navigation.c:5200
 msgid "slighty "
 msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn slight right
-#: navigation.c:4207 navigation.c:4633
+#: navigation.c:4680 navigation.c:5203
 msgid "slight "
 msgstr "hafif "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn hard right
-#: navigation.c:4217 navigation.c:4663
+#: navigation.c:4702 navigation.c:5233
 msgid "hard "
 msgstr "sert "
 
 #. TRANSLATORS: Don't forget the ending space
 #. TRANSLATORS: EXAMPLE: turn really hard right
-#: navigation.c:4223 navigation.c:4674
+#: navigation.c:4708 navigation.c:5244
 msgid "really hard "
 msgstr ""
 
-#: navigation.c:4246 navigation.c:4700
+#: navigation.c:4735 navigation.c:5275 navigation.c:7571
 msgid "When possible, please turn around"
 msgstr "Müsait olduğunda lütfen yönünü değiştir"
 
 #. TRANSLATORS: EXAMPLE: Follow the road for the next 300 meters
-#: navigation.c:4258 navigation.c:4899 navigation.c:4920
+#: navigation.c:4768 navigation.c:5408 navigation.c:5629 navigation.c:5650
 #, c-format
 msgid "Follow the road for the next %s"
 msgstr "Gelecek %s için yolu takip et"
 
-#: navigation.c:4268 navigation.c:4934
+#: navigation.c:4778 navigation.c:5664
 msgid "soon"
 msgstr "yakında"
 
-#: navigation.c:4324 navigation.c:4328 navigation.c:4372 navigation.c:4376
-#: navigation.c:5133 navigation.c:5137
+#: navigation.c:4835 navigation.c:4839 navigation.c:4922 navigation.c:4926
+#: navigation.c:5882 navigation.c:5886
 msgid "oncoming traffic!"
 msgstr ""
 
+#. TRANSLATORS: The argument is the distance. Example: 'keep left in 100 meters'
+#: navigation.c:4869 navigation.c:5929
+#, c-format
+msgid "keep left %s"
+msgstr ""
+
+#. TRANSLATORS: The argument is the distance. Example: 'keep right in 100 meters'
+#: navigation.c:4874 navigation.c:5940
+#, c-format
+msgid "keep right %s"
+msgstr ""
+
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
-#: navigation.c:4354 navigation.c:5161 navigation.c:5191
+#: navigation.c:4904 navigation.c:5910 navigation.c:5952
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
 msgstr "Dönüş %1$s%2$s %3$s%4$s"
 
-#: navigation.c:4372 navigation.c:4376 navigation.c:4383
+#: navigation.c:4922 navigation.c:4926 navigation.c:4933
 msgid "then"
 msgstr ""
 
+#. TRANSLATORS: First argument is strength, second direction, third distance, fourth destination
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
-#: navigation.c:4403 navigation.c:4411 navigation.c:5235 navigation.c:5262
+#: navigation.c:4953 navigation.c:4961 navigation.c:5996 navigation.c:6023
 #: main.c:668 main.c:673 main.c:677
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
 msgstr "sonra %1$s%2$s %3$s%4$s dönün"
 
 #. TRANSLATORS: EXAMPLE: You have reached your destination in 300 meters
-#: navigation.c:4436 navigation.c:5283
+#: navigation.c:4986 navigation.c:6044
 #, c-format
 msgid "You have reached your destination %s"
 msgstr "Hedefinize ulaştınız, %s"
 
-#: navigation.c:4442 navigation.c:5292
+#: navigation.c:4992 navigation.c:6053
 msgid "then you have reached your destination."
 msgstr "ardından hedefinize ulaşacaksınız"
 
-#: navigation.c:4608
-msgid "straight"
-msgstr ""
-
-#: navigation.c:4800
+#: navigation.c:5411 navigation.c:5520
 msgid "Enter the roundabout soon"
 msgstr ""
 
 #. TRANSLATORS: EXAMPLE: Leave the roundabout at the second exit
-#: navigation.c:4817 navigation.c:4865
+#: navigation.c:5414 navigation.c:5420 navigation.c:5537 navigation.c:5585
 #, c-format
 msgid "Leave the roundabout at the %s"
 msgstr "%s'de kavşaktan çıkın"
 
-#. TRANSLATORS: %s is the distance to the roundabout
-#. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
-#: navigation.c:4834
-#, c-format
-msgid "In %s, enter the roundabout"
-msgstr "%s içerisinde kavşağa girin"
-
 #. TRANSLATORS: EXAMPLE: ... then leave the roundabout at the second exit
-#: navigation.c:4852
+#: navigation.c:5417 navigation.c:5572
 #, c-format
 msgid "then leave the roundabout at the %s"
 msgstr "ardından %s'de kavşaktan çıkın"
 
+#. TRANSLATORS: %s is the distance to the roundabout
+#. TRANSLATORS: EXAMPLE: In 300m, enter the roundabout
+#: navigation.c:5554
+#, c-format
+msgid "In %s, enter the roundabout"
+msgstr "%s içerisinde kavşağa girin"
+
 #. TRANSLATORS: First argument is the how manieth street to take, second the direction
-#: navigation.c:4958
+#: navigation.c:5694
 #, c-format
 msgid "Take the %1$s road to the %2$s"
 msgstr "%1$s yolunda  %2$s yönüne dönün"
 
-#: navigation.c:4971 navigation.c:5018
+#: navigation.c:5707 navigation.c:5761
 #, c-format
 msgid "after %i roads"
 msgstr "%i yol sonra"
 
-#: navigation.c:4981
+#: navigation.c:5717
 msgid "now"
 msgstr "şimdi"
 
-#: navigation.c:5005
+#: navigation.c:5748
 #, c-format
 msgid "then take the %1$s road to the %2$s"
 msgstr "ardından %1$s yolunda  %2$s yönüne dönün"
 
-#: navigation.c:5033
+#: navigation.c:5776
 msgid "error"
 msgstr "hata"
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
-#: navigation.c:5156 navigation.c:5171
+#: navigation.c:5905 navigation.c:5920
 #, c-format
 msgid "%1$s%2$s %3$s%4$s"
 msgstr ""
 
-#. TRANSLATORS: The argument is the distance. Example: 'keep left in 100 meters'
-#: navigation.c:5180
-#, c-format
-msgid "keep left %s"
-msgstr ""
-
-#. TRANSLATORS: The argument is the distance. Example: 'keep right in 100 meters'
-#: navigation.c:5185
-#, c-format
-msgid "keep right %s"
-msgstr ""
-
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
-#: navigation.c:5230 navigation.c:5244
+#: navigation.c:5991 navigation.c:6005
 #, c-format
 msgid "then %1$s%2$s %3$s%4$s"
 msgstr ""
 
-#: navigation.c:5252
+#: navigation.c:6013
 msgid "then keep left"
 msgstr ""
 
-#: navigation.c:5256
+#: navigation.c:6017
 msgid "then keep right"
 msgstr ""
 
-#: navit.c:2452 gui/internal/gui_internal.c:3038
+#: aaa_jandegr.c:1282
+msgid "unknown street"
+msgstr ""
+
+#: navit.c:2638 gui/internal/gui_internal.c:3038
 msgid "Position"
 msgstr "Konum"
 
-#: navit.c:2453
+#: navit.c:2639
 msgid "Command"
 msgstr "Komut"
 
-#: navit.c:2457
+#: navit.c:2643
 msgid "Length"
 msgstr "Uzaklık"
 
-#: navit.c:2461 navit.c:2486
+#: navit.c:2647 navit.c:2672
 msgid "km"
 msgstr "km"
 
-#: navit.c:2465 navit.c:2490
+#: navit.c:2651 navit.c:2676
 msgid "m"
 msgstr "m"
 
-#: navit.c:2471
+#: navit.c:2657
 msgid "Time"
 msgstr "Zaman"
 
-#: navit.c:2483
+#: navit.c:2669
 msgid "Destination Length"
 msgstr "Hedef Uzaklığı"
 
-#: navit.c:2496
+#: navit.c:2682
 msgid "Destination Time"
 msgstr "Varış Zamanı"
 
-#: navit.c:2533
+#: navit.c:2719
 msgid "Roadbook"
 msgstr "Yol Haritası"
 
-#: navit.c:5268
+#: navit.c:5445
 msgid "Waypoint reached"
 msgstr ""
 
-#: navit.c:5281
+#: navit.c:5458
 msgid "You have reached your destination"
 msgstr "Hedefinize ulaştınız"
 
-#: navit.c:6745
+#: navit.c:6936
 msgid "Waypoint"
 msgstr ""
 
@@ -601,3 +596,9 @@ msgstr "Dikkat! Kamera!"
 #: osd/core/osd_core.c:2206
 msgid "Please decrease your speed"
 msgstr "Lütfen hızınızı düşürünüz"
+
+#~ msgid "zeroth"
+#~ msgstr "sıfırıncı"
+
+#~ msgid "zeroth exit"
+#~ msgstr "sıfırıncı çıkış"

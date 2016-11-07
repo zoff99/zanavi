@@ -3,27 +3,27 @@
 
     <item
         android:drawable="@drawable/ic_action_download0"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download1"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download2"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download3"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download4"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download5"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download6"
-        android:duration="250"/>
+        android:duration="300"/>
     <item
         android:drawable="@drawable/ic_action_download7"
-        android:duration="250"/>
+        android:duration="300"/>
 
 </animation-list>

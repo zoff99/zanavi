@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal|top"
+        android:orientation="vertical"
+        android:paddingBottom="50dp"
+        android:paddingTop="25dp" >
+
+        <ImageView
+            android:id="@+id/icon_slide"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="@integer/icon_image_weight_horizonztal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical" >
+
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:fadeScrollbars="false"
+                android:overScrollMode="never"
+                android:padding="8dp"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbarSize="8dp"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal|top"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:id="@+id/placeolder"
+                        android:layout_width="fill_parent"
+                        android:layout_height="10dp"
+                        android:src="@null" />
+
+                    <TextView
+                        android:id="@+id/header_text_slide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="title5"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/slide_title"
+                        android:visibility="gone"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/desc_text_slide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:gravity="center_horizontal"
+                        android:paddingLeft="@dimen/desc_padding"
+                        android:paddingRight="@dimen/desc_padding"
+                        android:text="description5"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/slide_desc" />
+
+                    <Spinner
+                        android:id="@+id/intro_spinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="50dp"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_spinner_background"
+                        android:spinnerMode="dropdown" />
+
+                    <Button
+                        android:id="@+id/button_slide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="30dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_spinner_background"
+                        android:text="__"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/slide_desc" >
+                    </Button>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

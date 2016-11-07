@@ -1,5 +1,11 @@
 #!/bin/bash
 
+
+# --- set this in your CI scripts !! ---
+# export FULL_LOG=1
+# --- set this in your CI scripts !! ---
+
+
 export START_PATH=~/
 export SOURCE_PATH="$START_PATH""/"${CIRCLE_PROJECT_REPONAME}"/"
 
@@ -32,19 +38,7 @@ echo "================================="
 # type -a ccache
 # echo "================================="
 
-# patch for circleCI -------------
 pwd
-ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
-sed -i -e 's#static final int CIDEBUG =.*#static final int CIDEBUG = 1;#' navit/android/src/com/zoffcc/applications/zanavi/Navit.java
-cat navit/android/src/com/zoffcc/applications/zanavi/Navit.java | grep 'static final int CIDEBUG'
-ls -al navit/android/src/com/zoffcc/applications/zanavi/Navit.java
-# ============
-ls -al navit/debug.h
-sed -i -e 'sc// #define _CIDEBUG_BUILD_ 1c#define _CIDEBUG_BUILD_ 1c' navit/debug.h
-cat navit/debug.h | grep 'CIDEBUG_BUILD'
-ls -al navit/debug.h
-# patch for circleCI -------------
-
 
 rm navit/maptool/poly2tri-c/001/seidel-1.0/triangulate
 rm pngout-static
@@ -66,69 +60,217 @@ CCACHE=""
 conf_addon=''
 
 if [ "$COVERITY_BUILD_""x" == "1x" ]; then
- sed -i -e 's#LIBS="$LIBS -rdynamic"#ABCDD="aaaabbb"#g' ../zanavi/configure
- cat ../zanavi/configure | grep 'rdynamic'
- cat ../zanavi/configure | grep 'aaaabbb'
- conf_addon=' --disable-shared '
+	sed -i -e 's#LIBS="$LIBS -rdynamic"#ABCDD="aaaabbb"#g' ../zanavi/configure
+	cat ../zanavi/configure | grep 'rdynamic'
+	cat ../zanavi/configure | grep 'aaaabbb'
+	conf_addon=' --disable-shared '
 fi
 
 DEBUG_="-fpic -ffunction-sections -fstack-protector -fomit-frame-pointer -fno-strict-aliasing -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__  -Wno-psabi -march=armv5te -msoft-float -mthumb -finline-limit=64 -DHAVE_API_ANDROID -DANDROID  -Wa,--noexecstack -O3 -I$_NDK_/platforms/android-14/arch-arm/usr/include -nostdlib -Wl,-rpath-link=$_NDK_/platforms/android-14/arch-arm/usr/lib -L$_NDK_/platforms/android-14/arch-arm/usr/lib"
 
-../zanavi/configure RANLIB=arm-linux-androideabi-ranlib AR=arm-linux-androideabi-ar CC="$CCACHE arm-linux-androideabi-gcc -O2 $DEBUG_ -L. -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " CXX="$CCACHE arm-linux-androideabi-g++ -O2 -fno-rtti -fno-exceptions -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " --host=arm-eabi-linux_android --enable-avoid-float --enable-avoid-unaligned --disable-glib --disable-gmodule --disable-vehicle-gpsd $conf_addon --enable-vehicle-demo --disable-binding-dbus --disable-speech-cmdline --disable-gui-gtk --disable-font-freetype --disable-fontconfig --disable-graphics-qt-qpainter --disable-graphics-gtk-drawing-area --disable-maptool --enable-cache-size=20971520 --enable-svg2png-scaling=8,16,32,48,64,96,192,384 --enable-svg2png-scaling-nav=48,64,59,96,192,384 --enable-svg2png-scaling-flag=32 --with-xslts=android,plugin_menu --with-saxon=saxonb-xslt --enable-transformation-roll --with-android-project="android-21"  > /dev/null 2> /dev/null
+../zanavi/configure RANLIB=arm-linux-androideabi-ranlib AR=arm-linux-androideabi-ar CC="$CCACHE arm-linux-androideabi-gcc -O2 $DEBUG_ -L. -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " CXX="$CCACHE arm-linux-androideabi-g++ -O2 -fno-rtti -fno-exceptions -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " --host=arm-eabi-linux_android --enable-avoid-float --enable-avoid-unaligned --disable-glib --disable-gmodule --disable-vehicle-gpsd $conf_addon --enable-vehicle-demo --disable-binding-dbus --disable-speech-cmdline --disable-gui-gtk --disable-font-freetype --disable-fontconfig --disable-graphics-qt-qpainter --disable-graphics-gtk-drawing-area --disable-maptool --enable-cache-size=20971520 --enable-svg2png-scaling=8,16,32,48,64,96,192,384 --enable-svg2png-scaling-nav=48,64,59,96,192,384 --enable-svg2png-scaling-flag=32 --with-xslts=android,plugin_menu --with-saxon=saxonb-xslt --enable-transformation-roll --with-android-project="android-24"  > /dev/null 2> /dev/null
 
 if [ "$COVERITY_BUILD_""x" == "1x" ]; then
- export AND_API_LEVEL_C=14 && \
+	export AND_API_LEVEL_C=14 && \
         export NDK=$_NDK_ && \
         export DO_RELEASE_BUILD=1 && \
         export DO_PNG_BUILD=1 && \
         export NDK_CCACHE="" && \
- export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH
- cd ~/android-build/
- # cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
- cov-configure -co arm-linux-androideabi-gcc -- -march=armv5te -msoft-float -mthumb
- make clean
- cov-build --dir cov-int make
+	export PATH=/home/ubuntu/cov_scan/cov-analysis-linux64-8.5.0/bin:/usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH
+	cd ~/android-build/
+	# cov-configure --comptype gcc --compiler /usr/local/android-ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
+	cov-configure -co arm-linux-androideabi-gcc -- -march=armv5te -msoft-float -mthumb
+	make clean
+	cov-build --dir cov-int make
 
- ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
- ls -al /home/ubuntu/android-build/navit/.libs/navit2
- ls -al /home/ubuntu/android-build/navit/navit2
+	ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
+	ls -al /home/ubuntu/android-build/navit/.libs/navit2
+	ls -al /home/ubuntu/android-build/navit/navit2
 
- make clean
- conf_addon=''
- sed -i -e 's#ABCDD="aaaabbb"#LIBS="$LIBS -rdynamic"#g' ../zanavi/configure
- cat ../zanavi/configure | grep 'rdynamic'
- cat ../zanavi/configure | grep 'aaaabbb'
- ../zanavi/configure RANLIB=arm-linux-androideabi-ranlib AR=arm-linux-androideabi-ar CC="$CCACHE arm-linux-androideabi-gcc -O2 $DEBUG_ -L. -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " CXX="$CCACHE arm-linux-androideabi-g++ -O2 -fno-rtti -fno-exceptions -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " --host=arm-eabi-linux_android --enable-avoid-float --enable-avoid-unaligned --disable-glib --disable-gmodule --disable-vehicle-gpsd $conf_addon --enable-vehicle-demo --disable-binding-dbus --disable-speech-cmdline --disable-gui-gtk --disable-font-freetype --disable-fontconfig --disable-graphics-qt-qpainter --disable-graphics-gtk-drawing-area --disable-maptool --enable-cache-size=20971520 --enable-svg2png-scaling=8,16,32,48,64,96,192,384 --enable-svg2png-scaling-nav=48,64,59,96,192,384 --enable-svg2png-scaling-flag=32 --with-xslts=android,plugin_menu --with-saxon=saxonb-xslt --enable-transformation-roll --with-android-project="android-21"  > /dev/null 2> /dev/null
+	make clean
+	conf_addon=''
+	sed -i -e 's#ABCDD="aaaabbb"#LIBS="$LIBS -rdynamic"#g' ../zanavi/configure
+	cat ../zanavi/configure | grep 'rdynamic'
+	cat ../zanavi/configure | grep 'aaaabbb'
+	../zanavi/configure RANLIB=arm-linux-androideabi-ranlib AR=arm-linux-androideabi-ar CC="$CCACHE arm-linux-androideabi-gcc -O2 $DEBUG_ -L. -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " CXX="$CCACHE arm-linux-androideabi-g++ -O2 -fno-rtti -fno-exceptions -L$_NDK_/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86$SUFFIX2/lib/gcc/arm-linux-androideabi/4.8/ -lgcc -ljnigraphics " --host=arm-eabi-linux_android --enable-avoid-float --enable-avoid-unaligned --disable-glib --disable-gmodule --disable-vehicle-gpsd $conf_addon --enable-vehicle-demo --disable-binding-dbus --disable-speech-cmdline --disable-gui-gtk --disable-font-freetype --disable-fontconfig --disable-graphics-qt-qpainter --disable-graphics-gtk-drawing-area --disable-maptool --enable-cache-size=20971520 --enable-svg2png-scaling=8,16,32,48,64,96,192,384 --enable-svg2png-scaling-nav=48,64,59,96,192,384 --enable-svg2png-scaling-flag=32 --with-xslts=android,plugin_menu --with-saxon=saxonb-xslt --enable-transformation-roll --with-android-project="android-24"  > /dev/null 2> /dev/null
 
 fi
 
-export AND_API_LEVEL_C=14 && \
-        export NDK=$_NDK_ && \
-        export DO_RELEASE_BUILD=1 && \
-        export DO_PNG_BUILD=1 && \
-        export NDK_CCACHE="" && \
+export AND_API_LEVEL_C=14
+export NDK=$_NDK_
+export DO_RELEASE_BUILD=1
+export DO_PNG_BUILD=1
+export NDK_CCACHE=""
+
+if [ "$FULL_LOG""x" == "1x" ]; then
+        make && \
+        pwd && \
+        cd navit
+        make apkg-release || pwd
+else
         make 2>&1 | grep -i error && \
         pwd && \
         cd navit
         make apkg-release 2>&1 | grep '\[javac\]' || pwd
+fi
 
 ls -al /home/ubuntu/android-build/navit/.libs/lib_data_data_com.zoffcc.applications.zanavi_lib_navit.so
 ls -al /home/ubuntu/android-build/navit/.libs/navit2
 ls -al /home/ubuntu/android-build/navit/navit2
 
+# ---------------------
+cd android-about-page && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
 
+# ---------------------
+cd android-support-animated-vector-drawable && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
+
+# ---------------------
+cd android-support-annotations && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
+
+# ---------------------
+cd android-support-design && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
+
+# ---------------------
+cd android-support-v4 && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
+
+# ---------------------
 cd android-support-v7-appcompat && \
-        cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
-        mv l.txt local.properties && \
-        cat local.properties
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
 
-cd ../android
+# ---------------------
+cd android-support-v7-recyclerview && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
+
+# ---------------------
+cd android-support-vector-drawable && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+cat local.properties
+cd ..
+# ---------------------
+
+# ---------------------
+cd material-intro && \
+cat local.properties |sed -e "s#/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_x86#$_SDK_#" > l.txt && \
+mv l.txt local.properties && \
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties && \
+
+	sed -i -e '3i\
+<property name="java.target" value="1.7" />' build.xml
+	sed -i -e '3i\
+<property name="java.source" value="1.7" />' build.xml
+
+cat local.properties
+cd ..
+# ---------------------
+
+
+# ---------------------
+cd ./android
+sed -i -e 'sxproguard.config=x#proguard.config=x' local.properties
+# ---------------------
+
 
 pwd
 cat AndroidManifest.xml | sed -e 's#android:debuggable="true"#android:debuggable="false"#' > l.txt
 mv l.txt AndroidManifest.xml
 
-ant release 2>&1 | grep '\[javac\]' # > /dev/null 2> /dev/null
+if [ "$FULL_LOG""x" == "1x" ]; then
+
+	ant -diagnostics | grep java\\.home
+	sed -i -e '3i\
+<echo>Java/JVM version: ${ant.java.version}</echo>' build.xml
+	sed -i -e '3i\
+<echo>Java/JVM detail version: ${java.version}</echo>' build.xml
+
+	sed -i -e '3i\
+<echo message="Value of java.target is ${java.target}" /> ' build.xml
+	sed -i -e '3i\
+<echo message="Value of java.source is ${java.source}" /> ' build.xml
+
+	sed -i -e '3i\
+<property name="java.target" value="1.7" />' build.xml
+	sed -i -e '3i\
+<property name="java.source" value="1.7" />' build.xml
+
+#	sudo sed -i -e 's#name="java.target" value="1.5"#name="java.target" value="1.7"#' \
+#/usr/local/android-sdk-linux/tools/ant/build.xml
+#	sudo sed -i -e 's#name="java.source" value="1.5"#name="java.source" value="1.7"#' \
+#/usr/local/android-sdk-linux/tools/ant/build.xml
+
+	# rm -f ../android-support-v7-appcompat/res/values-v23/values-v23.xml
+
+	ant release
+
+else
+
+	ant -diagnostics | grep java\\.home
+	sed -i -e '3i\
+<echo>Java/JVM version: ${ant.java.version}</echo>' build.xml
+	sed -i -e '3i\
+<echo>Java/JVM detail version: ${java.version}</echo>' build.xml
+
+	sed -i -e '3i\
+<echo message="Value of java.target is ${java.target}" /> ' build.xml
+	sed -i -e '3i\
+<echo message="Value of java.source is ${java.source}" /> ' build.xml
+
+	sed -i -e '3i\
+<property name="java.target" value="1.7" />' build.xml
+	sed -i -e '3i\
+<property name="java.source" value="1.7" />' build.xml
+
+#	sudo sed -i -e 's#name="java.target" value="1.5"#name="java.target" value="1.7"#' \
+#/usr/local/android-sdk-linux/tools/ant/build.xml
+#	sudo sed -i -e 's#name="java.source" value="1.5"#name="java.source" value="1.7"#' \
+#/usr/local/android-sdk-linux/tools/ant/build.xml
+
+	# rm -f ../android-support-v7-appcompat/res/values-v23/values-v23.xml
+
+	ant release 2>&1 | grep '\[javac\]' # > /dev/null 2> /dev/null
+
+fi
 
 ######  --------------- delete debug signing-key ---------------
 ### rm -f ~/.android/debug.keystore
@@ -138,21 +280,21 @@ cd bin/
 
 if [ ! -f ~/.android/debug.keystore ]; then
 
- echo "*** generating new signer key ***"
- echo "*** generating new signer key ***"
- echo "*** generating new signer key ***"
+	echo "*** generating new signer key ***"
+	echo "*** generating new signer key ***"
+	echo "*** generating new signer key ***"
 
- keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android \
- -keyalg RSA -keysize 2048 -validity 10000 \
- -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
+	keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android \
+	-keyalg RSA -keysize 2048 -validity 10000 \
+	-alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
 fi
 
 jarsigner -verbose -keystore ~/.android/debug.keystore \
-     -storepass android -keypass android -sigalg SHA1withRSA -digestalg SHA1 \
-     -sigfile CERT -signedjar zanavi_debug_signed.apk \
-      Navit-release-unsigned.apk androiddebugkey > /dev/null 2> /dev/null
+	-storepass android -keypass android -sigalg SHA1withRSA -digestalg SHA1 \
+	-sigfile CERT -signedjar zanavi_debug_signed.apk \
+	Navit-release-unsigned.apk androiddebugkey > /dev/null 2> /dev/null
 
-$_SDK_/build-tools/23.0.1/zipalign -v 4 zanavi_debug_signed.apk zanavi_debug_signed_aligned.apk > /dev/null 2> /dev/null
+${_SDK_}/build-tools/23.0.1/zipalign -v 4 zanavi_debug_signed.apk zanavi_debug_signed_aligned.apk > /dev/null 2> /dev/null
 
 pwd
 
@@ -162,6 +304,4 @@ cd ..
 pwd
 
 cp -av bin/zanavi_debug_signed_aligned.apk $CIRCLE_ARTIFACTS/zanavi_circleci_$CIRCLE_SHA1.apk || exit 1
-
-
 

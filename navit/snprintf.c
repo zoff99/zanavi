@@ -1549,7 +1549,9 @@ rpl_vasprintf(char **ret, const char *format, va_list ap)
 }
 #endif	/* !HAVE_VASPRINTF */
 
-#if !HAVE_SNPRINTF
+// zoff ---------------------
+// #if !HAVE_SNPRINTF
+// zoff ---------------------
 #if HAVE_STDARG_H
 int
 rpl_snprintf(char *str, size_t size, const char *format, ...)
@@ -1574,7 +1576,9 @@ rpl_snprintf(va_alist) va_dcl
 	va_end(ap);
 	return len;
 }
-#endif	/* !HAVE_SNPRINTF */
+// zoff ---------------------
+// #endif	/* !HAVE_SNPRINTF */
+// zoff ---------------------
 
 #if !HAVE_ASPRINTF
 #if HAVE_STDARG_H

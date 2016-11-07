@@ -41,6 +41,7 @@ package com.zoffcc.applications.zanavi;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -135,11 +136,30 @@ public class NavitDownloadSelectMapActivity extends ListActivity
 		//this.getListView().addHeaderView(text_v);
 
 		NavitMapDownloader.init();
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, NavitMapDownloader.OSM_MAP_NAME_LIST_inkl_SIZE_ESTIMATE);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.simple_list_item_1_custom, NavitMapDownloader.OSM_MAP_NAME_LIST_inkl_SIZE_ESTIMATE);
 		setListAdapter(adapter);
 		this.getListView().setFastScrollEnabled(true);
 		this.getListView().setVerticalFadingEdgeEnabled(true);
 		this.getListView().setFadingEdgeLength(25);
+
+		try
+		{
+			if (Build.VERSION.SDK_INT >= 16)
+			{
+				if (Navit.p.PREF_current_theme == Navit.DEFAULT_THEME_OLD_DARK)
+				{
+					this.getListView().setBackgroundColor(Color.BLACK);
+				}
+				else
+				{
+					this.getListView().setBackgroundColor(Color.WHITE);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("download-map-activity:" + e.getMessage());
+		}
 
 		my_id = this.getListView().getId();
 	}
@@ -169,10 +189,24 @@ public class NavitDownloadSelectMapActivity extends ListActivity
 
 	private void executeDone()
 	{
-		Intent resultIntent = new Intent();
-		resultIntent.putExtra("selected_id", String.valueOf(this.selected_id));
-		setResult(Activity.RESULT_OK, resultIntent);
-		finish();
+		int real_map_id = NavitMapDownloader.OSM_MAP_NAME_ORIG_ID_LIST[Integer.parseInt(String.valueOf(this.selected_id))];
+		if (real_map_id > -1)
+		{
+			ZANaviLogMessages.am(ZANaviLogMessages.STATUS_INFO, this.getClass().getSimpleName() + ":" + "selected id = " + this.selected_id + " real map id = " + real_map_id);
+			ZANaviLogMessages.am(ZANaviLogMessages.STATUS_INFO, this.getClass().getSimpleName() + ":" + "selected map = " + NavitMapDownloader.z_OSM_MAPS[real_map_id]);
+
+			// ok we have selected a map file. set flag
+			NavitMapDownloader.download_active_start = true;
+
+			Intent resultIntent = new Intent();
+			resultIntent.putExtra("selected_id", String.valueOf(this.selected_id));
+			setResult(Activity.RESULT_OK, resultIntent);
+			finish();
+		}
+		else
+		{
+			// no valid map select, stay here
+		}
 	}
 
 }

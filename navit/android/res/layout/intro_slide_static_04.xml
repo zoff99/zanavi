@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal|top"
+        android:orientation="vertical"
+        android:paddingBottom="50dp"
+        android:paddingTop="25dp" >
+
+        <ImageView
+            android:id="@+id/icon_slide"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="@integer/icon_image_weight_verylongtext_horizonztal"
+            android:scaleType="center"
+            android:src="@drawable/icon" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical"
+            android:padding="0dp" >
+
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:fadeScrollbars="false"
+                android:overScrollMode="never"
+                android:paddingBottom="0dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="0dp"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbarSize="8dp"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:gravity="center_horizontal|top"
+                    android:orientation="vertical"
+                    android:padding="0dp" >
+
+                    <TextView
+                        android:id="@+id/header_text_slide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:padding="0dp"
+                        android:text="title"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/slide_title"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/desc_text_slide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:gravity="center_horizontal|top"
+                        android:paddingLeft="@dimen/desc_padding"
+                        android:paddingRight="@dimen/desc_padding"
+                        android:text="description"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textColorLink="#202020"
+                        android:textSize="@dimen/slide_desc" />
+
+                    <Button
+                        android:id="@+id/button_slide"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="5dp"
+                        android:text="__"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/slide_desc" >
+                    </Button>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

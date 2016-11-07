@@ -1,248 +1,301 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:compat="http://schemas.android.com/apk/res-auto"
+    tools:context="com.zoffcc.applications.zanavi.Navit" >
 
     <item
         android:id="@+id/item_overflow"
         android:icon="@drawable/abs__ic_menu_moreoverflow_normal_holo_dark"
         android:orderInCategory="33000"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:title=""
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
         <menu>
             <item
                 android:id="@+id/overflow_share_location"
                 android:icon="@drawable/ic_action_share"
                 android:orderInCategory="2"
-                yourapp:showAsAction="always|withText"
-                android:title="share my Location"/>
+                android:title="share my Location"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_share_destination"
                 android:icon="@drawable/ic_action_share"
                 android:orderInCategory="3"
-                yourapp:showAsAction="always|withText"
-                android:title="share Destination"/>
+                android:title="share Destination"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_settings"
                 android:icon="@drawable/ic_action_settings"
                 android:orderInCategory="4"
-                yourapp:showAsAction="always|withText"
-                android:title="Settings"/>
+                android:title="Settings"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_zoom_to_route"
                 android:orderInCategory="5"
-                yourapp:showAsAction="always|withText"
-                android:title="Zoom to Route"/>
+                android:title="Zoom to Route"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_exit"
                 android:icon="@drawable/ic_action_undo"
                 android:orderInCategory="7"
-                yourapp:showAsAction="always|withText"
-                android:title="Exit ZANavi"/>
+                android:title="Exit ZANavi"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_toggle_poi"
                 android:orderInCategory="8"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_announcer_on"
                 android:orderInCategory="9"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_announcer_off"
                 android:orderInCategory="100"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <!--  -->
             <!-- android:icon="@drawable/icon" -->
             <item
                 android:id="@+id/overflow_donate_item"
                 android:icon="@drawable/heart"
                 android:orderInCategory="105"
-                yourapp:showAsAction="always|withText"
-                android:title="Donate with Google Play"/>
+                android:title="Donate with Google Play"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_donate_bitcoins_item"
                 android:icon="@drawable/menu_icon_bitcoin_logo"
                 android:orderInCategory="105"
-                yourapp:showAsAction="always|withText"
-                android:title="Donate with Bitcoins"/>
+                android:title="Donate with Bitcoins"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_download_maps"
-                android:icon="@drawable/anim_download_icon"
+                android:icon="@drawable/ic_action_download_static"
                 android:orderInCategory="110"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_delete_maps"
                 android:icon="@drawable/ic_action_discard"
                 android:orderInCategory="120"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_maps_age"
                 android:icon="@drawable/ic_action_go_to_today"
                 android:orderInCategory="130"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_coord_dialog"
                 android:orderInCategory="140"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_add_traffic_block"
                 android:orderInCategory="150"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_clear_traffic_block"
                 android:orderInCategory="160"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_convert_gpx_file"
                 android:orderInCategory="170"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_clear_gpx_map"
                 android:orderInCategory="180"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_dummy2"
                 android:orderInCategory="190"
-                yourapp:showAsAction="always|withText"
-                android:title="--"/>
+                android:title="--"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_demo_v_normal"
                 android:orderInCategory="200"
-                yourapp:showAsAction="always|withText"
-                android:title="Demo Vehicle [normal]"/>
+                android:title="Demo Vehicle [normal]"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_demo_v_fast"
                 android:orderInCategory="210"
-                yourapp:showAsAction="always|withText"
-                android:title="Demo Vehicle [fast]"/>
+                android:title="Demo Vehicle [fast]"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_replay_gps_file"
                 android:orderInCategory="212"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_yaml_tests"
                 android:orderInCategory="213"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_speech_texts"
                 android:orderInCategory="220"
-                yourapp:showAsAction="always|withText"
-                android:title="Speech Texts"/>
+                android:title="Speech Texts"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_nav_commands"
                 android:orderInCategory="230"
-                yourapp:showAsAction="always|withText"
-                android:title="Nav. Commands"/>
+                android:title="Nav. Commands"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_toggle_route_graph"
                 android:orderInCategory="240"
-                yourapp:showAsAction="always|withText"
-                android:title="toggle Routegraph"/>
+                android:title="toggle Routegraph"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_dummy1"
                 android:orderInCategory="250"
-                yourapp:showAsAction="always|withText"
-                android:title="--"/>
+                android:title="--"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_export_map_points_to_sdcard"
                 android:orderInCategory="252"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_import_map_points_from_sdcard"
                 android:orderInCategory="253"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_send_feedback"
                 android:orderInCategory="254"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_online_help"
                 android:icon="@drawable/ic_action_help"
                 android:orderInCategory="270"
-                yourapp:showAsAction="always|withText"
-                android:title=""/>
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
+            <item
+                android:id="@+id/overflow_about"
+                android:orderInCategory="275"
+                android:title=""
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/overflow_target_in_gmaps"
                 android:orderInCategory="280"
-                yourapp:showAsAction="always|withText"
-                android:title="Target in gmaps"/>
+                android:title="Target in gmaps"
+                compat:showAsAction="always|withText"
+                tools:ignore="AppCompatResource"/>
         </menu>
     </item>
     <item
         android:id="@+id/item_settings_menu_button"
         android:icon="@drawable/ic_action_settings"
         android:orderInCategory="21040"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:title=""
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
     </item>
     <item
         android:id="@+id/item_share_menu_button"
         android:icon="@drawable/abs__ic_menu_share_holo_dark"
         android:orderInCategory="22000"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:title=""
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
         <menu>
             <item
                 android:id="@+id/share_menu_location"
-                yourapp:showAsAction="always"
-                android:title="share Location"/>
+                android:title="share Location"
+                compat:showAsAction="always"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/share_menu_destination"
-                yourapp:showAsAction="always"
-                android:title="share Destination"/>
+                android:title="share Destination"
+                compat:showAsAction="always"
+                tools:ignore="AppCompatResource"/>
         </menu>
     </item>
     <item
         android:id="@+id/item_search_menu_button"
         android:icon="@drawable/abs__ic_search"
         android:orderInCategory="21020"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:title=""
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
         <menu>
             <item
                 android:id="@+id/search_menu_offline"
-                yourapp:showAsAction="always"
-                android:title="offline search"/>
+                android:title="offline search"
+                compat:showAsAction="always"
+                tools:ignore="AppCompatResource"/>
             <item
                 android:id="@+id/search_menu_online"
-                yourapp:showAsAction="always"
-                android:title="online search"/>
+                android:title="online search"
+                compat:showAsAction="always"
+                tools:ignore="AppCompatResource"/>
         </menu>
     </item>
     <item
         android:id="@+id/item_endnavigation_menu_button"
         android:icon="@drawable/ic_action_error"
         android:orderInCategory="20090"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:title=""
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
     </item>
     <item
         android:id="@+id/item_download_menu_button"
-        android:icon="@drawable/anim_download_icon"
+        android:icon="@null"
         android:orderInCategory="20070"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:src="@null"
+        android:title=""
+        compat:actionViewClass="android.widget.ImageView"
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
     </item>
     <item
         android:id="@+id/item_recentdest_menu_button"
         android:icon="@drawable/ic_action_labels"
         android:orderInCategory="21008"
-        yourapp:showAsAction="always"
-        android:title="">
+        android:title=""
+        compat:showAsAction="always"
+        tools:ignore="AppCompatResource">
     </item>
 
 </menu>

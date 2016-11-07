@@ -898,7 +898,7 @@ static int tracking_value(struct tracking *tr, struct tracking_line *t, int offs
 	{
 		struct roadprofile *roadprofile = g_hash_table_lookup(tr->vehicleprofile->roadprofile_hash, (void *) t->street->item.type);
 
-		if (roadprofile && tr->speed > roadprofile->speed * tr->overspeed_percent_pref / 100)
+		if (roadprofile && tr->speed > (double)(roadprofile->speed * tr->overspeed_percent_pref) / 100)
 		{
 			value += tr->overspeed_pref;
 		}
@@ -1210,14 +1210,18 @@ void tracking_send_lanes_info(struct map_rect *mr, int id_hi, int id_lo, int str
 				//dbg(0, "LL01:002\n");
 				lanes_info = g_strdup_printf("%d:%s:%s:%s", street_dir, lanes_info_l, lanes_info_l_for, lanes_info_tl);
 				g_free(lanes_info_l_for);
+				lanes_info_l_for = NULL;
 			}
 			else
 			{
 				//dbg(0, "LL01:003\n");
 				lanes_info = g_strdup_printf("%d:%s:%s:%s", street_dir, lanes_info_l, lanes_info_l, lanes_info_tl);
 			}
+
 			g_free(lanes_info_l);
+			lanes_info_l = NULL;
 			g_free(lanes_info_tl);
+			lanes_info_tl = NULL;
 
 			//dbg(0, "LL01:004 %s\n", lanes_info);
 
@@ -1226,6 +1230,7 @@ void tracking_send_lanes_info(struct map_rect *mr, int id_hi, int id_lo, int str
 			android_send_generic_text((8 + depth), lanes_info);
 #endif
 			g_free(lanes_info);
+			lanes_info = NULL;
 		}
 		else
 		{
@@ -1233,6 +1238,25 @@ void tracking_send_lanes_info(struct map_rect *mr, int id_hi, int id_lo, int str
 			android_send_generic_text((8 + depth), "");
 #endif
 		}
+
+		if (lanes_info_l)
+		{
+			g_free(lanes_info_l);
+			lanes_info_l = NULL;
+		}
+
+		if (lanes_info_tl)
+		{
+			g_free(lanes_info_tl);
+			lanes_info_tl = NULL;
+		}
+
+		if (lanes_info_l_for)
+		{
+			g_free(lanes_info_l_for);
+			lanes_info_l_for = NULL;
+		}
+
 	}
 }
 

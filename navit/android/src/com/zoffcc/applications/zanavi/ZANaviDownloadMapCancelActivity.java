@@ -19,14 +19,17 @@
 
 package com.zoffcc.applications.zanavi;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -35,7 +38,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+@SuppressLint("NewApi")
+public class ZANaviDownloadMapCancelActivity extends AppCompatActivity
 {
 
 	public static TextView addr_view2 = null;
@@ -142,6 +147,7 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 
 		pg = (ProgressBar) findViewById(R.id.mapdownload_prog_bar);
 		pg.setProgress(0);
+		pg.setIndeterminate(true);
 
 		pg_speed = new ProgressBar[NavitMapDownloader.MULTI_NUM_THREADS_MAX];
 		pg_speed_d = new Drawable[NavitMapDownloader.MULTI_NUM_THREADS_MAX];
@@ -168,7 +174,7 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 			}
 			catch (Exception e2)
 			{
-				System.out.println("PGB:EE3=" + e2.getMessage());
+				// System.out.println("PGB:EE3=" + e2.getMessage());
 			}
 		}
 	}
@@ -177,6 +183,7 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 	{
 		public void handleMessage(Message msg)
 		{
+			// System.out.println("PG_percent:" + "what=" + msg.what);
 			switch (msg.what)
 			{
 			case 0:
@@ -215,6 +222,7 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 			case 2:
 				try
 				{
+					ZANaviDownloadMapCancelActivity.pg.setIndeterminate(false);
 					ZANaviDownloadMapCancelActivity.pg.setProgress(msg.getData().getInt("pg"));
 					// System.out.println("PG_percent=" + msg.getData().getInt("pg"));
 					// ZANaviDownloadMapCancelActivity.pg.postInvalidate();
@@ -223,6 +231,20 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 				{
 					// System.out.println("PG_percent:EE:" + e.getMessage());
 				}
+
+				try
+				{
+					// update main progress bar percentage
+					Message msg7 = Navit.Navit_progress_h.obtainMessage();
+					Bundle b7 = new Bundle();
+					b7.putInt("pg", msg.getData().getInt("pg"));
+					msg7.what = 40;
+					msg7.setData(b7);
+					Navit.Navit_progress_h.sendMessage(msg7);
+				}
+				catch (Exception e)
+				{
+				}
 				break;
 			case 3:
 				try
@@ -230,6 +252,7 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 					final int max_kb_per_sec = 3000;
 					int t_num = msg.getData().getInt("threadnum");
 					int speed = msg.getData().getInt("speed_kb_per_sec");
+					String srv = msg.getData().getString("srv");
 
 					// System.out.println("PGB:num=" + t_num);
 
@@ -257,10 +280,30 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 							{
 								pg_speed[t_num].setVisibility(View.VISIBLE);
 							}
+
+							// -- set servername again --
+							if (srv.compareTo("-1") == 0)
+							{
+								pg_speed_txt[t_num].setVisibility(View.INVISIBLE);
+							}
+							else if (srv.compareTo("-2") == 0)
+							{
+								pg_speed_txt[t_num].setVisibility(View.VISIBLE);
+							}
+							else
+							{
+								pg_speed_txt[t_num].setText(srv + ":");
+
+								if (pg_speed_txt[t_num].getVisibility() == View.INVISIBLE)
+								{
+									pg_speed_txt[t_num].setVisibility(View.VISIBLE);
+								}
+							}
+							// -- set servername again --
 						}
 						catch (Exception e)
 						{
-							System.out.println("PGB:EE2=" + e.getMessage());
+							// System.out.println("PGB:EE2=" + e.getMessage());
 						}
 					}
 				}
@@ -288,7 +331,7 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 					else
 					{
 						pg_speed_txt[t_num].setText(srv + ":");
-						
+
 						if (pg_speed_txt[t_num].getVisibility() == View.INVISIBLE)
 						{
 							pg_speed_txt[t_num].setVisibility(View.VISIBLE);
@@ -297,7 +340,18 @@ public class ZANaviDownloadMapCancelActivity extends ActionBarActivity
 				}
 				catch (Exception e)
 				{
-					System.out.println("PGB:EESRV=" + e.getMessage());
+					// System.out.println("PGB:EESRV=" + e.getMessage());
+				}
+				break;
+			case 5:
+				try
+				{
+					ZANaviDownloadMapCancelActivity.pg.setIndeterminate(true);
+					ZANaviDownloadMapCancelActivity.pg.setProgress(msg.getData().getInt("pg"));
+				}
+				catch (Exception e)
+				{
+					System.out.println("PG_percent:EE:5:" + e.getMessage());
 				}
 				break;
 			}

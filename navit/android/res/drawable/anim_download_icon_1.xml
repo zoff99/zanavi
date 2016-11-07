@@ -4,8 +4,5 @@
     <item
         android:drawable="@drawable/abs__list_focused_holo"
         android:duration="250"/>
-    <item
-        android:drawable="@drawable/abs__list_focused_holo"
-        android:duration="250"/>
     
 </animation-list>

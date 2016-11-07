@@ -49,6 +49,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -79,7 +80,7 @@ import android.widget.TextView;
 import com.zoffcc.applications.zanavi.Navit.Navit_Address_Result_Struct;
 import com.zoffcc.applications.zanavi.NavitSearchResultListArrayAdapter.search_result_entry;
 
-public class NavitAddressSearchActivity extends ActionBarActivity
+public class NavitAddressSearchActivity extends AppCompatActivity
 {
 	static ZANaviAutoCompleteTextViewSearchLocation address_string;
 	private EditText hn_string;

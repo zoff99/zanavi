@@ -206,52 +206,7 @@ flag_svgs += country_TZ.svgz country_UA.svgz country_UG.svgz country_UM.svgz cou
 flag_svgs += country_VA.svgz country_VC.svgz country_VE.svgz country_VG.svgz country_VI.svgz country_VN.svgz country_VU.svgz
 flag_svgs += country_WF.svgz country_WS.svgz country_YE.svgz country_YT.svgz country_ZA.svgz country_ZM.svgz country_ZW.svgz
 
-if USE_SVG
-  xpm_DATA += $(svgs) $(nav_svgs) $(flag_svgs)
-endif
 
-if USE_SVG2PNG
-%.png: $(srcdir)/*.svgz
-	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir) $(srcdir)/navit_svg2png "@SVG2PNG@" "$@"
-%.png: $(srcdir)/*.svg
-	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir) $(srcdir)/navit_svg2png "@SVG2PNG@" "$@"
+all:
+	echo "nothing to do here"
 
-pngs  = $(addsuffix .png,$(basename $(svgs)))
-xsize = $(word 1,$(subst x, ,$(scale)))
-ysize = $(word $(words $(scale)),$(subst x, ,$(scale)))
-comma =,
-
-# png images of the user interface and other, sizes e.g. "8,16,32,48,96"
-if USE_SVG2PNG_SCALES
-pngs += $(foreach scale, $(subst $(comma), ,@SVG2PNG_SCALES@), $(addsuffix _$(xsize)_$(ysize).png,$(basename $(svgs))))
-endif
-# png state flags
-if USE_SVG2PNG_SCALES_FLAG
-pngs += $(foreach scale, $(subst $(comma), ,@SVG2PNG_SCALES_FLAG@), $(addsuffix _$(xsize)_$(ysize).png,$(basename $(flag_svgs))))
-endif
-# png symbols for navigation
-if USE_SVG2PNG_SCALES_NAV
-pngs += $(foreach scale, $(subst $(comma), ,@SVG2PNG_SCALES_NAV@), $(addsuffix _$(xsize)_$(ysize).png,$(basename $(nav_svgs))))
-endif
-xpm_DATA += $(pngs)
-endif
-
-if !SUPPORT_WIN32
-  DESKTOPFILEdir=$(datadir)/applications
-  DESKTOPFILE_DATA = desktop_icons/navit.desktop
-
-  ICON128dir=$(datadir)/icons/hicolor/128x128/apps
-  ICON128_DATA = desktop_icons/128x128/navit.png
-
-  ICON22dir=$(datadir)/icons/hicolor/22x22/apps
-  ICON22_DATA = desktop_icons/22x22/navit.png
-endif
-
-EXTRA_DIST = $(xpm_DATA) $(DESKTOPFILE_DATA) $(ICON128_DATA) $(ICON22_DATA) navit_svg2png
-#burgerking.ico:
-#	wget http://www.burgerking.de/favicon.ico -O burgerking.ico
-
-if USE_SVG2PNG
-distclean-local:
-	rm -f $(pngs)
-endif

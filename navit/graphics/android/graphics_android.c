@@ -292,6 +292,7 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 			//DBG // dbg(0,"JNI\n");
 			ret->Bitmap = (*jnienv2)->CallStaticObjectMethod(jnienv2, gra->NavitGraphicsClass, gra->NavitGraphicsClass_rotate_and_scale_bitmap, ret->Bitmap, *w, *h, rotation);
 		}
+
 		//// dbg(1, "result=%p\n", ret->Bitmap);
 		if (ret->Bitmap)
 		{
@@ -304,7 +305,20 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 			ret->height = (*jnienv2)->CallIntMethod(jnienv2, ret->Bitmap, gra->Bitmap_getHeight);
 			//// dbg(1, "w=%d h=%d for %s\n", ret->width, ret->height, path);
 			ret->hot.x = ret->width / 2;
-			ret->hot.y = ret->height / 2;
+
+			// dbg(0, "POI_ICON:001:%s", path);
+
+			if ( (!strncmp(path, "res/drawable/poi_", 17)) || (!strncmp(path, "poi_", 4)) )
+			{
+				// if icon starts with "poi_" then the hotspot is in the middle of the lower edge
+				ret->hot.y = ret->height;
+				// dbg(0, "POI_ICON:002:%s %d %d", path, ret->hot.y, ret->height);
+			}
+			else
+			{
+				ret->hot.y = ret->height / 2;
+				// dbg(0, "POI_ICON:003:%s %d %d", path, ret->hot.y, ret->height);
+			}
 		}
 		else
 		{
@@ -322,9 +336,25 @@ image_new(struct graphics_priv *gra, struct graphics_image_methods *meth, char *
 	{
 		*w = ret->width;
 		*h = ret->height;
+
+		// dbg(0, "POI_ICON:004:%s %d %d", path, ret->hot.y, ret->height);
+
 		if (hot)
 		{
 			*hot = ret->hot;
+		}
+	}
+
+	if (ret == NULL)
+	{
+		// log alert: icon missing
+		if (path == NULL)
+		{
+			// ?? no path string ??
+		}
+		else
+		{
+			send_alert_to_java(1, path);
 		}
 	}
 

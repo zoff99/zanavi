@@ -4,8 +4,8 @@ SUBDIRS=fib-1.1 support
 if PLUGINS
   SUBDIRS += .
 endif
-DIST_SUBDIRS=autoload binding map maptool fib-1.1 font fonts gui graphics osd plugin speech vehicle support xpm maps
-SUBDIRS+=autoload binding map font gui graphics osd plugin speech vehicle xpm
+DIST_SUBDIRS=autoload binding map maptool fib-1.1 font fonts gui graphics osd plugin speech vehicle support maps
+SUBDIRS+=autoload binding map font gui graphics osd plugin speech vehicle
 
 MODULES = $(wildcard $(top_builddir)/navit/binding/*/*.la $(top_builddir)/navit/font/*/*.la $(top_builddir)/navit/graphics/*/*.la $(top_builddir)/navit/gui/*/*.la $(top_builddir)/navit/map/*/*.la $(top_builddir)/navit/osd/*/*.la $(top_builddir)/navit/speech/*/*.la $(top_builddir)/navit/vehicle/*/*.la)
 
@@ -61,11 +61,12 @@ lib@LIBNAVIT@_la_SOURCES = announcement.c atom.c attr.c cache.c callback.c comma
 	param.h phrase.h plugin.h point.h plugin_def.h projection.h popup.h route.h profile.h roadprofile.h search.h speech.h start_real.h \
 	transform.h track.h types.h util.h vehicle.h vehicleprofile.h window.h xmlconfig.h zipfile.h \
 	navit_nls.h sunriset.c sunriset.h glib_slice.h maptool/miniz.c \
+	coffeecatch.c coffeejni.c \
 	snprintf.c snprintf.h
 
 
 if SUPPORT_ANDROID
-  lib@LIBNAVIT@_la_SOURCES += vehicle/android/vehicle_android.c \ 
+  lib@LIBNAVIT@_la_SOURCES += vehicle/android/vehicle_android.c \
 	vehicle/demo/vehicle_demo.c \
 	gui/internal/gui_internal.c \
 	graphics/android/graphics_android.c \
@@ -122,22 +123,21 @@ v_name = $$(cat $(srcdir)/android/Android_Market_Version_int.txt|grep v_name|cut
 b_arch = $(shell if [ "$(DO_X86_BUILD)" == "1" ]; then echo "x86"; elif [ "$(DO_ARMV7_BUILD)" == "1" ]; then echo "armeabi-v7a"; else echo "armeabi"; fi)
 
 
-android/AndroidManifest.xml: android/AndroidManifest.xml.in
+android/AndroidManifest.xml:
+	echo "making::android/AndroidManifest.xml"
 	mkdir -p $(builddir)/android
-	mkdir -p $(builddir)/android/res2/drawable-hdpi
-	mkdir -p $(builddir)/android/res2/drawable-mdpi
-	mkdir -p $(builddir)/android/res2/drawable-ldpi
-
-	sed '0,/<uses-sdk/!d' <$< >$@
-	for i in $(subst $(comma), ,@ANDROID_PERMISSIONS@); do echo "    <uses-permission android:name=\"android.permission.$$i\" />" >>$@; done
-	sed '0,/<uses-sdk/d' <$< >>$@
-	sed -e "s/@ANDROID_VERSION_INT@/$(v_int)/" <$@ >android/AndroidManifest.xml.tmp
-	mv android/AndroidManifest.xml.tmp $@
-	sed -e "s/@ANDROID_VERSION_NAME@/$(v_name)/" <$@ >android/AndroidManifest.xml.tmp
-	mv android/AndroidManifest.xml.tmp $@
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(srcdir)/android/AndroidManifest.xml.in $(builddir)/android/AndroidManifest.xml.in ; fi
+	sed -e "s/@ANDROID_VERSION_INT@/$(v_int)/" <android/AndroidManifest.xml.in >android/AndroidManifest.xml.tmp
+	mv android/AndroidManifest.xml.tmp android/AndroidManifest.xml.in
+	sed -e "s/@ANDROID_VERSION_NAME@/$(v_name)/" <android/AndroidManifest.xml.in >android/AndroidManifest.xml.tmp
+	mv android/AndroidManifest.xml.tmp android/AndroidManifest.xml
 
 android/build.xml: android/AndroidManifest.xml android/dummy.txt
 #	this is needed, otherwise somehow the files cant be deleted
+
+	echo "making::android/build.xml"
+	touch $(builddir)/android/build.xml
+
 	mkdir -p $(builddir)/android/src/
 	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android/src/; fi
@@ -150,92 +150,147 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	touch $(srcdir)/android/dummy.txt
 	touch $(builddir)/android/dummy.txt
 
-#	mkdir -p $(builddir)/actionbarsherlock/src/
-#	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/actionbarsherlock/src/; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/actionbarsherlock/src/; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/actionbarsherlock/* $(builddir)/actionbarsherlock; fi
-#	touch $(srcdir)/actionbarsherlock/dummy.txt
-#	touch $(builddir)/actionbarsherlock/dummy.txt
-#
-#	android update project -t @ANDROID_PROJECT@ -p android -l ../actionbarsherlock
-#	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
 
+######## --------------------------
+	mkdir -p $(builddir)/android-about-page/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-about-page/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-about-page/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-about-page/* $(builddir)/android-about-page/; fi
+	touch $(srcdir)/android-about-page/dummy.txt
+	touch $(builddir)/android-about-page/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-animated-vector-drawable/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-animated-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-animated-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-animated-vector-drawable/* $(builddir)/android-support-animated-vector-drawable/; fi
+	touch $(srcdir)/android-support-animated-vector-drawable/dummy.txt
+	touch $(builddir)/android-support-animated-vector-drawable/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-annotations/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-annotations/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-annotations/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-annotations/* $(builddir)/android-support-annotations/; fi
+	touch $(srcdir)/android-support-annotations/dummy.txt
+	touch $(builddir)/android-support-annotations/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-compat/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-compat/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-compat/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-compat/* $(builddir)/android-support-compat/; fi
+	touch $(srcdir)/android-support-compat/dummy.txt
+	touch $(builddir)/android-support-compat/dummy.txt
+######## --------------------------
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-core-ui/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-core-ui/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-core-ui/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-core-ui/* $(builddir)/android-support-core-ui/; fi
+	touch $(srcdir)/android-support-core-ui/dummy.txt
+	touch $(builddir)/android-support-core-ui/dummy.txt
+######## --------------------------
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-core-utils/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-core-utils/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-core-utils/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-core-utils/* $(builddir)/android-support-core-utils/; fi
+	touch $(srcdir)/android-support-core-utils/dummy.txt
+	touch $(builddir)/android-support-core-utils/dummy.txt
+######## --------------------------
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-design/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-design/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-design/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-design/* $(builddir)/android-support-design/; fi
+	touch $(srcdir)/android-support-design/dummy.txt
+	touch $(builddir)/android-support-design/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-fragment/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-fragment/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-fragment/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-fragment/* $(builddir)/android-support-fragment/; fi
+	touch $(srcdir)/android-support-fragment/dummy.txt
+	touch $(builddir)/android-support-fragment/dummy.txt
+######## --------------------------
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-media-compat/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-media-compat/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-media-compat/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-media-compat/* $(builddir)/android-support-media-compat/; fi
+	touch $(srcdir)/android-support-media-compat/dummy.txt
+	touch $(builddir)/android-support-media-compat/dummy.txt
+######## --------------------------
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-v4/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-v4/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-v4/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-v4/* $(builddir)/android-support-v4/; fi
+	touch $(srcdir)/android-support-v4/dummy.txt
+	touch $(builddir)/android-support-v4/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
 	mkdir -p $(builddir)/android-support-v7-appcompat/src/
 	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-v7-appcompat/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-v7-appcompat/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-v7-appcompat/* $(builddir)/android-support-v7-appcompat/; fi
 	touch $(srcdir)/android-support-v7-appcompat/dummy.txt
 	touch $(builddir)/android-support-v7-appcompat/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-v7-recyclerview/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-v7-recyclerview/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-v7-recyclerview/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-v7-recyclerview/* $(builddir)/android-support-v7-recyclerview/; fi
+	touch $(srcdir)/android-support-v7-recyclerview/dummy.txt
+	touch $(builddir)/android-support-v7-recyclerview/dummy.txt
+######## --------------------------
+
+
+######## --------------------------
+	mkdir -p $(builddir)/android-support-vector-drawable/src/
+	if [ "$(builddir)" != "$(srcdir)" ]; then chmod -R u+w $(builddir)/android-support-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android-support-vector-drawable/src/; fi
+	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android-support-vector-drawable/* $(builddir)/android-support-vector-drawable/; fi
+	touch $(srcdir)/android-support-vector-drawable/dummy.txt
+	touch $(builddir)/android-support-vector-drawable/dummy.txt
+######## --------------------------
 
 	if [ "$(builddir)" != "$(srcdir)" ]; then mkdir -p $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
+	echo "+++ move aidl files +++"
+	echo "+++ move aidl files +++"
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(builddir)/android/aidl/com/zoffcc/applications/zanavi_msg/*.aidl $(builddir)/android/src/com/zoffcc/applications/zanavi_msg/ ; fi
-
-#	android update lib-project -t @ANDROID_PROJECT@ -p $(builddir)/android-support-v7-appcompat
-	android update project -t @ANDROID_PROJECT@ -p android -l ../android-support-v7-appcompat
-	echo "jar.libs.dir=lib" >> $(builddir)/android/ant.properties
 
 
 apkg-all: all android/build.xml navit.xml
+
+	echo "making::apkg-all"
+
 	mkdir -p android/libs/$(b_arch)
-	cp .libs/*.so android/libs/$(b_arch)/libnavit.so
-	for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/$(b_arch)/$$(basename $$i); done
-
-	mkdir -p android/res/drawable-ldpi
-	mkdir -p android/res/drawable-mdpi
-	mkdir -p android/res/drawable-hdpi
-	mkdir -p android/res/drawable-xhdpi
-	mkdir -p android/res/drawable-xxhdpi
-
-	mkdir -p android/res2/drawable-hdpi
-	mkdir -p android/res2/drawable-mdpi
-	mkdir -p android/res2/drawable-ldpi
-
-# all icons and imgs
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo *_16_16.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_16_16xx') ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo *_32_32.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_32_32xx') ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo *_48_48.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_48_48xx') ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo *_48_48.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-xhdpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_48_48xx') ; done ; fi
-
-#	nav icons (overwrite with larger versions)
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo nav_*_48_48.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-ldpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_48_48xx') ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo nav_*_48_48.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-mdpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_48_48xx') ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo nav_*_96_96.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-hdpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_96_96xx') ; done ; fi
-	if [ "$(DO_PNG_BUILD)" == "1" ]; then for i in $(shell cd $(builddir)/xpm && echo nav_*_192_192.png); do cp -v $(builddir)/xpm/$$i android/res/drawable-xhdpi/$$( echo $$i | tr "[A-Z]" "[a-z]" | sed -e 'sx_192_192xx') ; done ; fi
-
-
-#	only use needed pngs to make size of apk smaller
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in flag_bk_tr.png flag_bk_wh.png mini_roundabout.png gui_active_32_32.png gui_arrow_right_32_32.png gui_arrow_left_32_32.png icon_32_32.png unknown_32_32.png gui_zoom_out_64_64.png gui_zoom_in_64_64.png gui_map_32_32.png gui_home_32_32.png gui_actions_64_64.png gui_settings_64_64.png gui_tools_64_64.png gui_about_64_64.png gui_inactive_32_32.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in flag_bk_tr.png flag_bk_wh.png mini_roundabout.png gui_active_32_32.png gui_arrow_right_32_32.png gui_arrow_left_32_32.png icon_32_32.png unknown_32_32.png gui_zoom_out_64_64.png gui_zoom_in_64_64.png gui_map_32_32.png gui_home_32_32.png gui_actions_64_64.png gui_settings_64_64.png gui_tools_64_64.png gui_about_64_64.png gui_inactive_32_32.png ; do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in flag_bk_tr.png flag_bk_wh.png mini_roundabout.png gui_active_32_32.png gui_arrow_right_32_32.png gui_arrow_left_32_32.png icon_32_32.png unknown_32_32.png gui_zoom_out_64_64.png gui_zoom_in_64_64.png gui_map_32_32.png gui_home_32_32.png gui_actions_64_64.png gui_settings_64_64.png gui_tools_64_64.png gui_about_64_64.png gui_inactive_32_32.png ; do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
-#	gui icons
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-hdpi && echo gui*64_64*png); do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-mdpi && echo gui*64_64*png); do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-ldpi && echo gui*64_64*png); do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
-#	nav icons
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-hdpi && echo nav_*png); do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-mdpi && echo nav_*png); do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in $(shell cd android/res2/drawable-ldpi && echo nav_*png); do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
-#	POIs
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png atm.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png atm.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in traffic_signals.png atm.png bank.png fuel.png gui_select_street_32_32.png gui_select_town_32_32.png gui_select_country_32_32.png ; do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
-#	more POIs
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in airport.png attraction.png bar.png beer.png bench.png boat_ramp.png boundary_stone.png bus.png cafe.png camping.png church.png cinema.png danger.png exit.png fastfood.png firebrigade.png fountain.png golf.png heliport.png hospital.png hotel.png information.png justice.png mark.png military.png mini_roundabout.png museum.png parking.png peak.png pharmacy.png police.png post.png repair_service.png resort.png restaurant.png ruins.png school.png shop_grocery.png shopping.png skiing.png stadium.png swimming.png tec_common.png telephone.png toilets.png viewpoint.png wifi.png zoom_in.png zoom_out.png zoo.png ; do cp -v $(builddir)/android/res2/drawable-hdpi/$$i android/res/drawable-hdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in airport.png attraction.png bar.png beer.png bench.png boat_ramp.png boundary_stone.png bus.png cafe.png camping.png church.png cinema.png danger.png exit.png fastfood.png firebrigade.png fountain.png golf.png heliport.png hospital.png hotel.png information.png justice.png mark.png military.png mini_roundabout.png museum.png parking.png peak.png pharmacy.png police.png post.png repair_service.png resort.png restaurant.png ruins.png school.png shop_grocery.png shopping.png skiing.png stadium.png swimming.png tec_common.png telephone.png toilets.png viewpoint.png wifi.png zoom_in.png zoom_out.png zoo.png ; do cp -v $(builddir)/android/res2/drawable-mdpi/$$i android/res/drawable-mdpi/ ; done ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then for i in airport.png attraction.png bar.png beer.png bench.png boat_ramp.png boundary_stone.png bus.png cafe.png camping.png church.png cinema.png danger.png exit.png fastfood.png firebrigade.png fountain.png golf.png heliport.png hospital.png hotel.png information.png justice.png mark.png military.png mini_roundabout.png museum.png parking.png peak.png pharmacy.png police.png post.png repair_service.png resort.png restaurant.png ruins.png school.png shop_grocery.png shopping.png skiing.png stadium.png swimming.png tec_common.png telephone.png toilets.png viewpoint.png wifi.png zoom_in.png zoom_out.png zoo.png ; do cp -v $(builddir)/android/res2/drawable-ldpi/$$i android/res/drawable-ldpi/ ; done ; fi
-# rest of nav_ icons
-#	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(builddir)/android/res2/drawable-hdpi/nav_destination_bk_59_59.png android/res/drawable-hdpi/nav_destination_bk.png ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(builddir)/android/res2/drawable-mdpi/nav_destination_bk_59_59.png android/res/drawable-mdpi/nav_destination_bk.png ; fi
-#	if [ "$(builddir)" != "$(srcdir)" ]; then cp -v $(builddir)/android/res2/drawable-ldpi/nav_destination_bk_59_59.png android/res/drawable-ldpi/nav_destination_bk.png ; fi
-
-# if release build -> then compress png images (this takes a long time!!!)
-#
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-hdpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-mdpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then if [ "$(builddir)" != "$(srcdir)" ]; then find android/res/drawable-ldpi/ -maxdepth 1 -type f -exec $(srcdir)/../pngout-static -c6 -f6 -y {} \; ; fi ; fi
+# cp .libs/*.so android/libs/$(b_arch)/libnavit.so
+# for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/$(b_arch)/$$(basename $$i); done
 
 #	remove old libs
-	ls -al android/libs/$(b_arch)/lib*.so
+# ls -al android/libs/$(b_arch)/lib*.so
 	rm -f android/libs/$(b_arch)/libgraphics_android.so
 	rm -f android/libs/$(b_arch)/libgraphics_null.so
 	rm -f android/libs/$(b_arch)/libgui_internal.so
@@ -254,14 +309,8 @@ apkg-all: all android/build.xml navit.xml
 	rm -f android/libs/$(b_arch)/libvehicle_serial.so
 	rm -f android/libs/$(b_arch)/libvehicle_socket.so
 
-#	clean up
-#	rm android/res2/drawable-hdpi/*
-#	rm android/res2/drawable-mdpi/*
-#	rm android/res2/drawable-ldpi/*
-
 	mkdir -p android/res/raw
 	for i in $(shell cd ../po && echo *.mo); do cp ../po/$$i android/res/raw/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done
-#	cp navit.xml android/res/raw
 	cp navit_android_mdpi.xml android/res/raw/navitmdpi.xml
 	cp navit_android_ldpi.xml android/res/raw/navitldpi.xml
 	cp navit_android_hdpi.xml android/res/raw/navithdpi.xml
@@ -278,25 +327,22 @@ apkg-all: all android/build.xml navit.xml
 	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/libs/$(b_arch)/gdb.setup ; fi
 
 #	strip libs if release build is selected
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi/* ; echo "done" ; fi
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi-v7a/* ; echo "done" ; fi
-	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; /home/navit/_navit_develop/_need/NDK/_unpack/android-ndk-r5c/toolchains/x86-4.8/prebuilt/linux-x86/bin/i686-linux-android-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
+#	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi/* ; echo "done" ; fi
+#	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi-v7a/* ; echo "done" ; fi
+#	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; /home/navit/_navit_develop/_need/NDK/_unpack/android-ndk-r5c/toolchains/x86-4.8/prebuilt/linux-x86/bin/i686-linux-android-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
 
 
 apkg: apkg-all
+	echo "making::apkg"
 	touch $(srcdir)/android/dummy.txt
 	touch $(builddir)/android/dummy.txt
-	cd android && ant debug
-#	zipalign is already run automatically
+	cd android && echo "debug"
 
 apkg-release: apkg-all
+	echo "making::apkg-release"
 	touch $(srcdir)/android/dummy.txt
 	touch $(builddir)/android/dummy.txt
-	cd android && ant release
-#	jarsigner $$(cat ~/.keys_args) android/bin/Navit-unsigned.apk mykey
-#	zipalign -f 4 android/bin/Navit-unsigned.apk android/bin/Navit-aligned.apk
-	/home/navit/_navit_develop/_need/SDK/_unpack/android-sdk-linux_SDK_r22.0.1/build-tools/21.1.1/zipalign -f 4 android/bin/Navit-release-unsigned.apk android/bin/Navit-aligned.apk
-	cp android/bin/Navit-aligned.apk android/bin/Navit-debug.apk
+	cd android && echo "release"
 else
 navit_SOURCES = start.c
 navit_LDADD = lib@LIBNAVIT@.la
@@ -383,3 +429,5 @@ support-builtin.c: $(top_builddir)/config.h
 	echo "void builtin_init(void) {" >>support-builtin.c
 	ls $(top_builddir)/navit/support/*/*.la | sed -e "s/\.la/_init();/" -e "s/.*\\/lib/	module_/" >>support-builtin.c
 	echo "}" >>support-builtin.c
+
+

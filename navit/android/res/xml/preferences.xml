@@ -235,7 +235,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="auto_night_mode"
-            android:summary="automatically swtich between day and night mode"
+            android:summary="automatically switch between day and night mode"
             android:title="auto night mode" />
 
         <fr.atcm.carpooling.views.utils.SeekBarPreference
@@ -280,7 +280,7 @@
             android:defaultValue="false"
             android:key="c_linedrawing"
             android:summary="map drawing is faster, but it may look choppy"
-            android:title="Faster Mapdrwaing" />
+            android:title="Faster Mapdrawing" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_anti_aliasing"
@@ -391,6 +391,11 @@
             android:key="enable_debug_functions"
             android:summary="enable Debug functions in menu [DEBUG]"
             android:title="Debug Functions" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_debug_crashdetect"
+            android:summary="detect if App has crashed [DEBUG]"
+            android:title="Detect App Crash" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_debug_write_gpx"

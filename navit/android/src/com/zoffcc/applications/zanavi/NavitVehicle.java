@@ -327,6 +327,12 @@ public class NavitVehicle
 					disregard_first_fast_location--;
 					return;
 				}
+				
+				// if we are in tunnel-extrapolation mode, don't use 3g location
+				if (Navit.tunnel_extrapolation)
+				{
+					return;
+				}
 
 				last_f_fix = location.getTime();
 				// if last gps fix was longer than 8 secs. ago, use this fix

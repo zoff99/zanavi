@@ -1,104 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
-    
-    <!-- the theme applied to the application or activity -->
-    <style name="CustomActionBarThemeM"
-           parent="Theme.AppCompat">
 
+    <!-- the theme applied to the application or activity -->
+    <style name="CustomActionBarThemeM" parent="Theme.AppCompat.NoActionBar">
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/MyActionBarM</item>
         <item name="android:windowBackground" tools:ignore="NewApi">@drawable/splash</item>
-        
-        <!--<item name="android:windowBackground">@color/custom_theme_color</item>-->
-		<!--<item name="android:colorBackground">@color/custom_theme_color</item>-->
- 
-<!--  	    <item name="colorAccent">@color/green</item> -->
-<!--     	<item name="android:textColorSecondary">@color/red</item> -->
- 
+
+        <!-- <item name="android:windowBackground">@color/custom_theme_color</item> -->
+        <!-- <item name="android:colorBackground">@color/custom_theme_color</item> -->
+
+
+        <!-- <item name="colorAccent">@color/green</item> -->
+        <!-- <item name="android:textColorSecondary">@color/red</item> -->
+
+
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBarM</item>
 
-        <!--<item name="android:windowFullscreen">true</item>-->
-        <item name="windowActionBar">false</item>
+        <!-- <item name="android:windowFullscreen">true</item> -->
+<!--         <item name="windowActionBar">false</item> -->
     </style>
 
+<!--
     <color name="black001">#000000</color>
     <color name="custom_theme_color">#000000</color>
     <color name="green">#00ff00</color>
     <color name="red">#ff0000</color>
-    
-    <!-- ActionBar styles -->
-    <style name="MyActionBarM"
-           parent="@style/Widget.AppCompat.ActionBar.Solid">
-        <item name="android:background">@color/black001</item>
+-->
 
+    <!-- ActionBar styles -->
+    <style name="MyActionBarM" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="android:background">@color/black001</item>
         <item name="android:windowContentTransitions" tools:ignore="NewApi">true</item>
-	    <item name="android:windowAllowEnterTransitionOverlap" tools:ignore="NewApi">true</item>
-	    <item name="android:windowAllowReturnTransitionOverlap" tools:ignore="NewApi">true</item>
-	    <item name="android:windowSharedElementEnterTransition" tools:ignore="NewApi">@android:transition/move</item>
-	    <item name="android:windowSharedElementExitTransition" tools:ignore="NewApi">@android:transition/move</item>
-	    
-    	<!-- Support library compatibility -->
+        <item name="android:windowAllowEnterTransitionOverlap" tools:ignore="NewApi">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:ignore="NewApi">true</item>
+        <item name="android:windowSharedElementEnterTransition" tools:ignore="NewApi">@android:transition/move</item>
+        <item name="android:windowSharedElementExitTransition" tools:ignore="NewApi">@android:transition/move</item>
+
+        <!-- Support library compatibility -->
         <item name="background">@color/black001</item>
 
-        <!--<item name="android:windowFullscreen">true</item>-->
-        <item name="windowActionBar">false</item>
-        
-	</style>
-	
-    
-    
-    
-    
-    
-    
-    <style name="CustomActionBarThemeLightM"
-           parent="@style/Theme.AppCompat.Light">
+        <!-- <item name="android:windowFullscreen">true</item> -->
+<!--         <item name="windowActionBar">false</item> -->
+    </style>
 
+    <style name="CustomActionBarThemeLightM" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/MyActionBarLightM</item>
         <item name="android:windowBackground" tools:ignore="NewApi">@drawable/splash</item>
 
-        <!--<item name="android:windowBackground">@color/custom_theme_color</item>-->
-		<!--<item name="android:colorBackground">@color/custom_theme_color</item>-->
- 
+        <!-- <item name="android:windowBackground">@color/custom_theme_color</item> -->
+        <!-- <item name="android:colorBackground">@color/custom_theme_color</item> -->
+
+
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBarLightM</item>
-        
-        <!--<item name="android:windowFullscreen">true</item>-->
-        <item name="windowActionBar">false</item>
-        
+
+        <!-- <item name="android:windowFullscreen">true</item> -->
+<!--         <item name="windowActionBar">false</item> -->
     </style>
 
     <!-- ActionBar styles -->
-    <style name="MyActionBarLightM"
-           parent="@style/Widget.AppCompat.ActionBar.Solid">
+    <style name="MyActionBarLightM" parent="@style/Widget.AppCompat.ActionBar.Solid">
         <item name="android:background">@color/black001</item>
-        
-
         <item name="android:windowContentTransitions" tools:ignore="NewApi">true</item>
-	    <item name="android:windowAllowEnterTransitionOverlap" tools:ignore="NewApi">true</item>
-	    <item name="android:windowAllowReturnTransitionOverlap" tools:ignore="NewApi">true</item>
-	    <item name="android:windowSharedElementEnterTransition" tools:ignore="NewApi">@android:transition/move</item>
-	    <item name="android:windowSharedElementExitTransition" tools:ignore="NewApi">@android:transition/move</item>
-        
+        <item name="android:windowAllowEnterTransitionOverlap" tools:ignore="NewApi">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:ignore="NewApi">true</item>
+        <item name="android:windowSharedElementEnterTransition" tools:ignore="NewApi">@android:transition/move</item>
+        <item name="android:windowSharedElementExitTransition" tools:ignore="NewApi">@android:transition/move</item>
+
         <!-- Support library compatibility -->
         <item name="background">@color/black001</item>
 
-        <!--<item name="android:windowFullscreen">true</item>-->
-        <item name="windowActionBar">false</item>
-        
-        
-	</style>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        <!-- <item name="android:windowFullscreen">true</item> -->
+<!--         <item name="windowActionBar">false</item> -->
+    </style>
+
 </resources>

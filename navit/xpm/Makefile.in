@@ -36,15 +36,6 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.inc
-@USE_SVG_TRUE@am__append_1 = $(svgs) $(nav_svgs) $(flag_svgs)
-
-# png images of the user interface and other, sizes e.g. "8,16,32,48,96"
-@USE_SVG2PNG_SCALES_TRUE@@USE_SVG2PNG_TRUE@am__append_2 = $(foreach scale, $(subst $(comma), ,@SVG2PNG_SCALES@), $(addsuffix _$(xsize)_$(ysize).png,$(basename $(svgs))))
-# png state flags
-@USE_SVG2PNG_SCALES_FLAG_TRUE@@USE_SVG2PNG_TRUE@am__append_3 = $(foreach scale, $(subst $(comma), ,@SVG2PNG_SCALES_FLAG@), $(addsuffix _$(xsize)_$(ysize).png,$(basename $(flag_svgs))))
-# png symbols for navigation
-@USE_SVG2PNG_SCALES_NAV_TRUE@@USE_SVG2PNG_TRUE@am__append_4 = $(foreach scale, $(subst $(comma), ,@SVG2PNG_SCALES_NAV@), $(addsuffix _$(xsize)_$(ysize).png,$(basename $(nav_svgs))))
-@USE_SVG2PNG_TRUE@am__append_5 = $(pngs)
 subdir = navit/xpm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/codeset.m4 \
@@ -94,10 +85,8 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(DESKTOPFILEdir)" \
-	"$(DESTDIR)$(ICON128dir)" "$(DESTDIR)$(ICON22dir)" \
-	"$(DESTDIR)$(xpmdir)"
-DATA = $(DESKTOPFILE_DATA) $(ICON128_DATA) $(ICON22_DATA) $(xpm_DATA)
+am__installdirs = "$(DESTDIR)$(xpmdir)"
+DATA = $(xpm_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
@@ -376,7 +365,7 @@ xpm_DATA = bus_halt.xpm car_dealer.xpm castle.xpm cemetery.xpm \
 	nav_right_1.xpm nav_right_2.xpm nav_straight.xpm \
 	nav_straight_32.xpm nav_left_1_32.xpm nav_left_2_32.xpm \
 	nav_right_1_32.xpm nav_right_2_32.xpm menu.xpm \
-	toggle_fullscreen.xpm $(am__append_1) $(am__append_5)
+	toggle_fullscreen.xpm
 svgs = gui_about.svg gui_actions.svg gui_active.svg gui_bookmark.svg \
 	gui_display.svg gui_help.svg gui_home.svg gui_inactive.svg \
 	gui_map.svg gui_maps.svg gui_rules.svg gui_settings.svg \
@@ -507,19 +496,6 @@ flag_svgs = country_.svgz country_AD.svgz country_AE.svgz \
 	country_VN.svgz country_VU.svgz country_WF.svgz \
 	country_WS.svgz country_YE.svgz country_YT.svgz \
 	country_ZA.svgz country_ZM.svgz country_ZW.svgz
-@USE_SVG2PNG_TRUE@pngs = $(addsuffix .png,$(basename $(svgs))) \
-@USE_SVG2PNG_TRUE@	$(am__append_2) $(am__append_3) \
-@USE_SVG2PNG_TRUE@	$(am__append_4)
-@USE_SVG2PNG_TRUE@xsize = $(word 1,$(subst x, ,$(scale)))
-@USE_SVG2PNG_TRUE@ysize = $(word $(words $(scale)),$(subst x, ,$(scale)))
-@USE_SVG2PNG_TRUE@comma = ,
-@SUPPORT_WIN32_FALSE@DESKTOPFILEdir = $(datadir)/applications
-@SUPPORT_WIN32_FALSE@DESKTOPFILE_DATA = desktop_icons/navit.desktop
-@SUPPORT_WIN32_FALSE@ICON128dir = $(datadir)/icons/hicolor/128x128/apps
-@SUPPORT_WIN32_FALSE@ICON128_DATA = desktop_icons/128x128/navit.png
-@SUPPORT_WIN32_FALSE@ICON22dir = $(datadir)/icons/hicolor/22x22/apps
-@SUPPORT_WIN32_FALSE@ICON22_DATA = desktop_icons/22x22/navit.png
-EXTRA_DIST = $(xpm_DATA) $(DESKTOPFILE_DATA) $(ICON128_DATA) $(ICON22_DATA) navit_svg2png
 all: all-am
 
 .SUFFIXES:
@@ -559,66 +535,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-DESKTOPFILEDATA: $(DESKTOPFILE_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(DESKTOPFILEdir)" || $(MKDIR_P) "$(DESTDIR)$(DESKTOPFILEdir)"
-	@list='$(DESKTOPFILE_DATA)'; test -n "$(DESKTOPFILEdir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(DESKTOPFILEdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(DESKTOPFILEdir)" || exit $$?; \
-	done
-
-uninstall-DESKTOPFILEDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(DESKTOPFILE_DATA)'; test -n "$(DESKTOPFILEdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(DESKTOPFILEdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(DESKTOPFILEdir)" && rm -f $$files
-install-ICON128DATA: $(ICON128_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(ICON128dir)" || $(MKDIR_P) "$(DESTDIR)$(ICON128dir)"
-	@list='$(ICON128_DATA)'; test -n "$(ICON128dir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(ICON128dir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(ICON128dir)" || exit $$?; \
-	done
-
-uninstall-ICON128DATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(ICON128_DATA)'; test -n "$(ICON128dir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(ICON128dir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(ICON128dir)" && rm -f $$files
-install-ICON22DATA: $(ICON22_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(ICON22dir)" || $(MKDIR_P) "$(DESTDIR)$(ICON22dir)"
-	@list='$(ICON22_DATA)'; test -n "$(ICON22dir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(ICON22dir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(ICON22dir)" || exit $$?; \
-	done
-
-uninstall-ICON22DATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(ICON22_DATA)'; test -n "$(ICON22dir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(ICON22dir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(ICON22dir)" && rm -f $$files
 install-xpmDATA: $(xpm_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(xpmdir)" || $(MKDIR_P) "$(DESTDIR)$(xpmdir)"
@@ -680,7 +596,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(DESKTOPFILEdir)" "$(DESTDIR)$(ICON128dir)" "$(DESTDIR)$(ICON22dir)" "$(DESTDIR)$(xpmdir)"; do \
+	for dir in "$(DESTDIR)$(xpmdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -708,14 +624,13 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@USE_SVG2PNG_FALSE@distclean-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-local
+distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
 
@@ -729,8 +644,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-DESKTOPFILEDATA install-ICON128DATA \
-	install-ICON22DATA install-xpmDATA
+install-data-am: install-xpmDATA
 
 install-dvi: install-dvi-am
 
@@ -774,36 +688,25 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-DESKTOPFILEDATA uninstall-ICON128DATA \
-	uninstall-ICON22DATA uninstall-xpmDATA
+uninstall-am: uninstall-xpmDATA
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	distclean distclean-generic distclean-libtool distclean-local \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-DESKTOPFILEDATA install-ICON128DATA install-ICON22DATA \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip install-xpmDATA installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am uninstall uninstall-DESKTOPFILEDATA \
-	uninstall-ICON128DATA uninstall-ICON22DATA uninstall-am \
-	uninstall-xpmDATA
+	distclean distclean-generic distclean-libtool distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	install-xpmDATA installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-xpmDATA
 
 
-@USE_SVG2PNG_TRUE@%.png: $(srcdir)/*.svgz
-@USE_SVG2PNG_TRUE@	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir) $(srcdir)/navit_svg2png "@SVG2PNG@" "$@"
-@USE_SVG2PNG_TRUE@%.png: $(srcdir)/*.svg
-@USE_SVG2PNG_TRUE@	SRCDIR=$(abs_srcdir) BUILDDIR=$(abs_builddir) $(srcdir)/navit_svg2png "@SVG2PNG@" "$@"
-#burgerking.ico:
-#	wget http://www.burgerking.de/favicon.ico -O burgerking.ico
-
-@USE_SVG2PNG_TRUE@distclean-local:
-@USE_SVG2PNG_TRUE@	rm -f $(pngs)
+all:
+	echo "nothing to do here"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -216,6 +216,8 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 
 	static void DR_save_route_to_gpx_file()
 	{
+		ZANaviLogMessages.ap("RouteSaveGpxPath", Navit.NAVIT_DATA_DEBUG_DIR);
+		
 		Message msg = new Message();
 		Bundle b = new Bundle();
 		b.putInt("Callback", 96);
@@ -1821,10 +1823,14 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		return -1;
 	}
 
+	@SuppressWarnings("unused")
 	static void DR_run_all_yaml_tests()
 	{
 		String yaml_dir = Navit.NAVIT_DATA_DEBUG_DIR + "../yamltests/";
 		String duration_string = "";
+
+		System.out.println("CI:Looking for yamltests in:" + yaml_dir);
+		ZANaviLogMessages.ap("YamltestsPath", yaml_dir);
 
 		try
 		{
@@ -2011,6 +2017,16 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		Navit.static_show_route_graph(3);
 		enable_normal_location();
 		// restore normal state ----------------------
+
+	
+		if (Navit.CIDEBUG != 0)
+		{
+			// ----- DEBUG -----
+			ZANaviLogMessages.dump_vales_to_log();
+			ZANaviLogMessages.dump_messages_to_log();
+			// ----- DEBUG -----		
+		}
+
 	}
 
 	static void DR_replay_gps_file(String filename, String date_str)
@@ -2394,4 +2410,3 @@ public class ZANaviDebugReceiver extends BroadcastReceiver
 		}
 	}
 }
-

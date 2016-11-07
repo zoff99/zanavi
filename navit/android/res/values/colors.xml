@@ -3,5 +3,43 @@
 
     <color name="blueish_bg____color_old">#505096</color>
     <color name="blueish_bg_color">#3f51b5</color>
+    <color name="zanavi_yellowbrown">#ffc107</color>
+    <color name="zanavi_blueish">#4051b5</color>
+    <color name="zanavi_teal">#009688</color>
+    <color name="zanavi_purple">#673ab7</color>
+    <color name="zanavi_black">#000000</color>
+
+    <!-- dots inactive colors -->
+    <color name="dot_dark_screen1">#D8000000</color>
+    <color name="dot_dark_screen2">#D8000000</color>
+    <color name="dot_dark_screen3">#D8000000</color>
+    <color name="dot_dark_screen4">#D8000000</color>
+    <color name="dot_dark_screen5">#D8000000</color>
+    <color name="dot_dark_screen6">#D8000000</color>
+    
+    <!-- dots active colors -->
+    <color name="dot_light_screen1">#78FFFFFF</color>
+    <color name="dot_light_screen2">#78FFFFFF</color>
+    <color name="dot_light_screen3">#78FFFFFF</color>
+    <color name="dot_light_screen4">#78FFFFFF</color>
+    <color name="dot_light_screen5">#78FFFFFF</color>
+    <color name="dot_light_screen6">#78FFFFFF</color>
+    
+    <array name="array_dot_active">
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen2</item>
+        <item>@color/dot_light_screen3</item>
+        <item>@color/dot_light_screen4</item>
+        <item>@color/dot_light_screen5</item>
+        <item>@color/dot_light_screen6</item>
+        </array>
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen2</item>
+        <item>@color/dot_dark_screen3</item>
+        <item>@color/dot_dark_screen4</item>
+        <item>@color/dot_dark_screen5</item>
+        <item>@color/dot_dark_screen6</item>
+    </array>
 
 </resources>

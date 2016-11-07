@@ -1,0 +1,18 @@
+include ':android-support-animated-vector-drawable'
+include ':android-support-annotations'
+include ':android-support-compat'
+include ':android-support-core-ui'
+include ':android-support-core-utils'
+include ':android-support-design'
+include ':android-support-fragment'
+include ':android-support-media-compat'
+include ':android-support-v4'
+include ':android-support-v7-appcompat'
+include ':android-support-v7-recyclerview'
+include ':android-support-vector-drawable'
+
+include ':android-about-page'
+// include ':appintro'
+// include ':material-intro'
+
+include ':android'

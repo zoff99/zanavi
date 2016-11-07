@@ -280,6 +280,7 @@ int route_status_previous = 0;
 long long global_route_memory_size = 0;
 int global_old_vehicle_speed = -1;
 int global_old_vehicle_speed_for_autozoom = -1;
+long global_scale = 100;
 
 void navit_add_mapset(struct navit *this_, struct mapset *ms)
 {
@@ -805,6 +806,8 @@ static void navit_scale(struct navit *this_, long scale, struct point *p, int dr
 	{
 		scale = this_->zoom_max;
 	}
+
+	global_scale = scale;
 
 	// return scale value to android
 #ifdef HAVE_API_ANDROID

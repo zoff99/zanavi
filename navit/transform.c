@@ -284,6 +284,7 @@ transform_new(void)
 
 	this_=g_new0(struct transformation, 1);
 	transform_set_screen_dist(this_, 100);
+	global_scale = 100;
 	this_->order_base = 14;
 #if 0
 	this_->pitch=20;

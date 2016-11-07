@@ -136,6 +136,8 @@ static pthread_mutex_t uiConditionMutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define MAX_POI_ICONS_ON_MAP 30
 #define MAX_POI_ICON_TEXTS_ON_MAP 12
+#define ORDER_LEVEL_TO_SHOW_ALL_POI 14 // order
+#define ORDER2_LEVEL_TO_SHOW_ALL_POI 12 // global_scale
 
 #define MAX_PLACE_LABELS_ON_MAP 13
 #define MAX_DISTRICT_LABELS_ON_MAP 13
@@ -2703,7 +2705,10 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 						// count labels and poi-texts and stop after drawing more than n of those
 						if (item_is_poi(dc->type))
 						{
-							if (poi_on_map_count > MAX_POI_ICON_TEXTS_ON_MAP)
+							if (
+								(poi_on_map_count > MAX_POI_ICON_TEXTS_ON_MAP) &&
+								((long)global_scale > (long)ORDER2_LEVEL_TO_SHOW_ALL_POI)
+								)
 							{
 								dont_draw = 1;
 							}
@@ -2835,8 +2840,12 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 
 					if (item_is_poi(dc->type))
 					{
-						if (poi_icon_on_map_count > MAX_POI_ICONS_ON_MAP)
+						if (
+							(poi_icon_on_map_count > MAX_POI_ICONS_ON_MAP) &&
+							((long)global_scale > (long)ORDER2_LEVEL_TO_SHOW_ALL_POI)
+							)
 						{
+							// send_alert_to_java(99, "POI-filter:002:dont draw POI icon");
 							dont_draw = 1;
 						}
 						else
@@ -2880,15 +2889,15 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 								dc->img = img;
 
 								// compensate for streched images on high dpi devices
-								img->hot.x = (int)((float)img->width / 2.0f / (float)global_dpi_factor);
-								img->hot.y = (int)((float)img->height / 2.0f / (float)global_dpi_factor);
+								img->hot.x = (int)((float)(img->hot.x) / (float)global_dpi_factor);
+								img->hot.y = (int)((float)(img->hot.y) / (float)global_dpi_factor);
 
-								//dbg(0, "img2_factor=%f\n", (float)global_dpi_factor);
-								//dbg(0, "img2_h=%d\n", img->height);
-								//dbg(0, "img2_w=%d\n", img->width);
-								//dbg(0, "img2_hotx=%d\n", img->hot.x);
-								//dbg(0, "img2_hoty=%d\n", img->hot.y);
-								//dbg(0, "img2_icon: '%s'\n", path);
+								// dbg(0, "POI_ICON:img2_factor=%f\n", (float)global_dpi_factor);
+								// dbg(0, "POI_ICON:img2_h=%d\n", img->height);
+								// dbg(0, "POI_ICON:img2_w=%d\n", img->width);
+								// dbg(0, "POI_ICON:img2_hotx=%d\n", img->hot.x);
+								// dbg(0, "POI_ICON:img2_hoty=%d\n", img->hot.y);
+								// dbg(0, "POI_ICON:img2_icon: '%s'\n", path);
 
 							}
 							else

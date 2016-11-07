@@ -77,6 +77,7 @@ public class ZANaviPrefs
 	boolean PREF_auto_night_mode = true;
 	int PREF_night_mode_lux = 10;
 	int PREF_night_mode_buffer = 20;
+	boolean PREF_enable_debug_crashdetect = false;
 
 	static void deep_copy(ZANaviPrefs src, ZANaviPrefs dst)
 	{
@@ -153,6 +154,7 @@ public class ZANaviPrefs
 		dst.PREF_auto_night_mode = src.PREF_auto_night_mode;
 		dst.PREF_night_mode_lux = src.PREF_night_mode_lux;
 		dst.PREF_night_mode_buffer = src.PREF_night_mode_buffer;
+		dst.PREF_enable_debug_crashdetect = src.PREF_enable_debug_crashdetect;
 
 		int j = 0;
 		for (j = 0; j < src.PREF_StreetSearchStrings.length; j++)
