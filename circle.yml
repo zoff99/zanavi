@@ -112,7 +112,8 @@ dependencies:
     - sudo apt-get install zip #> /dev/null 2> /dev/null
     - sudo apt-get install bc #> /dev/null 2> /dev/null
     - sudo apt-get install mtools #> /dev/null 2> /dev/null
-    - sudo apt-get install perlmagick #> /dev/null 2> /dev/null
+    - sudo apt-get install libmagickcore5 ; exit 0
+    - sudo apt-get install perlmagick ; exit 0
     - sudo apt-get install liblwp-useragent-determined-perl #> /dev/null 2> /dev/null
     - sudo apt-get install xvfb #> /dev/null 2> /dev/null
     - sudo apt-get install xdotool #> /dev/null 2> /dev/null
