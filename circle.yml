@@ -839,8 +839,8 @@ test:
 
     - ps -fu ubuntu ; exit 0
     - pkill --signal SIGINT -u ubuntu -f ffmpeg ; exit 0
-    - sleep 10
-    - pkill -9 -u ubuntu -f ffmpeg ; exit 0
+    #- sleep 10
+    #- pkill -9 -u ubuntu -f ffmpeg ; exit 0
     - ps -fu ubuntu ; exit 0
 
     # ------ kill ----------------
