@@ -681,7 +681,11 @@ test:
     #- . ~/_bt3;adb shell 'cp -av /storage/eee/Android/data/yamltests/* /storage/eee/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/yamltests/' ; exit 0
     #- . ~/_bt3;adb shell 'cp -av /storage/eee/Android/data/debug/* /storage/eee/Android/data/com.zoffcc.applications.zanavi/files/zanavi/maps/debug/' ; exit 0
 
-    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*" | tr -d '\r'| tr -d '\n' > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo 'XX'$_dir'YY'
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*"
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*" | grep '201'
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*" | grep '201' | tail -1
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*" | grep '201' | tail -1 | tr -d '\r'| tr -d '\n'
+    - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/yamltests/ ; ls -d 201?-??-*" | grep '201' | tail -1 | tr -d '\r'| tr -d '\n' > ~/tmp.txt && _dir=`cat ~/tmp.txt`; echo 'XX'$_dir'YY'
 
 
     - . ~/_bt3;export EMU2_=`echo 'EMU_'"${EMU_API}"` ; eval EMU_=\$$EMU2_ ; export EMU_ ; export sdpath2=`echo 'sdpath_'"${EMU_API}"` ; eval sdpath=\$$sdpath2 ; export sdpath ;  adb shell "cd $sdpath/Android/data/com.zoffcc.applications.zanavi/files/debug/ ; ls -al" ; exit 0
@@ -724,7 +728,8 @@ test:
     - . ~/_bt3;cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
 
-    - . ~/_bt3;pkill -9 -u ubuntu -f emulator64-arm
+    - . ~/_bt3;pkill -u ubuntu -f emulator64-arm
+#    - . ~/_bt3;pkill -9 -u ubuntu -f emulator64-arm
 
 
     #- Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
@@ -740,8 +745,10 @@ test:
 
     - . ~/_bt3;ps auxwww ; exit 0
 
-    - . ~/_bt3;pkill -9 -u ubuntu -f crashreporter; exit 0
-    - . ~/_bt3;pkill -9 -u ubuntu -f firefox; exit 0
+#    - . ~/_bt3;pkill -9 -u ubuntu -f crashreporter; exit 0
+    - . ~/_bt3;pkill -u ubuntu -f crashreporter; exit 0
+#    - . ~/_bt3;pkill -9 -u ubuntu -f firefox; exit 0
+    - . ~/_bt3;pkill -u ubuntu -f firefox; exit 0
     - . ~/_bt3;type -a firefox
 
     - . ~/_bt3;ps auxwww ; exit 0
@@ -791,7 +798,8 @@ test:
       done ;
       exit 0
 
-    - . ~/_bt3;pkill -9 -u ubuntu -f firefox
+    - . ~/_bt3;pkill -u ubuntu -f firefox
+#    - . ~/_bt3;pkill -9 -u ubuntu -f firefox
 
     - . ~/_bt3;cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
     - . ~/_bt3;cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
@@ -841,7 +849,7 @@ test:
     - pkill --signal SIGINT -u ubuntu -f ffmpeg ; exit 0
     - sleep 10
     #- pkill -9 -u ubuntu -f ffmpeg ; exit 0
-    #- ps -fu ubuntu ; exit 0
+    - ps -fu ubuntu ; exit 0
 
     # ------ kill ----------------
     #- ps -fu ubuntu
