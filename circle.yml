@@ -29,7 +29,7 @@ machine:
 #   0 -> NO
 #   1 -> YES
 #
-    _ALWAYS_NEW_EMU_: 1
+    _ALWAYS_NEW_EMU_: 0
 ###############################
 
 ###############################
@@ -850,6 +850,13 @@ test:
     - sleep 10
     #- pkill -9 -u ubuntu -f ffmpeg ; exit 0
     - ps -fu ubuntu ; exit 0
+
+    # ------ cleanup -------------
+    - mkdir $CIRCLE_ARTIFACTS/job_logs
+    - mv -v $CIRCLE_ARTIFACTS/stderr_circle_*.txt $CIRCLE_ARTIFACTS/job_logs/
+    - mv -v $CIRCLE_ARTIFACTS/stdout_circle_*.txt $CIRCLE_ARTIFACTS/job_logs/
+    # ------ cleanup -------------
+
 
     # ------ kill ----------------
     #- ps -fu ubuntu
