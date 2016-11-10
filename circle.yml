@@ -851,6 +851,13 @@ test:
     #- pkill -9 -u ubuntu -f ffmpeg ; exit 0
     - ps -fu ubuntu ; exit 0
 
+    # ------ cleanup -------------
+    - mkdir $CIRCLE_ARTIFACTS/job_logs
+    - mv -v $CIRCLE_ARTIFACTS/stderr_circle_*.txt $CIRCLE_ARTIFACTS/job_logs/
+    - mv -v $CIRCLE_ARTIFACTS/stdout_circle_*.txt $CIRCLE_ARTIFACTS/job_logs/
+    # ------ cleanup -------------
+
+
     # ------ kill ----------------
     #- ps -fu ubuntu
     #- adb -s emulator-5555 emu kill ; exit 0
