@@ -3359,12 +3359,15 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 			if ( (is_maybe_same_item(&(new->way), w22, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w22, 1) == 0)   )
 			{
-
 				new_angle_real = angle_delta(old->angle_end, w22->angle2);
 				new_angle_abs = abs(new_angle_real);
-				if (new_angle_abs < new_angle_abs_min)
+
+				if (is_way_allowed(nav, w22, 1))
 				{
-					new_angle_abs_min = new_angle_abs;
+					if (new_angle_abs < new_angle_abs_min)
+					{
+						new_angle_abs_min = new_angle_abs;
+					}
 				}
 
 				tests_dbg(0, "new_angle_real=%d new_angle_abs=%d is allowed=%d", new_angle_real, new_angle_abs, is_way_allowed(nav, w22, 1));
