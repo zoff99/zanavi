@@ -3359,15 +3359,12 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 			if ( (is_maybe_same_item(&(new->way), w22, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w22, 1) == 0)   )
 			{
+
 				new_angle_real = angle_delta(old->angle_end, w22->angle2);
 				new_angle_abs = abs(new_angle_real);
-
-				if (is_way_allowed(nav, w22, 1))
+				if (new_angle_abs < new_angle_abs_min)
 				{
-					if (new_angle_abs < new_angle_abs_min)
-					{
-						new_angle_abs_min = new_angle_abs;
-					}
+					new_angle_abs_min = new_angle_abs;
 				}
 
 				tests_dbg(0, "new_angle_real=%d new_angle_abs=%d is allowed=%d", new_angle_real, new_angle_abs, is_way_allowed(nav, w22, 1));
@@ -3450,7 +3447,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 				{
 					dbg(0, "STRAI:005a:d=%d\n", d);
 					r = "no: driving almost straight on highway and no other highway possibilities (1)";
-					tests_dbg(0, "no: driving almost straight on highway and no other highway possibilities (1)");
+					tests_dbg(0, "no: STRAI:005a: driving almost straight on highway and no other highway possibilities (1)");
 				}
 				else
 				{
@@ -3464,7 +3461,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 				{
 					dbg(0, "STRAI:005a:d=%d\n", d);
 					r = "no: driving almost straight on highway and no other highway possibilities (2)";
-					tests_dbg(0, "no: driving almost straight on highway and no other highway possibilities (2)");
+					tests_dbg(0, "no: STRAI:005a: driving almost straight on highway and no other highway possibilities (2)");
 				}
 				else
 				{
@@ -3475,7 +3472,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 			else if (item_is_ramp(old->way.item))
 			{
 				r = "yes: we are currently on a ramp and have more than 1 road to take";
-				tests_dbg(0, "yes: we are currently on a ramp and have more than 1 road to take");
+				tests_dbg(0, "yes: 001: we are currently on a ramp and have more than 1 road to take");
 				ret = 1;
 			}
 		}
@@ -3488,13 +3485,13 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		{
 			/* No announcement necessary */
 			r = "no: Only one possibility";
-			tests_dbg(0, "no: Only one possibility");
+			tests_dbg(0, "no: 002: Only one possibility");
 		}
 		else if (!new->way.next->next && item_is_ramp(new->way.next->item) && !is_way_allowed(nav, new->way.next, 1))
 		{
 			/* If the other way is only a ramp and it is one-way in the wrong direction, no announcement necessary */
 			r = "no: Only ramp";
-			tests_dbg(0, "no: Only ramp");
+			tests_dbg(0, "no: 003: Only ramp");
 		}
 	}
 	else // bicycle mode --------------------
@@ -3506,7 +3503,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 			{
 				/* No announcement necessary */
 				r = "no: Only one possibility and less than 20° turn";
-				tests_dbg(0, "no: Only one possibility and less than 20° turn");
+				tests_dbg(0, "no: 004: Only one possibility and less than 20° turn");
 				dbg(0, "%s\n", r);
 			}
 			else
@@ -3613,18 +3610,18 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		if ((old->way.flags & NAVIT_AF_ROUNDABOUT) && !(new->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			r = "yes: leaving roundabout";
-			tests_dbg(0, "yes: leaving roundabout");
+			tests_dbg(0, "yes: 005: leaving roundabout");
 			ret = 1;
 		}
 		else if (!(old->way.flags & NAVIT_AF_ROUNDABOUT) && (new->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			r = "no: entering roundabout";
-			tests_dbg(0, "no: entering roundabout");
+			tests_dbg(0, "no: 006: entering roundabout");
 		}
 		else if ((old->way.flags & NAVIT_AF_ROUNDABOUT) && (new->way.flags & NAVIT_AF_ROUNDABOUT))
 		{
 			r = "no: staying in roundabout";
-			tests_dbg(0, "no: staying in roundabout");
+			tests_dbg(0, "no: 007: staying in roundabout");
 		}
 	}
 
@@ -3644,7 +3641,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		{
 			/* always make an announcement if you have to make a sharp turn */
 			r = "yes: delta over 75";
-			tests_dbg(0, "yes: delta over 75");
+			tests_dbg(0, "yes: 008: delta over 75");
 			ret = 1;
 		}
 	}
@@ -3756,26 +3753,29 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		{
 			ret = 1;
 			r = "yes: (not same street) or (ambigous [nicht eindeutig])";
-			tests_dbg(0, "yes: (not same street) or (ambigous [nicht eindeutig])");
+			tests_dbg(0, "yes: 009: (not same street) or (ambigous [nicht eindeutig])");
 		}
 		else
 		{
 			r = "no: (same street) and (unambigous [eindeutig])";
-			tests_dbg(0, "no: (same street) and (unambigous [eindeutig])");
+			tests_dbg(0, "no: 010: (same street) and (unambigous [eindeutig])");
 		}
 
 		if (ret == 0)
 		{
+			tests_dbg(0, "enter: ret==0");
+
 			// add a new check here:
 			if (have_more_than_one_way_to_turn == 1)
 			{
+				tests_dbg(0, "have_more_than_one_way_to_turn == 1");
 
 				dbg(0, "STRAI:11.07:4.0: cat=%d, ncat=%d, highest_other_cat=%d, d=%d, abs(d)=%d new_angle_closest_to_cur=%d original_d=%d\n", cat, ncat, highest_other_cat, d, abs(d), new_angle_closest_to_cur, original_d);
 
 				if ( (cat > 6) && (ncat > 6) && (highest_other_cat <= 6) && (abs(d) < 70) )
 				{
 					r = "no: from highway to highway (no other highway possibilities)";
-					tests_dbg(0, "no: from highway to highway (no other highway possibilities)");
+					tests_dbg(0, "no: 011: from highway to highway (no other highway possibilities)");
 					dbg(0, "STRAI:011.07:4 abs(d)=%d cat=%d ncat=%d highest_other_cat=%d\n", abs(d), cat, ncat, highest_other_cat);
 				}
 				else
@@ -3785,7 +3785,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 					{
 						ret = 1;
 						r = "yes: we are driving onto a ramp and there a other ramps near (<50 degrees) to it";
-						tests_dbg(0, "yes: we are driving onto a ramp and there a other ramps near (<50 degrees) to it");
+						tests_dbg(0, "yes: 012: we are driving onto a ramp and there a other ramps near (<50 degrees) to it");
 						dbg(0, "STRAI:011.07:3.001 ncat=%d highest_other_cat=%d d=%d (new_angle_closest_to_cur=%d - original_d=%d)\n", ncat, highest_other_cat, d, new_angle_closest_to_cur, original_d);
 					}
 
@@ -3793,7 +3793,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 					if ((d == 0) && (new_angle_abs_min_allowed >= 25))
 					{
 						r = "no: driving almost straight, and other ways not very close to straight";
-						tests_dbg(0, "no: driving almost straight, and other ways not very close to straight");
+						tests_dbg(0, "no: 013: driving almost straight, and other ways not very close to straight");
 						dbg(0, "STRAI:011.07:3 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 					}
 					else
@@ -3803,28 +3803,30 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 						{
 							ret = 1;
 							r = "yes: we are going straight and some other way is very close to it";
-							tests_dbg(0, "yes: we are going straight and some other way is very close to it");
+							tests_dbg(0, "yes: 014: we are going straight and some other way is very close to it");
 							dbg(0, "STRAI:011.07:0 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 						}
 						else if ( (ncat_2 <= highest_other_cat) && (d == 0) && (abs(new_angle_closest_to_cur - original_d) < 30) )
 						{
 							ret = 1;
 							r = "yes: we are going straight and some other way is very close to it (same or higher cat)";
-							tests_dbg(0, "yes: we are going straight and some other way is very close to it (same or higher cat)");
+							tests_dbg(0, "yes: 015: we are going straight and some other way is very close to it (same or higher cat)");
 							dbg(0, "STRAI:011.07:7 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 						}
 						else if ((abs(d) > 0) && (new_angle_abs_min_allowed < abs(d)))
 						{
 							ret = 1;
 							r = "yes: some other way is going more straight";
-							tests_dbg(0, "yes: some other way is going more straight");
+							tests_dbg(0, "yes: 016: some other way is going more straight");
 							dbg(0, "STRAI:011.07:0 abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 
 
 							if (abs(d) < 10)
 							{
 
-							// ----------########### more way left/right of way ? ###########----------
+							tests_dbg(0, "enter: (abs(d) < 10)");
+
+							// ----------########### more ways left/right of way ? ###########----------
 							int more_ways_to_left_ = 0;
 							int more_ways_to_right_ = 0;
 							w = new->way.next;
@@ -3852,6 +3854,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 								w = w->next;
 							}
 
+							tests_dbg(0, "STRAI:108.02 %d %d\n", more_ways_to_left_, more_ways_to_right_);
 							dbg(0, "STRAI:108.02 %d %d\n", more_ways_to_left_, more_ways_to_right_);
 
 
@@ -3859,6 +3862,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 							{
 
 								dbg(0, "STRAI:108.03:left\n");
+								tests_dbg(0, "STRAI:108.03:left\n");
 								*delta_real = 0;
 								d = -8;
 								no_correction = 1;
@@ -3866,6 +3870,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 							else if ((d > 0) && (more_ways_to_left_ > 0)) // && (more_ways_to_right_ == 0))
 							{
 								dbg(0, "STRAI:108.04:right\n");
+								tests_dbg(0, "STRAI:108.04:right\n");
 								*delta_real = 0;
 								d = 8;
 								no_correction = 1;
@@ -3873,7 +3878,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 
 
-							// ----------########### more way left/right of way ? ###########----------
+							// ----------########### more ways left/right of way ? ###########----------
 
 							}
 
@@ -3884,14 +3889,14 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 							if ( (cat == ncat) && (ncat_2 > highest_other_cat) )
 							{
 								r = "no: we need to make a turn, but other possibilites are much lower cat roads";
-								tests_dbg(0, "no: we need to make a turn, but other possibilites are much lower cat roads");
+								tests_dbg(0, "no: 017: we need to make a turn, but other possibilites are much lower cat roads");
 								dbg(0, "STRAI:011.07:5iss cat=%d ncat=%d cat_2=%d ncat_2=%d highest_other_cat=%d\n", cat, ncat, cat_2, ncat_2, highest_other_cat);
 							}
 							else
 							{
 								ret = 1;
 								r = "yes: we need to make a turn";
-								tests_dbg(0, "yes: we need to make a turn");
+								tests_dbg(0, "yes: 018: we need to make a turn");
 								dbg(0, "STRAI:011.07:1iss abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 							}
 						}
@@ -3900,14 +3905,14 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 							if ( (cat == ncat) && (ncat_2 > highest_other_cat) )
 							{
 								r = "no: we need to make a turn, but other possibilites are much lower cat roads";
-								tests_dbg(0, "no: we need to make a turn, but other possibilites are much lower cat roads");
+								tests_dbg(0, "no: 019: we need to make a turn, but other possibilites are much lower cat roads");
 								dbg(0, "STRAI:011.07:5nss cat=%d ncat=%d cat_2=%d ncat_2=%d highest_other_cat=%d\n", cat, ncat, cat_2, ncat_2, highest_other_cat);
 							}
 							else
 							{
 								ret = 1;
 								r = "yes: we need to make a turn";
-								tests_dbg(0, "yes: we need to make a turn");
+								tests_dbg(0, "yes: 020: we need to make a turn");
 								dbg(0, "STRAI:011.07:1nss abs(d)=%d new_angle_abs_min_allowed=%d\n", abs(d), new_angle_abs_min_allowed);
 							}
 						}
@@ -3944,6 +3949,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 	if (no_correction == 0)
 	{
+		tests_dbg(0, "enter: no_correction == 0");
 		*delta_real = d;
 	}
 
@@ -3960,6 +3966,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		int correct_direction = 1;
 
 		dbg(0, "STRAI:007.01:d=%d d2=%d\n", d, d2);
+		tests_dbg(0, "STRAI:007.01:d=%d d2=%d\n", d, d2);
 
 		if (d2 < 0) // left
 		{
@@ -3981,6 +3988,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 			if (correct_direction == 1)
 			{
+				tests_dbg(0, "MAV:001:correct to right\n");
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 				dbg(0, "MAV:001:correct to right\n");
 #endif
@@ -4007,6 +4015,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 			if (correct_direction == 1)
 			{
+				tests_dbg(0, "MAV:002:correct to left\n");
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
 				dbg(0, "MAV:002:correct to left\n");
 #endif
@@ -4016,6 +4025,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 		else // (d2 == 0) // straight
 		{
 
+			tests_dbg(0, "STRAI:008.01:%d (%d < %d) new_angle_abs_min_allowed=%d\n", d2, new_angle_abs_min, ROAD_ANGLE_DISTANCE_FOR_STRAIGHT, new_angle_abs_min_allowed);
 			dbg(0, "STRAI:008.01:%d (%d < %d) new_angle_abs_min_allowed=%d\n", d2, new_angle_abs_min, ROAD_ANGLE_DISTANCE_FOR_STRAIGHT, new_angle_abs_min_allowed);
 
 			int more_ways_to_left = 0;
@@ -4023,6 +4033,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 			if (new_angle_abs_min_allowed < ROAD_ANGLE_DISTANCE_FOR_STRAIGHT) // if other angles are far different from straight, than let it still be straight! otherwise correct direction
 			{
+				tests_dbg(0, "STRAI:008.02\n");
 				dbg(0, "STRAI:008.02\n");
 
 
@@ -4036,6 +4047,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 						{
 							if ( (is_maybe_same_item(&(new->way), w, 0) == 0)   &&  (is_maybe_same_item(&(old->way), w, 1) == 0)   )
 							{
+								tests_dbg(0, "STRAI:008.02a delta=%d\n", angle_delta(old->angle_end, w->angle2));
 								dbg(0, "STRAI:008.02a delta=%d\n", angle_delta(old->angle_end, w->angle2));
 
 								if (is_way_allowed(nav, w, 1))
@@ -4054,11 +4066,13 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 						w = w->next;
 					}
 
+					tests_dbg(0, "STRAI:008.02 %d %d\n", more_ways_to_left, more_ways_to_right);
 					dbg(0, "STRAI:008.02 %d %d\n", more_ways_to_left, more_ways_to_right);
 
 					if ((more_ways_to_left == 0) && (more_ways_to_right > 0))
 					{
 
+						tests_dbg(0, "STRAI:008.03:left\n");
 						dbg(0, "STRAI:008.03:left\n");
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
@@ -4068,6 +4082,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 					}
 					else if ((more_ways_to_left > 0) && (more_ways_to_right == 0))
 					{
+						tests_dbg(0, "STRAI:008.04:right\n");
 						dbg(0, "STRAI:008.04:right\n");
 
 #ifdef NAVIT_ROUTING_DEBUG_PRINT
@@ -4079,6 +4094,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 				}
 				else
 				{
+					tests_dbg(0, "STRAI:008.02f street almost straight and nearest other street at least 25 away: closest=%d orig_d=%d\n", new_angle_closest_to_cur, original_d);
 					dbg(0, "STRAI:008.02f street almost straight and nearest other street at least 25 away: closest=%d orig_d=%d\n", new_angle_closest_to_cur, original_d);
 				}
 
@@ -4098,6 +4114,7 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 
 
+	tests_dbg(0, "STRAI:099:ret=%d r=%s d=%d d_real=%d\n", ret, r, d, *delta_real);
 	dbg(0, "STRAI:099:ret=%d r=%s d=%d d_real=%d\n", ret, r, d, *delta_real);
 	dbg(0, "STRAI:099:======================================\n");
 
