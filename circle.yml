@@ -502,11 +502,11 @@ test:
 
 
     - . ~/_bt2;xdotool search --class ''|xargs -L1 xdotool getwindowname|grep -v '^$'; xwininfo -root -tree -int
-    - . ~/_bt2;sleep 210
+    - . ~/_bt2;sleep 10
 
-    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then sleep 210 ; fi
-    - . ~/_bt2;if [ "$EMU_API""x" == "23x" ]; then sleep 210 ; fi
-    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 360 ; fi
+    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then sleep 30 ; fi
+    - . ~/_bt2;if [ "$EMU_API""x" == "23x" ]; then sleep 30 ; fi
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 30 ; fi
 
 
     - . ~/_bt2;adb shell input keyevent 82
@@ -557,11 +557,11 @@ test:
 
     - . ~/_bt2;adb install ~/app-signed-aligned.apk > $CIRCLE_ARTIFACTS/app_install.log 2>&1 ; cat $CIRCLE_ARTIFACTS/app_install.log | grep 'Failure' ; res=$? ; if [ $res -ne 0 ]; then echo "OK" ; else echo "ERROR" ; exit 1 ; fi
     - . ~/_bt2;cat $CIRCLE_ARTIFACTS/app_install.log ; exit 0
-    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 210 ; fi
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 20 ; fi
 
     - . ~/_bt2;echo adb shell am start -n $CLASS_P/$START_INTENT_P ; adb shell am start -n $CLASS_P/$START_INTENT_P
-    - . ~/_bt2;sleep 90
-    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 210 ; fi
+    - . ~/_bt2;sleep 30
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 10 ; fi
 
     - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then adb shell ps | grep "$CLASS_P" ; pr_id=`adb shell ps | grep "$CLASS_P" | awk '{print $2}'` ; echo "$pr_id" ; printf 'su\nid\nps\nkill '"$pr_id"'\nexit\nexit\n'|adb shell ; fi
     - . ~/_bt2;adb shell am force-stop $CLASS_P
@@ -593,9 +593,9 @@ test:
     - . ~/_bt2;adb shell am start -n $CLASS_P/$START_INTENT_P
 
 
-    - . ~/_bt2;sleep 120 # let app startup , it takes a while on the emulator
-    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 210 ; fi # even more time on older systems
-    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then sleep 360 ; fi # still even more time on API24
+    - . ~/_bt2;sleep 50 # let app startup , it takes a while on the emulator
+    - . ~/_bt2;if [ "$EMU_API""x" == "09x" ]; then sleep 30 ; fi # even more time on older systems
+    - . ~/_bt2;if [ "$EMU_API""x" == "24x" ]; then sleep 30 ; fi # still even more time on API24
 
     - . ~/_bt2;adb shell dumpsys meminfo $CLASS_P; exit 0
 
