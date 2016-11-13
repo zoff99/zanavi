@@ -41,6 +41,8 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Log;
 
+import com.zoffcc.applications.zanavi.Navit;
+
 public class Logging
 {
 
@@ -267,6 +269,23 @@ public class Logging
 			builder.append(pm.getApplicationLabel(pm.getApplicationInfo(context.getPackageName(), 0))).append(" ").append(pm.getPackageInfo(context.getPackageName(), 0).versionName).append("\n");
 		}
 		catch (PackageManager.NameNotFoundException nnfe)
+		{
+			builder.append("Unknown\n");
+		}
+
+		builder.append("App type: ");
+		try
+		{
+			if (Navit.get_fdbl())
+			{
+				builder.append("FD\n");
+			}
+			else
+			{
+				builder.append("PlayStore\n");
+			}
+		}
+		catch (Exception e)
 		{
 			builder.append("Unknown\n");
 		}

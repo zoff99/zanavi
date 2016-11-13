@@ -202,7 +202,7 @@ public class Navit extends AppCompatActivity implements Handler.Callback, Sensor
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 	}
 
-	public static final String VERSION_TEXT_LONG_INC_REV = "4521";
+	public static final String VERSION_TEXT_LONG_INC_REV = "4530";
 	static String ZANAVI_VERSION = "unknown";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";
@@ -216,6 +216,7 @@ public class Navit extends AppCompatActivity implements Handler.Callback, Sensor
 	static boolean actionabar_download_icon_visible = false;
 	static boolean is_navigating = false;
 	static boolean is_paused = true;
+	static String PGP_KEY_ID = "0x2942032B";
 
 	static boolean intro_flag_crash = false;
 	static boolean intro_flag_firststart = true;
@@ -1085,6 +1086,27 @@ public class Navit extends AppCompatActivity implements Handler.Callback, Sensor
 			// reset crash flag if we preference set to "false"
 			intro_flag_crash = false;
 		}
+
+		// --- if we have no stacktrace -> don't show crash screen ----------
+		if (intro_flag_crash)
+		{
+			try
+			{
+				if (ZANaviMainApplication.last_stack_trace_as_string == null)
+				{
+					intro_flag_crash = false;
+				}
+				else if (ZANaviMainApplication.last_stack_trace_as_string.length() < 2)
+				{
+					intro_flag_crash = false;
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		// --- if we have no stacktrace -> don't show crash screen ----------
 
 		System.out.println("app_status_string:2:" + "intro_flag_crash=" + intro_flag_crash);
 
@@ -17433,5 +17455,10 @@ public class Navit extends AppCompatActivity implements Handler.Callback, Sensor
 		}
 
 		return false;
+	}
+
+	public static boolean get_fdbl()
+	{
+		return FDBL;
 	}
 }

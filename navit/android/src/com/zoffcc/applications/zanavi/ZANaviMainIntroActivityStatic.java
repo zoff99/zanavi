@@ -45,6 +45,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -209,6 +210,9 @@ public class ZANaviMainIntroActivityStatic extends AppCompatActivity implements 
 				title_txt.add("");
 				desc_txt.add(Html.fromHtml(Navit.get_text("you have just updated ZANavi")));
 				icon_res.add(R.drawable.icon_large);
+
+				// reset flag right now
+				Navit.intro_flag_update = false;
 			}
 		}
 
@@ -831,6 +835,10 @@ public class ZANaviMainIntroActivityStatic extends AppCompatActivity implements 
 								{
 									slide_press = 0;
 
+									// reset message
+									ZANaviMainApplication.last_stack_trace_as_string = "";
+									PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("last_crash_text", ZANaviMainApplication.last_stack_trace_as_string).commit();
+
 									// reset flag
 									Navit.intro_flag_crash = false;
 
@@ -1317,7 +1325,7 @@ public class ZANaviMainIntroActivityStatic extends AppCompatActivity implements 
 		String date = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.GERMAN).format(new Date());
 		String full_file_name = Navit.NAVIT_DATA_DEBUG_DIR + "/crashlog_" + date + ".txt";
 		String full_file_name_suppl = Navit.NAVIT_DATA_DEBUG_DIR + "/crashlog_single.txt";
-		String feedback_text = Navit.get_text("Crashlog");
+		String feedback_text = Navit.get_text("Crashlog") + "\n" + Navit.get_text("You can use our PGP-Key") + ": " + Navit.PGP_KEY_ID;
 
 		System.out.println("crashlogfile=" + full_file_name);
 
@@ -1374,19 +1382,12 @@ public class ZANaviMainIntroActivityStatic extends AppCompatActivity implements 
 
 		Navit.Global_Navit_Object.sendEmailWithAttachment(this, "feedback@zanavi.cc", "ZANavi Crashlog (v:" + subject_d_version + FD_addon + Navit.NavitAppVersion + " a:" + android.os.Build.VERSION.SDK + ")", feedback_text, full_file_name, full_file_name_suppl);
 
+		// reset message
+		ZANaviMainApplication.last_stack_trace_as_string = "";
+		PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).edit().putString("last_crash_text", ZANaviMainApplication.last_stack_trace_as_string).commit();
+
 		// reset flag
 		Navit.intro_flag_crash = false;
-
-		//		try
-		//		{
-		//			// go to next slide
-		//			btnNext.callOnClick();
-		//			// -----------------
-		//		}
-		//		catch (java.lang.NoSuchMethodError e2)
-		//		{
-		//			System.out.println("ZANaviMainIntroActivity:" + "callOnClick:Ex04");
-		//		}
 	}
 
 	public class CustomSpinnerAdapter extends BaseAdapter implements SpinnerAdapter
