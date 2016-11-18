@@ -220,7 +220,10 @@ dependencies:
     - ps aux
     - cd ~/android-build/navit ; gradle :android:lint --no-daemon --info ; exit 0
     - find ../ -name 'lint-results*.html'; exit 0
+    - find ../ -name 'lint-results*.html' 2> /dev/null` ; exit 0
+    - find ../ -name 'lint-results*.html' 2> /dev/null | tail -1 2> /dev/null` ; exit 0
     - cp -v `find ../ -name 'lint-results*.html' 2> /dev/null | tail -1 2> /dev/null` $CIRCLE_ARTIFACTS/lint-001.html ; exit 0
+    - cat /home/ubuntu/android-build/navit/android/build/reports/lint/lint-result.html ; exit 0
     - cp -v /home/ubuntu/android-build/navit/android/build/reports/lint/lint-result.html $CIRCLE_ARTIFACTS/ ; exit 0
   # - cd ~/android-build/navit ; ./gradlew check --no-daemon --info ; exit 0
     - ps aux
