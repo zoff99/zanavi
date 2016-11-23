@@ -143,7 +143,6 @@ dependencies:
     - if [ "$GRADLE_CUSTOM_VERSION""x" == "1x" ]; then cd ~/g ; mv -v ./gradle-"$GRADLE_CUSTOM_VNUM" ./gradle-custom ; fi
     - gradle -v # display gradle version
 
-
     - echo y | android update sdk --no-ui --all --filter "tools"
     - android list sdk --all | grep -i tools
     - android list sdk --all --extended
@@ -173,6 +172,11 @@ dependencies:
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-m2repository #> /dev/null 2> /dev/null
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-google-m2repository #> /dev/null 2> /dev/null
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-support #> /dev/null 2> /dev/null
+
+# ------- install missing NDK ----------
+    - wget -O ~/zandroid-ndk.sh 'https://raw.githubusercontent.com/zoff99/circleCI_android_template/master/android-ndk.sh'
+    - printf 'export NDK_VERSION=r10d\n. ~/zandroid-ndk.sh\n. ./zandroid-ndk.sh && install_android_ndk\n' | sudo bash
+# ------- install missing NDK ----------
 
     - if [ "$COVERITY_BUILD_""x" == "1x" ]; then mkdir ~/cov_scan/ && wget 'https://scan.coverity.com/download/linux-64' --post-data "token=$COVERITY_TOKEN&project=$COV_PROJ" -O ~/cov_scan/coverity_tool.tgz && wget 'http://www.catb.org/~esr/coverity-submit/coverity-submit-1.17.tar.gz' -O ~/cov_scan/coverity-submit.tar.gz && cd ~/cov_scan/ && tar -xzvf coverity_tool.tgz ; fi
 
