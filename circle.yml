@@ -111,7 +111,7 @@ dependencies:
     ### ------- DO NOT EDIT -------
 
     - sudo apt-get update #> /dev/null 2> /dev/null
-    #- sudo apt-get install libpng12-dev #> /dev/null 2> /dev/null
+    - sudo apt-get install libpng12-dev #> /dev/null 2> /dev/null
     #- sudo apt-get install librsvg2-bin #> /dev/null 2> /dev/null
     - sudo apt-get install g++ #> /dev/null 2> /dev/null
     - sudo apt-get install gettext #> /dev/null 2> /dev/null
