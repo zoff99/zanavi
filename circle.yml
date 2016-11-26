@@ -375,7 +375,7 @@ test:
 
 
 
-    - pkill -9 -u ubuntu -f emulator64-arm
+    - pkill -SIGQUIT -u ubuntu -f emulator64-arm
 
 
     #- Xvfb :2 -screen 0 1920x1080x24 -nolisten tcp :
@@ -391,7 +391,7 @@ test:
 
     - ps auxwww ; exit 0
 
-    - pkill -9 -u ubuntu -f firefox
+    - pkill -SIGQUIT -u ubuntu -f firefox ; exit 0
     - type -a firefox
 
     - ps auxwww ; exit 0
@@ -441,7 +441,7 @@ test:
       done ;
       exit 0
 
-    - pkill -9 -u ubuntu -f firefox
+    - pkill -SIGQUIT -u ubuntu -f firefox ; exit 0
 
     - cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
     - cd ~/debug_output/ && mkdir -p $CIRCLE_TEST_REPORTS/ && cp -av ./* $CIRCLE_TEST_REPORTS/ ; exit 0
@@ -492,7 +492,7 @@ test:
     #- adb -s emulator-5554 emu kill ; exit 0
     #- ps -fu ubuntu
     #- sleep 10
-    #- pkill -9 -u ubuntu -f java
+    #- pkill -SIGQUIT -u ubuntu -f java ; exit 0
     #- sleep 10
     #- ps -fu ubuntu
     # ------ kill ----------------
