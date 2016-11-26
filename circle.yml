@@ -748,7 +748,7 @@ test:
     - . ~/_bt3;cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
 
-    - . ~/_bt3;pkill -SIGQUIT -u ubuntu -f emulator64-arm ; exit 0
+    - . ~/_bt3;pgrep -u ubuntu -f emulator64-arm ; pkill --signal SIGQUIT -u ubuntu -f emulator64-arm ; exit 0
 #    - . ~/_bt3;pkill -9 -u ubuntu -f emulator64-arm
 
 
@@ -766,15 +766,15 @@ test:
     - . ~/_bt3;ps auxwww ; exit 0
 
 #    - . ~/_bt3;pkill -9 -u ubuntu -f crashreporter; exit 0
-    - . ~/_bt3;pkill -SIGQUIT crashreporter; exit 0
+    - . ~/_bt3;pgrep -f crashreporter;pkill --signal SIGQUIT -f crashreporter; exit 0
 #    - . ~/_bt3;pkill -9 -u ubuntu -f firefox; exit 0
-    - . ~/_bt3;pkill -SIGQUIT firefox; exit 0
+    - . ~/_bt3;pgrep -f firefox;pkill --signal SIGQUIT -f firefox; exit 0
     - . ~/_bt3;type -a firefox
 
     - . ~/_bt3;ps auxwww ; exit 0
 
     - . ~/_bt3;cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
-    - . ~/_bt3;while [ 1 == 1 ]; do nohup firefox -silent -setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 ; pkill -SIGQUIT crashreporter ; done :
+    - . ~/_bt3;while [ 1 == 1 ]; do nohup firefox -silent -setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 ; pgrep -f crashreporter ; echo "kill crashreporter" ; pkill --signal SIGQUIT -f crashreporter ; done :
         background: true
     - . ~/_bt3;sleep 20
 
@@ -818,7 +818,7 @@ test:
       done ;
       exit 0
 
-    - . ~/_bt3;pkill -SIGQUIT firefox
+    - . ~/_bt3;pgrep -f firefox ; pkill --signal SIGQUIT -f firefox
 #    - . ~/_bt3;pkill -9 -u ubuntu -f firefox
 
     - . ~/_bt3;cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
