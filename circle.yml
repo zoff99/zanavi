@@ -112,19 +112,14 @@ dependencies:
 
     - sudo apt-get update #> /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev #> /dev/null 2> /dev/null
-    #- sudo apt-get install librsvg2-bin #> /dev/null 2> /dev/null
     - sudo apt-get install g++ #> /dev/null 2> /dev/null
     - sudo apt-get install gettext #> /dev/null 2> /dev/null
-    #- sudo apt-get install ant #> /dev/null 2> /dev/null
     - sudo apt-get install libsaxonb-java #> /dev/null 2> /dev/null
     - sudo apt-get install lib32stdc++6 #> /dev/null 2> /dev/null
     - sudo apt-get install lib32z1 #> /dev/null 2> /dev/null
     - sudo apt-get install zip #> /dev/null 2> /dev/null
     - sudo apt-get install bc #> /dev/null 2> /dev/null
     - sudo apt-get install mtools #> /dev/null 2> /dev/null
-    #- sudo apt-get install libfftw3-double3 ; exit 0
-    #- sudo apt-get install libmagickcore5 ; exit 0
-    #- sudo apt-get install perlmagick ; exit 0
     - sudo apt-get install liblwp-useragent-determined-perl #> /dev/null 2> /dev/null
     - sudo apt-get install xvfb #> /dev/null 2> /dev/null
     - sudo apt-get install xdotool #> /dev/null 2> /dev/null
@@ -156,18 +151,18 @@ dependencies:
     - ~/__sdk_update__.sh build-tools-24.0.2
 #    - ~/__sdk_update__.sh build-tools-24.0.3
     - echo y | android update sdk --no-ui --all --filter build-tools-24.0.3 > /dev/null 2> /dev/null # license
-    - ~/__sdk_update__.sh android-7
-    - ~/__sdk_update__.sh android-14
-    - ~/__sdk_update__.sh android-19
+#    - ~/__sdk_update__.sh android-7
+#    - ~/__sdk_update__.sh android-14
+#    - ~/__sdk_update__.sh android-19
     - ~/__sdk_update__.sh android-21
     - ~/__sdk_update__.sh android-22
-    - ~/__sdk_update__.sh android-23
-    - ~/__sdk_update__.sh android-24
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-14
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-19
+#    - ~/__sdk_update__.sh android-23
+#    - ~/__sdk_update__.sh android-24
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-14
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-19
     - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-21
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-23
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-24
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-23
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-24
     - echo y | android update sdk --no-ui --all --filter platform-tools > /dev/null 2> /dev/null
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-m2repository #> /dev/null 2> /dev/null
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-google-m2repository #> /dev/null 2> /dev/null
