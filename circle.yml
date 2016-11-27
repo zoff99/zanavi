@@ -108,7 +108,7 @@ dependencies:
     - wget 'https://raw.githubusercontent.com/zoff99/android_sdk_install_wrapper/master/__sdk_update__.sh' -O ~/__sdk_update__.sh
     - chmod a+rx ~/__sdk_update__.sh
 
-    - printf '#! /bin/bash\n pgrep -l -f "$1"\n kill -9 $(pgrep -f "$1" | grep -v ^"$mypid"\$ | grep -v ^$$\$)\n pgrep -l -f "$1"\n' > ~/pkill2.sh
+    - printf '#! /bin/bash\n pgrep -l "$1"\n kill -9 $(pgrep "$1" | grep -v ^$$\$)\n pgrep -l -f "$1"\n' > ~/pkill2.sh
     - chmod a+rx ~/pkill2.sh
     ### ------- scripts for _BUILD_TYPE_ type check -------
     ### ------- DO NOT EDIT -------
