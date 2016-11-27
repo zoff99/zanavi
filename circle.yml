@@ -107,24 +107,24 @@ dependencies:
 
     - wget 'https://raw.githubusercontent.com/zoff99/android_sdk_install_wrapper/master/__sdk_update__.sh' -O ~/__sdk_update__.sh
     - chmod a+rx ~/__sdk_update__.sh
+
+    - printf '#! /bin/bash\n pgrep -l "$1"\n kill -9 $(pgrep "$1" | grep -v ^$$\$)\n pgrep -l -f "$1"\n' > ~/pkill2.sh
+    - chmod a+rx ~/pkill2.sh
     ### ------- scripts for _BUILD_TYPE_ type check -------
     ### ------- DO NOT EDIT -------
 
     - sudo apt-get update #> /dev/null 2> /dev/null
     - sudo apt-get install libpng12-dev #> /dev/null 2> /dev/null
-    #- sudo apt-get install librsvg2-bin #> /dev/null 2> /dev/null
     - sudo apt-get install g++ #> /dev/null 2> /dev/null
     - sudo apt-get install gettext #> /dev/null 2> /dev/null
-    #- sudo apt-get install ant #> /dev/null 2> /dev/null
     - sudo apt-get install libsaxonb-java #> /dev/null 2> /dev/null
     - sudo apt-get install lib32stdc++6 #> /dev/null 2> /dev/null
     - sudo apt-get install lib32z1 #> /dev/null 2> /dev/null
     - sudo apt-get install zip #> /dev/null 2> /dev/null
     - sudo apt-get install bc #> /dev/null 2> /dev/null
     - sudo apt-get install mtools #> /dev/null 2> /dev/null
-    #- sudo apt-get install libfftw3-double3 ; exit 0
-    #- sudo apt-get install libmagickcore5 ; exit 0
-    #- sudo apt-get install perlmagick ; exit 0
+    - sudo apt-get install libmagickcore5 ; exit 0
+    - sudo apt-get install perlmagick ; exit 0
     - sudo apt-get install liblwp-useragent-determined-perl #> /dev/null 2> /dev/null
     - sudo apt-get install xvfb #> /dev/null 2> /dev/null
     - sudo apt-get install xdotool #> /dev/null 2> /dev/null
@@ -156,15 +156,15 @@ dependencies:
     - ~/__sdk_update__.sh build-tools-24.0.2
 #    - ~/__sdk_update__.sh build-tools-24.0.3
     - echo y | android update sdk --no-ui --all --filter build-tools-24.0.3 > /dev/null 2> /dev/null # license
-    - ~/__sdk_update__.sh android-7
-    - ~/__sdk_update__.sh android-14
-    - ~/__sdk_update__.sh android-19
+#    - ~/__sdk_update__.sh android-7
+#    - ~/__sdk_update__.sh android-14
+#    - ~/__sdk_update__.sh android-19
     - ~/__sdk_update__.sh android-21
     - ~/__sdk_update__.sh android-22
     - ~/__sdk_update__.sh android-23
     - ~/__sdk_update__.sh android-24
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-14
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-19
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-14
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-19
     - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-21
     - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-23
     - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-24
@@ -748,7 +748,8 @@ test:
     - . ~/_bt3;cp -av ~/yaml-tests/routing-qa-master/*.yaml $CIRCLE_TEST_REPORTS/
 
 
-    - . ~/_bt3;pkill -u ubuntu -f emulator64-arm
+    - . ~/_bt3;pgrep -l -u ubuntu -f emulator64-arm ; pkill --signal SIGQUIT -u ubuntu -f emulator64-arm ; exit 0
+    - . ~/_bt3;pgrep -l -u ubuntu -f emulator64-arm ; exit 0
 #    - . ~/_bt3;pkill -9 -u ubuntu -f emulator64-arm
 
 
@@ -765,16 +766,22 @@ test:
 
     - . ~/_bt3;ps auxwww ; exit 0
 
-#    - . ~/_bt3;pkill -9 -u ubuntu -f crashreporter; exit 0
-    - . ~/_bt3;pkill -u ubuntu -f crashreporter; exit 0
-#    - . ~/_bt3;pkill -9 -u ubuntu -f firefox; exit 0
-    - . ~/_bt3;pkill -u ubuntu -f firefox; exit 0
+
+
+    - . ~/_bt3;pgrep -l -f crashreporter ; ~/pkill2.sh crashreporter; exit 0
+    - . ~/_bt3;pgrep -l -f crashreporter ; exit 0
+
+    - . ~/_bt3;pgrep -l -f firefox ; ~/pkill2.sh firefox; exit 0
+    - . ~/_bt3;pgrep -l -f firefox ; exit 0
+
     - . ~/_bt3;type -a firefox
+
+
 
     - . ~/_bt3;ps auxwww ; exit 0
 
     - . ~/_bt3;cd ~/.mozilla/firefox/*default/ ; echo 'user_pref("browser.link.open_newwindow.override.external", 1);' >> prefs.js ; echo 'user_pref("browser.link.open_newwindow", 1);' >> prefs.js ; echo 'user_pref("browser.shell.checkDefaultBrowser", false);' >> prefs.js ; echo 'user_pref("app.update.enabled", false);' >> prefs.js
-    - . ~/_bt3;while [ 1 == 1 ]; do nohup firefox -silent -setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 ; pkill -u ubuntu -f crashreporter ; done :
+    - . ~/_bt3;while [ 1 == 1 ]; do nohup firefox -silent -setDefaultBrowser 'http://www.google.com/maps/dir/47.53916,19.04749/47.53986,19.04499' > $CIRCLE_ARTIFACTS/firefox_out.txt 2>&1 ; pgrep -l -f crashreporter ; echo "kill crashreporter" ; ~/pkill2.sh crashreporter ; pgrep -l -f crashreporter ; done :
         background: true
     - . ~/_bt3;sleep 20
 
@@ -791,6 +798,7 @@ test:
       url2=`cat "$i"|grep 'URL2'|cut -d":" -f2-` ; echo "$url2" ;
       url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
       url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
+      url3_orig="" ; echo "google url crashes firefox, arrgh" ;
       if [ "$url1""x" != "x" ]; then
       firefox -silent -setDefaultBrowser "$url1";
       sleep 10;
@@ -818,7 +826,7 @@ test:
       done ;
       exit 0
 
-    - . ~/_bt3;pkill -u ubuntu -f firefox
+    - . ~/_bt3;pgrep -l -f firefox ; ~/pkill2.sh firefox
 #    - . ~/_bt3;pkill -9 -u ubuntu -f firefox
 
     - . ~/_bt3;cd ~/debug_results/ && cp -av * $CIRCLE_TEST_REPORTS/
