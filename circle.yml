@@ -40,7 +40,7 @@ machine:
 #   2 -> build + run
 #   3 -> build + run + tests
 #
-    _BUILD_TYPE_: 1
+    _BUILD_TYPE_: 3
 ###############################
 
 ###############################
