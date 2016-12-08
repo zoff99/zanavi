@@ -40,7 +40,7 @@ machine:
 #   2 -> build + run
 #   3 -> build + run + tests
 #
-    _BUILD_TYPE_: 3
+    _BUILD_TYPE_: 1
 ###############################
 
 ###############################
@@ -863,8 +863,8 @@ test:
 
     - . ~/_bt3;cat $CIRCLE_ARTIFACTS/adb_out.txt |grep -e 'progress_handler:msg:10' -e '\.yaml' -e 'search params' -e 'No Results found'|grep -v 'title=getting search results' ; exit 0
 
-    #- cd ~/debug_results/ && zip results.zip ../debug_output/* ../debug_summary/* 201?-??-*/* ~/yaml-tests/routing-qa-master/*.yaml && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av results.zip $CIRCLE_TEST_REPORTS/0000__packed/
-    - . ~/_bt3;cd $CIRCLE_TEST_REPORTS/ && zip -r ~/results.zip * && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av ~/results.zip $CIRCLE_TEST_REPORTS/0000__packed/
+    # pack results into zipfile
+    #- . ~/_bt3;cd $CIRCLE_TEST_REPORTS/ && zip -r ~/results.zip * && mkdir -p $CIRCLE_TEST_REPORTS/0000__packed/ && cp -av ~/results.zip $CIRCLE_TEST_REPORTS/0000__packed/
 
     # throw error if some tests failed
     - . ~/_bt3;cat ~/debug_summary/_XX_XX_SUMMARY_XX_XX_.txt | grep 'RES:ERR' ; ex=$? ; ex2=$[ 1 - $ex ] ; exit $ex2
