@@ -12,7 +12,12 @@ android:
     - tools # to get the new `repository-11.xml`
     - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
     - platform-tools
+    - build-tools-22.0.0
+    - build-tools-22.0.1
+    - build-tools-23.0.1
+    - build-tools-23.0.2
     - build-tools-23.0.3
+    - build-tools-24.0.0
     - build-tools-24.0.2
     - build-tools-25.0.2
     - android-21
