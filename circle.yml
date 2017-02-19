@@ -154,8 +154,7 @@ dependencies:
     - ~/__sdk_update__.sh build-tools-23.0.3
     - ~/__sdk_update__.sh build-tools-24.0.0
     - ~/__sdk_update__.sh build-tools-24.0.2
-#    - ~/__sdk_update__.sh build-tools-24.0.3
-    - echo y | android update sdk --no-ui --all --filter build-tools-24.0.3 > /dev/null 2> /dev/null # license
+    - echo y | android update sdk --no-ui --all --filter build-tools-24.0.3 # license
 #    - ~/__sdk_update__.sh android-7
 #    - ~/__sdk_update__.sh android-14
 #    - ~/__sdk_update__.sh android-19
@@ -166,9 +165,10 @@ dependencies:
 #    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-14
 #    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-19
     - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-21
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-23
-    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-24
-    - echo y | android update sdk --no-ui --all --filter platform-tools > /dev/null 2> /dev/null
+#    - ~/__sdk_update__.sh sys-img-armeabi-v7a-android-23
+    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-23 ; exit 0
+    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-24 ; exit 0
+    - echo y | android update sdk --no-ui --all --filter platform-tools
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-m2repository #> /dev/null 2> /dev/null
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-google-m2repository #> /dev/null 2> /dev/null
     - . ~/_bt2;echo y | android update sdk --no-ui --all --filter extra-android-support #> /dev/null 2> /dev/null
