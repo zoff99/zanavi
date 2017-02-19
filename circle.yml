@@ -237,6 +237,14 @@ dependencies:
     - ps aux
     ## ----- GRADLE -----
 
+    # ------ create files for android studio project -------------
+    - cd ~/android-build/navit ; du -hs .
+    - cd ~/android-build/navit ; zip -r $CIRCLE_ARTIFACTS/android-studio-project.zip * 
+    - ls -hal $CIRCLE_ARTIFACTS/android-studio-project.zip
+    # ------ create files for android studio project -------------
+
+
+
     - find ../ -name '*.apk' ; exit 0
 ##### ------------ BUILD ------------
 
@@ -884,7 +892,6 @@ test:
     - mv -v $CIRCLE_ARTIFACTS/stderr_circle_*.txt $CIRCLE_ARTIFACTS/job_logs/
     - mv -v $CIRCLE_ARTIFACTS/stdout_circle_*.txt $CIRCLE_ARTIFACTS/job_logs/
     # ------ cleanup -------------
-
 
     # ------ kill ----------------
     #- ps -fu ubuntu
