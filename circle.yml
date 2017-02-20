@@ -243,7 +243,7 @@ dependencies:
     - echo 'navit/android/res/raw/*' >> /tmp/and_std_zipfiles.txt
     - echo 'navit/android/AndroidManifest.xml' >> /tmp/and_std_zipfiles.txt
     - echo 'navit/android/nativelibs/*' >> /tmp/and_std_zipfiles.txt
-    - cd ~/android-build/navit ; cat /tmp/and_std_zipfiles.txt | zip -r $CIRCLE_ARTIFACTS/android-studio-project.zip -@
+    - cat /tmp/and_std_zipfiles.txt | zip -r $CIRCLE_ARTIFACTS/android-studio-project.zip -@
     - ls -hal $CIRCLE_ARTIFACTS/android-studio-project.zip
     # ------ create files for android studio project -------------
 
