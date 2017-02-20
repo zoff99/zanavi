@@ -143,9 +143,9 @@ android/build.xml: android/AndroidManifest.xml android/dummy.txt
 	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android/src/; fi
 	if [ "$(builddir)" != "$(srcdir)" ]; then cp -rpf $(srcdir)/android/* $(builddir)/android; fi
 
-	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android/lib/; fi
-	mkdir -p $(builddir)/android/lib/
-	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(srcdir)/android/tagsoup-1.2.1.jar $(builddir)/android/lib/; fi
+#	if [ "$(builddir)" != "$(srcdir)" ]; then rm -Rf $(builddir)/android/lib/; fi
+#	mkdir -p $(builddir)/android/lib/
+#	if [ "$(builddir)" != "$(srcdir)" ]; then cp -pf $(srcdir)/android/tagsoup-1.2.1.jar $(builddir)/android/lib/; fi
 
 	touch $(srcdir)/android/dummy.txt
 	touch $(builddir)/android/dummy.txt
@@ -285,29 +285,27 @@ apkg-all: all android/build.xml navit.xml
 
 	echo "making::apkg-all"
 
-	mkdir -p android/libs/$(b_arch)
-# cp .libs/*.so android/libs/$(b_arch)/libnavit.so
-# for i in */*/.libs/*.so ; do sed 's&lib_data_data_com\.zoffcc\.applications\.zanavi_lib_&/data/data/com.zoffcc.applications.zanavi/lib/lib&' <$$i >android/libs/$(b_arch)/$$(basename $$i); done
+	mkdir -p android/nativelibs/$(b_arch)
 
 #	remove old libs
 # ls -al android/libs/$(b_arch)/lib*.so
-	rm -f android/libs/$(b_arch)/libgraphics_android.so
-	rm -f android/libs/$(b_arch)/libgraphics_null.so
-	rm -f android/libs/$(b_arch)/libgui_internal.so
-	rm -f android/libs/$(b_arch)/libmap_binfile.so
-	rm -f android/libs/$(b_arch)/libmap_csv.so
-	rm -f android/libs/$(b_arch)/libmap_filter.so
-	rm -f android/libs/$(b_arch)/libmap_mg.so
-	rm -f android/libs/$(b_arch)/libmap_shapefile.so
-	rm -f android/libs/$(b_arch)/libmap_textfile.so
-	rm -f android/libs/$(b_arch)/libosd_core.so
-	rm -f android/libs/$(b_arch)/libspeech_android.so
-	rm -f android/libs/$(b_arch)/libvehicle_android.so
-	rm -f android/libs/$(b_arch)/libvehicle_demo.so
-	rm -f android/libs/$(b_arch)/libvehicle_file.so
-	rm -f android/libs/$(b_arch)/libvehicle_pipe.so
-	rm -f android/libs/$(b_arch)/libvehicle_serial.so
-	rm -f android/libs/$(b_arch)/libvehicle_socket.so
+	rm -f android/nativelibs/$(b_arch)/libgraphics_android.so
+	rm -f android/nativelibs/$(b_arch)/libgraphics_null.so
+	rm -f android/nativelibs/$(b_arch)/libgui_internal.so
+	rm -f android/nativelibs/$(b_arch)/libmap_binfile.so
+	rm -f android/nativelibs/$(b_arch)/libmap_csv.so
+	rm -f android/nativelibs/$(b_arch)/libmap_filter.so
+	rm -f android/nativelibs/$(b_arch)/libmap_mg.so
+	rm -f android/nativelibs/$(b_arch)/libmap_shapefile.so
+	rm -f android/nativelibs/$(b_arch)/libmap_textfile.so
+	rm -f android/nativelibs/$(b_arch)/libosd_core.so
+	rm -f android/nativelibs/$(b_arch)/libspeech_android.so
+	rm -f android/nativelibs/$(b_arch)/libvehicle_android.so
+	rm -f android/nativelibs/$(b_arch)/libvehicle_demo.so
+	rm -f android/nativelibs/$(b_arch)/libvehicle_file.so
+	rm -f android/nativelibs/$(b_arch)/libvehicle_pipe.so
+	rm -f android/nativelibs/$(b_arch)/libvehicle_serial.so
+	rm -f android/nativelibs/$(b_arch)/libvehicle_socket.so
 
 	mkdir -p android/res/raw
 	for i in $(shell cd ../po && echo *.mo); do cp ../po/$$i android/res/raw/$$( echo $$i | tr "[A-Z]" "[a-z]") ; done
@@ -318,18 +316,13 @@ apkg-all: all android/build.xml navit.xml
 #	cleanup svn dirs, they should never be in build dir
 	if [ "$(builddir)" != "$(srcdir)" ]; then find $(builddir) -type d -name '\.svn' -exec rm -Rf {} \; ; fi; echo "ignore the find errors!!"
 
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/prebuilt/android-arm/gdbserver/gdbserver android/libs/$(b_arch)/gdbserver ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/libs/$(b_arch) ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/nativelibs/$(b_arch) ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then install -p $(NDK)/prebuilt/android-arm/gdbserver/gdbserver android/nativelibs/$(b_arch)/gdbserver ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/nativelibs/$(b_arch) ; fi
 	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then mkdir -p android/obj/local/$(b_arch) ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/libs/$(b_arch)/*.so android/obj/local/$(b_arch)/ ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "set solib-search-path $(builddir)/obj/local/$(b_arch)" > android/libs/$(b_arch)/gdb.setup ; fi
-	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/libs/$(b_arch)/gdb.setup ; fi
-
-#	strip libs if release build is selected
-#	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi/* ; echo "done" ; fi
-#	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; arm-linux-androideabi-strip --strip-unneeded $(builddir)/android/libs/armeabi-v7a/* ; echo "done" ; fi
-#	if [ "$(DO_RELEASE_BUILD)" == "1" ]; then echo "stripping libs ..."; /home/navit/_navit_develop/_need/NDK/_unpack/android-ndk-r5c/toolchains/x86-4.8/prebuilt/linux-x86/bin/i686-linux-android-strip --strip-unneeded $(builddir)/android/libs/x86/* ; echo "done" ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then cp android/nativelibs/$(b_arch)/*.so android/obj/local/$(b_arch)/ ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "set solib-search-path $(builddir)/obj/local/$(b_arch)" > android/nativelibs/$(b_arch)/gdb.setup ; fi
+	if [ "$(DO_RELEASE_BUILD)" != "1" ]; then echo "directory $(NDK)/platforms/android-""$(AND_API_LEVEL_C)""/arch-arm/usr/include $(NDK)/sources/cxx-stl/system" >> android/nativelibs/$(b_arch)/gdb.setup ; fi
 
 
 apkg: apkg-all

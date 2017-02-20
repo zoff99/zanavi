@@ -239,7 +239,11 @@ dependencies:
 
     # ------ create files for android studio project -------------
     - cd ~/android-build/navit ; du -hs .
-    - cd ~/android-build/navit ; zip -r $CIRCLE_ARTIFACTS/android-studio-project.zip * 
+    - rm -f /tmp/and_std_zipfiles.txt
+    - echo 'navit/android/res/raw/*' >> /tmp/and_std_zipfiles.txt
+    - echo 'navit/android/AndroidManifest.xml' >> /tmp/and_std_zipfiles.txt
+    - echo 'navit/android/nativelibs/*' >> /tmp/and_std_zipfiles.txt
+    - cd ~/android-build/navit ; cat /tmp/and_std_zipfiles.txt | zip -r $CIRCLE_ARTIFACTS/android-studio-project.zip -@
     - ls -hal $CIRCLE_ARTIFACTS/android-studio-project.zip
     # ------ create files for android studio project -------------
 
@@ -256,9 +260,9 @@ dependencies:
 ##### ------------ COPY APP to standard DIR ------------
 
 ##### ------------ COPY LIBS to ARTIFACTS DIR ----------
-    - zip -r $CIRCLE_ARTIFACTS/zanavi_binary_libs.zip ~/android-build/navit/android/libs ; exit 0
+    - zip -r $CIRCLE_ARTIFACTS/zanavi_binary_libs.zip ~/android-build/navit/android/nativelibs ; exit 0
     - mkdir -p $CIRCLE_ARTIFACTS/libs/ ; exit 0
-    - cp -av ~/android-build/navit/android/libs/* $CIRCLE_ARTIFACTS/libs/ ; exit 0
+    - cp -av ~/android-build/navit/android/nativelibs/* $CIRCLE_ARTIFACTS/libs/ ; exit 0
 ##### ------------ COPY LIBS to ARTIFACTS DIR ----------
 
 ##### ------------ COPY "raw" to ARTIFACTS DIR ---------

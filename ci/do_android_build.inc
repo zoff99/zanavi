@@ -288,10 +288,10 @@ echo "+++++++++++++"
 pwd
 echo "+++++++++++++"
 
-mkdir -p $BUILD_PATH/navit/android/libs/
-cp -av "$START_PATH"/libs-build/* "$BUILD_PATH"/navit/android/libs/
+mkdir -p $BUILD_PATH/navit/android/nativelibs/
+cp -av "$START_PATH"/libs-build/* "$BUILD_PATH"/navit/android/nativelibs/
 
-mv -v android/libs/*jar android/lib/
+# mv -v android/libs/*jar android/lib/
 
 cp -v "$SOURCE_PATH"/navit/build.gradle ./
 cp -v "$SOURCE_PATH"/navit/gradle.properties ./

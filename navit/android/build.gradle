@@ -17,7 +17,7 @@ repositories {
     jcenter()
 
     flatDir {
-        dirs 'lib'
+        dirs 'libs'
     }
 }
 
@@ -26,7 +26,7 @@ dependencies {
 
     compile project(':android-about-page')
 
-    compile fileTree(dir: 'lib', include: '*.jar')
+    compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':android-support-v7-appcompat')
     compile project(':android-support-annotations')
     compile project(':android-support-vector-drawable')
@@ -78,7 +78,7 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
-            jniLibs.srcDirs = ['libs']
+            jniLibs.srcDirs = ['nativelibs']
         }
 
     }
