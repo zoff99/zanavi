@@ -74,13 +74,12 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src']
             resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
+            aidl.srcDirs = ['src', 'aidl']
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['nativelibs']
         }
-
     }
 
     compileOptions {
