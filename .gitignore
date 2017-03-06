@@ -33,3 +33,6 @@ navit/android-support-vector-drawable/android-support-vector-drawable.iml
 navit/navit.iml
 navit/local.properties
 navit/android/res/raw
+navit/android/nativelibs/armeabi-v7a/libnavit.so
+navit/android/nativelibs/armeabi/libnavit.so
+navit/android/nativelibs/x86/libnavit.so
