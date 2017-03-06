@@ -41,8 +41,10 @@ script:
    - mkdir build_
    - pwd;cd build_;pwd
    - ls -al
+   - chmod a+rx ../download-androidstudio-files.sh
    - ../download-androidstudio-files.sh
    - ls -al
+   - gradle wrapper --no-daemon --info
    - ./gradlew assembleRelease -x lint --stacktrace
    - pwd; cd .. ; pwd
    - find . -name '*.apk' -exec ls -al {} \;
