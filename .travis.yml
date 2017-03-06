@@ -44,7 +44,7 @@ script:
    - chmod a+rx ../download-androidstudio-files.sh
    - ../download-androidstudio-files.sh
    - ls -al
-   - gradle wrapper --no-daemon --gradle-version "3.1" --info
+   - gradle wrapper --no-daemon --info
    - ./gradlew assembleRelease -x lint --stacktrace
    - pwd; cd .. ; pwd
    - find . -name '*.apk' -exec ls -al {} \;
