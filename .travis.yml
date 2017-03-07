@@ -42,6 +42,7 @@ script:
    - ./download-androidstudio-files.sh
    - cd navit
    - pwd
+   - cat gradle.properties
    - chmod a+rx ./gradlew
    - ./gradlew assembleRelease --stacktrace
    - pwd
