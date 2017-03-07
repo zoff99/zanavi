@@ -5,8 +5,8 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - _JAVA_OPTIONS="-Xms512m -Xmx1024m"
-  - GRADLE_OPTS='-Xmx512m -Dorg.gradle.jvmargs="-Xmx1700m -XX:+HeapDumpOnOutOfMemoryError -XX:MaxPermSize=1700m"'
+  - _JAVA_OPTIONS="-Xms512m -Xmx2048m"
+  - GRADLE_OPTS='-Xmx512m -Dorg.gradle.jvmargs="-Xmx2200m -XX:+HeapDumpOnOutOfMemoryError -XX:MaxPermSize=2200m"'
 android:
   components:
     - tools # to get the new `repository-11.xml`
