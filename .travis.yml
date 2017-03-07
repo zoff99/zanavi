@@ -45,6 +45,7 @@ script:
    - ../download-androidstudio-files.sh
    - ls -al
    - gradle wrapper --no-daemon --info
-   - ./gradlew assembleRelease -x lint --stacktrace
+   - ./gradlew tasks
+   - ./gradlew assembleRelease --stacktrace
    - pwd; cd .. ; pwd
    - find . -name '*.apk' -exec ls -al {} \;
