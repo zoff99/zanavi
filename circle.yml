@@ -126,14 +126,14 @@ dependencies:
     - sudo apt-get install libmagickcore5 ; exit 0
     - sudo apt-get install perlmagick ; exit 0
     - sudo apt-get install liblwp-useragent-determined-perl #> /dev/null 2> /dev/null
-    - sudo apt-get install xvfb #> /dev/null 2> /dev/null
-    - sudo apt-get install xdotool #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install xvfb #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install xdotool #> /dev/null 2> /dev/null
     - sudo apt-get install autoconf #> /dev/null 2> /dev/null
     - sudo apt-get install telnet #> /dev/null 2> /dev/null
-    - sudo apt-get install x11-utils #> /dev/null 2> /dev/null
-    - sudo apt-get install xvkbd #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install x11-utils #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install xvkbd #> /dev/null 2> /dev/null
     - sudo apt-get install qrencode #> /dev/null 2> /dev/null
-    - sudo apt-get install firefox
+    - . ~/_bt3;sudo apt-get install firefox
 
     - sudo apt-get install libav-tools #> /dev/null 2> /dev/null
 
