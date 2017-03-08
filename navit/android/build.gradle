@@ -1,8 +1,7 @@
-
 buildscript {
-   repositories {
-       jcenter()
-   }
+    repositories {
+        jcenter()
+    }
 }
 
 apply plugin: 'com.android.application'
@@ -61,12 +60,12 @@ android {
     }
 
     aaptOptions {
-          additionalParameters "--no-version-vectors"
+        additionalParameters "--no-version-vectors"
     }
 
 
     dexOptions {
-          javaMaxHeapSize "1.6g"
+        javaMaxHeapSize "1.6g"
     }
 
     sourceSets {
@@ -93,8 +92,15 @@ android {
     }
 
     externalNativeBuild {
-        cmake {
-            path '../../CMakeLists.txt'
+
+        def sysprops = System.getProperties()
+        if (sysprops['idea.platform.prefix'] != null) {
+            // Built from AndroidStudio
+            cmake {
+                path '../../CMakeLists.txt'
+            }
+        } else {
+            // Built from command line
         }
     }
 
