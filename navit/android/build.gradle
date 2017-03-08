@@ -92,6 +92,12 @@ android {
         abortOnError false
     }
 
+    externalNativeBuild {
+        cmake {
+            path '../../CMakeLists.txt'
+        }
+    }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
 // -------QC-------
