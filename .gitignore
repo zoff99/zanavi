@@ -36,3 +36,4 @@ navit/android/res/raw
 navit/android/nativelibs/armeabi-v7a/libnavit.so
 navit/android/nativelibs/armeabi/libnavit.so
 navit/android/nativelibs/x86/libnavit.so
+.externalNativeBuild
