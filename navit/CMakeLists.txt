@@ -4,12 +4,12 @@ include_directories( "${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories( "${CMAKE_CURRENT_BINARY_DIR}")
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/support")
 
-# navit cre
+# navit
 set(NAVIT_SRC announcement.c atom.c attr.c cache.c callback.c command.c config_.c coord.c country.c data_window.c debug.c
-   event.c file.c geom.c graphics.c gui.c item.c layout.c log.c main.c map.c maps.c
-   linguistics.c mapset.c maptype.c menu.c messages.c bookmarks.c navit.c navit_nls.c navigation.c osd.c param.c phrase.c plugin.c popup.c
-   profile.c profile_option.c projection.c roadprofile.c route.c script.c search.c speech.c start_real.c sunriset.c transform.c track.c
-   search_houseno_interpol.c util.c vehicle.c vehicleprofile.c xmlconfig.c )
+   event.c file.c maptool/geom.c graphics.c gui.c item.c layout.c log.c main.c map.c
+   linguistics.c mapset.c maptype.c menu.c messages.c bookmarks.c navit.c navigation.c osd.c param.c phrase.c plugin.c popup.c
+   profile.c projection.c roadprofile.c route.c search.c speech.c start_real.c sunriset.c transform.c track.c
+   util.c vehicle.c vehicleprofile.c xmlconfig.c )
 
 if(NOT USE_PLUGINS)
   list(APPEND NAVIT_SRC  ${CMAKE_CURRENT_BINARY_DIR}/builtin.c)
@@ -137,33 +137,33 @@ macro(process_xslt SRC_XML DEST_XML)
    )
 endmacro()
 
-if(ANDROID)
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxxxhdpi.xml OSD_SIZE=5.33 ICON_SMALL=128 ICON_MEDIUM=192 ICON_BIG=256)
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxxhdpi.xml OSD_SIZE=4 ICON_SMALL=96 ICON_MEDIUM=128 ICON_BIG=192)
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxhdpi.xml OSD_SIZE=2.67 ICON_SMALL=64 ICON_MEDIUM=96 ICON_BIG=128)
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navithdpi.xml OSD_SIZE=2 ICON_SMALL=48 ICON_MEDIUM=64 ICON_BIG=96)
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitmdpi.xml OSD_SIZE=1.33 ICON_SMALL=32 ICON_MEDIUM=48 ICON_BIG=64)
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitldpi.xml OSD_SIZE=1 ICON_SMALL=24 ICON_MEDIUM=32 ICON_BIG=48)
-   add_custom_target( navit_config_xml ALL DEPENDS navitxxxhdpi.xml navitxxhdpi.xml navitxhdpi.xml navithdpi.xml navitmdpi.xml navitldpi.xml)
-else()
-   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navit.xml "")
-   add_custom_target( navit_config_xml_resource DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml COMMAND mkdir -p resources/share/navit COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/navit.xml resources/share/navit)
-   add_custom_target( locale_resource DEPENDS locales COMMAND mkdir -p resources/share COMMAND cp -a ${CMAKE_CURRENT_BINARY_DIR}/../locale resources/share/locale)
-   add_custom_target( navit_config_xml ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml)
-endif()
+#if(ANDROID)
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxxxhdpi.xml OSD_SIZE=5.33 ICON_SMALL=128 ICON_MEDIUM=192 ICON_BIG=256)
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxxhdpi.xml OSD_SIZE=4 ICON_SMALL=96 ICON_MEDIUM=128 ICON_BIG=192)
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxhdpi.xml OSD_SIZE=2.67 ICON_SMALL=64 ICON_MEDIUM=96 ICON_BIG=128)
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navithdpi.xml OSD_SIZE=2 ICON_SMALL=48 ICON_MEDIUM=64 ICON_BIG=96)
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitmdpi.xml OSD_SIZE=1.33 ICON_SMALL=32 ICON_MEDIUM=48 ICON_BIG=64)
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitldpi.xml OSD_SIZE=1 ICON_SMALL=24 ICON_MEDIUM=32 ICON_BIG=48)
+#   add_custom_target( navit_config_xml ALL DEPENDS navitxxxhdpi.xml navitxxhdpi.xml navitxhdpi.xml navithdpi.xml navitmdpi.xml navitldpi.xml)
+#else()
+#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navit.xml "")
+#   add_custom_target( navit_config_xml_resource DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml COMMAND mkdir -p resources/share/navit COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/navit.xml resources/share/navit)
+#   add_custom_target( locale_resource DEPENDS locales COMMAND mkdir -p resources/share COMMAND cp -a ${CMAKE_CURRENT_BINARY_DIR}/../locale resources/share/locale)
+#   add_custom_target( navit_config_xml ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml)
+#endif()
 
 ADD_DEPENDENCIES(${NAVIT_LIBNAME} git_version)
-if (USE_LIBGNUINTL AND NOT HAVE_GLIB)
-   ADD_DEPENDENCIES(support_glib support_gettext_intl)
-endif()
+#if (USE_LIBGNUINTL AND NOT HAVE_GLIB)
+#   ADD_DEPENDENCIES(support_glib support_gettext_intl)
+#endif()
 
 
-add_subdirectory (maptool)
-add_subdirectory (xpm)
-add_subdirectory (maps)
-if(ANDROID)
-   add_subdirectory (android)
-endif()
+#add_subdirectory (maptool)
+#add_subdirectory (xpm)
+#add_subdirectory (maps)
+#if(ANDROID)
+#   add_subdirectory (android)
+#endif()
 
 install(TARGETS navit
         DESTINATION ${BIN_DIR}
