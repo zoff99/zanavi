@@ -1,7 +1,199 @@
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.navitproject.navit")
-set(MACOSX_BUNDLE_BUNDLE_NAME "Navit")
+
+
+
+#U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -HD:\_ready\git_repos\zanavi -BD:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\armeabi "-GAndroid Gradle - Ninja" -DANDROID_ABI=armeabi -DANDROID_NDK=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\_ready\git_repos\zanavi\navit\android\build\intermediates\cmake\debug\obj\armeabi -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\ninja.exe -DCMAKE_TOOLCHAIN_FILE=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle\build\cmake\android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=9
+#cmd.exe /C "cd /D D:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\mips64\navit && U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -D SRC=D:/_ready/git_repos/zanavi/navit/version.h.in -D DST=D:/_ready/git_repos/zanavi/navit/android/.externalNativeBuild/cmake/debug/mips64/navit/version.h -D NAME="GIT_VERSION" -P D:/_ready/git_repos/zanavi/cmake/version.cmake"
+
+
+
+#  [91/93] Linking C shared library ..\..\..\..\build\intermediates\cmake\debug\obj\mips64\libnavit.so
+#FAILED: cmd.exe /C "cd . && U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle\toolchains\llvm\prebuilt\windows-x86_64\bin\clang.exe  --target=mips64el-none-linux-android --gcc-toolchain=U:/_Projekte/android/sdk/android-sdk-windows/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=U:/_Projekte/android/sdk/android-sdk-windows/ndk-bundle/platforms/android-21/arch-mips64 -fPIC -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--no-undefined -Wl,-z,noexecstack -Qunused-arguments -Wl,-z,relro -Wl,-z,now -Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--no-undefined -Wl,-z,noexecstack -Qunused-arguments -Wl,-z,relro -Wl,-z,now -shared -Wl,-soname,libnavit.so -o ..\..\..\..\build\intermediates\cmake\debug\obj\mips64\libnavit.so navit/CMakeFiles/navit.dir/announcement.c.o navit/CMakeFiles/navit.dir/atom.c.o navit/CMakeFiles/navit.dir/attr.c.o navit/CMakeFiles/navit.dir/cache.c.o navit/CMakeFiles/navit.dir/callback.c.o navit/CMakeFiles/navit.dir/command.c.o navit/CMakeFiles/navit.dir/config_.c.o navit/CMakeFiles/navit.dir/coord.c.o navit/CMakeFiles/navit.dir/country.c.o navit/CMakeFiles/navit.dir/data_window.c.o navit/CMakeFiles/navit.dir/debug.c.o navit/CMakeFiles/navit.dir/event.c.o navit/CMakeFiles/navit.dir/file.c.o navit/CMakeFiles/navit.dir/graphics.c.o navit/CMakeFiles/navit.dir/gui.c.o navit/CMakeFiles/navit.dir/item.c.o navit/CMakeFiles/navit.dir/layout.c.o navit/CMakeFiles/navit.dir/log.c.o navit/CMakeFiles/navit.dir/main.c.o navit/CMakeFiles/navit.dir/map.c.o navit/CMakeFiles/navit.dir/linguistics.c.o navit/CMakeFiles/navit.dir/mapset.c.o navit/CMakeFiles/navit.dir/maptype.c.o navit/CMakeFiles/navit.dir/menu.c.o navit/CMakeFiles/navit.dir/messages.c.o navit/CMakeFiles/navit.dir/bookmarks.c.o navit/CMakeFiles/navit.dir/navit.c.o navit/CMakeFiles/navit.dir/navigation.c.o navit/CMakeFiles/navit.dir/osd.c.o navit/CMakeFiles/navit.dir/param.c.o navit/CMakeFiles/navit.dir/phrase.c.o navit/CMakeFiles/navit.dir/plugin.c.o navit/CMakeFiles/navit.dir/popup.c.o navit/CMakeFiles/navit.dir/profile.c.o navit/CMakeFiles/navit.dir/projection.c.o navit/CMakeFiles/navit.dir/roadprofile.c.o navit/CMakeFiles/navit.dir/route.c.o navit/CMakeFiles/navit.dir/search.c.o navit/CMakeFiles/navit.dir/speech.c.o navit/CMakeFiles/navit.dir/start_real.c.o navit/CMakeFiles/navit.dir/sunriset.c.o navit/CMakeFiles/navit.dir/transform.c.o navit/CMakeFiles/navit.dir/track.c.o navit/CMakeFiles/navit.dir/maptool/miniz.c.o navit/CMakeFiles/navit.dir/coffeecatch.c.o navit/CMakeFiles/navit.dir/coffeejni.c.o navit/CMakeFiles/navit.dir/snprintf.c.o navit/CMakeFiles/navit.dir/vehicle/android/vehicle_android.c.o navit/CMakeFiles/navit.dir/vehicle/demo/vehicle_demo.c.o navit/CMakeFiles/navit.dir/gui/internal/gui_internal.c.o navit/CMakeFiles/navit.dir/graphics/android/graphics_android.c.o navit/CMakeFiles/navit.dir/map/binfile/binfile.c.o navit/CMakeFiles/navit.dir/map/csv/csv.c.o navit/CMakeFiles/navit.dir/map/csv/quadtree.c.o navit/CMakeFiles/navit.dir/map/textfile/textfile.c.o navit/CMakeFiles/navit.dir/osd/core/osd_core.c.o navit/CMakeFiles/navit.dir/speech/android/speech_android.c.o navit/CMakeFiles/navit.dir/android.c.o navit/CMakeFiles/navit.dir/util.c.o navit/CMakeFiles/navit.dir/vehicle.c.o navit/CMakeFiles/navit.dir/vehicleprofile.c.o navit/CMakeFiles/navit.dir/xmlconfig.c.o  navit/support/ezxml/libsupport_ezxml.a navit/support/glib/libsupport_glib.a navit/support/wordexp/libsupport_wordexp.a navit/fib-1.1/libfib.a -lz -llog -ldl -lm -lm && cd ."
+#navit/CMakeFiles/navit.dir/main.c.o: In function `main_init_nls':
+#  D:\_ready\git_repos\zanavi\navit/main.c:616: undefined reference to `bindtextdomain'
+#  D:\_ready\git_repos\zanavi\navit/main.c:617: undefined reference to `bind_textdomain_codeset'
+#  D:\_ready\git_repos\zanavi\navit/main.c:618: undefined reference to `textdomain'
+#  navit/CMakeFiles/navit.dir/graphics/android/graphics_android.c.o: In function `draw_lines3':
+#  D:\_ready\git_repos\zanavi\navit\graphics\android/graphics_android.c:1773: undefined reference to `AndroidBitmap_getInfo'
+#  D:\_ready\git_repos\zanavi\navit\graphics\android/graphics_android.c:1801: undefined reference to `AndroidBitmap_lockPixels'
+#  D:\_ready\git_repos\zanavi\navit\graphics\android/graphics_android.c:1823: undefined reference to `AndroidBitmap_unlockPixels'
+#  clang.exe: error: linker command failed with exit code 1 (use -v to see invocation)
+#  ninja: build stopped: subcommand failed.
+
+
+
+
+
+
+# set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.navitproject.navit")
+# set(MACOSX_BUNDLE_BUNDLE_NAME "Navit")
 message(STATUS "Building with CMake V${CMAKE_VERSION}")
 project(navit C)
+
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "lib2/")
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib3/")
+#set(LIBRARY_OUTPUT_PATH "lib4/")
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
+
+
+
+
+# ------------------------- Begin Generic CMake Variable Logging ------------------
+
+# /*	C++ comment style not allowed	*/
+
+
+# if you are building in-source, this is the same as CMAKE_SOURCE_DIR, otherwise
+# this is the top level directory of your build tree
+MESSAGE( STATUS "CMAKE_BINARY_DIR:         " ${CMAKE_BINARY_DIR} )
+
+# if you are building in-source, this is the same as CMAKE_CURRENT_SOURCE_DIR, otherwise this
+# is the directory where the compiled or generated files from the current CMakeLists.txt will go to
+MESSAGE( STATUS "CMAKE_CURRENT_BINARY_DIR: " ${CMAKE_CURRENT_BINARY_DIR} )
+
+# this is the directory, from which cmake was started, i.e. the top level source directory
+MESSAGE( STATUS "CMAKE_SOURCE_DIR:         " ${CMAKE_SOURCE_DIR} )
+
+# this is the directory where the currently processed CMakeLists.txt is located in
+MESSAGE( STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${CMAKE_CURRENT_SOURCE_DIR} )
+
+# contains the full path to the top level directory of your build tree
+MESSAGE( STATUS "PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR} )
+
+# contains the full path to the root of your project source directory,
+# i.e. to the nearest directory where CMakeLists.txt contains the PROJECT() command
+MESSAGE( STATUS "PROJECT_SOURCE_DIR: " ${PROJECT_SOURCE_DIR} )
+
+# set this variable to specify a common place where CMake should put all executable files
+# (instead of CMAKE_CURRENT_BINARY_DIR)
+MESSAGE( STATUS "EXECUTABLE_OUTPUT_PATH: " ${EXECUTABLE_OUTPUT_PATH} )
+
+# set this variable to specify a common place where CMake should put all libraries
+# (instead of CMAKE_CURRENT_BINARY_DIR)
+MESSAGE( STATUS "LIBRARY_OUTPUT_PATH:     " ${LIBRARY_OUTPUT_PATH} )
+
+# tell CMake to search first in directories listed in CMAKE_MODULE_PATH
+# when you use FIND_PACKAGE() or INCLUDE()
+MESSAGE( STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH} )
+
+# this is the complete path of the cmake which runs currently (e.g. /usr/local/bin/cmake)
+MESSAGE( STATUS "CMAKE_COMMAND: " ${CMAKE_COMMAND} )
+
+# this is the CMake installation directory
+MESSAGE( STATUS "CMAKE_ROOT: " ${CMAKE_ROOT} )
+
+# this is the filename including the complete path of the file where this variable is used.
+MESSAGE( STATUS "CMAKE_CURRENT_LIST_FILE: " ${CMAKE_CURRENT_LIST_FILE} )
+
+# this is linenumber where the variable is used
+MESSAGE( STATUS "CMAKE_CURRENT_LIST_LINE: " ${CMAKE_CURRENT_LIST_LINE} )
+
+# this is used when searching for include files e.g. using the FIND_PATH() command.
+MESSAGE( STATUS "CMAKE_INCLUDE_PATH: " ${CMAKE_INCLUDE_PATH} )
+
+# this is used when searching for libraries e.g. using the FIND_LIBRARY() command.
+MESSAGE( STATUS "CMAKE_LIBRARY_PATH: " ${CMAKE_LIBRARY_PATH} )
+
+# the complete system name, e.g. "Linux-2.4.22", "FreeBSD-5.4-RELEASE" or "Windows 5.1"
+MESSAGE( STATUS "CMAKE_SYSTEM: " ${CMAKE_SYSTEM} )
+
+# the short system name, e.g. "Linux", "FreeBSD" or "Windows"
+MESSAGE( STATUS "CMAKE_SYSTEM_NAME: " ${CMAKE_SYSTEM_NAME} )
+
+# only the version part of CMAKE_SYSTEM
+MESSAGE( STATUS "CMAKE_SYSTEM_VERSION: " ${CMAKE_SYSTEM_VERSION} )
+
+# the processor name (e.g. "Intel(R) Pentium(R) M processor 2.00GHz")
+MESSAGE( STATUS "CMAKE_SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR} )
+
+# is TRUE on all UNIX-like OS's, including Apple OS X and CygWin
+MESSAGE( STATUS "UNIX: " ${UNIX} )
+
+# is TRUE on Windows, including CygWin
+MESSAGE( STATUS "WIN32: " ${WIN32} )
+
+# is TRUE on Apple OS X
+MESSAGE( STATUS "APPLE: " ${APPLE} )
+
+# is TRUE when using the MinGW compiler in Windows
+MESSAGE( STATUS "MINGW: " ${MINGW} )
+
+# is TRUE on Windows when using the CygWin version of cmake
+MESSAGE( STATUS "CYGWIN: " ${CYGWIN} )
+
+# is TRUE on Windows when using a Borland compiler
+MESSAGE( STATUS "BORLAND: " ${BORLAND} )
+
+# Microsoft compiler
+MESSAGE( STATUS "MSVC: " ${MSVC} )
+MESSAGE( STATUS "MSVC_IDE: " ${MSVC_IDE} )
+MESSAGE( STATUS "MSVC60: " ${MSVC60} )
+MESSAGE( STATUS "MSVC70: " ${MSVC70} )
+MESSAGE( STATUS "MSVC71: " ${MSVC71} )
+MESSAGE( STATUS "MSVC80: " ${MSVC80} )
+MESSAGE( STATUS "CMAKE_COMPILER_2005: " ${CMAKE_COMPILER_2005} )
+
+
+# set this to true if you don't want to rebuild the object files if the rules have changed,
+# but not the actual source files or headers (e.g. if you changed the some compiler switches)
+MESSAGE( STATUS "CMAKE_SKIP_RULE_DEPENDENCY: " ${CMAKE_SKIP_RULE_DEPENDENCY} )
+
+# since CMake 2.1 the install rule depends on all, i.e. everything will be built before installing.
+# If you don't like this, set this one to true.
+MESSAGE( STATUS "CMAKE_SKIP_INSTALL_ALL_DEPENDENCY: " ${CMAKE_SKIP_INSTALL_ALL_DEPENDENCY} )
+
+# If set, runtime paths are not added when using shared libraries. Default it is set to OFF
+MESSAGE( STATUS "CMAKE_SKIP_RPATH: " ${CMAKE_SKIP_RPATH} )
+
+# set this to true if you are using makefiles and want to see the full compile and link
+# commands instead of only the shortened ones
+MESSAGE( STATUS "CMAKE_VERBOSE_MAKEFILE: " ${CMAKE_VERBOSE_MAKEFILE} )
+
+# this will cause CMake to not put in the rules that re-run CMake. This might be useful if
+# you want to use the generated build files on another machine.
+MESSAGE( STATUS "CMAKE_SUPPRESS_REGENERATION: " ${CMAKE_SUPPRESS_REGENERATION} )
+
+
+# A simple way to get switches to the compiler is to use ADD_DEFINITIONS().
+# But there are also two variables exactly for this purpose:
+
+# the compiler flags for compiling C sources
+MESSAGE( STATUS "CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
+
+# the compiler flags for compiling C++ sources
+MESSAGE( STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+
+
+# Choose the type of build.  Example: SET(CMAKE_BUILD_TYPE Debug)
+MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
+
+# if this is set to ON, then all libraries are built as shared libraries by default.
+MESSAGE( STATUS "BUILD_SHARED_LIBS: " ${BUILD_SHARED_LIBS} )
+
+# the compiler used for C files
+MESSAGE( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+
+# the compiler used for C++ files
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+
+# if the compiler is a variant of gcc, this should be set to 1
+MESSAGE( STATUS "CMAKE_COMPILER_IS_GNUCC: " ${CMAKE_COMPILER_IS_GNUCC} )
+
+# if the compiler is a variant of g++, this should be set to 1
+MESSAGE( STATUS "CMAKE_COMPILER_IS_GNUCXX : " ${CMAKE_COMPILER_IS_GNUCXX} )
+
+# the tools for creating libraries
+MESSAGE( STATUS "CMAKE_AR: " ${CMAKE_AR} )
+MESSAGE( STATUS "CMAKE_RANLIB: " ${CMAKE_RANLIB} )
+
+# ------------------------- End of Generic CMake Variable Logging ------------------
+
+
+
+
+
+
+
 
 # Workaround for CMake issue 8345 / 9220, see http://trac.navit-project.org/ticket/1041
 if(DEFINED CMAKE_CXX_COMPILER AND CMAKE_CXX_COMPILER MATCHES "^$")
@@ -76,9 +268,9 @@ endif(EXTRA_LIBDIR)
 add_plugin(support/ezxml "native Glib found" FALSE)
 add_plugin(support/glib "native Glib found" FALSE)
 add_plugin(support/zlib "native zlib found" FALSE)
-add_plugin(support/libpng "native libpng found" FALSE)
+#add_plugin(support/libpng "native libpng found" FALSE)
 add_plugin(support/wordexp "native wordexp found" FALSE)
-add_plugin(support/gettext_intl "native libintl found" FALSE)
+#add_plugin(support/gettext_intl "native libintl found" FALSE)
 add_module(font/freetype "freetype not found" FALSE)
 add_module(graphics/android "FreeType library not found" FALSE)
 add_module(graphics/gd "FreeType library not found" FALSE)
@@ -97,7 +289,8 @@ add_module(binding/win32 "Default" FALSE)
 add_module(binding/dbus "dbus-glib-1 not found" FALSE)
 add_module(binding/python "python libraries not found" FALSE)
 add_module(speech/dbus "dbus-glib-1 not found" FALSE)
-add_module(speech/cmdline "neither system() nor CreateProcess() found" FALSE)
+# add_module(speech/cmdline "neither system() nor CreateProcess() found" FALSE)
+add_module(speech/cmdline "disabled" FALSE)
 add_module(vehicle/gpsd_dbus "dbus-glib-1 not found" FALSE)
 add_module(vehicle/qt5 "Qt5 libraries not found" FALSE)
 add_module(speech/speech_dispatcher "speech_dispatcher lib not found" FALSE)
@@ -156,38 +349,38 @@ find_package(OpenSSL)
 find_package(Threads)
 libfind_pkg_check_modules(FONTCONFIG fontconfig)
 #Qt detection
-if (NOT DISABLE_QT)
-  find_package(Qt5Widgets)
-  find_package(Qt5Svg)
-  find_package(Qt5DBus)
-  find_package(Qt5Positioning)
-  find_package(Qt5Sensors)
-  #find_package(Qt5Declarative)
-  if (Qt5Widgets_FOUND)
-  else (Qt5Widgets_FOUND)
-    # Unfortunately, CMake seems to ignore the "OPTIONAL_COMPONENTS" flag,
-    # and actually requires all components to be installed. Maybe this can
-    # be fixed later...
-    find_package(Qt4 4.7 COMPONENTS QtCore OPTIONAL_COMPONENTS QtGui QtXml QtDeclarative QtSvg)
-  endif (Qt5Widgets_FOUND)      
-endif (NOT DISABLE_QT)
+#if (NOT DISABLE_QT)
+#  find_package(Qt5Widgets)
+#  find_package(Qt5Svg)
+#  find_package(Qt5DBus)
+#  find_package(Qt5Positioning)
+#  find_package(Qt5Sensors)
+#  #find_package(Qt5Declarative)
+#  if (Qt5Widgets_FOUND)
+#  else (Qt5Widgets_FOUND)
+#    # Unfortunately, CMake seems to ignore the "OPTIONAL_COMPONENTS" flag,
+#    # and actually requires all components to be installed. Maybe this can
+#    # be fixed later...
+#    find_package(Qt4 4.7 COMPONENTS QtCore OPTIONAL_COMPONENTS QtGui QtXml QtDeclarative QtSvg)
+#  endif (Qt5Widgets_FOUND)
+#endif (NOT DISABLE_QT)
 
 #pkg-config based detection
 find_package(PkgConfig)
-if(PKG_CONFIG_FOUND)
-   pkg_check_modules(LIBLOCATION liblocation)
-   pkg_check_modules(LIBOSSO libosso)
-   # Accept even old versions of libgps, because N810 uses an old version (see #1179).
-   pkg_check_modules(LIBGPS libgps)
-   pkg_check_modules(LIBGPS19 libgps>=2.90)
-   # libgpsd<V3.1 is buggy if LC_ALL is set.
-   pkg_check_modules(LIBGPS_NEW libgps>=3.1)
-   pkg_check_modules(LIBGARMIN libgarmin)
-   pkg_check_modules(IMLIB2 imlib2)
-   if(IMLIB2_FOUND)
-      set(HAVE_IMLIB2 1)
-   endif(IMLIB2_FOUND)
-endif(PKG_CONFIG_FOUND)
+#if(PKG_CONFIG_FOUND)
+#   pkg_check_modules(LIBLOCATION liblocation)
+#   pkg_check_modules(LIBOSSO libosso)
+#   # Accept even old versions of libgps, because N810 uses an old version (see #1179).
+#   pkg_check_modules(LIBGPS libgps)
+#   pkg_check_modules(LIBGPS19 libgps>=2.90)
+#   # libgpsd<V3.1 is buggy if LC_ALL is set.
+#   pkg_check_modules(LIBGPS_NEW libgps>=3.1)
+#   pkg_check_modules(LIBGARMIN libgarmin)
+#   pkg_check_modules(IMLIB2 imlib2)
+#   if(IMLIB2_FOUND)
+#      set(HAVE_IMLIB2 1)
+#   endif(IMLIB2_FOUND)
+#endif(PKG_CONFIG_FOUND)
 #Simple checks
 CHECK_INCLUDE_FILES(wordexp.h HAVE_WORDEXP)
 CHECK_INCLUDE_FILES(endian.h HAVE_ENDIAN_H)
@@ -232,11 +425,11 @@ else()
    endif(NEEDS_LIBINTL)
 endif(NOT HAVE_LIBINTL)
 
-if (CMAKE_USE_PTHREADS_INIT)
-   if (NOT ANDROID)
-      list(APPEND NAVIT_LIBS pthread)
-   endif(NOT ANDROID)
-endif(CMAKE_USE_PTHREADS_INIT)
+#if (CMAKE_USE_PTHREADS_INIT)
+#   if (NOT ANDROID)
+#      list(APPEND NAVIT_LIBS pthread)
+#   endif(NOT ANDROID)
+#endif(CMAKE_USE_PTHREADS_INIT)
 if (Glib_FOUND)
    set(HAVE_GLIB 1)
    include_directories(${Glib_INCLUDE_DIRS})
@@ -268,7 +461,7 @@ if(PNG_FOUND)
    list(APPEND NAVIT_LIBS ${PNG_LIBRARIES})
 else(PNG_FOUND)
    message(STATUS "using internal libpng")
-   set_with_reason(support/libpng "native libpng missing" TRUE)
+   #set_with_reason(support/libpng "native libpng missing" TRUE)
 endif(PNG_FOUND)
 if (NOT HAVE_WORDEXP)
    message(STATUS "wordexp.h not found. use internal wordexp")
@@ -297,157 +490,157 @@ if(FONTCONFIG_FOUND)
    set(HAVE_FONTCONFIG 1)
 endif(FONTCONFIG_FOUND)
 
-if (QT_FOUND)
-   if (QT_QTCORE_FOUND AND QT_QTGUI_FOUND AND FREETYPE_FOUND)
-      include(${QT_USE_FILE})
-      set_with_reason(graphics/qt_qpainter "Qt libraries found" TRUE ${QT_LIBRARIES})
-
-      if (QT_QTDECLARATIVE_FOUND AND QT_QTXML_FOUND)
-         set_with_reason(gui/qml "Qt Declarative found" TRUE ${QT_LIBRARIES})
-      endif()
-
-      if (QT_QTSVG_FOUND)
-         set(HAVE_QT_SVG 1)
-      elseif( USE_SVG AND graphics/qt_qpainter)
-         message( WARNING "QT compiled without SVG support")
-      endif()
-   endif()
-endif(QT_FOUND)
-if (Qt5Widgets_FOUND)
-	set_with_reason(graphics/qt5 "Qt5 found" TRUE ${Qt5Widgets_LIBRARIES}
-		${Qt5Declarative_LIBRARIES}
-		${Qt5Svg_LIBRARIES}
-		${Qt5DBus_LIBRARIES})
-endif ()
-if (Qt5Positioning_FOUND)
-	set_with_reason(vehicle/qt5 "Qt5 Positioning found" TRUE
-		${Qt5Positioning_LIBRARIES}
-		${Qt5Sensors_LIBRARIES}) 
-endif ()
-if(GTK2_FOUND)
-   # Include gtk.h with "SYSTEM" to avoid GCC compiler warning for gtkitemfactory.h.
-   include_directories(SYSTEM ${GTK2_GTK_INCLUDE_DIR})
-   include_directories(${GTK2_INCLUDE_DIRS})
-   set(HAVE_GTK2 1)
-   set_with_reason(gui/gtk "GTK libs found" TRUE ${GTK2_LIBRARIES})
-   if(FREETYPE_FOUND)
-      set_with_reason(graphics/gtk_drawing_area "GTK libs found" TRUE ${GTK2_LIBRARIES})
-   endif(FREETYPE_FOUND)
-endif(GTK2_FOUND)
+#if (QT_FOUND)
+#   if (QT_QTCORE_FOUND AND QT_QTGUI_FOUND AND FREETYPE_FOUND)
+#      include(${QT_USE_FILE})
+#      set_with_reason(graphics/qt_qpainter "Qt libraries found" TRUE ${QT_LIBRARIES})
+#
+#      if (QT_QTDECLARATIVE_FOUND AND QT_QTXML_FOUND)
+#         set_with_reason(gui/qml "Qt Declarative found" TRUE ${QT_LIBRARIES})
+#      endif()
+#
+#      if (QT_QTSVG_FOUND)
+#         set(HAVE_QT_SVG 1)
+#      elseif( USE_SVG AND graphics/qt_qpainter)
+#         message( WARNING "QT compiled without SVG support")
+#      endif()
+#   endif()
+#endif(QT_FOUND)
+#if (Qt5Widgets_FOUND)
+#	set_with_reason(graphics/qt5 "Qt5 found" TRUE ${Qt5Widgets_LIBRARIES}
+#		${Qt5Declarative_LIBRARIES}
+#		${Qt5Svg_LIBRARIES}
+#		${Qt5DBus_LIBRARIES})
+#endif ()
+#if (Qt5Positioning_FOUND)
+#	set_with_reason(vehicle/qt5 "Qt5 Positioning found" TRUE
+#		${Qt5Positioning_LIBRARIES}
+#		${Qt5Sensors_LIBRARIES})
+#endif ()
+#if(GTK2_FOUND)
+#   # Include gtk.h with "SYSTEM" to avoid GCC compiler warning for gtkitemfactory.h.
+#   include_directories(SYSTEM ${GTK2_GTK_INCLUDE_DIR})
+#   include_directories(${GTK2_INCLUDE_DIRS})
+#   set(HAVE_GTK2 1)
+#   set_with_reason(gui/gtk "GTK libs found" TRUE ${GTK2_LIBRARIES})
+#   if(FREETYPE_FOUND)
+#      set_with_reason(graphics/gtk_drawing_area "GTK libs found" TRUE ${GTK2_LIBRARIES})
+#   endif(FREETYPE_FOUND)
+#endif(GTK2_FOUND)
 
 CHECK_LIBRARY_EXISTS(freeimage FreeImage_Load "" HAVE_FREEIMAGE)
-if (USE_OPENGLES OR USE_OPENGLES2)
-   CHECK_LIBRARY_EXISTS(EGL eglInitialize "" HAVE_EGL)
-endif(USE_OPENGLES OR USE_OPENGLES2)
-if (FREETYPE_FOUND)
-   if (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND AND OPENGL_INCLUDE_DIR)
-      message (STATUS "opengl found: ${OPENGL_gl_LIBRARY}")
-      include_directories(${OPENGL_INCLUDE_DIR})
-      if (USE_OPENGLES2)
-	 set(USE_OPENGLES TRUE)
-	 set(GRAPHICS_OPENGL_LIBRARY GLESv2 EGL)
-      elseif (USE_OPENGLES)
-         set(GRAPHICS_OPENGL_LIBRARY GLESv1_CM EGL)
-      else()
-         set(GRAPHICS_OPENGL_LIBRARY ${OPENGL_gl_LIBRARY};${OPENGL_glu_LIBRARY};${GLUT_glut_LIBRARY})
-      endif(USE_OPENGLES2)
-      if (HAVE_FREEIMAGE)
-         list(APPEND GRAPHICS_OPENGL_LIBRARY freeimage)
-      endif(HAVE_FREEIMAGE)
-      set_with_reason(graphics/opengl "Found OpenGL" TRUE ${GRAPHICS_OPENGL_LIBRARY})
-   else()
-      message (STATUS "opengl not found")
-   endif()
-else()
-   message (STATUS "no Freetype found")
-endif(FREETYPE_FOUND)
+#if (USE_OPENGLES OR USE_OPENGLES2)
+#   CHECK_LIBRARY_EXISTS(EGL eglInitialize "" HAVE_EGL)
+#endif(USE_OPENGLES OR USE_OPENGLES2)
+#if (FREETYPE_FOUND)
+#   if (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND AND OPENGL_INCLUDE_DIR)
+#      message (STATUS "opengl found: ${OPENGL_gl_LIBRARY}")
+#      include_directories(${OPENGL_INCLUDE_DIR})
+#      if (USE_OPENGLES2)
+#	 set(USE_OPENGLES TRUE)
+#	 set(GRAPHICS_OPENGL_LIBRARY GLESv2 EGL)
+#      elseif (USE_OPENGLES)
+#         set(GRAPHICS_OPENGL_LIBRARY GLESv1_CM EGL)
+#      else()
+#         set(GRAPHICS_OPENGL_LIBRARY ${OPENGL_gl_LIBRARY};${OPENGL_glu_LIBRARY};${GLUT_glut_LIBRARY})
+#      endif(USE_OPENGLES2)
+#      if (HAVE_FREEIMAGE)
+#         list(APPEND GRAPHICS_OPENGL_LIBRARY freeimage)
+#      endif(HAVE_FREEIMAGE)
+#      set_with_reason(graphics/opengl "Found OpenGL" TRUE ${GRAPHICS_OPENGL_LIBRARY})
+#   else()
+#      message (STATUS "opengl not found")
+#   endif()
+#else()
+#   message (STATUS "no Freetype found")
+#endif(FREETYPE_FOUND)
 
-if(SDL_FOUND AND SDLIMAGE_FOUND AND FREETYPE_FOUND)
-   set(SDL_IMAGE 1)
-   if(SDLTTF_FOUND)
-      set(SDL_TTF 1)
-      list(APPEND SDL_LIBRARY ${SDLTTF_LIBRARY})
-   else(SDLTTF_FOUND)
-      list(APPEND SDL_LIBRARY ${FREETYPE_LIBRARY})
-   endif(SDLTTF_FOUND)
-   set_with_reason(graphics/sdl "SDL/SDL_image libs found" TRUE ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY})
-endif(SDL_FOUND AND SDLIMAGE_FOUND AND FREETYPE_FOUND)
+#if(SDL_FOUND AND SDLIMAGE_FOUND AND FREETYPE_FOUND)
+#   set(SDL_IMAGE 1)
+#   if(SDLTTF_FOUND)
+#      set(SDL_TTF 1)
+#      list(APPEND SDL_LIBRARY ${SDLTTF_LIBRARY})
+#   else(SDLTTF_FOUND)
+#      list(APPEND SDL_LIBRARY ${FREETYPE_LIBRARY})
+#   endif(SDLTTF_FOUND)
+#   set_with_reason(graphics/sdl "SDL/SDL_image libs found" TRUE ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY})
+#endif(SDL_FOUND AND SDLIMAGE_FOUND AND FREETYPE_FOUND)
 
-if(SDL2MAIN AND SDL2IMAGE AND GLES2)
-    set_with_reason(graphics/egl "SDL2/SDL2_image libs found" TRUE ${SDL2MAIN} ${SDL2IMAGE} ${GLES2})
-    message(STATUS "EGL libs found : ${SDL2MAIN} ${SDL2IMAGE} ${GLES2}")
-endif(SDL2_FOUND AND SDL2IMAGE_FOUND AND GLES2)
+#if(SDL2MAIN AND SDL2IMAGE AND GLES2)
+#    set_with_reason(graphics/egl "SDL2/SDL2_image libs found" TRUE ${SDL2MAIN} ${SDL2IMAGE} ${GLES2})
+#    message(STATUS "EGL libs found : ${SDL2MAIN} ${SDL2IMAGE} ${GLES2}")
+#endif(SDL2_FOUND AND SDL2IMAGE_FOUND AND GLES2)
 
-if (LIBGPS_FOUND)
-   if (LIBGPS_NEW_FOUND)
-      set(VEHICLE_GPSD_REASON "gpsd lib found")
-   else(LIBGPS_NEW_FOUND)
-     set(VEHICLE_GPSD_REASON "WARNING: old gpsd lib found, buggy if LC_ALL is set")
-   endif(LIBGPS_NEW_FOUND)
-   set_with_reason(vehicle/gpsd ${VEHICLE_GPSD_REASON} TRUE ${LIBGPS_LDFLAGS})
-endif(LIBGPS_FOUND)
+#if (LIBGPS_FOUND)
+#   if (LIBGPS_NEW_FOUND)
+#      set(VEHICLE_GPSD_REASON "gpsd lib found")
+#   else(LIBGPS_NEW_FOUND)
+#     set(VEHICLE_GPSD_REASON "WARNING: old gpsd lib found, buggy if LC_ALL is set")
+#   endif(LIBGPS_NEW_FOUND)
+#   set_with_reason(vehicle/gpsd ${VEHICLE_GPSD_REASON} TRUE ${LIBGPS_LDFLAGS})
+#endif(LIBGPS_FOUND)
 
-if (GYPSY_FOUND)
-   set_with_reason(vehicle/gypsy "gypsy lib found" TRUE)
-endif(GYPSY_FOUND)
+#if (GYPSY_FOUND)
+#   set_with_reason(vehicle/gypsy "gypsy lib found" TRUE)
+#endif(GYPSY_FOUND)
 
-if (LIBGARMIN_FOUND)
-   include_directories(${LIBGARMIN_INCLUDE_DIRS})
-   set_with_reason(map/garmin "Garmin library found" TRUE ${LIBGARMIN_LDFLAGS})
-endif(LIBGARMIN_FOUND)
+#if (LIBGARMIN_FOUND)
+#   include_directories(${LIBGARMIN_INCLUDE_DIRS})
+#   set_with_reason(map/garmin "Garmin library found" TRUE ${LIBGARMIN_LDFLAGS})
+#endif(LIBGARMIN_FOUND)
 
-if(DBusGLib_FOUND)
-   include_directories(${DBusGLib_INCLUDE_DIRS})
-   set_with_reason(binding/dbus "dbus-glib-1 found" TRUE ${DBusGLib_LIBRARIES})
-   set_with_reason(speech/dbus "dbus-glib-1 found" TRUE ${DBusGLib_LIBRARIES})
-   set_with_reason(vehicle/gpsd_dbus "dbus-glib-1 found" TRUE ${DBusGLib_LIBRARIES})
-endif()
+#if(DBusGLib_FOUND)
+#   include_directories(${DBusGLib_INCLUDE_DIRS})
+#   set_with_reason(binding/dbus "dbus-glib-1 found" TRUE ${DBusGLib_LIBRARIES})
+#   set_with_reason(speech/dbus "dbus-glib-1 found" TRUE ${DBusGLib_LIBRARIES})
+#   set_with_reason(vehicle/gpsd_dbus "dbus-glib-1 found" TRUE ${DBusGLib_LIBRARIES})
+#endif()
 
-if(PYTHONLIBS_FOUND)
-   set_with_reason(binding/python "python libraries [${PYTHONLIBS_VERSION_STRING}] found" TRUE ${PYTHON_LIBRARIES})
-endif()
+#if(PYTHONLIBS_FOUND)
+#   set_with_reason(binding/python "python libraries [${PYTHONLIBS_VERSION_STRING}] found" TRUE ${PYTHON_LIBRARIES})
+#endif()
 
-if (HAVE_LIBSPEECHD)
-   set_with_reason(speech/speech_dispatcher "speech_dispatcher lib found" TRUE speechd)
-endif(HAVE_LIBSPEECHD)
+#if (HAVE_LIBSPEECHD)
+#   set_with_reason(speech/speech_dispatcher "speech_dispatcher lib found" TRUE speechd)
+#endif(HAVE_LIBSPEECHD)
 
-if (HAVE_SYSTEM)
-   set_with_reason(speech/cmdline "system() call is available" TRUE)
-endif(HAVE_SYSTEM)
+#if (HAVE_SYSTEM)
+#   set_with_reason(speech/cmdline "system() call is available" TRUE)
+#endif(HAVE_SYSTEM)
 
-if (HAVE_CREATEPROCESS)
-   set_with_reason(speech/cmdline "CreateProcess() call is available" TRUE)
-endif(HAVE_CREATEPROCESS)
+#if (HAVE_CREATEPROCESS)
+#   set_with_reason(speech/cmdline "CreateProcess() call is available" TRUE)
+#endif(HAVE_CREATEPROCESS)
 
-if (LIBLOCATION_FOUND)
-    set_with_reason(vehicle/maemo "Maemo location library found" TRUE ${LIBLOCATION_LIBRARIES})
-endif(LIBLOCATION_FOUND)
+#if (LIBLOCATION_FOUND)
+#    set_with_reason(vehicle/maemo "Maemo location library found" TRUE ${LIBLOCATION_LIBRARIES})
+#endif(LIBLOCATION_FOUND)
 
-if (LIBOSSO_FOUND)
-    set_with_reason(autoload/osso "Maemo osso library found" TRUE ${LIBOSSO_LIBRARIES})
-endif(LIBOSSO_FOUND)
+#if (LIBOSSO_FOUND)
+#    set_with_reason(autoload/osso "Maemo osso library found" TRUE ${LIBOSSO_LIBRARIES})
+#endif(LIBOSSO_FOUND)
 
 if (GETTEXT_FOUND)
     set_with_reason(USE_NATIVE_LANGUAGE_SUPPORT "Gettext found" TRUE)
 endif(GETTEXT_FOUND)
 
 #Independent modules
-add_module(graphics/null "Default" TRUE)
+#add_module(graphics/null "Default" FALSE)
 add_module(osd/core "Default" TRUE)
 add_module(vehicle/demo "Default" TRUE)
-add_module(vehicle/file "Default" TRUE)
-add_module(vehicle/null "Default" FALSE)
+add_module(vehicle/file "Default" FALSE)
+#add_module(vehicle/null "Default" FALSE)
 add_module(gui/internal "Default" TRUE)
 add_module(map/binfile "Default" TRUE)
-add_module(map/filter "Default" TRUE)
-if(NOT MSVC)
-add_module(map/mg "Default" TRUE)
-endif(NOT MSVC)
-add_module_plugin(support/shapefile "Default" TRUE)
+#add_module(map/filter "Default" FALSE)
+#if(NOT MSVC)
+#add_module(map/mg "Default" FALSE)
+#endif(NOT MSVC)
+add_module_plugin(support/shapefile "Default" FALSE)
 set(map_shapefile_INCLUDES "${CMAKE_SOURCE_DIR}/navit/support/shapefile")
 #set(map_shapefile_LIBRARY_DIRS "${CMAKE_BINARY_DIR}/navit/support/shapefile")
 set(map_shapefile_LIBS "support_shapefile")
-add_module(map/shapefile "Default" TRUE)
+add_module(map/shapefile "Default" FALSE)
 add_module(map/textfile "Default" TRUE)
 add_module(map/csv "Default" TRUE)
 
@@ -468,7 +661,7 @@ add_feature(USE_PLUGINS "default" TRUE)
 add_feature(USE_ROUTING "default" TRUE)
 add_feature(USE_SVG "default" TRUE)
 add_feature(SVG2PNG "default" TRUE)
-add_feature(SAMPLE_MAP "default" TRUE)
+add_feature(SAMPLE_MAP "default" FALSE)
 
 IF(NOT svg2png_scaling)
    IF(NOT ANDROID)
@@ -494,7 +687,7 @@ ENDIF()
 
 add_feature(DBUS_USE_SYSTEM_BUS "default" FALSE)
 add_feature(BUILD_MAPTOOL "default" TRUE)
-add_feature(XSL_PROCESSING "default" TRUE)
+add_feature(XSL_PROCESSING "default" FALSE)
 
 set(SUPPORTED_XSLT_PROCESSORS "saxonb-xslt;saxon;saxon8;saxon-xslt;xsltproc;transform.exe")
 find_program(XSLT_PROCESSOR NAMES ${SUPPORTED_XSLT_PROCESSORS})
@@ -602,14 +795,14 @@ if(WINCE)
    set_with_reason(vehicle/file "wince: currently broken" FALSE)
    set_with_reason(vehicle/wince "wince detected" TRUE)
 endif()
-if (APPLE OR USE_UIKIT)
-   set_with_reason(vehicle/iphone "apple detected" TRUE)
-   set_with_reason(graphics/cocoa "apple detected" TRUE)
-   if (EXISTS "${CMAKE_OSX_SYSROOT}/System/Library/PrivateFrameworks/VoiceServices.framework")
-      set_with_reason(speech/iphone "apple detected" TRUE)
-   endif()
-   set(BUILD_BUNDLE TRUE CACHE BOOLEAN "build an osx bundle")
-endif()
+#if (APPLE OR USE_UIKIT)
+#   set_with_reason(vehicle/iphone "apple detected" TRUE)
+#   set_with_reason(graphics/cocoa "apple detected" TRUE)
+#   if (EXISTS "${CMAKE_OSX_SYSROOT}/System/Library/PrivateFrameworks/VoiceServices.framework")
+#      set_with_reason(speech/iphone "apple detected" TRUE)
+#   endif()
+#   set(BUILD_BUNDLE TRUE CACHE BOOLEAN "build an osx bundle")
+#endif()
 
 if(CMAKE_SIZEOF_VOID_P LESS 8)
    set_with_reason(BUILD_MAPTOOL "maptool works only on 64 bit architectures" FALSE)
@@ -632,20 +825,20 @@ if (SAMPLE_MAP)
 endif(SAMPLE_MAP)
 
 if(ANDROID)
-   find_program(ANDROID_LOCATION NAMES android android.bat)
-   find_program(ANT_LOCATION NAMES ant)
-   if (NOT ANT_LOCATION)
-      message_error("Could not find ant. Please install ant and add it to the search path.")
-   else()
-      execute_process(COMMAND ${ANT_LOCATION} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake RESULT_VARIABLE ANT_VERSION_OK OUTPUT_QUIET ERROR_QUIET)
-      if(ANT_VERSION_OK GREATER 0)
-         message(WARNING "Old ant version detected. If you need crash reporter, update to at least ant 1.8")
-      endif()
-   endif()
-   if (NOT ANDROID_LOCATION)
-      message_error( "Could not find 'Android SDK and AVD Manager'. Please install the android sdk and add the <android-sdk>/tools directory to the search path.")
-   endif()
-   set(XSLTS "android;${XSLTS}" CACHE STRING "define a semicolon seperated list of XSLTs to process")
+   #find_program(ANDROID_LOCATION NAMES android android.bat)
+   #find_program(ANT_LOCATION NAMES ant)
+   #if (NOT ANT_LOCATION)
+   #   message_error("Could not find ant. Please install ant and add it to the search path.")
+   #else()
+   #   execute_process(COMMAND ${ANT_LOCATION} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake RESULT_VARIABLE ANT_VERSION_OK OUTPUT_QUIET ERROR_QUIET)
+   #   if(ANT_VERSION_OK GREATER 0)
+   #      message(WARNING "Old ant version detected. If you need crash reporter, update to at least ant 1.8")
+   #   endif()
+   #endif()
+   #if (NOT ANDROID_LOCATION)
+   #   message_error( "Could not find 'Android SDK and AVD Manager'. Please install the android sdk and add the <android-sdk>/tools directory to the search path.")
+   #endif()
+   #set(XSLTS "android;${XSLTS}" CACHE STRING "define a semicolon seperated list of XSLTs to process")
    list(APPEND NAVIT_LIBS log)
    set(HAVE_API_ANDROID 1)
    set_with_reason(graphics/android "Android detected" TRUE)
@@ -658,9 +851,9 @@ if(ANDROID)
 
 endif(ANDROID)
 
-if(FREETYPE_FOUND AND NOT FONTCONFIG_FOUND)
-   add_subdirectory( "${CMAKE_CURRENT_SOURCE_DIR}/navit/fonts")
-endif()
+#if(FREETYPE_FOUND AND NOT FONTCONFIG_FOUND)
+#   add_subdirectory( "${CMAKE_CURRENT_SOURCE_DIR}/navit/fonts")
+#endif()
 
 # Image conversion
 find_program(IMAGE_CONVERTER NAMES convert)
@@ -736,15 +929,76 @@ if(CMAKE_COMPILER_IS_GNUCC OR CCMAKE_COMPILER_IS_GNUCXX)
    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${COMMON_COMPILER_FLAGS}")
    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${COMMON_COMPILER_FLAGS}")
    # flags not available in old GCC versions, or not for both C and C++
-   add_compiler_flag_if_available("-Wno-missing-field-initializers")
-   add_compiler_flag_if_available("-Wextra")
-   add_compiler_flag_if_available("-Wmissing-prototypes")
-   add_compiler_flag_if_available("-Wstrict-prototypes ")
+   #add_compiler_flag_if_available("-Wno-missing-field-initializers")
+   #add_compiler_flag_if_available("-Wextra")
+   # -Wreturn-type
+   #add_compiler_flag_if_available("-Wmissing-prototypes")
+   #add_compiler_flag_if_available("-Wstrict-prototypes ")
+
+# ---------------------------
+MESSAGE( STATUS "0 CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "0 CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "0 CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "0 CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "0 COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+
+
+   #remove_compiler_flag("-Wall")
+   #remove_compiler_flag("-Werror")
+   #remove_compiler_flag("-Wreturn-type")
+
+   string (REPLACE "-Wall" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+   #string (REPLACE "-Werror" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+   string (REPLACE "-Wreturn-type" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+
+   string (REPLACE "-Wall" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+   #string (REPLACE "-Werror" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+   string (REPLACE "-Wreturn-type" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+
+   string (REPLACE "-Wall" "" COMMON_COMPILER_FLAGS ${COMMON_COMPILER_FLAGS})
+   #string (REPLACE "-Werror" "" COMMON_COMPILER_FLAGS ${COMMON_COMPILER_FLAGS})
+   string (REPLACE "-Wreturn-type" "" COMMON_COMPILER_FLAGS ${COMMON_COMPILER_FLAGS})
+
 endif()
 
-if (EXTRA_DEFINES)
-	add_definitions("${EXTRA_DEFINES}")
-endif(EXTRA_DEFINES)
+#if (EXTRA_DEFINES)
+#	add_definitions("${EXTRA_DEFINES}")
+#endif(EXTRA_DEFINES)
+
+remove_definitions(-Werror)
+remove_definitions(-Wreturn-type)
+
+# ---------------------------
+MESSAGE( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+
+
+# ---------------------------
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS: " ${ANDROID_COMPILER_FLAGS} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_CXX: " ${ANDROID_COMPILER_FLAGS_CXX} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_DEBUG: " ${ANDROID_COMPILER_FLAGS_DEBUG} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_RELEASE: " ${ANDROID_COMPILER_FLAGS_RELEASE} )
+# ---------------------------
+
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS         "${ANDROID_COMPILER_FLAGS}")
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS_CXX     "${ANDROID_COMPILER_FLAGS_CXX}")
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS_DEBUG   "${ANDROID_COMPILER_FLAGS_DEBUG}")
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS_RELEASE "${ANDROID_COMPILER_FLAGS_RELEASE}")
+
+# ---------------------------
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS: " ${ANDROID_COMPILER_FLAGS} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_CXX: " ${ANDROID_COMPILER_FLAGS_CXX} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_DEBUG: " ${ANDROID_COMPILER_FLAGS_DEBUG} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_RELEASE: " ${ANDROID_COMPILER_FLAGS_RELEASE} )
+# ---------------------------
+
+
+
 
 if (NOT NAVIT_DEPENDENCY_ERROR)
    message("\nSummary:\n")
@@ -797,10 +1051,27 @@ if (NOT NAVIT_DEPENDENCY_ERROR)
    message("\nTo configure your build use 'cmake -L' to find changeable variables and run cmake again with 'cmake -D <var-name>=<your value> ...'.")
 endif(NOT NAVIT_DEPENDENCY_ERROR)
 
+
+
+# ---------------------------
+MESSAGE( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+
+
+# ---------------------------
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS: " ${ANDROID_COMPILER_FLAGS} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_CXX: " ${ANDROID_COMPILER_FLAGS_CXX} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_DEBUG: " ${ANDROID_COMPILER_FLAGS_DEBUG} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_RELEASE: " ${ANDROID_COMPILER_FLAGS_RELEASE} )
+
+MESSAGE( STATUS "CMAKE_C_FLAGS_DEBUG: " ${CMAKE_C_FLAGS_DEBUG} )
+MESSAGE( STATUS "CMAKE_CXX_FLAGS_DEBUG: " ${CMAKE_CXX_FLAGS_DEBUG} )
+# ---------------------------
+
 add_subdirectory (navit)
-add_subdirectory (man)
 
 
-if (USE_NATIVE_LANGUAGE_SUPPORT)
-   add_subdirectory (po)
-endif(USE_NATIVE_LANGUAGE_SUPPORT)

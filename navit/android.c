@@ -486,6 +486,14 @@ int android_find_static_method(jclass class, char *name, char *args, jmethodID *
 	return 1;
 }
 
+
+void send_alert_to_java(int id, const char *text);
+void android_DrawMapPreview_target(int x, int y);
+void android_DrawMapPreview_text(int x, int y, char *text, int size, int dx, int dy);
+void android_DrawMapPreview_polyline(struct point *p, int count, int type);
+void android_DrawPreview_polyline(struct point *p, int count, int type, const char* item_type);
+
+
 // #include <signal.h>
 Java_com_zoffcc_applications_zanavi_Navit_AppCrashC__XX_real(JNIEnv* env, jobject thiz) __attribute__((optimize("-O0")));
 Java_com_zoffcc_applications_zanavi_Navit_AppCrashC__XX_real(JNIEnv* env, jobject thiz) __attribute__((optimize("O0")));
@@ -1173,14 +1181,6 @@ void android_return_generic_int(int id, int i)
 }
 
 
-
-JNIEXPORT void JNICALL
-Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEnv* env, jobject thiz, int id, int partial, jobject str, jobject str_town, jobject str_hn, int search_flags, jobject search_country, jobject latlon, int radius)
-{
-	COFFEE_TRY_JNI(env, Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_real(env, thiz, id, partial, str, str_town, str_hn, search_flags, search_country, latlon, radius));
-}
-
-
 JNIEXPORT void JNICALL
 Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_real(JNIEnv* env, jobject thiz, int id, int partial, jobject str, jobject str_town, jobject str_hn, int search_flags, jobject search_country, jobject latlon, int radius)
 {
@@ -1220,7 +1220,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_r
 		{
 			// unused now!!
 		}
-		// new experimental street-index search
+			// new experimental street-index search
 		else if (id == 2)
 		{
 			offline_search_break_searching = 0;
@@ -1241,13 +1241,13 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_r
 			(*env)->ReleaseStringUTFChars(env, str_hn, s_hn);
 
 		}
-		// search for street in variable "s" within "search_country" -> return a list of streets as result
-		// ------- normal search ----------
-		// ------- normal search ----------
-		// ------- normal search ----------
-		// ------- normal search ----------
-		// ------- normal search ----------
-		// ------- normal search ----------
+			// search for street in variable "s" within "search_country" -> return a list of streets as result
+			// ------- normal search ----------
+			// ------- normal search ----------
+			// ------- normal search ----------
+			// ------- normal search ----------
+			// ------- normal search ----------
+			// ------- normal search ----------
 		else if (id == 29)
 		{
 			//struct attr s_attr4;
@@ -1281,7 +1281,7 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_r
 			//	gp4->sl=NULL;
 			//}
 		}
-		// do a full search in all mapfiles for string in variable "s" -> return a list of streets as result
+			// do a full search in all mapfiles for string in variable "s" -> return a list of streets as result
 		else if (id == 3)
 		{
 			const char *s3;
@@ -1314,6 +1314,13 @@ Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_r
 	}
 
 	(*env)->ReleaseStringUTFChars(env, str, s);
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList(JNIEnv* env, jobject thiz, int id, int partial, jobject str, jobject str_town, jobject str_hn, int search_flags, jobject search_country, jobject latlon, int radius)
+{
+	COFFEE_TRY_JNI(env, Java_com_zoffcc_applications_zanavi_NavitGraphics_CallbackSearchResultList__XX_real(env, thiz, id, partial, str, str_town, str_hn, search_flags, search_country, latlon, radius));
 }
 
 JNIEXPORT jint JNICALL
@@ -1925,6 +1932,7 @@ Java_com_zoffcc_applications_zanavi_NavitMapPreviewActivity_DrawMapPreview(JNIEn
 
 	android_DrawMapPreview_target(pnt.x, pnt.y);
 }
+
 
 void android_DrawMapPreview_target(int x, int y)
 {

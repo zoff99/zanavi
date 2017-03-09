@@ -6,9 +6,16 @@ include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/support")
 
 # navit
 set(NAVIT_SRC announcement.c atom.c attr.c cache.c callback.c command.c config_.c coord.c country.c data_window.c debug.c
-   event.c file.c maptool/geom.c graphics.c gui.c item.c layout.c log.c main.c map.c
+   event.c file.c graphics.c gui.c item.c layout.c log.c main.c map.c
    linguistics.c mapset.c maptype.c menu.c messages.c bookmarks.c navit.c navigation.c osd.c param.c phrase.c plugin.c popup.c
    profile.c projection.c roadprofile.c route.c search.c speech.c start_real.c sunriset.c transform.c track.c
+   maptool/miniz.c coffeecatch.c
+   coffeejni.c snprintf.c
+   vehicle/android/vehicle_android.c vehicle/demo/vehicle_demo.c
+   gui/internal/gui_internal.c
+   graphics/android/graphics_android.c map/binfile/binfile.c
+   map/csv/csv.c map/csv/quadtree.c map/textfile/textfile.c
+   osd/core/osd_core.c speech/android/speech_android.c android.c
    util.c vehicle.c vehicleprofile.c xmlconfig.c )
 
 if(NOT USE_PLUGINS)
@@ -189,3 +196,14 @@ WRITE_FILE("cmake_plugin_settings.txt"
 	"set(LIB_DIR \"${LIB_DIR}\" CACHE STRING init)\n"
 	"set(CMAKE_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\" CACHE STRING init)\n"
 	)
+
+
+
+# ---------------------------
+MESSAGE( STATUS "2 CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "2 CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "2 CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "2 CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "2 COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+

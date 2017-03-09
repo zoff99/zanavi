@@ -111,6 +111,13 @@ struct graphics_image_priv
 
 static GHashTable *image_cache_hash = NULL;
 
+
+
+
+void drawLineOverlap(uint32_t *map_buffer, int disp_width, int disp_height, int16_t aXStart, int16_t aYStart, int16_t aXEnd, int16_t aYEnd, uint8_t aOverlap,
+					 uint32_t aColor, int alpha);
+
+
 static int find_class_global(char *name, jclass *ret)
 {
 	//DBG // dbg(0,"EEnter\n");

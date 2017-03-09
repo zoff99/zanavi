@@ -197,6 +197,12 @@ typedef struct ucontext {
 
 /* Taken from Google Breakpad. */
 
+
+
+
+// TODO: android studio ----------
+// TODO: android studio ----------
+#if 0
 typedef struct {
   uint32_t regmask;
   uint32_t status;
@@ -217,6 +223,13 @@ typedef struct {
   uint32_t hi3;
   uint32_t lo3;
 } mcontext_t;
+#endif
+// TODO: android studio ----------
+// TODO: android studio ----------
+
+
+
+
 
 #if !defined(__BIONIC_HAVE_UCONTEXT_T)
 typedef struct ucontext {

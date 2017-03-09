@@ -2088,7 +2088,7 @@ static navigation_select_announced_destinations(struct navigation_command *curre
 	if ((current_nav_way) && (current_nav_way->street_dest_text))
 	{
 		// already have set a destination --> return
-		return;
+		return NULL;
 	}
 	current_nav_way->street_dest_text = NULL; // set default to "no value"
 	// put text into way struct later -----------------
@@ -2175,7 +2175,7 @@ static navigation_select_announced_destinations(struct navigation_command *curre
 			dbg(0, "put exit_label into nav way (C) %s\n", current_command->itm->way.exit_label);
 #endif
 
-			return;
+			return NULL;
 		}
 	}
 	else if (current_command->itm->way.exit_label)
@@ -2190,7 +2190,7 @@ static navigation_select_announced_destinations(struct navigation_command *curre
 		dbg(0, "put exit_label into nav way (A) %s\n", current_command->itm->way.exit_label);
 #endif
 
-		return;
+		return NULL;
 	}
 
 

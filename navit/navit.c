@@ -6863,7 +6863,7 @@ GList* navit_route_export_to_java_string(struct navit *this_, int result_id)
 	}
 	else
 	{
-		return;
+		return NULL;
 	}
 
   	trans = navit_get_trans(this_);
