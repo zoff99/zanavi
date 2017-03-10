@@ -60,15 +60,21 @@ android {
         // generatedDensities = []
 
         externalNativeBuild {
-            cmake {
-                abiFilters 'armeabi'
+            def sysprops = System.getProperties()
+            if (sysprops['idea.platform.prefix'] != null) {
+                cmake {
+                    abiFilters 'armeabi'
+                }
             }
         }
 
         ndk {
-            // Specifies the ABI configurations of your native
-            // libraries Gradle should build and package with your APK.
-            abiFilters 'armeabi'
+            def sysprops = System.getProperties()
+            if (sysprops['idea.platform.prefix'] != null) {
+                // Specifies the ABI configurations of your native
+                // libraries Gradle should build and package with your APK.
+                abiFilters 'armeabi'
+            }
         }
 
     }
