@@ -59,6 +59,18 @@ android {
         vectorDrawables.useSupportLibrary = true
         // generatedDensities = []
 
+        externalNativeBuild {
+            cmake {
+                abiFilters 'armeabi'
+            }
+        }
+
+        ndk {
+            // Specifies the ABI configurations of your native
+            // libraries Gradle should build and package with your APK.
+            abiFilters 'armeabi'
+        }
+
     }
 
     aaptOptions {
@@ -105,6 +117,7 @@ android {
             // Built from command line
         }
     }
+
 
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'

@@ -2,6 +2,8 @@
 
 
 #U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -HD:\_ready\git_repos\zanavi -BD:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\armeabi "-GAndroid Gradle - Ninja" -DANDROID_ABI=armeabi -DANDROID_NDK=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\_ready\git_repos\zanavi\navit\android\build\intermediates\cmake\debug\obj\armeabi -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\ninja.exe -DCMAKE_TOOLCHAIN_FILE=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle\build\cmake\android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=9
+#U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -HD:\_ready\git_repos\zanavi -BD:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\armeabi-v7a "-GAndroid Gradle - Ninja" -DANDROID_ABI=armeabi-v7a -DANDROID_NDK=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\_ready\git_repos\zanavi\navit\android\build\intermediates\cmake\debug\obj\armeabi-v7a -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\ninja.exe -DCMAKE_TOOLCHAIN_FILE=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle\build\cmake\android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=9
+
 #cmd.exe /C "cd /D D:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\mips64\navit && U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -D SRC=D:/_ready/git_repos/zanavi/navit/version.h.in -D DST=D:/_ready/git_repos/zanavi/navit/android/.externalNativeBuild/cmake/debug/mips64/navit/version.h -D NAME="GIT_VERSION" -P D:/_ready/git_repos/zanavi/cmake/version.cmake"
 
 
@@ -24,10 +26,8 @@
 
 
 
-# set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.navitproject.navit")
-# set(MACOSX_BUNDLE_BUNDLE_NAME "Navit")
 message(STATUS "Building with CMake V${CMAKE_VERSION}")
-project(navit C)
+project(zanavi C)
 
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "lib2/")
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib3/")
@@ -203,14 +203,17 @@ if (NOT DISABLE_CXX)
   enable_language(CXX OPTIONAL)
 endif(NOT DISABLE_CXX)
 
+
+
+
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 set(NAVIT_VERSION_MAJOR "0")
 set(NAVIT_VERSION_MINOR "5")
 set(NAVIT_VERSION_PATCH "1")
 set(PACKAGE_VERSION "${NAVIT_VERSION_MAJOR}.${NAVIT_VERSION_MINOR}.${NAVIT_VERSION_PATCH}")
 
-set(PACKAGE_NAME "navit-git")
-set(PACKAGE "navit")
+set(PACKAGE_NAME "zanavi-git")
+set(PACKAGE "zanavi")
 set(PACKAGE_STRING "${PACKAGE} ${PACKAGE_VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
@@ -270,7 +273,8 @@ add_plugin(support/glib "native Glib found" FALSE)
 add_plugin(support/zlib "native zlib found" FALSE)
 #add_plugin(support/libpng "native libpng found" FALSE)
 add_plugin(support/wordexp "native wordexp found" FALSE)
-#add_plugin(support/gettext_intl "native libintl found" FALSE)
+#add_plugin(../intl "native libintl found" FALSE)
+#add_subdirectory (./intl ./intl)
 add_module(font/freetype "freetype not found" FALSE)
 add_module(graphics/android "FreeType library not found" FALSE)
 add_module(graphics/gd "FreeType library not found" FALSE)
@@ -398,7 +402,7 @@ if (NOT HAVE_SNPRINTF)
    endif(HAVE_DECL__SNPRINTF)
 endif(NOT HAVE_SNPRINTF)
 CHECK_INCLUDE_FILES(locale.h HAVE_LC_MESSAGES)
-CHECK_INCLUDE_FILES(libintl.h HAVE_LIBINTL)
+#CHECK_INCLUDE_FILES(libintl.h HAVE_LIBINTL)
 CHECK_INCLUDE_FILES(sys/time.h HAVE_SYS_TIME_H)
 CHECK_INCLUDE_FILES(getopt.h HAVE_GETOPT_H)
 CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
@@ -414,16 +418,16 @@ CHECK_FUNCTION_EXISTS(fsync HAVE_FSYNC)
 
 ### Configure build
 #Required libraries, supplied with navit
-if (NOT HAVE_LIBINTL)
-   set_with_reason(support/gettext_intl "native libintl missing" TRUE)
-   set(USE_LIBGNUINTL TRUE)
-else()
-   CHECK_LIBRARY_EXISTS(intl libintl_fprintf "" NEEDS_LIBINTL)
-   if (NEEDS_LIBINTL)
-      list(APPEND NAVIT_LIBS intl)
-      set(INTL_LIBS intl)
-   endif(NEEDS_LIBINTL)
-endif(NOT HAVE_LIBINTL)
+#if (NOT HAVE_LIBINTL)
+#   set_with_reason(../intl "native libintl missing" TRUE)
+#   set(USE_LIBGNUINTL TRUE)
+#else()
+#   CHECK_LIBRARY_EXISTS(intl libintl_fprintf "" NEEDS_LIBINTL)
+#   if (NEEDS_LIBINTL)
+#      list(APPEND NAVIT_LIBS intl)
+#      set(INTL_LIBS intl)
+#   endif(NEEDS_LIBINTL)
+#endif(NOT HAVE_LIBINTL)
 
 #if (CMAKE_USE_PTHREADS_INIT)
 #   if (NOT ANDROID)
@@ -962,9 +966,14 @@ MESSAGE( STATUS "0 COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
 
 endif()
 
-#if (EXTRA_DEFINES)
-#	add_definitions("${EXTRA_DEFINES}")
-#endif(EXTRA_DEFINES)
+
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -lgcc -ljnigraphics -lm")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -lgcc -ljnigraphics -lm")
+
+
+if (EXTRA_DEFINES)
+	add_definitions("${EXTRA_DEFINES}")
+endif(EXTRA_DEFINES)
 
 remove_definitions(-Werror)
 remove_definitions(-Wreturn-type)

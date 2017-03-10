@@ -194,7 +194,7 @@ char *stristr(const char *String, const char *Pattern)
 
 // TODO: android studio ---------
 // TODO: android studio ---------
-#if 0
+#if 1
 int
 getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
 {

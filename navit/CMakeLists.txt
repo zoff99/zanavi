@@ -62,6 +62,7 @@ endforeach()
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/builtin.c.in ${CMAKE_CURRENT_BINARY_DIR}/builtin.c)
 
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/fib-1.1")
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/../intl")
 
 # Add module paths
 foreach (CURRENT_MODULE ${ALL_PLUGINS} ${ALL_MODULE_PLUGINS} ${ALL_MODULES})
@@ -71,6 +72,7 @@ foreach (CURRENT_MODULE ${ALL_PLUGINS} ${ALL_MODULE_PLUGINS} ${ALL_MODULES})
 endforeach()
 
 add_subdirectory (fib-1.1)
+add_subdirectory (../intl ./intl) # out-of-source dir needs bin dir
 
 if(NOT ANDROID)
    set(NAVIT_START_SRC start.c)
@@ -108,7 +110,7 @@ endif(SHARED_LIBNAVIT)
 if(NOT MSVC)
     SET(NAVIT_LIBS ${NAVIT_LIBS} m)
 endif(NOT MSVC)
-target_link_libraries(${NAVIT_LIBNAME}  ${MODULES_NAME} ${NAVIT_SUPPORT_LIBS} fib ${NAVIT_LIBS} ) 
+target_link_libraries(${NAVIT_LIBNAME}  ${MODULES_NAME} ${NAVIT_SUPPORT_LIBS} fib intl ${NAVIT_LIBS})
 set_target_properties(${NAVIT_LIBNAME} PROPERTIES COMPILE_DEFINITIONS "MODULE=navit;LIBDIR=\"${CMAKE_INSTALL_PREFIX}/${LIB_DIR}\";PREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 if (DEFINED NAVIT_COMPILE_FLAGS)
    set_target_properties(${NAVIT_LIBNAME} PROPERTIES COMPILE_FLAGS "${NAVIT_COMPILE_FLAGS}")
