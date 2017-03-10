@@ -37,3 +37,9 @@ navit/android/nativelibs/armeabi-v7a/libnavit.so
 navit/android/nativelibs/armeabi/libnavit.so
 navit/android/nativelibs/x86/libnavit.so
 .externalNativeBuild
+navit/cmake_plugin_settings.txt
+navit/android/cmake_plugin_settings.txt
+cmake_plugin_settings.txt
+CMakeFiles/
+CMakeCache.txt
+navit/android/cmake_plugin_settings.txt
