@@ -55,10 +55,9 @@ chmod a+rx "$SOURCE_PATH"/ci/do_android_build_generic_arch.sh
 
 
 
-
-
-
-
+# tweak ------------------------------------
+rm -fv "$SOURCE_PATH"/intl/libgnuintl.h
+# tweak ------------------------------------
 
 
 
