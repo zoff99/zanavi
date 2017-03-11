@@ -63,7 +63,7 @@ android {
             def sysprops = System.getProperties()
             if (sysprops['idea.platform.prefix'] != null) {
                 cmake {
-                    abiFilters 'armeabi'
+                    abiFilters 'armeabi' //,'x86'
                 }
             }
         }
@@ -73,7 +73,7 @@ android {
             if (sysprops['idea.platform.prefix'] != null) {
                 // Specifies the ABI configurations of your native
                 // libraries Gradle should build and package with your APK.
-                abiFilters 'armeabi'
+                abiFilters 'armeabi' //, 'x86'
             }
         }
 

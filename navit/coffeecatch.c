@@ -229,6 +229,27 @@ typedef struct {
 
 
 
+// TODO: android studio ----------
+// TODO: android studio ----------
+#if 0
+#if defined(__i386__)
+#include <setjmp.h>
+void siglongjmp(jmp_buf env, int val);
+int sigsetjmp(jmp_buf env, int savemask);
+void siglongjmp(jmp_buf env, int val)
+{
+    longjmp(env, val);
+}
+int sigsetjmp(jmp_buf env, int savemask)
+{
+    return setjmp(env);
+}
+#endif
+#endif
+// TODO: android studio ----------
+// TODO: android studio ----------
+
+
 
 
 #if !defined(__BIONIC_HAVE_UCONTEXT_T)
