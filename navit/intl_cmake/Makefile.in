@@ -240,6 +240,7 @@ libgnuintl.h: $(srcdir)/libgnuintl.h.in
 	  < $(srcdir)/libgnuintl.h.in > libgnuintl.h
 
 libintl.h: libgnuintl.h
+	ls -al libgnuintl.h libintl.h libgnuint*
 	cp libgnuintl.h libintl.h
 
 charset.alias: $(srcdir)/config.charset
