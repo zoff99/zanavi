@@ -290,10 +290,17 @@ echo "+++++++++++++"
 mkdir -p $BUILD_PATH/navit/android/nativelibs/
 cp -av "$START_PATH"/libs-build/* "$BUILD_PATH"/navit/android/nativelibs/
 
+
+
 # check for dependencies -----------------
 ls -alR "$BUILD_PATH"/navit/android/nativelibs
 readelf --dynamic "$BUILD_PATH"/navit/android/nativelibs/armeabi/libnavit.so | grep NEEDED
+readelf --dynamic "$BUILD_PATH"/navit/android/nativelibs/armeabi/libnavit.so | grep TEXTREL
+readelf --header "$BUILD_PATH"/navit/android/nativelibs/armeabi/libnavit.so | grep 'section headers'
+readelf --dynamic "$BUILD_PATH"/navit/android/nativelibs/armeabi/libnavit.so | grep SONAME
 # check for dependencies -----------------
+
+
 
 # mv -v android/libs/*jar android/lib/
 
