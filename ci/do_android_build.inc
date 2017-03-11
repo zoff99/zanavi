@@ -290,6 +290,11 @@ echo "+++++++++++++"
 mkdir -p $BUILD_PATH/navit/android/nativelibs/
 cp -av "$START_PATH"/libs-build/* "$BUILD_PATH"/navit/android/nativelibs/
 
+# check for dependencies -----------------
+ls -alR "$BUILD_PATH"/navit/android/nativelibs
+readelf --dynamic "$BUILD_PATH"/navit/android/nativelibs/armeabi/libnavit.so | grep NEEDED
+# check for dependencies -----------------
+
 # mv -v android/libs/*jar android/lib/
 
 cp -v "$SOURCE_PATH"/navit/build.gradle ./
