@@ -146,33 +146,8 @@ macro(process_xslt SRC_XML DEST_XML)
    )
 endmacro()
 
-#if(ANDROID)
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxxxhdpi.xml OSD_SIZE=5.33 ICON_SMALL=128 ICON_MEDIUM=192 ICON_BIG=256)
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxxhdpi.xml OSD_SIZE=4 ICON_SMALL=96 ICON_MEDIUM=128 ICON_BIG=192)
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitxhdpi.xml OSD_SIZE=2.67 ICON_SMALL=64 ICON_MEDIUM=96 ICON_BIG=128)
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navithdpi.xml OSD_SIZE=2 ICON_SMALL=48 ICON_MEDIUM=64 ICON_BIG=96)
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitmdpi.xml OSD_SIZE=1.33 ICON_SMALL=32 ICON_MEDIUM=48 ICON_BIG=64)
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navitldpi.xml OSD_SIZE=1 ICON_SMALL=24 ICON_MEDIUM=32 ICON_BIG=48)
-#   add_custom_target( navit_config_xml ALL DEPENDS navitxxxhdpi.xml navitxxhdpi.xml navitxhdpi.xml navithdpi.xml navitmdpi.xml navitldpi.xml)
-#else()
-#   process_xslt(${CMAKE_CURRENT_SOURCE_DIR}/navit_shipped.xml ${CMAKE_CURRENT_BINARY_DIR}/navit.xml "")
-#   add_custom_target( navit_config_xml_resource DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml COMMAND mkdir -p resources/share/navit COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/navit.xml resources/share/navit)
-#   add_custom_target( locale_resource DEPENDS locales COMMAND mkdir -p resources/share COMMAND cp -a ${CMAKE_CURRENT_BINARY_DIR}/../locale resources/share/locale)
-#   add_custom_target( navit_config_xml ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml)
-#endif()
 
 ADD_DEPENDENCIES(${NAVIT_LIBNAME} git_version)
-#if (USE_LIBGNUINTL AND NOT HAVE_GLIB)
-#   ADD_DEPENDENCIES(support_glib support_gettext_intl)
-#endif()
-
-
-#add_subdirectory (maptool)
-#add_subdirectory (xpm)
-#add_subdirectory (maps)
-#if(ANDROID)
-#   add_subdirectory (android)
-#endif()
 
 install(TARGETS navit
         DESTINATION ${BIN_DIR}
@@ -198,14 +173,4 @@ WRITE_FILE("cmake_plugin_settings.txt"
 	"set(LIB_DIR \"${LIB_DIR}\" CACHE STRING init)\n"
 	"set(CMAKE_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}\" CACHE STRING init)\n"
 	)
-
-
-
-# ---------------------------
-MESSAGE( STATUS "2 CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
-MESSAGE( STATUS "2 CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
-MESSAGE( STATUS "2 CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
-MESSAGE( STATUS "2 CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
-MESSAGE( STATUS "2 COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
-# ---------------------------
 
