@@ -111,7 +111,7 @@ android {
 
 
     dexOptions {
-        javaMaxHeapSize "1.6g"
+        javaMaxHeapSize "2.2g"
     }
 
     sourceSets {
