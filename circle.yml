@@ -811,7 +811,8 @@ test:
       url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
       url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
       url3_orig="" ; echo "google url crashes firefox, arrgh" ;
-      url3_orig=`cat "$i"|grep 'URL4'|cut -d":" -f2-` ; echo "$url3_orig" ;
+      url3=`cat "$i"|grep 'URL4'|cut -d":" -f2-` ; echo "$url3_orig" ;
+      url3_orig="$url3";
       if [ "$url1""x" != "x" ]; then
       firefox -silent -setDefaultBrowser "$url1";
       sleep 10;
