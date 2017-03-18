@@ -6,7 +6,9 @@ for more details look at our wiki
 
 http://zanavi.cc
 
-###Code Style
+
+###Screenshots
+
 
 https://github.com/zoff99/Code-Style-Guidelines/blob/master/Android/Java.md
 
