@@ -1,7 +1,7 @@
-ZANavi
-=====
 
-<img src="https://cloud.githubusercontent.com/assets/16841860/23113427/4eb1e016-f738-11e6-9b71-7503210245a4.png" width="400" />
+<img src="https://cloud.githubusercontent.com/assets/16841860/23113427/4eb1e016-f738-11e6-9b71-7503210245a4.png" width="600" />
+
+=====
 
 **Travis:** [![Build Status](https://travis-ci.org/zoff99/zanavi.png?branch=and_stud)](https://travis-ci.org/zoff99/zanavi/branches)
 **CircleCI:** [![CircleCI](https://circleci.com/gh/zoff99/zanavi/tree/and_stud.png?style=badge)](https://circleci.com/gh/zoff99/zanavi/tree/and_stud)
