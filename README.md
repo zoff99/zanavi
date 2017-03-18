@@ -11,13 +11,15 @@ for more details look at our website
 http://zanavi.cc
 
 ### Compiling (command line)
+```
 git clone https://github.com/zoff99/zanavi
 cd zanavi
 checkout and_stud
 ./download-androidstudio-files.sh
 cd navit
-./gradlew build
-
+./gradlew assembleRelease --stacktrace
+find . -name '*.apk' -exec ls -al {} \;
+```
 
 ### Compiling Android Studio
 
