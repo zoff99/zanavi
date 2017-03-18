@@ -4,8 +4,6 @@
 **Travis:** [![Build Status](https://travis-ci.org/zoff99/zanavi.png?branch=and_stud)](https://travis-ci.org/zoff99/zanavi/branches)
 **CircleCI:** [![CircleCI](https://circleci.com/gh/zoff99/zanavi/tree/and_stud.png?style=badge)](https://circleci.com/gh/zoff99/zanavi/tree/and_stud)
 
-<br/>
-=
 
 ZANavi is a fork of NavIT. It is for the Android platfrom only!
 for more details look at our website
