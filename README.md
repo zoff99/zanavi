@@ -22,14 +22,14 @@ find . -name '*.apk' -exec ls -al {} \;
 ```
 
 ### Compiling Android Studio
-first do this *outside* of Android Studio!
+first do this **outside** of Android Studio!
 ```
 git clone https://github.com/zoff99/zanavi
 cd zanavi
 checkout and_stud
 ./download-androidstudio-files.sh
 ```
-now start Android Studio and select "import Project" then select the *navit* subdirectory
+now start Android Studio and select "import Project" then select the **navit** subdirectory
 in Android Studio just press "play"
 
 
