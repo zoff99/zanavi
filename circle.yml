@@ -1,4 +1,5 @@
-﻿machine:
+﻿
+machine:
   timezone:
     Europe/Vienna
   java:
