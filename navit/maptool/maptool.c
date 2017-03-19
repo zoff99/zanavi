@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
+
+#define NO_GTYPES_ 1
 
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
@@ -77,6 +79,11 @@ time_t start_tt, end_tt;
 double diff_tt;
 double diff2_tt;
 
+int global_keep_tmpfiles = 0;
+int global_less_verbose = 0;
+int global_use_runtime_db = 0;
+char *runtime_db_filename_with_path = NULL;
+
 time_t global_start_tt, global_end_tt;
 double global_diff_tt;
 
@@ -97,19 +104,26 @@ int use_global_fixed_country_id = 0;
 int verbose_mode = 0;
 int global_fixed_country_id = 999;
 long long dummy_town_id = -2;
+char *manual_country_border_dir = "./";
 
 int cur_thread_num = 0;
 int threads = 1;
 int max_threads = MAX_THREADS;
 int thread_is_working_[MAX_THREADS];
 const char* sqlite_db_dir_extra = "./db/";
+const char* sqlite_db_dir_extra2 = "./db2/";
+const char* sqlite_db_dir_extra3 = "./db3/";
 char *sqlite_db_dir = "./";
+char *sqlite_db_dir2 = "./";
+char *sqlite_db_dir3 = "./";
 int sqlite_temp_dir = 0;
+
+int MAPTOOL_QUICK_RUN = 0;
 
 FILE *ways_ref_file;
 FILE *ways_ref_file_thread[MAX_THREADS];
 
-char ib_buffer_array[MAX_THREADS][2400000];
+char *ib_buffer_array[MAX_THREADS]; // [2400000];
 
 // char ib_buffer_2[800000]; // --> this would be a independent buffer
 // char *ib_buffer_2; // = ib_buffer_array[0];
@@ -118,13 +132,20 @@ struct buffer node_buffer[MAX_THREADS]; // buffer for nodes // ARRAY (max max_th
 struct buffer waytag_buffer = { 64 * 1024 * 1024, }; // buffer for relations // extend in 64MBytes steps
 
 GHashTable *node_hash[MAX_THREADS]; // ARRAY (max max_threads)
+
+
+#if 0
 cfuhash_table_t *node_hash_cfu[MAX_THREADS];
+#endif
+struct quickhash_table *node_hash_cfu[MAX_THREADS];
+
 
 long long seekpos_waynode[MAX_THREADS];
 long long last_seekpos_waynode[MAX_THREADS];
 osmid last_seek_wayid[MAX_THREADS];
 
-struct item_bin *item_bin_2 = (struct item_bin *) &ib_buffer_array[0];
+// struct item_bin *item_bin_2 = (struct item_bin *) &ib_buffer_array[0];
+struct item_bin *item_bin_2 = NULL;
 
 pthread_t sqlite_thread001;
 
@@ -150,12 +171,44 @@ void *sql_handle006;
 void *sql_handle007;
 #endif
 
-int processed_nodes, processed_nodes_out, processed_ways, processed_relations, processed_tiles = 0;
+int processed_nodes_out, processed_tiles = 0;
+long long processed_nodes = 0;
+long long processed_ways = 0;
+long long processed_relations = 0;
+
+long long processed_nodes_sum = 0;
+long long processed_ways_sum = 0;
+long long processed_relations_sum = 0;
+
 
 int overlap = 1;
 
 int bytes_read;
 int verbose_mem = 0;
+
+
+
+void fprintf_(FILE *f, const char *fmt, ...)
+{
+	if (!global_less_verbose)
+	{
+		char *strp = NULL;
+		int err = 0;
+
+		va_list argptr;
+		va_start(argptr, fmt);
+		strp = g_strdup_vprintf(fmt, argptr);
+		va_end(argptr);
+
+		if (strp)
+		{
+			fprintf(f, strp);
+			g_free(strp);
+		}
+	}
+}
+
+
 
 void sig_alrm(int sig)
 {
@@ -357,15 +410,164 @@ void convert_to_human_bytes2(long long bytes, char *outstring)
 	}
 }
 
+// -------------------------------------
+// start_end -> 0 : start
+// start_end -> 1 : end
+// -------------------------------------
+void sql_runtime_db_write(const char* mapname, long long runtimes_secs, const char* runtime_text, int start_end)
+{
+
+#ifdef MAPTOOL_USE_SQL
+
+	int retval;
+	int rc;
+	sqlite3 *sql_handle_local = NULL;
+
+	retval = sqlite3_open(runtime_db_filename_with_path, &sql_handle_local);
+
+	// If connection failed, sql_handle returns NULL
+	if (retval)
+	{
+		fprintf(stderr, "SQL Runtime-Database connection failed\n");
+	}
+	else
+	{
+		// try to create table if not exists
+		char create_table1[1000] = "\
+				CREATE TABLE IF NOT EXISTS maptool_runtime \
+				(\
+					mapname text NOT NULL, \
+					start DATETIME DEFAULT NULL, \
+					end DATETIME DEFAULT NULL, \
+					runtime_secs integer DEFAULT NULL, \
+					runtime_text text DEFAULT NULL \
+				)";
+		retval = sqlite3_exec(sql_handle_local, create_table1, 0, 0, 0);
+
+		char stmt1[1000] = "CREATE INDEX index_name ON maptool_runtime (mapname text)";
+		retval = sqlite3_exec(sql_handle_local, stmt1, 0, 0, 0);
+
+
+		char create_table1a[1000] = "\
+				CREATE TABLE IF NOT EXISTS maptool_helper \
+				(\
+					mapname text PRIMARY KEY NOT NULL, \
+					nodes integer DEFAULT NULL, \
+					ways integer DEFAULT NULL, \
+					relations integer DEFAULT NULL \
+				)";
+		retval = sqlite3_exec(sql_handle_local, create_table1a, 0, 0, 0);
+
+		char stmt1a[1000] = "CREATE INDEX index_helper1 ON maptool_helper (mapname text)";
+		retval = sqlite3_exec(sql_handle_local, stmt1a, 0, 0, 0);
+
+
+		// insert or update data
+
+		sqlite3_exec(sql_handle_local, "BEGIN", 0, 0, 0);
+
+		if (start_end == 0)
+		{
+			// finish up old stale entries
+			sqlite3_stmt *stmt_update = NULL;
+			sqlite3_prepare_v2(sql_handle_local, "update maptool_runtime set runtime_secs = -1 where mapname = ? and end is null", -1, &stmt_update, NULL);
+			sqlite3_bind_text(stmt_update, 1, mapname, -1, SQLITE_STATIC);
+			sqlite3_step(stmt_update);
+			sqlite3_reset(stmt_update);
+
+			retval = sqlite3_finalize(stmt_update);
+			fprintf_(stderr, "fin:%d\n", retval);
+
+			// start of maptool run
+			sqlite3_stmt *stmt_insert = NULL;
+			rc = sqlite3_prepare_v2(sql_handle_local, "insert into maptool_runtime (mapname, start, runtime_secs) values (? , DateTime('now'), null)", -1, &stmt_insert, NULL);
+			rc = sqlite3_bind_text(stmt_insert, 1, mapname, -1, SQLITE_STATIC);
+			rc = sqlite3_step(stmt_insert);
+			sqlite3_reset(stmt_insert);
+
+			retval = sqlite3_finalize(stmt_insert);
+			fprintf_(stderr, "fin:%d\n", retval);
+
+
+			sqlite3_stmt *stmt_mm_1;
+			int retval8 = sqlite3_prepare_v2(sql_handle_local, "select nodes, ways, relations from maptool_helper where mapname = ?", -1, &stmt_mm_1, NULL);
+			fprintf_(stderr, "prep:%d\n", retval8);
+			sqlite3_bind_text(stmt_mm_1, 1, mapname, -1, SQLITE_STATIC);
+			sqlite3_step(stmt_mm_1);
+			processed_nodes_sum = sqlite3_column_int64(stmt_mm_1, 0);
+			processed_ways_sum = sqlite3_column_int64(stmt_mm_1, 1);
+			processed_relations_sum = sqlite3_column_int64(stmt_mm_1, 2);
+
+			fprintf_(stderr, "helper:%lld %lld %lld\n", processed_nodes_sum, processed_ways_sum, processed_relations_sum);
+
+			sqlite3_reset(stmt_mm_1);
+
+			retval = sqlite3_finalize(stmt_mm_1);
+			fprintf_(stderr, "fin:%d\n", retval);
+		}
+		else
+		{
+			// end of maptool run
+			sqlite3_stmt *stmt_update = NULL;
+			sqlite3_prepare_v2(sql_handle_local, "update maptool_runtime set end = DateTime('now') , runtime_text = ? , \
+								runtime_secs = ? where mapname = ? and end is null and runtime_secs is null", -1, &stmt_update, NULL);
+
+			sqlite3_bind_text(stmt_update, 1, runtime_text, -1, SQLITE_STATIC);
+			sqlite3_bind_int64(stmt_update, 2, runtimes_secs);
+			sqlite3_bind_text(stmt_update, 3, mapname, -1, SQLITE_STATIC);
+			sqlite3_step(stmt_update);
+			sqlite3_reset(stmt_update);
+
+			fprintf_(stderr, "helper:insert:%lld %lld %lld\n", processed_nodes_sum, processed_ways_sum, processed_relations_sum);
+
+			sqlite3_stmt *stmt_insert = NULL;
+			rc = sqlite3_prepare_v2(sql_handle_local, "insert into maptool_helper (mapname,nodes,ways,relations) values (?,?,?,?)", -1, &stmt_insert, NULL);
+			rc = sqlite3_bind_text(stmt_insert, 1, mapname, -1, SQLITE_STATIC);
+			sqlite3_bind_int64(stmt_insert, 2, processed_nodes_sum);
+			sqlite3_bind_int64(stmt_insert, 3, processed_ways_sum);
+			sqlite3_bind_int64(stmt_insert, 4, processed_relations_sum);
+			rc = sqlite3_step(stmt_insert);
+			sqlite3_reset(stmt_insert);
+
+			retval = sqlite3_finalize(stmt_insert);
+			fprintf_(stderr, "fin:%d\n", retval);
+
+			fprintf_(stderr, "helper:update:%lld %lld %lld\n", processed_nodes_sum, processed_ways_sum, processed_relations_sum);
+
+			sqlite3_prepare_v2(sql_handle_local, "update maptool_helper set nodes = ? , \
+								ways = ?, relations = ? where mapname = ?", -1, &stmt_update, NULL);
+
+			sqlite3_bind_int64(stmt_update, 1, processed_nodes_sum);
+			sqlite3_bind_int64(stmt_update, 2, processed_ways_sum);
+			sqlite3_bind_int64(stmt_update, 3, processed_relations_sum);
+			sqlite3_bind_text(stmt_update, 4, mapname, -1, SQLITE_STATIC);
+			sqlite3_step(stmt_update);
+			sqlite3_reset(stmt_update);
+
+			retval = sqlite3_finalize(stmt_update);
+			fprintf_(stderr, "fin:%d\n", retval);
+
+		}
+
+		sqlite3_exec(sql_handle_local, "COMMIT", 0, 0, 0);
+
+		retval = sqlite3_close(sql_handle_local);
+	}
+
+#endif
+
+}
+
 void sql_db_open()
 {
 #ifdef MAPTOOL_USE_SQL
 
 	int retval;
 
-	fprintf(stderr, "SQL: -- INIT --\n");
+	fprintf_(stderr, "SQL: -- INIT --\n");
 
 #ifdef MAPTOOL_USE_ASYNC_SQL
+/*
 	retval = sqlite3async_initialize(NULL, 1);
 	if (retval)
 	{
@@ -395,6 +597,7 @@ void sql_db_open()
 	fprintf(stderr, "SQL: -- INIT 2 --\n");
 	pthread_create(&sqlite_thread001, NULL, sql_thread, NULL);
 	fprintf(stderr, "SQL: -- INIT 3 --\n");
+*/
 #endif
 
 	sql_handle = NULL;
@@ -408,7 +611,7 @@ void sql_db_open()
 
 	sql_handle002a = NULL;
 
-	retval = sqlite3_open(g_strdup_printf("%stemp_data002a.db",sqlite_db_dir), &sql_handle002a);
+	retval = sqlite3_open(g_strdup_printf("%stemp_data002a.db",sqlite_db_dir2), &sql_handle002a);
 	// If connection failed, sql_handle returns NULL
 	if (retval)
 	{
@@ -456,7 +659,7 @@ void sql_db_open()
 
 	sql_handle004 = NULL;
 
-	retval = sqlite3_open(g_strdup_printf("%stemp_data004.db",sqlite_db_dir), &sql_handle004);
+	retval = sqlite3_open(g_strdup_printf("%stemp_data004.db",sqlite_db_dir3), &sql_handle004);
 	// If connection failed, sql_handle returns NULL
 	if (retval)
 	{
@@ -569,48 +772,48 @@ void sql_db_close()
 	sqlite3_exec(sql_handle007, "COMMIT", 0, 0, 0);
 
 	retval = sqlite3_finalize(stmt_nodea);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_node__2a);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_nodeb);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_node__2b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_nodei);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	//retval = sqlite3_finalize(stmt_way2);
 	//fprintf(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way_node);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way_node__2);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way_nodeb);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way_node__2b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_sel001);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel001__2);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel001b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel001__2b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_sel0012);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel0012__2);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel0012b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel0012__2b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	int jj;
 	for (jj = 0; jj < max_threads; jj++)
@@ -622,83 +825,83 @@ void sql_db_close()
 	}
 
 	retval = sqlite3_finalize(stmt_sel002a);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel002__2a);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_sel002b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel002__2b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_town);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_town_sel001);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way3);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way3a);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_way3b);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_town_sel002);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_town_sel005);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_town_sel006);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_town_sel007);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_town_sel008);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_bd_001);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_bd_002);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_bd_003);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_bd_004);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_bd_005);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	retval = sqlite3_finalize(stmt_sel003);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel003u);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 	retval = sqlite3_finalize(stmt_sel004);
-	fprintf(stderr, "fin:%d\n", retval);
+	fprintf_(stderr, "fin:%d\n", retval);
 
 	// set temp_store back to default
 	// sqlite3_exec(sql_handle, "PRAGMA temp_store=DEFAULT", NULL, NULL, &errorMessage);
 
 	// close sql file
 	retval = sqlite3_close(sql_handle);
-	fprintf(stderr, "close:%d\n", retval);
+	fprintf_(stderr, "close:%d\n", retval);
 
 	retval = sqlite3_close(sql_handle002a);
-	fprintf(stderr, "close002a:%d\n", retval);
+	fprintf_(stderr, "close002a:%d\n", retval);
 	retval = sqlite3_close(sql_handle003a);
-	fprintf(stderr, "close003a:%d\n", retval);
+	fprintf_(stderr, "close003a:%d\n", retval);
 
 	retval = sqlite3_close(sql_handle002b);
-	fprintf(stderr, "close002b:%d\n", retval);
+	fprintf_(stderr, "close002b:%d\n", retval);
 	retval = sqlite3_close(sql_handle003b);
-	fprintf(stderr, "close003b:%d\n", retval);
+	fprintf_(stderr, "close003b:%d\n", retval);
 
 	retval = sqlite3_close(sql_handle004);
-	fprintf(stderr, "close004:%d\n", retval);
+	fprintf_(stderr, "close004:%d\n", retval);
 	retval = sqlite3_close(sql_handle005);
-	fprintf(stderr, "close005:%d\n", retval);
+	fprintf_(stderr, "close005:%d\n", retval);
 	retval = sqlite3_close(sql_handle006);
-	fprintf(stderr, "close006:%d\n", retval);
+	fprintf_(stderr, "close006:%d\n", retval);
 	retval = sqlite3_close(sql_handle007);
-	fprintf(stderr, "close007:%d\n", retval);
+	fprintf_(stderr, "close007:%d\n", retval);
 
 #ifdef MAPTOOL_USE_ASYNC_SQL
-
+/*
 	retval = sqlite3async_control(SQLITEASYNC_HALT, SQLITEASYNC_HALT_IDLE);
 	if (retval)
 	{
@@ -722,9 +925,47 @@ void sql_db_close()
 	fprintf(stderr, "close async 003:%d\n", retval);
 
 	fprintf(stderr, "close async 001:%d\n", retval);
+*/
 #endif
 
 #endif
+}
+
+void sql_deactivate_walmode()
+{
+	char* errorMessage;
+        sqlite3_exec(sql_handle004, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+        sqlite3_exec(sql_handle005, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+        sqlite3_exec(sql_handle006, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+        sqlite3_exec(sql_handle007, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+
+        sqlite3_exec(sql_handle, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+
+}
+
+
+void sql_activate_walmode()
+{
+	char* errorMessage;
+        sqlite3_exec(sql_handle004, "PRAGMA journal_mode=WAL", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle004, "PRAGMA wal_autocheckpoint=15000", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle004, "PRAGMA mmap_size=67108864", NULL, NULL, &errorMessage);
+
+        sqlite3_exec(sql_handle005, "PRAGMA journal_mode=WAL", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle005, "PRAGMA wal_autocheckpoint=15000", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle005, "PRAGMA mmap_size=67108864", NULL, NULL, &errorMessage);
+
+        sqlite3_exec(sql_handle006, "PRAGMA journal_mode=WAL", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle006, "PRAGMA wal_autocheckpoint=15000", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle006, "PRAGMA mmap_size=67108864", NULL, NULL, &errorMessage);
+
+        sqlite3_exec(sql_handle007, "PRAGMA journal_mode=WAL", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle007, "PRAGMA wal_autocheckpoint=15000", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle007, "PRAGMA mmap_size=67108864", NULL, NULL, &errorMessage);
+
+        sqlite3_exec(sql_handle, "PRAGMA journal_mode=WAL", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle, "PRAGMA wal_autocheckpoint=15000", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle, "PRAGMA mmap_size=67108864", NULL, NULL, &errorMessage);
 }
 
 void sql_create_index001()
@@ -751,15 +992,17 @@ void sql_create_index001()
 	sqlite3_exec(sql_handle, "PRAGMA temp_store=FILE", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle, "PRAGMA cache_size = -9000", NULL, NULL, &errorMessage);
 
+#if 1
 	char create_table5[100] = "CREATE index wn1 on way_node(way_id, s)";
 	retval = sqlite3_exec(sql_handle004, create_table5, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	retval = sqlite3_exec(sql_handle005, create_table5, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	retval = sqlite3_exec(sql_handle006, create_table5, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	retval = sqlite3_exec(sql_handle007, create_table5, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
+#endif
 
 	/*
 	 char create_table5a[100] = "alter table way_node rename to way_node2";
@@ -827,46 +1070,58 @@ void sql_create_index001()
 
 	char create_table11[100] = "create index w5 on way(town_id,lat,lon)";
 	retval = sqlite3_exec(sql_handle,create_table11,0,0,0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	char create_table12[100] = "CREATE index w4 on way(id)";
 	retval = sqlite3_exec(sql_handle, create_table12, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	//char create_table13[100] = "create index w6 on way(ind)";
 	//retval = sqlite3_exec(sql_handle,create_table13,0,0,0);
-	//fprintf(stderr, "index:%d\n", retval);
+	//fprintf_(stderr, "index:%d\n", retval);
 
 	char create_table14[100] = "create index w8 on way(name_fold,town_id,ind)";
 	retval = sqlite3_exec(sql_handle,create_table14,0,0,0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	//char create_table15[100] = "create index w9 on way(name_fold)";
 	//retval = sqlite3_exec(sql_handle,create_table15,0,0,0);
-	//fprintf(stderr, "index:%d\n", retval);
+	//fprintf_(stderr, "index:%d\n", retval);
 
 	char create_table16[100] = "create index w10 on way(town_id,ind)";
 	retval = sqlite3_exec(sql_handle,create_table16,0,0,0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	char create_table17[100] = "create index w11 on way(ind,name_fold)";
 	retval = sqlite3_exec(sql_handle,create_table17,0,0,0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	char create_table18[100] = "create index w12 on way(ind,name_fold_idx)";
 	retval = sqlite3_exec(sql_handle,create_table18,0,0,0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
-	retval = sqlite3_exec(sql_handle, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle004, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle005, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle006, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle007, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle004, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle005, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle006, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle007, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+
+	retval = sqlite3_exec(sql_handle, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle004, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle005, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle006, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle007, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+
 
 	sqlite3_exec(sql_handle004, "PRAGMA temp_store=MEMORY", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle004, "PRAGMA cache_size = -20000", NULL, NULL, &errorMessage);
@@ -877,12 +1132,12 @@ void sql_create_index001()
 	sqlite3_exec(sql_handle007, "PRAGMA temp_store=MEMORY", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle007, "PRAGMA cache_size = -20000", NULL, NULL, &errorMessage);
 
-	sqlite3_exec(sql_handle004, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
-	sqlite3_exec(sql_handle005, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
-	sqlite3_exec(sql_handle006, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
-	sqlite3_exec(sql_handle007, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+	//sqlite3_exec(sql_handle004, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+	//sqlite3_exec(sql_handle005, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+	//sqlite3_exec(sql_handle006, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+	//sqlite3_exec(sql_handle007, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
 
-	sqlite3_exec(sql_handle, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+	//sqlite3_exec(sql_handle, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
 
 	sqlite3_exec(sql_handle, "PRAGMA temp_store=MEMORY", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle, "PRAGMA cache_size = -20000", NULL, NULL, &errorMessage);
@@ -910,30 +1165,43 @@ void sql_create_index002()
 
 	char create_table9[100] = "CREATE index twn1 on town(country_id)";
 	retval = sqlite3_exec(sql_handle, create_table9, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	char create_table12[100] = "CREATE index twn2 on town(size)";
 	retval = sqlite3_exec(sql_handle, create_table12, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	char create_table13[100] = "CREATE index twn3 on town(lat)";
 	retval = sqlite3_exec(sql_handle, create_table13, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	char create_table14[100] = "CREATE index twn4 on town(lon)";
 	retval = sqlite3_exec(sql_handle, create_table14, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 	char create_table15[100] = "CREATE index twn5 on town(done)";
 	retval = sqlite3_exec(sql_handle, create_table15, 0, 0, 0);
-	fprintf(stderr, "index:%d\n", retval);
+	fprintf_(stderr, "index:%d\n", retval);
 
-	retval = sqlite3_exec(sql_handle, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle004, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle005, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle006, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle007, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
+
+
+	retval = sqlite3_exec(sql_handle, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle004, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle005, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle006, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle007, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+
+	retval = sqlite3_exec(sql_handle, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle004, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle005, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle006, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle007, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	sqlite3_exec(sql_handle004, "PRAGMA temp_store=MEMORY", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle004, "PRAGMA cache_size = -20000", NULL, NULL, &errorMessage);
@@ -979,14 +1247,25 @@ void sql_create_index003()
 	 fprintf(stderr, "index:%d\n", retval);
 	 */
 
-	retval = sqlite3_exec(sql_handle002a, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle003a, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle002b, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
-	retval = sqlite3_exec(sql_handle003b, "analyze;", NULL, NULL, &errorMessage);
-	fprintf(stderr, "index:%d\n", retval);
+
+
+	retval = sqlite3_exec(sql_handle002a, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle003a, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle002b, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle003b, "analyze", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+
+	retval = sqlite3_exec(sql_handle002a, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle003a, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle002b, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle003b, "analyze sqlite_master", NULL, NULL, &errorMessage);
+	fprintf_(stderr, "index:%d\n", retval);
 
 	/*
 	 sqlite3_exec(sql_handle002a, "PRAGMA temp_store=MEMORY", NULL, NULL, &errorMessage);
@@ -1011,33 +1290,39 @@ void sql_db_init(int startup)
 	{
 		// Create the SQL query for creating a table
 		//char create_table1[200] = "CREATE TABLE IF NOT EXISTS way (id integer primary key asc, town_id integer, lat real,lon real, name text)";
-		char create_table1[200] = "CREATE TABLE IF NOT EXISTS way (id integer, town_id integer, ind integer, lat real,lon real, name text, name_fold text, name_fold_idx text)";
+		// char waytype = 1 --> normal item name in native language
+		//                2 --> english name of item
+		//                3 --> alternative name of item
+		//                4 --> town / district (masked as way)
+		//			??	  5 --> town english name (masked as way) ??
+		//               40 --> POI (masked as way)
+		char create_table1[200] = "CREATE TABLE IF NOT EXISTS way (id integer, town_id integer, ind integer, lat real,lon real, name text, name_fold text, name_fold_idx text, waytype integer)";
 		retval = sqlite3_exec(sql_handle, create_table1, 0, 0, 0);
 
 		char create_table2[200] = "CREATE TABLE IF NOT EXISTS way_node(way_id integer,node_id integer, s integer, seekpos1)";
 		retval = sqlite3_exec(sql_handle004, create_table2, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 		retval = sqlite3_exec(sql_handle005, create_table2, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 		retval = sqlite3_exec(sql_handle006, create_table2, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 		retval = sqlite3_exec(sql_handle007, create_table2, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 
 		char create_table15[200] = "CREATE TABLE IF NOT EXISTS boundary(rel_id integer primary key asc,admin_level integer, done integer, parent_rel_id integer, country_id integer, lat real, lon real, name text)";
 		retval = sqlite3_exec(sql_handle, create_table15, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 
 		char create_table3[200] = "CREATE TABLE IF NOT EXISTS node(id integer primary key asc,lat real,lon real)";
 		//char create_table3[200] = "CREATE TABLE IF NOT EXISTS node(id integer ,lat real,lon real)";
 		retval = sqlite3_exec(sql_handle002a, create_table3, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 		retval = sqlite3_exec(sql_handle003a, create_table3, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 		retval = sqlite3_exec(sql_handle002b, create_table3, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 		retval = sqlite3_exec(sql_handle003b, create_table3, 0, 0, 0);
-		fprintf(stderr, "table:%d\n", retval);
+		fprintf_(stderr, "table:%d\n", retval);
 
 		//char create_table7[200] = "CREATE TABLE IF NOT EXISTS nodei(id integer primary key asc,lat integer,lon integer)";
 		//retval = sqlite3_exec(sql_handle002, create_table7, 0, 0, 0);
@@ -1081,10 +1366,14 @@ void sql_db_init(int startup)
 	// WAYS and TOWNS -------
 	sqlite3_exec(sql_handle, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
+
 
 	//sqlite3_exec(sql_handle, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle, "PRAGMA journal_mode=OFF", NULL, NULL, &errorMessage);
+
+
 
 	sqlite3_exec(sql_handle, "PRAGMA temp_store=MEMORY", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle, "PRAGMA locking_mode=EXCLUSIVE", NULL, NULL, &errorMessage);
@@ -1095,6 +1384,8 @@ void sql_db_init(int startup)
 	// NODE -------
 	sqlite3_exec(sql_handle002a, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle002a, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle002a, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
+
 
 	//sqlite3_exec(sql_handle002a, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle002a, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1106,6 +1397,7 @@ void sql_db_init(int startup)
 
 	sqlite3_exec(sql_handle002b, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle002b, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle002b, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle002b, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle002b, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1120,6 +1412,7 @@ void sql_db_init(int startup)
 	// NODE -------
 	sqlite3_exec(sql_handle003a, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle003a, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle003a, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle003a, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle003a, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1131,6 +1424,7 @@ void sql_db_init(int startup)
 
 	sqlite3_exec(sql_handle003b, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle003b, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle003b, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle003b, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle003b, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1145,6 +1439,7 @@ void sql_db_init(int startup)
 	// WAY NODE -------
 	sqlite3_exec(sql_handle004, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle004, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle004, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle004, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle004, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1159,6 +1454,7 @@ void sql_db_init(int startup)
 	// WAY NODE -------
 	sqlite3_exec(sql_handle005, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle005, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle005, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle005, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle005, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1173,6 +1469,7 @@ void sql_db_init(int startup)
 	// WAY NODE -------
 	sqlite3_exec(sql_handle006, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle006, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle006, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle006, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle006, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1187,6 +1484,7 @@ void sql_db_init(int startup)
 	// WAY NODE -------
 	sqlite3_exec(sql_handle007, "PRAGMA synchronous=OFF", NULL, NULL, &errorMessage);
 	sqlite3_exec(sql_handle007, "PRAGMA count_changes=OFF", NULL, NULL, &errorMessage);
+	sqlite3_exec(sql_handle007, "PRAGMA threads = 3", NULL, NULL, &errorMessage);
 
 	//sqlite3_exec(sql_handle007, "PRAGMA journal_mode=MEMORY", NULL, NULL, &errorMessage);
 	//sqlite3_exec(sql_handle007, "PRAGMA journal_mode=PERSIST", NULL, NULL, &errorMessage);
@@ -1197,39 +1495,52 @@ void sql_db_init(int startup)
 	sqlite3_exec(sql_handle007, "PRAGMA cache_size = -20000", NULL, NULL, &errorMessage);
 	// WAY NODE -------
 
+	// sql_activate_walmode();
+	sql_deactivate_walmode();
 
 	retval = sqlite3_prepare_v2(sql_handle002a, "INSERT INTO node (id, lat, lon) VALUES (?,?,?);", -1, &stmt_nodea, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle003a, "INSERT INTO node (id, lat, lon) VALUES (?,?,?);", -1, &stmt_node__2a, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle002b, "INSERT INTO node (id, lat, lon) VALUES (?,?,?);", -1, &stmt_nodeb, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle003b, "INSERT INTO node (id, lat, lon) VALUES (?,?,?);", -1, &stmt_node__2b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	//retval = sqlite3_prepare_v2(sql_handle002, "INSERT INTO nodei (id, lat, lon) VALUES (?,?,?);", -1, &stmt_nodei, NULL);
-	//fprintf(stderr, "prep:%d\n", retval);
-	retval = sqlite3_prepare_v2(sql_handle, "INSERT INTO way (id, name, town_id, lat, lon, name_fold, ind, name_fold_idx) VALUES (?,?,?,?,?,?,0,?);", -1, &stmt_way, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	//fprintf_(stderr, "prep:%d\n", retval);
+	retval = sqlite3_prepare_v2(sql_handle, "INSERT INTO way (id, name, town_id, lat, lon, name_fold, ind, name_fold_idx, waytype) VALUES (?,?,?,?,?,?,0,?,?);", -1, &stmt_way, NULL);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle004, "INSERT INTO way_node (way_id, node_id,s,seekpos1) VALUES (?,?,?,?);", -1, &stmt_way_node, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle005, "INSERT INTO way_node (way_id, node_id,s,seekpos1) VALUES (?,?,?,?);", -1, &stmt_way_node__2, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle006, "INSERT INTO way_node (way_id, node_id,s,seekpos1) VALUES (?,?,?,?);", -1, &stmt_way_nodeb, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle007, "INSERT INTO way_node (way_id, node_id,s,seekpos1) VALUES (?,?,?,?);", -1, &stmt_way_node__2b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle004, "select node_id from way_node where way_id=? order by s;", -1, &stmt_sel001, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle005, "select node_id from way_node where way_id=? order by s;", -1, &stmt_sel001__2, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle006, "select node_id from way_node where way_id=? order by s;", -1, &stmt_sel001b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle007, "select node_id from way_node where way_id=? order by s;", -1, &stmt_sel001__2b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
+#if 0
+	char create_table543[100] = "CREATE index wn1 on way_node(way_id, s)";
+	retval = sqlite3_exec(sql_handle004, create_table543, 0, 0, 0);
+	fprintf(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle005, create_table543, 0, 0, 0);
+	fprintf(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle006, create_table543, 0, 0, 0);
+	fprintf(stderr, "index:%d\n", retval);
+	retval = sqlite3_exec(sql_handle007, create_table543, 0, 0, 0);
+	fprintf(stderr, "index:%d\n", retval);
+#endif
 
 	int jj;
 	for (jj = 0; jj < max_threads; jj++)
@@ -1241,79 +1552,79 @@ void sql_db_init(int startup)
 	}
 
 	retval = sqlite3_prepare_v2(sql_handle004, "select node_id,seekpos1 from way_node where way_id=? and s=?;", -1, &stmt_sel0012, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle005, "select node_id,seekpos1 from way_node where way_id=? and s=?;", -1, &stmt_sel0012__2, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle006, "select node_id,seekpos1 from way_node where way_id=? and s=?;", -1, &stmt_sel0012b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle007, "select node_id,seekpos1 from way_node where way_id=? and s=?;", -1, &stmt_sel0012__2b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle002a, "select lat,lon from node where id=?;", -1, &stmt_sel002a, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle003a, "select lat,lon from node where id=?;", -1, &stmt_sel002__2a, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle002b, "select lat,lon from node where id=?;", -1, &stmt_sel002b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle003b, "select lat,lon from node where id=?;", -1, &stmt_sel002__2b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "INSERT INTO town (done, id, country_id, name, size, postal, lat, lon, border_id) VALUES (0,?,?,?,?,?,?,?,?);", -1, &stmt_town, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	//retval = sqlite3_prepare_v2(sql_handle, "UPDATE way set lat=?, lon=? WHERE id=?;", -1, &stmt_way2, NULL);
-	//fprintf(stderr, "prep:%d\n", retval);
+	//fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "select id,size,lat,lon,name,border_id from town where done = 0 order by size desc;", -1, &stmt_town_sel001, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle, "update way set town_id = ? where lat >= ? and lat <= ? and lon >= ? and lon <= ? and town_id = -1;", -1, &stmt_way3, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
-	retval = sqlite3_prepare_v2(sql_handle, "select id, lat, lon from way where lat >= ? and lat <= ? and lon >= ? and lon <= ? and town_id = -1;", -1, &stmt_way3a, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	retval = sqlite3_prepare_v2(sql_handle, "select id, lat, lon, name from way where lat >= ? and lat <= ? and lon >= ? and lon <= ? and town_id = -1;", -1, &stmt_way3a, NULL);
+	fprintf_(stderr, "prep:%d\n", retval);
 	retval = sqlite3_prepare_v2(sql_handle, "update way set town_id = ? where id = ?;", -1, &stmt_way3b, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "select count(*) from town where done = 0;", -1, &stmt_town_sel002, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "update town set done = 1 where id = ?;", -1, &stmt_town_sel007, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "insert into town2 (border_id, id, admin_level) values (?,?,?);", -1, &stmt_town_sel008, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
-	retval = sqlite3_prepare_v2(sql_handle, "select id, country_id, name, border_id from town order by id;", -1, &stmt_town_sel005, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	retval = sqlite3_prepare_v2(sql_handle, "select id, country_id, name, border_id, lat, lon from town order by id;", -1, &stmt_town_sel005, NULL);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "select count(id) from town;", -1, &stmt_town_sel006, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "insert into boundary (done, rel_id, admin_level, lat, lon, name) values (0, ?,?,?,?,?);", -1, &stmt_bd_001, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "select rel_id, admin_level, lat, lon, name from boundary where done = 0;", -1, &stmt_bd_002, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "update boundary set done = 1, parent_rel_id = ? where rel_id = ?;", -1, &stmt_bd_003, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "update boundary set lat = ?, lon = ? where rel_id = ?;", -1, &stmt_bd_004, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
-	retval = sqlite3_prepare_v2(sql_handle, "select rel_id, parent_rel_id, name from boundary where rel_id = ?;", -1, &stmt_bd_005, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	retval = sqlite3_prepare_v2(sql_handle, "select rel_id, parent_rel_id, name, admin_level, lat, lon from boundary where rel_id = ?;", -1, &stmt_bd_005, NULL);
+	fprintf_(stderr, "prep:%d\n", retval);
 
-	retval = sqlite3_prepare_v2(sql_handle, "select t.id,w.lat, w.lon, w.name, t.country_id from way w left outer join town t on w.town_id=t.id where w.ind = 0 and w.name_fold_idx = ? order by w.name_fold,w.town_id;", -1, &stmt_sel003, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	retval = sqlite3_prepare_v2(sql_handle, "select t.id,w.lat, w.lon, w.name, t.country_id, w.waytype from way w left outer join town t on w.town_id=t.id where w.ind = 0 and w.name_fold_idx = ? order by w.name_fold,w.town_id;", -1, &stmt_sel003, NULL);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	retval = sqlite3_prepare_v2(sql_handle, "update way set ind = ? where ind = 0 and name_fold_idx = ?;", -1, &stmt_sel003u, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
-	retval = sqlite3_prepare_v2(sql_handle, "select t.id,w.lat, w.lon, w.name, t.country_id from way w left outer join town t on w.town_id=t.id \
+	retval = sqlite3_prepare_v2(sql_handle, "select t.id,w.lat, w.lon, w.name, t.country_id, w.waytype from way w left outer join town t on w.town_id=t.id \
 where ind = 0 \
 order by w.name_fold,w.town_id;", -1, &stmt_sel004, NULL);
-	fprintf(stderr, "prep:%d\n", retval);
+	fprintf_(stderr, "prep:%d\n", retval);
 
 	sql_counter = 0;
 	sql_counter2 = 0;
@@ -1335,6 +1646,7 @@ static void usage(FILE *f)
 	fprintf(f, "-6 (--64bit)             : set zip 64 bit compression\n");
 	fprintf(f, "-a (--attr-debug-level)  : control which data is included in the debug attribute\n");
 	//	fprintf(f, "-c (--dump-coordinates)  : dump coordinates after phase 1\n");
+	fprintf(f, "-D                       : *WARNING* quick debug run *WARNING*\n");
 	fprintf(f, "-X                       : generate country-border-ONLY map\n");
 	fprintf(f, "-Y                       : generate coastline-ONLY map\n");
 	fprintf(f, "-Z                       : output coastline-ONLY map as XML file\n");
@@ -1351,6 +1663,7 @@ static void usage(FILE *f)
 	fprintf(f, "-N (--nodes-only)        : process only nodes\n");
 	fprintf(f, "-m                       : print memory info\n");
 	fprintf(f, "-n                       : ignore unknown types\n");
+	fprintf(f, "-o                       : filename including path to sqlite db to record maptool runtimes\n");
 	// fprintf(f, "-o (--coverage)          : map every street to item coverage\n");
 	// fprintf(f, "-P (--protobuf)          : input file is protobuf\n");
 	fprintf(f, "-r (--rule-file)         : read mapping rules from specified file\n");
@@ -1358,9 +1671,11 @@ static void usage(FILE *f)
 	fprintf(f, "-S (--slice-size)        : defines the amount of memory to use, in bytes. Default is 1GB\n");
 	fprintf(f, "-v                       : verbose mode\n");
 	fprintf(f, "-w (--dedupe-ways)       : ensure no duplicate ways or nodes. useful when using several input files\n");
+	fprintf(f, "-x                       : use ./manual/ as directory for manual country border files\n");
 	fprintf(f, "-W (--ways-only)         : process only ways\n");
 	fprintf(f, "-z (--compression-level) : set the compression level\n");
 	fprintf(f, "-U (--unknown-country)   : add objects with unknown country to index\n");
+	fprintf(f, "-q                       : less verbose (quiet) mode\n");
 
 	exit(1);
 }
@@ -1369,7 +1684,7 @@ void *sql_thread(void *ptr)
 {
 	// this call never returns!!
 #ifdef MAPTOOL_USE_SQL
-	sqlite3async_run();
+/*	sqlite3async_run(); */
 #endif
 }
 
@@ -1379,30 +1694,30 @@ void *multi_threaded_phase_001(void *ptr)
 
 	long long i_x_slice_base = vars->count * slice_size;
 
-	fprintf(stderr, "[THREAD] #%d load buffer\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d load buffer\n", vars->thread_num);
 	load_buffer("coords.tmp", &node_buffer[vars->thread_num], i_x_slice_base, slice_size);
-	fprintf(stderr, "[THREAD] #%d load buffer ready\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d load buffer ready\n", vars->thread_num);
 
 	// try to fillup the node_hash again
-	fprintf(stderr, "[THREAD] #%d fill hash node\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d fill hash node\n", vars->thread_num);
 	fill_hash_node(vars->thread_num);
-	fprintf(stderr, "[THREAD] #%d fill hash node ready\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d fill hash node ready\n", vars->thread_num);
 
-	fprintf(stderr, "[THREAD] #%d ref ways\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d ref ways\n", vars->thread_num);
 	ref_ways(vars->file1, vars->thread_num); // --> this just sets "ref_way" count, of nodes (and takes hours of time!!)
-	fprintf(stderr, "[THREAD] #%d ref ways ready\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d ref ways ready\n", vars->thread_num);
 
-	fprintf(stderr, "[THREAD] #%d save buffer\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d save buffer\n", vars->thread_num);
 	save_buffer("coords.tmp", &node_buffer[vars->thread_num], i_x_slice_base); // this saves the "ref_way" count back to file
-	fprintf(stderr, "[THREAD] #%d save buffer ready\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d save buffer ready\n", vars->thread_num);
 
-	fprintf(stderr, "[THREAD] #%d free buffer\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d free buffer\n", vars->thread_num);
 	// just to be save always free buffer here (dont want to have mem leaks)
 	free_buffer("coords.tmp", &node_buffer[vars->thread_num]);
-	fprintf(stderr, "[THREAD] #%d free buffer ready\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d free buffer ready\n", vars->thread_num);
 
 	thread_is_working_[vars->thread_num] = 0;
-	fprintf(stderr, "[THREAD] #%d ready\n", vars->thread_num);
+	fprintf_(stderr, "[THREAD] #%d ready\n", vars->thread_num);
 }
 
 int main(int argc, char **argv)
@@ -1423,9 +1738,19 @@ int main(int argc, char **argv)
 
 	linguistics_init();
 
-#if 0
-	char *map=g_strdup(attrmap);
-#endif
+
+ 	// reserve mem for item buffer 2 ------------
+	//
+	item_bin_2 = (struct item_bin *) g_malloc0(MAX_ITEMBIN_BYTES_); // 24 MByte buffer for item
+	// 
+ 	// reserve mem for item buffer 2 ------------
+
+	int ii33;
+	for (ii33 = 0; ii33 < max_threads; ii33++)
+	{
+		ib_buffer_array[ii33] = (char *) g_malloc0(MAX_ITEMBIN_BYTES_);
+	}
+
 
 	int jk;
 	for (jk = 0; jk < max_threads; jk++)
@@ -1456,6 +1781,7 @@ int main(int argc, char **argv)
 	char *result, *optarg_cp, *attr_name, *attr_value;
 	char *protobufdb = NULL, *protobufdb_operation = NULL, *md5file = NULL;
 	GList *boundaries_list = NULL;
+	GList *manual_borders = NULL;
 
 	diff_tt = 0;
 	diff2_tt = 0;
@@ -1526,7 +1852,7 @@ int main(int argc, char **argv)
 #ifdef HAVE_POSTGRESQL
 				"d:"
 #endif
-					"e:fghj:i:knmp:r:s:wvu:z:UXYZ", long_options, &option_index);
+					"e:fghj:i:knmo:p:qr:s:wxvu:z:UXYZ", long_options, &option_index);
 		if (c == -1)
 		{
 			break;
@@ -1537,6 +1863,10 @@ int main(int argc, char **argv)
 			case '5':
 				md5file = optarg;
 				break;
+			case 'o':
+				global_use_runtime_db = 1;
+				runtime_db_filename_with_path = optarg;
+				break;
 			case '6':
 				fprintf(stderr, "I will generate a ZIP64 map\n");
 				zip64 = 1;
@@ -1545,7 +1875,7 @@ int main(int argc, char **argv)
 				//	protobufdb = optarg;
 				//	break;
 			case 'D':
-				output = 1;
+				MAPTOOL_QUICK_RUN = 1;
 				break;
 			case 'N':
 				process_ways = 0;
@@ -1562,6 +1892,13 @@ int main(int argc, char **argv)
 				//	break;
 			case 'S':
 				slice_size = atoll(optarg);
+
+				if (slice_size < MIN_SLICE_SIZE_BYTES)
+				{
+					fprintf(stderr, "Using minimum slice size: %d bytes\n", MIN_SLICE_SIZE_BYTES);
+					slice_size = MIN_SLICE_SIZE_BYTES;
+				}
+
 				break;
 			case 'W':
 				process_nodes = 0;
@@ -1585,7 +1922,7 @@ int main(int argc, char **argv)
 
 				FILE *out_ = tempfile("", "borders.xml", 1);
 				fprintf(out_, "<?xml version='1.0' encoding='UTF-8'?>\n");
-				fprintf(out_, "<osm version=\"0.6\" generator=\"ZANavi maptool\">\n");
+				fprintf(out_, "<osm version=\"0.6\" generator=\"ZANavi maptool v"SVN_VERSION"\">\n");
 				fclose(out_);
 
 				break;
@@ -1620,10 +1957,18 @@ int main(int argc, char **argv)
 				break;
 			case 'g':
 				sqlite_db_dir = sqlite_db_dir_extra;
+				sqlite_db_dir2 = sqlite_db_dir_extra2;
+				sqlite_db_dir3 = sqlite_db_dir_extra3;
 				sqlite_temp_dir = 0;
+				break;
+			case 'x':
+				manual_country_border_dir = "./manual/";
+				fprintf(stderr, "ASSUME manual country border dir: %s\n", manual_country_border_dir);
 				break;
 			case 'f':
 				sqlite_db_dir = sqlite_db_dir_extra;
+				sqlite_db_dir2 = sqlite_db_dir_extra2;
+				sqlite_db_dir3 = sqlite_db_dir_extra3;
 				sqlite_temp_dir = 1;
 				break;
 			case 'h':
@@ -1640,9 +1985,13 @@ int main(int argc, char **argv)
 			case 'k':
 				fprintf(stderr, "I will KEEP tmp files\n");
 				keep_tmpfiles = 1;
+				global_keep_tmpfiles = 1;
 				break;
 			case 'p':
 				add_plugin(optarg);
+				break;
+			case 'q':
+				global_less_verbose = 1;
 				break;
 			case 's':
 				start = atoi(optarg);
@@ -1695,7 +2044,13 @@ int main(int argc, char **argv)
 	{
 		usage(stderr);
 	}
+
+	// ------------------------------------
+	// ------------------------------------
+	// "result" has the name of the output xxx.bin file!
 	result = argv[optind];
+	// ------------------------------------
+	// ------------------------------------
 
 	sig_alrm(0);
 
@@ -1764,7 +2119,7 @@ int main(int argc, char **argv)
 	unlink(g_strdup_printf("%stemp_data.db",sqlite_db_dir));
 	unlink("temp_data.db");
 
-	unlink(g_strdup_printf("%stemp_data002a.db",sqlite_db_dir));
+	unlink(g_strdup_printf("%stemp_data002a.db",sqlite_db_dir2));
 	unlink(g_strdup_printf("%stemp_data003a.db",sqlite_db_dir));
 	unlink(g_strdup_printf("%stemp_data002b.db",sqlite_db_dir));
 	unlink(g_strdup_printf("%stemp_data003b.db",sqlite_db_dir));
@@ -1773,7 +2128,7 @@ int main(int argc, char **argv)
 	unlink("temp_data002b.db");
 	unlink("temp_data003b.db");
 
-	unlink(g_strdup_printf("%stemp_data004.db",sqlite_db_dir));
+	unlink(g_strdup_printf("%stemp_data004.db",sqlite_db_dir3));
 	unlink(g_strdup_printf("%stemp_data005.db",sqlite_db_dir));
 	unlink(g_strdup_printf("%stemp_data006.db",sqlite_db_dir));
 	unlink(g_strdup_printf("%stemp_data007.db",sqlite_db_dir));
@@ -1785,15 +2140,19 @@ int main(int argc, char **argv)
 	sql_db_open();
 	sql_db_init(1);
 
+	if (global_use_runtime_db == 1)
+	{
+		sql_runtime_db_write(basename(result), 0, NULL, 0);
+	}
 
-	unlink(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir));
+	unlink(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir2));
 	unlink("ways_ref_file.db");
-	ways_ref_file = fopen(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir), "wb+");
+	ways_ref_file = fopen(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir2), "wb+");
 
 	int jk2;
-	for (jk2 = 0; jk2 < max_threads; jk2++)
+	for (jk2 = 0; jk2 < threads; jk2++)
 	{
-		ways_ref_file_thread[jk2] = fopen(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir), "rb");
+		ways_ref_file_thread[jk2] = fopen(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir2), "rb");
 	}
 
 	unlink("coords.tmp");
@@ -1827,12 +2186,79 @@ int main(int argc, char **argv)
 	osm.boundaries = boundaries;
 	osm.relations_riverbank = relations_riverbank;
 
-	init_node_hash(max_threads, 1); // initialze to maximum array size
+	init_node_hash(threads, 1); // initialze to maximum array size // --> now only to really used threads
+
+
+
+
+
+
+#if 0
+	time(&start_tt);
+
+	int i2;
+	long long l2;
+	for(i2=0;i2 < 50000000;i2++)
+	{
+		//l2 = (long long)rand();
+		//l2 = (long long)((long long)l2 << 32);
+		//l2 = l2 + ((long long)rand());
+		l2 = i2 * 4;
+		quick_hash_add_entry(node_hash_cfu[0], l2, 1);
+
+		if ((i2 % 50000) == 0)
+		{
+			//fprintf(stderr, "i=%d key=%lld\n", i2, l2);
+			quick_hash_print_stats(node_hash_cfu[0]);
+		}
+	}
+
+	quick_hash_print_stats(node_hash_cfu[0]);
+
+	time(&end_tt);
+	diff_tt = difftime(end_tt, start_tt);
+	char outstring933[200];
+	convert_to_human_time(diff_tt, outstring933);
+	fprintf(stderr, "-RUNTIME-HASH01: %s\n", outstring933);
+
+	fprintf(stderr, "******* lookup ********\n");
+
+	time(&start_tt);
+
+	for(i2=0;i2 < 50000000;i2++)
+	{
+		l2 = (long long)rand();
+		l2 = (long long)((long long)l2 << 32);
+		l2 = l2 + ((long long)rand());
+		quick_hash_lookup(node_hash_cfu[0], l2);
+
+		if ((i2 % 50000) == 0)
+		{
+			//fprintf(stderr, "i=%d\n", i2);
+		}
+	}
+
+	time(&end_tt);
+	diff_tt = difftime(end_tt, start_tt);
+	char outstring934[200];
+	convert_to_human_time(diff_tt, outstring934);
+	fprintf(stderr, "-RUNTIME-HASH01: %s\n", outstring934);
+
+
+	quick_hash_destroy(node_hash_cfu[0]);
+	init_node_hash(threads, 1);
+
+#endif
+
+
+
 
 	if (map_handles)
 	{
 		if (verbose_mode)
+		{
 			fprintf(stderr, "**phase1:A**\n");
+		}
 		GList *l;
 		phase1_map(map_handles, ways, nodes);
 		l = map_handles;
@@ -1845,7 +2271,9 @@ int main(int argc, char **argv)
 	else if (protobuf)
 	{
 		if (verbose_mode)
+		{
 			fprintf(stderr, "**phase1:B**\n");
+		}
 		// ---obsolete--- // map_collect_data_osm_protobuf(input_file, &osm);
 	}
 	else
@@ -1853,7 +2281,9 @@ int main(int argc, char **argv)
 		time(&start_tt);
 
 		if (verbose_mode)
+		{
 			fprintf(stderr, "**phase1:C**\n");
+		}
 
 		// ---------------- MAIN routine to read in data from OSM !!! ----------
 		// ---------------- MAIN routine to read in data from OSM !!! ----------
@@ -1937,6 +2367,10 @@ int main(int argc, char **argv)
 	// fprintf(stderr, "slices==2==%d\n", slices);
 
 	long long i_x_slice_size;
+
+	if (MAPTOOL_QUICK_RUN == 0)
+	{
+
 	// for (i = slices - 2; i >= 0; i--)
 	for (i = 0; i < slices; i++)
 	{
@@ -1959,7 +2393,7 @@ int main(int argc, char **argv)
 					if (thread_is_working_[cur_thread_num + ij] == 0)
 					{
 						cur_thread_num = cur_thread_num + ij;
-						fprintf(stderr, "found free thread #%d\n", cur_thread_num);
+						fprintf_(stderr, "found free thread #%d\n", cur_thread_num);
 						pthread_join(thread_[cur_thread_num], NULL);
 						break;
 					}
@@ -1969,7 +2403,7 @@ int main(int argc, char **argv)
 					if (thread_is_working_[cur_thread_num + ij - threads] == 0)
 					{
 						cur_thread_num = cur_thread_num + ij - threads;
-						fprintf(stderr, "found free thread #%d\n", cur_thread_num);
+						fprintf_(stderr, "found free thread #%d\n", cur_thread_num);
 						pthread_join(thread_[cur_thread_num], NULL);
 						break;
 					}
@@ -1981,25 +2415,27 @@ int main(int argc, char **argv)
 		{
 			time(&start_tt);
 
-			fprintf(stderr, "need to wait for thread #%d to finish first ...\n", cur_thread_num);
+			fprintf_(stderr, "need to wait for thread #%d to finish first ...\n", cur_thread_num);
 			//iret_[cur_thread_num] = g_thread_join(thread_[cur_thread_num]);
 			pthread_join(thread_[cur_thread_num], NULL);
 			//thread_is_working_[cur_thread_num] = 0;
 			if (verbose_mode)
+			{
 				printf("Thread %d returns: %d\n", cur_thread_num, iret_[cur_thread_num]);
-			fprintf(stderr, "... thread #%d ready\n", cur_thread_num);
+			}
+			fprintf_(stderr, "... thread #%d ready\n", cur_thread_num);
 
 			time(&end_tt);
 			diff_tt = difftime(end_tt, start_tt);
 			char outstring[200];
 			convert_to_human_time(diff_tt, outstring);
-			fprintf(stderr, "-RUNTIME-LOOP1: %s this loop run\n", outstring);
+			fprintf_(stderr, "-RUNTIME-LOOP1: %s this loop run\n", outstring);
 			diff2_tt = diff2_tt + diff_tt;
 			if (i > 0)
 			{
 				double eta_time = (diff2_tt / i) * (slices - i);
 				convert_to_human_time(eta_time, outstring);
-				fprintf(stderr, "-RUNTIME-LOOP1: %s left\n", outstring);
+				fprintf_(stderr, "-RUNTIME-LOOP1: %s left\n", outstring);
 			}
 		}
 
@@ -2011,7 +2447,7 @@ int main(int argc, char **argv)
 		vars[cur_thread_num].count = i;
 		vars[cur_thread_num].thread_num = cur_thread_num;
 		vars[cur_thread_num].file1 = ways_file[cur_thread_num];
-		fprintf(stderr, "starting thread #%d\n", cur_thread_num);
+		fprintf_(stderr, "starting thread #%d\n", cur_thread_num);
 
 		thread_is_working_[cur_thread_num] = 1;
 
@@ -2033,7 +2469,7 @@ int main(int argc, char **argv)
 	{
 		if (thread_is_working_[i] == 1)
 		{
-			fprintf(stderr, "[LAST] need to wait for thread #%d to finish first ...\n", i);
+			fprintf_(stderr, "[LAST] need to wait for thread #%d to finish first ...\n", i);
 			// iret_[i] = g_thread_join(thread_[i]);
 			pthread_join(thread_[i], NULL);
 			if (verbose_mode)
@@ -2071,18 +2507,11 @@ int main(int argc, char **argv)
 	//	fclose(file1);
 	//}
 
-	cur_thread_num = 0;
-
-	// clean up buffer(s)
-	for (i = 0; i < threads; i++)
-	{
-		int jj = 0;
-		for (jj = 0; jj < 2400000; jj++)
-		{
-			ib_buffer_array[i][jj] = 0;
-		}
 	}
 
+	cur_thread_num = 0;
+
+/*
 	for (jk = 0; jk < max_threads; jk++)
 	{
 		if (node_buffer[jk].base != NULL)
@@ -2093,6 +2522,7 @@ int main(int argc, char **argv)
 		node_buffer[jk].base = NULL;
 		node_buffer[jk].size = 0;
 	}
+*/
 
 	if (osm.ways_with_coords)
 	{
@@ -2165,7 +2595,11 @@ int main(int argc, char **argv)
 
 			fprintf(stderr, "slice %d of %d\n", i + 1, slices99);
 			int final = (i >= slices99 - 1);
+
+			// ways_split = tempfile(suffix, "./db/ways_split", 1);
 			ways_split = tempfile(suffix, "ways_split", 1);
+
+
 			ways_split_index = final ? tempfile(suffix, "ways_split_index", 1) : NULL;
 			graph = tempfile(suffix, "graph", 1);
 			coastline = tempfile(suffix, "coastline", 1);
@@ -2178,7 +2612,14 @@ int main(int argc, char **argv)
 			// fseeko(ways_ref_file, 0L, SEEK_CUR);
 
 			// fill in lat,long for way, and find intersections
-			map_find_intersections(ways, ways_split, ways_split_index, graph, coastline, final);
+			if (MAPTOOL_QUICK_RUN == 0)
+			{
+				map_find_intersections(ways, ways_split, ways_split_index, graph, coastline, final);
+			}
+			else
+			{
+				map_find_intersections__quick__for__debug(ways, ways_split, ways_split_index, graph, coastline, final);
+			}
 			// write to "ways_split" file
 
 			fclose(ways_split);
@@ -2192,8 +2633,16 @@ int main(int argc, char **argv)
 			if (!final)
 			{
 				// rename to "ways_to_resolve" and use that as new input
+
 				tempfile_rename(suffix, "ways_split", "ways_to_resolve");
+				// tempfile_copyrename(suffix, "./db/ways_split", "ways_to_resolve");
+
 				ways = tempfile(suffix, "ways_to_resolve", 0);
+			}
+			else
+			{
+				// on final run, just move the file without renaming
+				// tempfile_copyrename(suffix, "./db/ways_split", "ways_split");
 			}
 
 			if (i == 0)
@@ -2209,13 +2658,13 @@ int main(int argc, char **argv)
 			diff_tt = difftime(end_tt, start_tt);
 			char outstring[200];
 			convert_to_human_time(diff_tt, outstring);
-			fprintf(stderr, "-RUNTIME-LOOP2: %s this loop run\n", outstring);
+			fprintf_(stderr, "-RUNTIME-LOOP2: %s this loop run\n", outstring);
 			diff2_tt = diff2_tt + diff_tt;
 			if ((i + 1) > 0)
 			{
 				double eta_time = (diff2_tt / (i + 1)) * (slices99 - (i + 1));
 				convert_to_human_time(eta_time, outstring);
-				fprintf(stderr, "-RUNTIME-LOOP2: %s left\n", outstring);
+				fprintf_(stderr, "-RUNTIME-LOOP2: %s left\n", outstring);
 			}
 		}
 
@@ -2226,6 +2675,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "PROGRESS: Skipping Phase 2\n");
 	}
 
+/*
 	for (jk = 0; jk < max_threads; jk++)
 	{
 		if (node_buffer[jk].base != NULL)
@@ -2236,6 +2686,20 @@ int main(int argc, char **argv)
 		node_buffer[jk].base = NULL;
 		node_buffer[jk].size = 0;
 	}
+*/
+
+/*
+	for (jk = 0; jk < threads; jk++)
+	{
+		if (node_buffer[jk].base != NULL)
+		{
+			free(node_buffer[jk].base);
+		}
+		node_buffer[jk].malloced = 0;
+		node_buffer[jk].base = NULL;
+		node_buffer[jk].size = 0;
+	}
+*/
 
 	// ------ append already resolved ways to ways file -----
 	fprintf(stderr, "PROGRESS: Phase 12: append already resolved ways to ways file\n");
@@ -2321,6 +2785,18 @@ int main(int argc, char **argv)
 	// sql_db_open();
 	// sql_db_init(0);
 
+
+	// ------ load manual country borders --------------------------------------------------
+	fprintf(stderr, "PROGRESS: Phase 15: load manual country borders\n");
+	manual_borders = load_manual_country_borders();
+	save_manual_country_borders_to_db(manual_borders);
+	// ------ load manual country borders --------------------------------------------------
+
+
+
+
+
+
 	FILE *towns2 = tempfile(suffix, "towns", 0);
 	FILE *boundaries2 = NULL;
 	FILE *ways2 = NULL;
@@ -2347,12 +2823,14 @@ int main(int argc, char **argv)
 		sqlite3_exec(sql_handle006, "COMMIT", 0, 0, 0);
 		sqlite3_exec(sql_handle007, "COMMIT", 0, 0, 0);
 #endif
-		boundaries_list = osm_process_towns(towns2, coords2, boundaries2, ways2); // check where towns are located with boundaries and "is_in"
+		boundaries_list = osm_process_towns(towns2, coords2, boundaries2, ways2, manual_borders); // check where towns are located with boundaries and "is_in"
 
 		fprintf(stderr, "PROGRESS: Correcting Boundary Refpoints\n");
 		correct_boundary_ref_point(boundaries_list);
+
 		fprintf(stderr, "PROGRESS: Building Boundarytree\n");
-		build_boundary_tree(boundaries_list);
+		build_boundary_tree(boundaries_list, manual_borders);
+
 #ifdef MAPTOOL_USE_SQL
 		sql_counter = 0;
 		sql_counter2 = 0;
@@ -2397,6 +2875,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, "-RUNTIME-TOWNS: %s\n", outstring);
 	}
 
+	// ------ save manual country borders --------------------------------------------------
+	fprintf(stderr, "PROGRESS: Phase 15a: save manual country borders\n");
+	save_manual_country_borders(boundaries_list);
+	// ------ save manual country borders --------------------------------------------------
 
 
 	// ------ remove useless tags from ways --------------------------------------------------
@@ -2424,8 +2906,11 @@ int main(int argc, char **argv)
 	fprintf(stderr, "PROGRESS: Phase 13: assign town to streets\n");
 
 	time(&start_tt);
-	assign_town_to_streets(boundaries_list);
-	// we should free the GList boundaries_list here!!!
+	assign_town_to_streets(boundaries_list, manual_borders);
+
+	// we should free the GList boundaries_list here!!! --> now we do :-)
+	free_boundaries(boundaries_list);
+
 	time(&end_tt);
 	diff_tt = difftime(end_tt, start_tt);
 	char outstring7[200];
@@ -2440,7 +2925,7 @@ int main(int argc, char **argv)
 	time(&start_tt);
 
 	FILE *ways14_2 = tempfile(suffix, "town_index", 1);
-	generate_town_index_file(ways14_2);
+	generate_town_index_file(ways14_2, manual_borders);
 	fclose(ways14_2);
 
 	FILE *ways14_1 = tempfile(suffix, "street_index", 1);
@@ -2471,6 +2956,72 @@ int main(int argc, char **argv)
 	// ------ generate street index file --------------------------------------------------
 
 
+	if (!global_less_verbose)
+	{
+		// ------ plot streets with no towns assigned -----------------------------------------
+		FILE *file_coords_for_street_map = NULL;
+		FILE *file_coords_for_street_map2 = NULL;
+		sqlite3_stmt *stmt_mm_1;
+		int rc9;
+		double lat9;
+		double lon9;
+		char *str_name = NULL;
+
+		int retval9 = sqlite3_prepare_v2(sql_handle, "select w.town_id, w.lat, w.lon, w.name from way w where w.town_id='-1';", -1, &stmt_mm_1, NULL);
+		fprintf_(stderr, "prep:%d\n", retval9);
+
+
+		file_coords_for_street_map = fopen("streets_no_town.coords.txt", "wb");
+		fprintf(file_coords_for_street_map, "-175.0|85.0|-175_85\n");
+		fprintf(file_coords_for_street_map, "175|85.0|175_85\n");
+		fprintf(file_coords_for_street_map, "-175.0|-85.0|-175_-85\n");
+		fprintf(file_coords_for_street_map, "175.0|-85.0|175_-85\n");
+
+		file_coords_for_street_map2 = fopen("streets_no_town.coords_names.txt", "wb");
+		fprintf(file_coords_for_street_map2, "-175.0|85.0|-175_85\n");
+		fprintf(file_coords_for_street_map2, "175|85.0|175_85\n");
+		fprintf(file_coords_for_street_map2, "-175.0|-85.0|-175_-85\n");
+		fprintf(file_coords_for_street_map2, "175.0|-85.0|175_-85\n");
+
+		// loop thru all the towns
+		do
+		{
+			rc9 = sqlite3_step(stmt_mm_1);
+			switch (rc9)
+			{
+				case SQLITE_DONE:
+					break;
+				case SQLITE_ROW:
+					lat9 = sqlite3_column_double(stmt_mm_1, 1);
+					lon9 = sqlite3_column_double(stmt_mm_1, 2);
+					str_name = g_strdup_printf("%s", sqlite3_column_text(stmt_mm_1, 3));
+					// format: lon|lat|[townname]\n
+					fprintf(file_coords_for_street_map, "%lf|%lf|\n", lon9, lat9);
+					fprintf(file_coords_for_street_map2, "%lf|%lf|%s\n", lon9, lat9, str_name);
+					if (str_name)
+					{
+						g_free(str_name);
+					}
+					break;
+				default:
+					fprintf(stderr, "SQL Error: %d\n", rc9);
+					break;
+			}
+		}
+		while (rc9 == SQLITE_ROW);
+		sqlite3_reset(stmt_mm_1);
+
+		retval9 = sqlite3_finalize(stmt_mm_1);
+		fprintf_(stderr, "fin:%d\n", retval9);
+
+		fclose(file_coords_for_street_map);
+		fclose(file_coords_for_street_map2);
+
+		// ------ plot streets with no towns assigned -----------------------------------------
+	}
+
+
+
 
 	if (! MAPTOOL_SQL_INPUT_TOO_SMALL)
 	{
@@ -2482,7 +3033,7 @@ int main(int argc, char **argv)
 		unlink(g_strdup_printf("%stemp_data.db",sqlite_db_dir));
 		unlink("temp_data.db");
 
-		unlink(g_strdup_printf("%stemp_data002a.db",sqlite_db_dir));
+		unlink(g_strdup_printf("%stemp_data002a.db",sqlite_db_dir2));
 		unlink(g_strdup_printf("%stemp_data003a.db",sqlite_db_dir));
 		unlink(g_strdup_printf("%stemp_data002b.db",sqlite_db_dir));
 		unlink(g_strdup_printf("%stemp_data003b.db",sqlite_db_dir));
@@ -2491,7 +3042,7 @@ int main(int argc, char **argv)
 		unlink("temp_data002b.db");
 		unlink("temp_data003b.db");
 
-		unlink(g_strdup_printf("%stemp_data004.db",sqlite_db_dir));
+		unlink(g_strdup_printf("%stemp_data004.db",sqlite_db_dir3));
 		unlink(g_strdup_printf("%stemp_data005.db",sqlite_db_dir));
 		unlink(g_strdup_printf("%stemp_data006.db",sqlite_db_dir));
 		unlink(g_strdup_printf("%stemp_data007.db",sqlite_db_dir));
@@ -2501,24 +3052,17 @@ int main(int argc, char **argv)
 		unlink("temp_data007.db");
 
 		int jk2;
-		for (jk2 = 0; jk2 < max_threads; jk2++)
+		for (jk2 = 0; jk2 < threads; jk2++)
 		{
 			fclose(ways_ref_file_thread[jk2]);
 		}
 
 		fclose(ways_ref_file);
 
-		unlink(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir));
+		// unlink(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir));
+		unlink(g_strdup_printf("%sways_ref_file.db",sqlite_db_dir2));
 		unlink("ways_ref_file.db");
 	}
-
-
-
-
-
-
-
-
 
 
 	fprintf(stderr, "PROGRESS: Phase 3: sorting countries, generating turn restrictions\n");
@@ -2609,6 +3153,30 @@ int main(int argc, char **argv)
 	convert_to_human_time(diff_tt, outstring5);
 	fprintf(stderr, "-RUNTIME-PHASE11: %s\n", outstring5);
 	// ------ remove useless tags from nodes --------------------------------------------------
+
+
+#if 0
+	// ------ remove useless ways --------------------------------------------------
+	fprintf(stderr, "PROGRESS: Phase 110: remove useless ways\n");
+
+	time(&start_tt);
+	ways = tempfile(suffix, "ways_split", 0);
+	FILE *ways128 = tempfile(suffix, "ways_tags_removed", 1);
+	remove_useless_ways(ways, ways128);
+	if (ways)
+		fclose(ways);
+	if (ways128)
+		fclose(ways128);
+	tempfile_unlink(suffix, "ways_split");
+	tempfile_rename(suffix, "ways_tags_removed", "ways_split");
+	time(&end_tt);
+	diff_tt = difftime(end_tt, start_tt);
+	char outstring104[200];
+	convert_to_human_time(diff_tt, outstring104);
+	fprintf(stderr, "-RUNTIME-PHASE110: %s\n", outstring104);
+	// ------ remove useless tags from ways --------------------------------------------------
+#endif
+
 
 
 	// remove DB
@@ -2709,7 +3277,7 @@ int main(int argc, char **argv)
 					map_information_attrs[1].type = attr_url;
 					map_information_attrs[1].u.str = url;
 				}
-				index_init(zip_info, 1);
+				index_init(zip_info, (int)GENERATE_BINFILE_MAPVERSION);
 			}
 
 			if (!strcmp(suffix, r))
@@ -2740,7 +3308,7 @@ int main(int argc, char **argv)
 					files[2] = tempfile(suffix, "nodes", 0);
 				}
 
-				fprintf(stderr, "Slice %d\n", i);
+				fprintf_(stderr, "Slice %d\n", i);
 
 				time(&start_tt);
 				phase5(files, references, 3, 0, suffix, zip_info);
@@ -2824,6 +3392,36 @@ int main(int argc, char **argv)
 		fclose(out_);
 	}
 
+
+	for (jk = 0; jk < max_threads; jk++)
+	{
+		if (node_buffer[jk].base != NULL)
+		{
+			free(node_buffer[jk].base);
+		}
+		node_buffer[jk].malloced = 0;
+		node_buffer[jk].base = NULL;
+		node_buffer[jk].size = 0;
+	}
+
+
+	// clean up buffer(s)
+	for (i = 0; i < max_threads; i++)
+	{
+		if (ib_buffer_array[i])
+		{
+			g_free(ib_buffer_array[i]);
+			ib_buffer_array[i] = NULL;
+		}
+	}
+
+
+	if (item_bin_2)
+	{
+		g_free(item_bin_2);
+		item_bin_2 = NULL;
+	}
+
 	sig_alrm(0);
 	sig_alrm_end();
 
@@ -2831,6 +3429,12 @@ int main(int argc, char **argv)
 	global_diff_tt = difftime(global_end_tt, global_start_tt);
 	char global_outstring[200];
 	convert_to_human_time(global_diff_tt, global_outstring);
+
+	if (global_use_runtime_db == 1)
+	{
+		sql_runtime_db_write(basename(result), (long long)global_diff_tt, global_outstring, 1);
+	}
+
 	fprintf(stderr, "PROGRESS: Phase 999:%s:### Map Ready ### -RUNTIME-OVERALL: %s\n", result, global_outstring);
 
 	return 0;

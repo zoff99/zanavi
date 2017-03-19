@@ -25,7 +25,7 @@ BUILT_SOURCES = version_maptool.h
 #	poly2tri-c/002/poly2tri-c/p2t/sweep/sweep.c \
 #	poly2tri-c/002/poly2tri-c/p2t/sweep/sweep_context.c \
 #
-libmaptool_la_SOURCES = boundaries.c buffer.c ch.c coastline.c geom.c itembin.c itembin_buffer.c misc.c osm.c osm_psql.c osm_protobuf.c osm_protobufdb.c osm_relations.c osm_xml.c sourcesink.c tempfile.c tile.c zip.c maptool.h generated-code/fileformat.pb-c.c generated-code/fileformat.pb-c.h generated-code/osmformat.pb-c.c generated-code/osmformat.pb-c.h google/protobuf-c/protobuf-c.c google/protobuf-c/protobuf-c.h google/protobuf-c/protobuf-c-private.h miniz.c sqlite3.c sqlite3async.c
+libmaptool_la_SOURCES = boundaries.c buffer.c ch.c coastline.c geom.c itembin.c itembin_buffer.c misc.c osm.c osm_psql.c osm_protobuf.c osm_protobufdb.c osm_relations.c osm_xml.c sourcesink.c tempfile.c tile.c zip.c maptool.h generated-code/fileformat.pb-c.c generated-code/fileformat.pb-c.h generated-code/osmformat.pb-c.c generated-code/osmformat.pb-c.h google/protobuf-c/protobuf-c.c google/protobuf-c/protobuf-c.h google/protobuf-c/protobuf-c-private.h miniz.c quick_hash.c sqlite3.c
 
 maptool_SOURCES = maptool.c
 maptool_LDADD = libmaptool.la ../libnavit.la @NAVIT_LIBS@ @WORDEXP_LIBS@ @ZLIB_LIBS@ @POSTGRESQL_LIBS@ @CRYPTO_LIBS@ @INTLLIBS@ @LIBC_LIBS@ p2t/libp2tc.la refine/libp2tc-refine.la libcfu-0.03-zanavi/src/libcfu.a

@@ -36,6 +36,8 @@
  * Boston, MA  02110-1301, USA.
  */
 
+#define NO_GTYPES_ 1
+
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
 #define _LARGEFILE64_SOURCE
@@ -61,6 +63,8 @@
 #include "plugin.h"
 
 #include "maptool.h"
+
+#include "version_maptool.h"
 
 GList *aux_tile_list;
 struct tile_head *tile_head_root;
@@ -221,12 +225,12 @@ if (! th)
 	*tiles_list=g_list_append(*tiles_list, string_hash_lookup( th->name ) );
 	processed_tiles++;
 	if (debug_tile(tile))
-	fprintf(stderr,"new '%s'\n", tile);
+	fprintf_(stderr,"new '%s'\n", tile);
 }
 th->total_size+=ib->len*4+4;
 if (debug_tile(tile))
 {
-	fprintf(stderr,"New total size of %s(%p):%d\n", th->name, th, th->total_size);
+	fprintf_(stderr,"New total size of %s(%p):%d\n", th->name, th, th->total_size);
 }
 g_hash_table_insert(tile_hash, string_hash_lookup( th->name ), th);
 }
@@ -407,7 +411,7 @@ int add_aux_tile(struct zip_info *zip_info, char *name, char *filename, int size
 		at = l->data;
 		if (!strcmp(at->name, name))
 		{
-			fprintf(stderr, "exists %s vs %s\n", at->name, name);
+			fprintf_(stderr, "exists %s vs %s\n", at->name, name);
 			return -1;
 		}
 		l = g_list_next(l);
@@ -601,9 +605,9 @@ void merge_tiles(struct tile_info *info)
 	do
 	{
 		tiles_list_sorted = get_tiles_list();
-		fprintf(stderr, "PROGRESS: sorting %d tiles\n", g_list_length(tiles_list_sorted));
+		fprintf_(stderr, "PROGRESS: sorting %d tiles\n", g_list_length(tiles_list_sorted));
 		tiles_list_sorted = g_list_sort(tiles_list_sorted, (GCompareFunc) strcmp);
-		fprintf(stderr, "PROGRESS: sorting %d tiles done\n", g_list_length(tiles_list_sorted));
+		fprintf_(stderr, "PROGRESS: sorting %d tiles done\n", g_list_length(tiles_list_sorted));
 		last = g_list_last(tiles_list_sorted);
 		zip_size = 0;
 		while (last)
@@ -668,10 +672,11 @@ void merge_tiles(struct tile_info *info)
 			last = g_list_previous(last);
 		}
 		g_list_free(tiles_list_sorted);
-		fprintf(stderr, "PROGRESS: merged %d tiles\n", work_done);
+		fprintf_(stderr, "PROGRESS: merged %d tiles\n", work_done);
 	}
 	while (work_done);
 }
+
 
 struct attr map_information_attrs[32];
 
@@ -679,13 +684,22 @@ void index_init(struct zip_info *info, int version)
 {
 	struct item_bin *item_bin;
 	int i;
+
 	map_information_attrs[0].type = attr_version;
 	map_information_attrs[0].u.num = version;
+
+	map_information_attrs[1].type = attr_map_release;
+	map_information_attrs[1].u.str = SVN_VERSION;
+
+	fprintf(stderr, "writing mapversion num:%d str:%s\n", version, SVN_VERSION);
+
 	item_bin = init_item(type_map_information, 0);
 	for (i = 0; i < 32; i++)
 	{
 		if (!map_information_attrs[i].type)
+		{
 			break;
+		}
 		item_bin_add_attr(item_bin, &map_information_attrs[i]);
 	}
 	item_bin_write(item_bin, zip_get_index(info));

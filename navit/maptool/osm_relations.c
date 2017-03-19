@@ -110,11 +110,11 @@ void relations_add_func(struct relations *rel, struct relations_func *func, void
 
 void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *relations)
 {
-	char buffer[128];
-	struct item_bin *ib = (struct item_bin *) buffer;
+	// char buffer_rel1[128];
+	char *buffer_rel1 = g_malloc0(MAX_ITEMBIN_BYTES_);
+	struct item_bin *ib = (struct item_bin *) buffer_rel1;
 	long long *id;
-	struct coord *c = (struct coord *) (ib + 1), cn =
-	{ 0, 0 };
+	struct coord *c = (struct coord *) (ib + 1), cn = { 0, 0 };
 	struct node_item *ni;
 	GList *l;
 
@@ -126,17 +126,15 @@ void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *rel
 	int _c = 0;
 	int _e = 8000000;
 
-	//fprintf(stderr,"relations_process:001\n");
+	//fprintf_(stderr,"relations_process:001\n");
 
 	if (nodes)
 	{
-		//fprintf(stderr,"relations_process:002 nodes\n");
-
 		long long pos_now = (long long)ftello(nodes); // 64bit
 		fseeko(nodes, 0, SEEK_END);
 		size_in = (long long)ftello(nodes); // 64bit
-		fprintf(stderr, "relations_process: pos nodes file=%lld\n", pos_now);
-		fprintf(stderr, "relations_process:size nodes file=%lld\n", size_in);
+		fprintf_(stderr, "relations_process: pos nodes file=%lld\n", pos_now);
+		fprintf_(stderr, "relations_process:size nodes file=%lld\n", size_in);
 		// seek to start of file
 		fseeko(nodes, 0, SEEK_SET);
 		// reset timer
@@ -148,12 +146,14 @@ void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *rel
 		item_bin_add_coord(ib, &cn, 1);
 		item_bin_add_attr_longlong(ib, attr_osm_nodeid, 0);
 		id = item_bin_get_attr(ib, attr_osm_nodeid, NULL);
+
 		while ((ni = read_node_item(nodes, 0)))
 		{
 			_c++;
 
 			*id = ni->id;
 			*c = ni->c;
+
 			l = g_hash_table_lookup(rel->member_hash[0], id);
 			while (l)
 			{
@@ -175,28 +175,33 @@ void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *rel
 				convert_to_human_time(diff_tt, outstring);
 				convert_to_human_bytes(pos_in, outstring2);
 				convert_to_human_bytes(size_in, outstring3);
-				fprintf(stderr, "-RUNTIME-LOOP-REL-PROC-NODES: %s elapsed (POS:%s of %s)\n", outstring, outstring2, outstring3);
+				fprintf_(stderr, "-RUNTIME-LOOP-REL-PROC-NODES: %s elapsed (POS:%s of %s)\n", outstring, outstring2, outstring3);
 				if (pos_in > 0)
 				{
 					double eta_time = (diff_tt / pos_in) * (size_in - pos_in);
 					convert_to_human_time(eta_time, outstring);
-					fprintf(stderr, "-RUNTIME-LOOP-REL-PROC-NODES: %s left\n", outstring);
+					fprintf_(stderr, "-RUNTIME-LOOP-REL-PROC-NODES: %s left\n", outstring);
 				}
 			}
 		}
 	}
 
-	//fprintf(stderr,"relations_process:002.9\n");
+	// fprintf_(stderr,"relations_process:002.9\n");
+
+
+	// dont need the buffer here -------
+	g_free(buffer_rel1);
+	ib = NULL;
 
 	if (ways)
 	{
-		//fprintf(stderr,"relations_process:003 ways\n");
+		// fprintf_(stderr,"relations_process:003 ways\n");
 
 		long long pos_now = (long long)ftello(ways); // 64bit
 		fseeko(ways, 0, SEEK_END);
 		size_in = (long long)ftello(ways); // 64bit
-		fprintf(stderr, "relations_process: pos ways file=%lld\n", pos_now);
-		fprintf(stderr, "relations_process:size ways file=%lld\n", size_in);
+		fprintf_(stderr, "relations_process: pos ways file=%lld\n", pos_now);
+		fprintf_(stderr, "relations_process:size ways file=%lld\n", size_in);
 		// seek to start of file
 		fseeko(ways, 0, SEEK_SET);
 		// reset timer
@@ -204,60 +209,97 @@ void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *rel
 		_c = 0;
 		time(&start_tt);
 
+		// fprintf_(stderr,"relations_process:004 ways\n");
+
+		// zero out buffer ------------------
+		// bzero(ib_buffer_array[0], MAX_ITEMBIN_BYTES_);
+		// zero out buffer ------------------
+
+
 		while ((ib = read_item(ways, 0)))
 		{
 			_c++;
 
-			//fprintf(stderr,"relations_process:003.1\n");
+			// fprintf_(stderr,"relations_process:003.1\n");
 
-			id = item_bin_get_attr(ib, attr_osm_wayid, NULL);
-
-			//fprintf(stderr,"********DUMP relw***********\n");
-			//dump_itembin(ib);
-			//fprintf(stderr,"********DUMP relw***********\n");
-
-			//char *labelxx=item_bin_get_attr(ib, attr_name, NULL);
-			//fprintf(stderr,"relations_process:003.2 %s\n", labelxx);
-			//labelxx=item_bin_get_attr(ib, attr_label, NULL);
-			//fprintf(stderr,"relations_process:003.3 %s\n", labelxx);
-
-			if (id)
+			if (ib)
 			{
-				//fprintf(stderr,"relations_process:004 wayid:"LONGLONG_FMT"\n", id);
 
-				l = g_hash_table_lookup(rel->member_hash[1], id);
-				while (l)
+				id = item_bin_get_attr(ib, attr_osm_wayid, NULL);
+
+				//fprintf(stderr,"********DUMP relw***********\n");
+				//dump_itembin(ib);
+				//fprintf(stderr,"********DUMP relw***********\n");
+
+				//char *labelxx=item_bin_get_attr(ib, attr_name, NULL);
+				//fprintf(stderr,"relations_process:003.2 %s\n", labelxx);
+				//labelxx=item_bin_get_attr(ib, attr_label, NULL);
+				//fprintf(stderr,"relations_process:003.3 %s\n", labelxx);
+
+				if (id)
 				{
-					//fprintf(stderr,"relations_process:005\n");
-					struct relations_member *memb = l->data;
-					//fprintf(stderr,"relations_process:005.1 %d\n", memb->memberid);
-					memb->func->func(memb->func->func_priv, memb->relation_priv, ib, memb->member_priv);
-					l = g_list_next(l);
+					// fprintf_(stderr,"relations_process:004 wayid:"LONGLONG_FMT"\n", id);
+
+					l = g_hash_table_lookup(rel->member_hash[1], id);
+					while (l)
+					{
+						// fprintf_(stderr,"relations_process:005\n");
+						struct relations_member *memb = l->data;
+						// fprintf_(stderr,"relations_process:005.1 %d\n", memb->memberid);
+						memb->func->func(memb->func->func_priv, memb->relation_priv, ib, memb->member_priv);
+						l = g_list_next(l);
+					}
 				}
+
+				if (_c > _e)
+				{
+					_c = 0;
+
+					pos_in = ftello(ways); // 64bit
+					time(&end_tt);
+					diff_tt = difftime(end_tt,start_tt);
+					char outstring[200];
+					char outstring2[200];
+					char outstring3[200];
+					convert_to_human_time(diff_tt, outstring);
+					convert_to_human_bytes(pos_in, outstring2);
+					convert_to_human_bytes(size_in, outstring3);
+					fprintf_(stderr, "-RUNTIME-LOOP-REL-PROC-WAYS: %s elapsed (POS:%s of %s)\n", outstring, outstring2, outstring3);
+					if (pos_in > 0)
+					{
+						double eta_time = (diff_tt / pos_in) * (size_in - pos_in);
+						convert_to_human_time(eta_time, outstring);
+						fprintf_(stderr, "-RUNTIME-LOOP-REL-PROC-WAYS: %s left\n", outstring);
+					}
+				}
+
 			}
 
-			if (_c > _e)
-			{
-				_c = 0;
-
-				pos_in = ftello(ways); // 64bit
-				time(&end_tt);
-				diff_tt = difftime(end_tt,start_tt);
-				char outstring[200];
-				char outstring2[200];
-				char outstring3[200];
-				convert_to_human_time(diff_tt, outstring);
-				convert_to_human_bytes(pos_in, outstring2);
-				convert_to_human_bytes(size_in, outstring3);
-				fprintf(stderr, "-RUNTIME-LOOP-REL-PROC-WAYS: %s elapsed (POS:%s of %s)\n", outstring, outstring2, outstring3);
-				if (pos_in > 0)
-				{
-					double eta_time = (diff_tt / pos_in) * (size_in - pos_in);
-					convert_to_human_time(eta_time, outstring);
-					fprintf(stderr, "-RUNTIME-LOOP-REL-PROC-WAYS: %s left\n", outstring);
-				}
-			}
 		}
 	}
+
+	// fprintf_(stderr,"relations_process:099\n");
 }
+
+void relations_destroy_func(void *key, GList *l, void *data)
+{
+	while (l)
+	{
+		g_free(l->data);
+		l=g_list_next(l);
+	}
+}
+
+void relations_destroy(struct relations *relations)
+{
+	int i;
+
+	for (i = 0 ; i < 3 ; i++)
+	{
+		g_hash_table_foreach(relations->member_hash[i], (GHFunc)relations_destroy_func, NULL);
+		g_hash_table_destroy(relations->member_hash[i]);
+	}
+}
+
+
 

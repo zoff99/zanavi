@@ -170,7 +170,7 @@ _cfuhash_new(size_t size, u_int32_t flags) {
 	ht->entries = 0;
 	ht->flags = flags;
 	ht->buckets = (cfuhash_entry **)calloc(size, sizeof(cfuhash_entry *));
-	pthread_mutex_init(&ht->mutex, NULL);
+	//pthread_mutex_init(&ht->mutex, NULL);
 	
 	ht->hash_func = hash_func;
 	ht->high = 0.75;
@@ -790,7 +790,7 @@ cfuhash_destroy_with_free_fn(cfuhash_table_t *ht, cfuhash_free_fn_t ff) {
 	}
 	free(ht->buckets);
 	unlock_hash(ht);
-	pthread_mutex_destroy(&ht->mutex);
+	//pthread_mutex_destroy(&ht->mutex);
 	free(ht);
 
 	return 1;

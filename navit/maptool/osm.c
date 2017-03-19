@@ -1,6 +1,6 @@
 /**
  * ZANavi, Zoff Android Navigation system.
- * Copyright (C) 2011-2012 Zoff <zoff@zoff.cc>
+ * Copyright (C) 2011-2013 Zoff <zoff@zoff.cc>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -145,6 +145,18 @@ int sqlite3_bind_text(void* v, int i, char* c, int i2, int i3)
 #define _LARGEFILE_SOURCE
 #define _LARGEFILE64_SOURCE
 
+
+
+
+#include "osm_countrytable.h"
+
+
+// function def --
+static long long osm_process_street_by_manual_country_borders(GList *bl_manual, struct coord *c);
+static int osm_check_all_inner_polys_of_country_id(int country_id, struct coord *c);
+// function def --
+
+
 extern int doway2poi;
 
 static int in_way, in_node, in_relation;
@@ -177,8 +189,10 @@ char is_in_buffer[BUFFER_SIZE];
 char attr_strings_buffer[BUFFER_SIZE * 16];
 int attr_strings_buffer_len;
 int alt_name_found = 0;
+int real_alt_name_found = 0;
 
 struct coord coord_buffer[65536];
+struct coord coord_buffer_3[65536];
 
 struct attr_mapping
 {
@@ -203,15 +217,28 @@ static long long seekpos1;
 
 enum attr_strings
 {
-	attr_string_phone, attr_string_fax, attr_string_email, attr_string_url, attr_string_street_name, attr_string_street_name_systematic, attr_string_house_number, attr_string_label, attr_string_label_alt, attr_string_postal, attr_string_population, attr_string_county_name, attr_string_colour_, attr_string_last,
+	attr_string_phone, attr_string_fax, attr_string_email, attr_string_url, attr_string_street_name, attr_string_street_name_systematic, attr_string_house_number, attr_string_label, attr_string_label_alt, attr_string_label_real_alt, attr_string_postal,
+    attr_string_population, attr_string_county_name, attr_string_colour_, attr_string_capacity,
+	attr_string_street_name_systematic_nat,
+	attr_string_street_name_systematic_int,
+	attr_string_ref,
+	attr_string_exit_to,
+	attr_string_street_destination,
+	attr_string_street_lanes,
+	// ----------
+	attr_string_street_lanes_forward,
+	attr_string_street_turn_lanes,
+	attr_string_street_destination_lanes,
+	// ----- last ----
+	attr_string_last,
 };
 
 char *attr_strings[attr_string_last];
 
 char *osm_types[] = { "unknown", "node", "way", "relation" };
 
-int transform_from_geo_lat(double lat);
-int transform_from_geo_lon(double lon);
+double save_node_lat;
+double save_node_lon;
 
 // #define REF_X 1073741834 --> maptool.h // lat
 // #define REF_Y 240000000  --> maptool.h // lon
@@ -302,19 +329,6 @@ osmid decode_nodeid(struct coord c)
 
 
 
-
-struct country_table
-{
-	int countryid;
-	char *names;
-	char *admin_levels;
-	FILE *file;
-	int size;
-	struct rect r;
-}
-		country_table[] =
-				{ { 4, "Afghanistan" }, { 8, "Albania" }, { 10, "Antarctica" }, { 12, "Algeria" }, { 16, "American Samoa" }, { 20, "Andorra" }, { 24, "Angola" }, { 28, "Antigua and Barbuda" }, { 31, "Azerbaijan" }, { 32, "Argentina,República Argentina,AR " }, { 36, "Australia,AUS" }, { 40, "Austria,Österreich,AUT" }, { 44, "Bahamas" }, { 48, "Bahrain" }, { 50, "Bangladesh" }, { 51, "Armenia" }, { 52, "Barbados" }, { 56, "Belgium,Belgique,Belgie,België,Belgien" }, { 60, "Bermuda" }, { 64, "Bhutan" }, { 68, "Bolivia, Plurinational State of" }, { 70, "Bosnia and Herzegovina,Bosna i Hercegovina,Босна и Херцеговина" }, { 72, "Botswana" }, { 74, "Bouvet Island" }, { 76, "Brazil" }, { 84, "Belize" }, { 86, "British Indian Ocean Territory" }, { 90, "Solomon Islands" }, { 92, "Virgin Islands, British" }, { 96, "Brunei Darussalam" }, { 100, "Bulgaria,България" }, { 104, "Myanmar" }, { 108, "Burundi" }, { 112, "Belarus" }, { 116, "Cambodia" }, { 120, "Cameroon" }, { 124, "Canada" }, { 132, "Cape Verde" }, { 136, "Cayman Islands" }, { 140, "Central African Republic" }, { 144, "Sri Lanka" }, { 148, "Chad" }, { 152, "Chile" }, { 156, "China" }, { 158, "Taiwan, Province of China" }, { 162, "Christmas Island" }, { 166, "Cocos (Keeling) Islands" }, { 170, "Colombia" }, { 174, "Comoros" }, { 175, "Mayotte" }, { 178, "Congo" }, { 180, "Congo, the Democratic Republic of the" }, { 184, "Cook Islands" }, { 188, "Costa Rica" }, { 191, "Croatia,Republika Hrvatska,HR" }, { 192, "Cuba" }, { 196, "Cyprus" }, { 203, "Czech Republic,Česká republika,CZ" }, { 204, "Benin" }, { 208, "Denmark,Danmark,DK" }, { 212, "Dominica" }, { 214, "Dominican Republic" }, { 218, "Ecuador" }, { 222, "El Salvador" }, { 226, "Equatorial Guinea" }, { 231, "Ethiopia" }, { 232, "Eritrea" }, { 233, "Estonia" }, { 234, "Faroe Islands,Føroyar" }, { 238, "Falkland Islands (Malvinas)" }, { 239, "South Georgia and the South Sandwich Islands" }, { 242, "Fiji" }, { 246, "Finland,Suomi" }, { 248, "Åland Islands" }, { 250, "France,République française,FR" }, { 254, "French Guiana" }, { 258, "French Polynesia" }, { 260, "French Southern Territories" }, { 262, "Djibouti" }, { 266, "Gabon" }, { 268, "Georgia" }, { 270, "Gambia" }, { 275, "Palestinian Territory, Occupied" }, { 276, "Germany,Deutschland,Bundesrepublik Deutschland", "345c7m" }, { 288, "Ghana" }, { 292, "Gibraltar" }, { 296, "Kiribati" }, { 300, "Greece" }, { 304, "Greenland" }, { 308, "Grenada" }, { 312, "Guadeloupe" }, { 316, "Guam" }, { 320, "Guatemala" }, { 324, "Guinea" }, { 328, "Guyana" }, { 332, "Haiti" }, { 334, "Heard Island and McDonald Islands" }, { 336, "Holy See (Vatican City State)" }, { 340, "Honduras" }, { 344, "Hong Kong" }, { 348, "Hungary,Magyarország" }, { 352, "Iceland" }, { 356, "India" }, { 360, "Indonesia" }, { 364, "Iran, Islamic Republic of" }, { 368, "Iraq" }, { 372, "Ireland" }, { 376, "Israel" }, { 380, "Italy,Italia" }, { 384, "Côte d'Ivoire" }, { 388, "Jamaica" }, { 392, "Japan" }, { 398, "Kazakhstan" }, { 400, "Jordan" }, { 404, "Kenya" }, { 408, "Korea, Democratic People's Republic of" }, { 410, "Korea, Republic of" }, { 414, "Kuwait" }, { 417, "Kyrgyzstan" }, { 418, "Lao People's Democratic Republic" }, { 422, "Lebanon" }, { 426, "Lesotho" }, { 428, "Latvia" }, { 430, "Liberia" }, { 434, "Libyan Arab Jamahiriya" }, { 438, "Liechtenstein" }, { 440, "Lithuania,Lietuva" }, { 442, "Luxembourg" }, { 446, "Macao" }, { 450, "Madagascar" }, { 454, "Malawi" }, { 458, "Malaysia" }, { 462, "Maldives" }, { 466, "Mali" }, { 470, "Malta" }, { 474, "Martinique" }, { 478, "Mauritania" }, { 480, "Mauritius" }, { 484, "Mexico" }, { 492, "Monaco" }, { 496, "Mongolia" }, { 498, "Moldova, Republic of" }, { 499, "Montenegro,Црна Гора,Crna Gora" }, { 500, "Montserrat" }, { 504, "Morocco" }, { 508, "Mozambique" }, { 512, "Oman" }, { 516, "Namibia" }, { 520, "Nauru" }, { 524, "Nepal" }, { 528, "Nederland,The Netherlands,Niederlande,NL,Netherlands" }, { 530, "Netherlands Antilles" }, { 533, "Aruba" }, { 540, "New Caledonia" }, { 548, "Vanuatu" }, { 554, "New Zealand" }, { 558, "Nicaragua" }, { 562, "Niger" }, { 566, "Nigeria" }, { 570, "Niue" }, { 574, "Norfolk Island" }, { 578, "Norway,Norge,Noreg,NO" }, { 580, "Northern Mariana Islands" }, { 581, "United States Minor Outlying Islands" }, { 583, "Micronesia, Federated States of" }, { 584, "Marshall Islands" }, { 585, "Palau" }, { 586, "Pakistan" }, { 591, "Panama" }, { 598, "Papua New Guinea" }, { 600, "Paraguay" }, { 604, "Peru" }, { 608, "Philippines" }, { 612, "Pitcairn" }, { 616, "Poland,Polska,PL" }, { 620, "Portugal" }, { 624, "Guinea-Bissau" }, { 626, "Timor-Leste" }, { 630, "Puerto Rico" }, { 634, "Qatar" }, { 638, "Réunion" }, { 642, "România,Romania,RO" }, { 643, "Россия,Российская Федерация,Russia,Russian Federation" }, { 646, "Rwanda" }, { 652, "Saint Barthélemy" }, { 654, "Saint Helena, Ascension and Tristan da Cunha" }, { 659, "Saint Kitts and Nevis" }, { 660, "Anguilla" }, { 662, "Saint Lucia" }, { 663, "Saint Martin (French part)" }, { 666, "Saint Pierre and Miquelon" }, { 670, "Saint Vincent and the Grenadines" }, { 674, "San Marino" }, { 678, "Sao Tome and Principe" }, { 682, "Saudi Arabia" }, { 686, "Senegal" }, { 688, "Srbija,Србија,Serbia" }, { 690, "Seychelles" }, { 694, "Sierra Leone" }, { 702, "Singapore" }, { 703, "Slovakia,Slovensko,SK" }, { 704, "Viet Nam" }, { 705, "Slovenia,Republika Slovenija,SI" }, { 706, "Somalia" }, { 710, "South Africa" }, { 716, "Zimbabwe" }, { 724, "Spain,Espana,España,Reino de Espana,Reino de España" }, { 732, "Western Sahara" }, { 736, "Sudan" }, { 740, "Suriname" }, { 744, "Svalbard and Jan Mayen" }, { 748, "Swaziland" }, { 752, "Sweden,Sverige,Konungariket Sverige,SE" }, { 756, "Switzerland,Schweiz" }, { 760, "Syrian Arab Republic" }, { 762, "Tajikistan" }, { 764, "Thailand" }, { 768, "Togo" }, { 772, "Tokelau" }, { 776, "Tonga" }, { 780, "Trinidad and Tobago" }, { 784, "United Arab Emirates" }, { 788, "Tunisia" }, { 792, "Turkey" }, { 795, "Turkmenistan" }, { 796, "Turks and Caicos Islands" }, { 798, "Tuvalu" }, { 800, "Uganda" }, { 804, "Ukraine" }, { 807, "Macedonia,Македонија" }, { 818, "Egypt" }, { 826, "United Kingdom,UK" }, { 831, "Guernsey" }, { 832, "Jersey" }, { 833, "Isle of Man" }, { 834, "Tanzania, United Republic of" }, { 840, "USA" }, { 850, "Virgin Islands, U.S." }, { 854, "Burkina Faso" }, { 858, "Uruguay" }, { 860, "Uzbekistan" }, { 862, "Venezuela, Bolivarian Republic of" }, { 876, "Wallis and Futuna" }, { 882, "Samoa" }, { 887, "Yemen" }, { 894, "Zambia" }, { 999, "Unknown" }, };
-
 // first char - item type
 //   =w - ways
 //   =? - used both for nodes and ways
@@ -378,6 +392,8 @@ static char *attrmap_normal = { "n	*=*			point_unkn\n"
 	"n	amenity=nightclub	poi_nightclub\n"
 	//"n	amenity=park_bench	poi_bench\n"
 	"n	amenity=parking		poi_car_parking\n"
+	"n	amenity=bicycle_parking		poi_bicycle_parking\n"
+	"n	amenity=bicycle_rental		poi_bicycle_rental\n"
 	"n	amenity=pharmacy	poi_pharmacy\n"
 	"n	amenity=place_of_worship,religion=christian	poi_church\n"
 	"n	amenity=place_of_worship			poi_worship\n"
@@ -410,6 +426,9 @@ static char *attrmap_normal = { "n	*=*			point_unkn\n"
 	"n	highway=motorway_junction	highway_exit\n"
 	"n	highway=stop		traffic_sign_stop\n"
 	"n	highway=toll_booth	poi_toll_booth\n"
+	"n	highway=crossing,crossing=traffic_signals	traffic_crossing_signal\n"
+	"n	highway=crossing,crossing=uncontrolled	traffic_crossing_uncontrolled\n"
+	"n	highway=crossing	traffic_crossing_uncontrolled\n"
 	"n	highway=traffic_signals	traffic_signals\n"
 	"n	highway=turning_circle	turning_circle\n"
 	//"n	historic=boundary_stone	poi_boundary_stone\n"
@@ -436,11 +455,13 @@ static char *attrmap_normal = { "n	*=*			point_unkn\n"
 	"n	natural=peak,ele=*		poi_peak\n" // show only major peaks with elevation
 	//"n	natural=tree		poi_tree\n"
 	"n	place=city		town_label_2e5\n"
+	"n	place=town		town_label_2e4\n"
+	"n	place=village		town_label_2e3\n"
 	"n	place=hamlet		town_label_2e2\n"
 	"n	place=locality		town_label_2e0\n"
 	"n	place=suburb		district_label\n"
-	"n	place=town		town_label_2e4\n"
-	"n	place=village		town_label_2e3\n"
+	"n	place=quarter		district_label_1e2\n"
+	"n	place=neighbourhood		district_label_1e1\n"
 	//"n	power=tower		power_tower\n"
 	//"n	power=sub_station	power_substation\n"
 	"n	railway=halt		poi_rail_halt\n"
@@ -549,29 +570,29 @@ static char *attrmap_normal = { "n	*=*			point_unkn\n"
 	"w	highway=plaza				poly_plaza\n"
 	"w	highway=motorway			highway_land\n"
 	"w	highway=motorway,rural=0		highway_city\n"
-	"w	highway=motorway_link			ramp\n"
-	"w	highway=trunk				street_4_land\n"
+	"w	highway=motorway_link			ramp_highway_land\n"
+	"w	highway=trunk				street_n_lanes\n"
 	"w	highway=trunk,name=*,rural=1		street_4_land\n"
-	"w	highway=trunk,name=*			street_4_city\n"
-	"w	highway=trunk,rural=0			street_4_city\n"
-	"w	highway=trunk_link			ramp\n"
+	"w	highway=trunk,name=*			street_n_lanes\n"
+	"w	highway=trunk,rural=0			street_n_lanes\n"
+	"w	highway=trunk_link			ramp_street_4_city\n"
 	"w	highway=primary				street_4_land\n"
 	"w	highway=primary,name=*,rural=1		street_4_land\n"
 	"w	highway=primary,name=*			street_4_city\n"
 	"w	highway=primary,rural=0			street_4_city\n"
-	"w	highway=primary_link			ramp\n"
+	"w	highway=primary_link			ramp_street_4_city\n"
 	"w	highway=secondary			street_3_land\n"
 	"w	highway=secondary,name=*,rural=1	street_3_land\n"
 	"w	highway=secondary,name=*		street_3_city\n"
 	"w	highway=secondary,rural=0		street_3_city\n"
 	"w	highway=secondary,area=1		poly_street_3\n"
-	"w	highway=secondary_link			ramp\n"
+	"w	highway=secondary_link			ramp_street_3_city\n"
 	"w	highway=tertiary			street_2_land\n"
 	"w	highway=tertiary,name=*,rural=1		street_2_land\n"
 	"w	highway=tertiary,name=*			street_2_city\n"
 	"w	highway=tertiary,rural=0		street_2_city\n"
 	"w	highway=tertiary,area=1			poly_street_2\n"
-	"w	highway=tertiary_link			ramp\n"
+	"w	highway=tertiary_link			ramp_street_2_city\n"
 	"w	highway=residential			street_1_city\n"
 	"w	highway=residential,area=1		poly_street_1\n"
 	"w	highway=unclassified			street_1_city\n"
@@ -809,8 +830,10 @@ static void build_attrmap(FILE* rule_file)
 			p = strchr(map, '\n');
 			if (p)
 				*p++ = '\0';
+
 			if (strlen(map))
 				build_attrmap_line(map);
+
 			map = p;
 		}
 	}
@@ -835,6 +858,40 @@ static void build_countrytable(void)
 	}
 }
 
+int string_endswith2(const char* ending, const char* instring)
+{
+	int l1;
+	int l2;
+
+	if (!ending)
+	{
+		return 0;
+	}
+
+	if (!instring)
+	{
+		return 0;
+	}
+
+    l1 = strlen(ending);
+    l2 = strlen(instring);
+
+	if (l1 < 1)
+	{
+		return 0;
+	}
+
+    if (l1 > l2)
+	{
+		return 0;
+	}
+
+    int ret = strcmp(ending, instring + (l2 - l1));
+	//dbg(0, "ending=%s in=%s ret=%d\n", ending, instring + (l2 - l1), (ret == 0));
+	return (ret == 0);
+}
+
+
 void osm_warning(char *type, long long id, int cont, char *fmt, ...)
 {
 	char str[4096];
@@ -858,6 +915,7 @@ if (verbose_mode) fprintf(stderr,"%shttp://www.openstreetmap.org/browse/%s/"LONG
 static void attr_strings_clear(void)
 {
 	alt_name_found = 0;
+	real_alt_name_found = 0;
 	attr_strings_buffer_len = 0;
 	memset(attr_strings, 0, sizeof(attr_strings));
 }
@@ -916,6 +974,8 @@ long long item_bin_get_id(struct item_bin *ib)
 
 static int node_is_tagged;
 static void relation_add_tag(char *k, char *v);
+osmid get_waynode_num_have_seekpos(osmid way_id, int coord_num, int local_thread_num, off_t seek_pos);
+
 
 static int access_value(char *v)
 {
@@ -959,42 +1019,243 @@ void osm_add_tag(char *k, char *v)
 
 	if (!strcmp(k, "ele"))
 		level = 9;
+
 	if (!strcmp(k, "time"))
 		level = 9;
+
 	if (!strcmp(k, "created_by"))
 		level = 9;
+
 	if (!strncmp(k, "tiger:", 6) || !strcmp(k, "AND_nodes"))
 		level = 9;
+
 	if (!strcmp(k, "converted_by") || !strcmp(k, "source"))
 		level = 8;
+
 	if (!strncmp(k, "osmarender:", 11) || !strncmp(k, "svg:", 4))
 		level = 8;
+
 	if (!strcmp(k, "layer"))
 		level = 7;
+
 	if (!strcasecmp(v, "true") || !strcasecmp(v, "yes"))
 		v = "1";
+
 	if (!strcasecmp(v, "false") || !strcasecmp(v, "no"))
 		v = "0";
+
+
+
+
+
 	if (!strcmp(k, "oneway"))
 	{
 		if (!strcmp(v, "1"))
 		{
 			flags[0] |= NAVIT_AF_ONEWAY | NAVIT_AF_ROUNDABOUT_VALID;
 		}
+
 		if (!strcmp(v, "-1"))
 		{
 			flags[0] |= NAVIT_AF_ONEWAYREV | NAVIT_AF_ROUNDABOUT_VALID;
 		}
+
 		if (!in_way)
+		{
 			level = 6;
+		}
 		else
+		{
 			level = 5;
+		}
 	}
+
+	if (!strcmp(k, "cycleway"))
+	{
+		if (!strcmp(v, "opposite"))
+		{
+			flags[0] |= NAVIT_AF_ONEWAY_BICYCLE_NO;
+		}
+		if (!strcmp(v, "opposite_lane"))
+		{
+			flags[0] |= NAVIT_AF_ONEWAY_BICYCLE_NO;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+
+	if (!strcmp(k, "bicycle:oneway"))
+	{
+		if (!strcmp(v, "0"))
+		{
+			flags[0] |= NAVIT_AF_ONEWAY_BICYCLE_NO;
+		}
+		if (!strcmp(v, "1"))
+		{
+			flags[0] |= NAVIT_AF_ONEWAY_BICYCLE_YES;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+	if (!strcmp(k, "oneway:bicycle"))
+	{
+		if (!strcmp(v, "0"))
+		{
+			flags[0] |= NAVIT_AF_ONEWAY_BICYCLE_NO;
+		}
+		if (!strcmp(v, "1"))
+		{
+			flags[0] |= NAVIT_AF_ONEWAY_BICYCLE_YES;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+
+/*
+blue: cycleway=lane + oneway=yes
+blue: cycleway=lane + oneway=yes + bicycle=yes
+
+xxxx: cycleway=opposite_lane + cycleway:left=lane + oneway=yes
+xxxx: bicycle=yes + cycleway:right=lane + oneway=yes
+xxxx: cycleway:left=track + cycleway:right=lane + oneway=yes + oneway:bicycle=no
+xxxx: cycleway:left=share_busway + cycleway:right=lane + oneway=yes + oneway:bicycle=no
+
+dots: cycleway=track + oneway=yes
+dots: cycleway=track
+
+xxxx: cycleway:left=track + oneway=yes
+xxxx: cycleway:right=track + oneway=yes
+
+xxxx: cycleway:right=track
+xxxx: cycleway:right=track + cycleway:right:oneway=no
+*/
+
+	if (!strcmp(k, "cycleway"))
+	{
+		if (!strcmp(v, "track"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_TRACK;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+
+
+/*
+	cycleway=lane
+	cycleway:right=lane
+	cycleway:left=lane
+
+	cycleway=opposite_lane
+	cycleway:left=opposite_lane
+	cycleway:right=opposite_lane
+*/
+
+	if (!strcmp(k, "cycleway"))
+	{
+		if (!strcmp(v, "lane"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_LANE;
+		}
+		else if (!strcmp(v, "opposite_lane"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_LANE;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+
+	if (!strcmp(k, "cycleway:left"))
+	{
+		if (!strcmp(v, "lane"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_LANE;
+		}
+		else if (!strcmp(v, "opposite_lane"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_LANE;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+	if (!strcmp(k, "cycleway:right"))
+	{
+		if (!strcmp(v, "lane"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_LANE;
+		}
+		else if (!strcmp(v, "opposite_lane"))
+		{
+			flags[0] |= NAVIT_AF_BICYCLE_LANE;
+		}
+
+		if (!in_way)
+		{
+			level = 6;
+		}
+		else
+		{
+			level = 5;
+		}
+	}
+
+
+
+
 	if (!strcmp(k, "junction"))
 	{
 		if (!strcmp(v, "roundabout"))
 			flags[0] |= NAVIT_AF_ONEWAY | NAVIT_AF_ROUNDABOUT | NAVIT_AF_ROUNDABOUT_VALID;
 	}
+
 	if (!strcmp(k, "maxspeed"))
 	{
 		if (strstr(v, "mph"))
@@ -1005,7 +1266,9 @@ void osm_add_tag(char *k, char *v)
 		{
 			maxspeed_attr_value = atoi(v);
 		}
+
 		if (maxspeed_attr_value)
+
 			flags[0] |= NAVIT_AF_SPEED_LIMIT;
 		level = 5;
 	}
@@ -1104,31 +1367,43 @@ void osm_add_tag(char *k, char *v)
 	{
 		flags[0] |= NAVIT_AF_BRIDGE;
 	}
+
 	if (!strcmp(k, "note"))
+	{
 		level = 5;
+	}
+
 	if (!strcmp(k, "name"))
 	{
 		attr_strings_save(attr_string_label, v);
 		level = 5;
 	}
 
-	if ((!strcmp(k, "name:en")) && (alt_name_found == 0))
+	if (!strcmp(k, "capacity"))
 	{
-		attr_strings_save(attr_string_label_alt, v);
-		alt_name_found = 1;
+		attr_strings_save(attr_string_capacity, v);
 		level = 5;
 	}
-	if ((!strcmp(k, "alt_name:en")) && (alt_name_found < 2))
-	{
-		// only use "alt_name:en" if we dont have "alt_name"
-		attr_strings_save(attr_string_label_alt, v);
-		alt_name_found = 2;
-		level = 5;
-	}
+
 	if (!strcmp(k, "alt_name"))
 	{
+		// alternative name for some places (is sometimes what people call it in the local area)
+		attr_strings_save(attr_string_label_real_alt, v);
+		real_alt_name_found = 1;
+		level = 5;
+	}
+
+	if ((!strcmp(k, "int_name")) && (alt_name_found == 0))
+	{
+		// only use "int_name" if we dont have "name:en"
 		attr_strings_save(attr_string_label_alt, v);
-		alt_name_found = 3;
+		alt_name_found = 1; // lowest priority
+		level = 5;
+	}
+	if (!strcmp(k, "name:en"))
+	{
+		attr_strings_save(attr_string_label_alt, v);
+		alt_name_found = 2; // highest priority
 		level = 5;
 	}
 	if (!strcmp(k, "addr:email"))
@@ -1184,19 +1459,71 @@ void osm_add_tag(char *k, char *v)
 	if (!strcmp(k, "ref"))
 	{
 		if (in_way)
+		{
 			attr_strings_save(attr_string_street_name_systematic, v);
+		}
+		else
+		{
+			attr_strings_save(attr_string_ref, v);
+		}
 		level = 5;
+	}
+	if (! strcmp(k,"nat_ref"))
+	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_name_systematic_nat, v);
+			//fprintf(stderr, "XYZ123!?:nat_ref=%s\n", v);
+		}
+		level=5;
+	}
+	if (! strcmp(k,"int_ref"))
+	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_name_systematic_int, v);
+			//fprintf(stderr, "XYZ123!?:int_ref=%s\n", v);
+		}
+		level=5;
+	}
+	if (! strcmp(k,"destination:lanes"))
+	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_destination_lanes, v);
+			//fprintf(stderr, "XYZ123!?:destination:lanes=%s\n", v);
+		}
+		level=5;
+	}
+	if (! strcmp(k,"destination"))
+	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_destination, v);
+			//fprintf(stderr, "XYZ123!?:destination=%s\n", v);
+		}
+		level=5;
+	}
+	if (! strcmp(k,"exit_to"))
+	{
+		attr_strings_save(attr_string_exit_to, v);
+		//fprintf(stderr, "XYZ123!?:exit_to=%s\n", v);
+		level=5;
 	}
 	if (!strcmp(k, "openGeoDB:is_in"))
 	{
 		if (!is_in_buffer[0])
+		{
 			strcpy(is_in_buffer, v);
+		}
 		level = 5;
 	}
 	if (!strcmp(k, "is_in"))
 	{
 		if (!is_in_buffer[0])
+		{
 			strcpy(is_in_buffer, v);
+		}
 		level = 5;
 	}
 	if (!strcmp(k, "is_in:country"))
@@ -1230,10 +1557,39 @@ void osm_add_tag(char *k, char *v)
 		strcpy(is_in_buffer, "USA");
 		level = 5;
 	}
-	if (!strcmp(k, "lanes"))
+
+	if (!strcmp(k, "turn:lanes"))
 	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_turn_lanes, v);
+			//fprintf(stderr, "XYZ123!?:turn:lanes=%s\n", v);
+		}
 		level = 5;
 	}
+
+
+	if (!strcmp(k, "lanes:forward"))
+	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_lanes_forward, v);
+			//fprintf(stderr, "XYZ123!?:lanes:forward=%s\n", v);
+		}
+		level = 5;
+	}
+
+	if (!strcmp(k, "lanes"))
+	{
+		if (in_way)
+		{
+			attr_strings_save(attr_string_street_lanes, v);
+			//fprintf(stderr, "XYZ123!?:lanes=%s\n", v);
+		}
+		level = 5;
+	}
+
+
 	if (attr_debug_level >= level)
 	{
 		int bytes_left = sizeof(debug_attr_buffer) - strlen(debug_attr_buffer) - 1;
@@ -1252,19 +1608,27 @@ void osm_add_tag(char *k, char *v)
 
 	strcpy(buffer, "*=*");
 	if ((idx = (int) (long) g_hash_table_lookup(attr_hash, buffer)))
+	{
 		attr_present[idx] = 1;
+	}
 
 	sprintf(buffer, "%s=*", k);
 	if ((idx = (int) (long) g_hash_table_lookup(attr_hash, buffer)))
+	{
 		attr_present[idx] = 2;
+	}
 
 	sprintf(buffer, "*=%s", v);
 	if ((idx = (int) (long) g_hash_table_lookup(attr_hash, buffer)))
+	{
 		attr_present[idx] = 2;
+	}
 
 	sprintf(buffer, "%s=%s", k, v);
 	if ((idx = (int) (long) g_hash_table_lookup(attr_hash, buffer)))
+	{
 		attr_present[idx] = 4;
+	}
 }
 
 int coord_count;
@@ -1287,7 +1651,8 @@ osmid nodeid_last;
 GHashTable *way_hash, *waytag_hash;
 cfuhash_table_t *way_hash_cfu = NULL;
 
-typedef struct dummy_cfuhash_entry {
+typedef struct dummy_cfuhash_entry
+{
 	long long key;
 	int data;
 	struct dummy_cfuhash_entry *next;
@@ -1296,32 +1661,52 @@ typedef struct dummy_cfuhash_entry {
 static void node_buffer_to_hash(int local_thread_num)
 {
 	if (verbose_mode)
+	{
 		fprintf(stderr, "node_buffer_to_hash t:%d nb->size:%lu\n", local_thread_num, node_buffer[local_thread_num].size);
-	if (verbose_mode)
 		fprintf(stderr, "node_buffer_to_hash t:%d nb->base:%lu\n", local_thread_num, node_buffer[local_thread_num].base);
-	if (verbose_mode)
 		fprintf(stderr, "node_buffer_to_hash t:%d nh:%p\n", local_thread_num, node_hash[local_thread_num]);
+	}
 
 	int i = 0;
 	int count2 = node_buffer[local_thread_num].size / sizeof(struct node_item);
 	struct node_item *ni = (struct node_item *) node_buffer[local_thread_num].base;
 
+#if 0
 	fprintf(stderr, "[THREAD] #%d fill hash node: count=%d size=%d\n", local_thread_num, count2, sizeof(dummy_cfuhash_entry));
+#endif
+
+	struct dummy_dummy_entry
+	{
+		long long key;
+		int value_ptr;
+	};
+
+	fprintf_(stderr, "[THREAD] #%d fill hash node: count=%d size=%d\n", local_thread_num, count2, sizeof(struct dummy_dummy_entry));
 
 	for (i = 0; i < count2; i++)
 	{
 		/*
 		 if (i % 5000)
 		 {
-		 fprintf(stderr, "thread #%d fill #%d\n", local_thread_num, i);
 		 }
 		 */
+
+		// fprintf_(stderr, "thread #%d fill #%d/%d\n", local_thread_num, i, count2);
+
 		// g_hash_table_insert(node_hash[local_thread_num], (gpointer) (long) (ni[i].id), (gpointer) (long) i);
 		//cfuhash_put(node_hash_cfu[local_thread_num], &(long long)ni[i].id, xxx);
 
+#if 0
 		//fprintf(stderr, "node id:%lld i:%d\n", (long long)ni[i].id, i);
 		cfuhash_put_data(node_hash_cfu[local_thread_num], (long long)ni[i].id, sizeof(long long), i, sizeof(int), NULL);
+#endif
+
+		// fprintf(stderr, "node id:%lld mem:%p\n", (long long)ni->id, ni);
+		quick_hash_add_entry(node_hash_cfu[local_thread_num], (long long)ni[i].id, i);
+		// ni++;
 	}
+
+	// fprintf_(stderr, "thread #%d node_buffer_to_hash ready\n", local_thread_num);
 
 	if (verbose_mode)
 	{
@@ -1355,8 +1740,11 @@ void init_node_hash(int threads, int clear)
 		//{
 		//*node_hash[i] = g_hash_table_new(NULL, NULL);
 		//}
+#if 0
 		node_hash_cfu[i] = cfuhash_new_with_initial_size(CFUHASH_BUCKETS_NODES);
 		cfuhash_set_flag(node_hash_cfu[i], CFUHASH_FROZEN);
+#endif
+		node_hash_cfu[i] = quick_hash_init(CFUHASH_BUCKETS_NODES);
 	}
 }
 
@@ -1365,26 +1753,41 @@ void fill_hash_node(int local_thread_num)
 	//fprintf(stderr, "001t:%d base:%lu\n", local_thread_num, node_buffer[local_thread_num]);
 
 	if (verbose_mode)
+	{
 		fprintf(stderr, "fill_hash_node - START\n");
+	}
 	//if (node_hash[local_thread_num])
 	if (node_hash_cfu[local_thread_num])
 	{
+#if 0
 		//g_hash_table_destroy(node_hash[local_thread_num]);
 		//node_hash[local_thread_num] = NULL;
 		cfuhash_clear(node_hash_cfu[local_thread_num]);
 		cfuhash_destroy(node_hash_cfu[local_thread_num]);
 		node_hash_cfu[local_thread_num] = NULL;
+#endif
+		quick_hash_destroy(node_hash_cfu[local_thread_num]);
+		node_hash_cfu[local_thread_num] = NULL;
 	}
 
+#if 0
 	// node_hash[local_thread_num] = g_hash_table_new(NULL, NULL);
 	node_hash_cfu[local_thread_num] = cfuhash_new_with_initial_size(CFUHASH_BUCKETS_NODES);
 	cfuhash_set_flag(node_hash_cfu[local_thread_num], CFUHASH_FROZEN);
+#endif
+	node_hash_cfu[local_thread_num] = quick_hash_init(CFUHASH_BUCKETS_NODES);
+	
 
 	//fprintf(stderr, "002t:%d base:%lu\n", local_thread_num, node_buffer[local_thread_num]);
 	node_buffer_to_hash(local_thread_num);
+
+	quick_hash_print_stats(node_hash_cfu[local_thread_num]);
+
 	//fprintf(stderr, "003t:%d base:%lu\n", local_thread_num, node_buffer[local_thread_num]);
 	if (verbose_mode)
+	{
 		fprintf(stderr, "fill_hash_node - END\n");
+	}
 }
 
 void flush_nodes(int final, int local_thread_num)
@@ -1407,10 +1810,14 @@ void flush_nodes(int final, int local_thread_num)
 		if (node_hash_cfu[local_thread_num])
 		{
 			if (verbose_mode) fprintf(stderr,"node_hash size="LONGLONG_FMT"\n", g_hash_table_size (node_hash[local_thread_num]));
+#if 0
 			//g_hash_table_destroy(node_hash[local_thread_num]);
 			//node_hash[local_thread_num] = NULL;
 			cfuhash_clear(node_hash_cfu[local_thread_num]);
 			cfuhash_destroy(node_hash_cfu[local_thread_num]);
+			node_hash_cfu[local_thread_num] = NULL;
+#endif
+			quick_hash_destroy(node_hash_cfu[local_thread_num]);
 			node_hash_cfu[local_thread_num] = NULL;
 		}
 	}
@@ -1422,44 +1829,30 @@ void flush_nodes(int final, int local_thread_num)
 	slices++;
 }
 
-double transform_to_geo_lat(int y)
+
+
+inline double transform_to_geo_lat(int y)
 {
-	double lat = navit_atan(exp(y / 6371000.0)) / M_PI * 360 - 90;
-	return lat;
+	/* ZZ GEO TRANS ZZ */
+	return TO_GEO_LAT_(y);
 }
 
-double transform_to_geo_lon(int x)
+inline double transform_to_geo_lon(int x)
 {
-	double lon = (x * 0.00000899322);
-	return lon;
+	/* ZZ GEO TRANS ZZ */
+	return TO_GEO_LON_(x);
 }
 
-int transform_from_geo_lat(double lat)
+inline int transform_from_geo_lat(double lat)
 {
-	/* slower */
-	// int ret = log(tan(M_PI_4 + lat * M_PI / 360)) * 6371000.0;
-	//fprintf(stderr, "y=%d\n", ret);
-	/* slower */
-
-	/* fast */
-	int ret = log(tan(M_PI_4 + lat * 0.008726646259971647884618)) * 6371000.0; // already calced (M_PI/360)
-	/* fast */
-
-	return ret;
+	/* ZZ GEO TRANS ZZ */
+	return FROM_GEO_LAT_(lat);
 }
 
-int transform_from_geo_lon(double lon)
+inline int transform_from_geo_lon(double lon)
 {
-	/* slower */
-	//int ret = lon * 6371000.0 * M_PI / 180;
-	// fprintf(stderr, "x=%d\n", ret);
-	/* slower */
-
-	/* fast */
-	int ret = lon * 111194.9266445587373; // already calced (6371000.0*M_PI/180)
-	/* fast */
-
-	return ret;
+	/* ZZ GEO TRANS ZZ */
+	return FROM_GEO_LON_(lon);
 }
 
 void osm_add_node(osmid id, double lat, double lon)
@@ -1490,15 +1883,21 @@ void osm_add_node(osmid id, double lat, double lon)
 	ni->ref_ref = 0;
 	ni->dummy = 0;
 
-	/* slower */
-	// ni->c.x = lon * 6371000.0 * M_PI / 180;
-	// ni->c.y = log(tan(M_PI_4 + lat * M_PI / 360)) * 6371000.0;
-	/* slower */
+	// fprintf(stderr, "NNDD:000:%f %f\n", lat, lon);
 
-	/* fast */
-	ni->c.x = lon * 111194.9266445587373; // already calced (6371000.0*M_PI/180)
-	ni->c.y = log(tan(M_PI_4 + lat * 0.008726646259971647884618)) * 6371000.0; // already calced (M_PI/360)
-	/* fast */
+	/* ZZ GEO TRANS ZZ */
+	ni->c.x = FROM_GEO_LON_(lon);
+	ni->c.y = FROM_GEO_LAT_(lat);
+	/* ZZ GEO TRANS ZZ */
+
+	// fprintf(stderr, "NNDD:002:%d %d\n", ni->c.x, ni->c.y);
+
+
+	// save values -----
+	save_node_lat = lat;
+	save_node_lon = lon;
+	// save values -----
+
 
 #ifdef MAPTOOL_USE_SQL
 
@@ -1628,15 +2027,18 @@ void clear_node_item_buffer(void)
 static struct node_item *
 node_item_get_fast(osmid id, int local_thread_num)
 {
+#if 1
 	int i;
-	void *p_tmp;
-	int rr;
-	size_t data_size2 = sizeof(int);
+	//void *p_tmp;
+	//int rr;
+	//size_t data_size2 = sizeof(int);
 	struct node_item *ni = (struct node_item *) (node_buffer[local_thread_num].base);
+#endif
 
 	//if (node_hash[local_thread_num])
 	if (node_hash_cfu[local_thread_num])
 	{
+#if 0
 		//p_tmp = (gpointer)(g_hash_table_lookup(node_hash[local_thread_num], (gpointer) (long) id));
 		rr = cfuhash_get_data(node_hash_cfu[local_thread_num], (long long) id, sizeof(long long), &p_tmp, &data_size2);
 		if (rr == 1)
@@ -1644,6 +2046,19 @@ node_item_get_fast(osmid id, int local_thread_num)
 			//fprintf(stderr, "got key=%lld value=%d\n", (long long) id, p_tmp);
 			i = p_tmp;
 			return ni + i;
+		}
+#endif
+
+		//struct node_item *ni = quick_hash_lookup(node_hash_cfu[local_thread_num], id);
+		//fprintf(stderr, "got key=%lld value=%p\n", (long long)id, ni);
+		//if (ni)
+		//{
+		//	fprintf(stderr, "x=%d y=%d\n", ni->c.x, ni->c.y);
+		//}
+		i = quick_hash_lookup(node_hash_cfu[local_thread_num], id);
+		if (i != -1)
+		{
+			return ni + i; // move pointer "i" number of items forward
 		}
 
 		//if (p_tmp != NULL)
@@ -1684,6 +2099,7 @@ void osm_add_way(osmid id)
 	memset(flags, 0, sizeof(flags));
 	debug_attr_buffer[0] = '\0';
 	osmid_attr_value = id;
+
 	if (wayid < wayid_last && !way_hash_cfu)
 	{
 		if (verbose_mode)
@@ -1692,7 +2108,7 @@ void osm_add_way(osmid id)
 		}
 		// way_hash = g_hash_table_new(NULL, NULL);
 		way_hash_cfu = cfuhash_new_with_initial_size(CFUHASH_BUCKETS_WAYS);
-		cfuhash_set_flag(node_hash_cfu, CFUHASH_FROZEN);
+		cfuhash_set_flag(way_hash_cfu, CFUHASH_FROZEN);
 
 	}
 	wayid_last = wayid;
@@ -1712,6 +2128,11 @@ void osm_add_relation(osmid id)
 	iso_code[0] = '\0';
 	admin_level = -1;
 	boundary = 0;
+
+	// zero out buffer -----------------------
+	// bzero(item_bin_2, MAX_ITEMBIN_BYTES_);
+	// zero out buffer -----------------------
+
 	item_bin_init(item_bin_2, type_none);
 	item_bin_add_attr_longlong(item_bin_2, attr_osm_relationid, current_id);
 }
@@ -1721,11 +2142,11 @@ static int country_id_from_iso2(char *iso)
 	int ret = 0;
 	if (iso)
 	{
-		// make lowercase
+		// make uppercase
 		int i99;
 		for (i99 = 0; iso[i99]; i99++)
 		{
-			iso[i99] = tolower(iso[i99]);
+			iso[i99] = toupper(iso[i99]);
 		}
 		struct country_search *search;
 		struct attr country_iso2, country_id;
@@ -1753,8 +2174,7 @@ static int country_id_from_iso2(char *iso)
 	return ret;
 }
 
-static struct country_table *
-country_from_countryid(int id)
+struct country_table *country_from_countryid(int id)
 {
 	int i;
 	for (i = 0; i < sizeof(country_table) / sizeof(struct country_table); i++)
@@ -1963,6 +2383,7 @@ void get_lat_lon_way_first_node(long long way_id, struct node_lat_lon *node)
 		break;
 	}
 	sqlite3_reset(st);
+	// sqlite3_finalize(st);
 
 	if (nd != 0)
 	{
@@ -2206,6 +2627,8 @@ void osm_end_relation(struct maptool_osm *osm)
 	int role_ = 0;
 
 	double factor = 10000000;
+
+	struct node_lat_lon* lat_lon_c;
 
 	// triangulate vars
 #if 0
@@ -2636,8 +3059,8 @@ void osm_end_relation(struct maptool_osm *osm)
 					if (found_new_way == 0)
 					{
 						// some problem with this multipolygon
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "some problem with this multipolygon\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "some problem with this multipolygon\n");
 						triangulate_not_done = 1;
 						problem = 1;
 						break;
@@ -2737,14 +3160,14 @@ void osm_end_relation(struct maptool_osm *osm)
 				}
 				CATCH( MAPTOOL_00001_EXCEPTION )
 				{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-					fprintf(stderr, "Got Exception 1!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+					fprintf_(stderr, "Got Exception 1!\n");
 					exception = 1;
 				}
 				CATCH( MAPTOOL_00002_EXCEPTION )
 				{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-					fprintf(stderr, "Got segv Exception 1!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+					fprintf_(stderr, "Got segv Exception 1!\n");
 					exception = 1;
 				}
 				FINALLY
@@ -2796,8 +3219,8 @@ void osm_end_relation(struct maptool_osm *osm)
 									{
 										if (glist_find_already_inside(temp_nodes_list, ndptr) != 0)
 										{
-											fprintf(stderr, "relation id=%lld\n", current_id);
-											fprintf(stderr, "problem with hole!\n");
+											fprintf_(stderr, "relation id=%lld\n", current_id);
+											fprintf_(stderr, "problem with hole!\n");
 											no_holes = 1;
 											break;
 										}
@@ -2984,14 +3407,14 @@ void osm_end_relation(struct maptool_osm *osm)
 											}
 											CATCH( MAPTOOL_00001_EXCEPTION )
 											{
-												fprintf(stderr, "relation id=%lld\n", current_id);
-												fprintf(stderr, "Got Exception A!\n");
+												fprintf_(stderr, "relation id=%lld\n", current_id);
+												fprintf_(stderr, "Got Exception A!\n");
 												exception = 1;
 											}
 											CATCH( MAPTOOL_00002_EXCEPTION )
 											{
-												fprintf(stderr, "relation id=%lld\n", current_id);
-												fprintf(stderr, "Got segv Exception A!\n");
+												fprintf_(stderr, "relation id=%lld\n", current_id);
+												fprintf_(stderr, "Got segv Exception A!\n");
 												exception = 1;
 											}
 											FINALLY
@@ -3066,14 +3489,14 @@ void osm_end_relation(struct maptool_osm *osm)
 							}
 							CATCH( MAPTOOL_00001_EXCEPTION )
 							{
-								fprintf(stderr, "relation id=%lld\n", current_id);
-								fprintf(stderr, "Got Exception 8!\n");
+								fprintf_(stderr, "relation id=%lld\n", current_id);
+								fprintf_(stderr, "Got Exception 8!\n");
 								exception = 1;
 							}
 							CATCH( MAPTOOL_00002_EXCEPTION )
 							{
-								fprintf(stderr, "relation id=%lld\n", current_id);
-								fprintf(stderr, "Got segv Exception 8!\n");
+								fprintf_(stderr, "relation id=%lld\n", current_id);
+								fprintf_(stderr, "Got segv Exception 8!\n");
 								exception = 1;
 							}
 							FINALLY
@@ -3131,14 +3554,14 @@ void osm_end_relation(struct maptool_osm *osm)
 					}
 					CATCH( MAPTOOL_00001_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got Exception 2! (in triangulate)\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got Exception 2! (in triangulate)\n");
 						exception = 1;
 					}
 					CATCH( MAPTOOL_00002_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got segv Exception 2! (in triangulate)\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got segv Exception 2! (in triangulate)\n");
 						exception = 1;
 					}
 					FINALLY
@@ -3236,8 +3659,7 @@ void osm_end_relation(struct maptool_osm *osm)
 								//fprintf(stderr, "T:water\n");
 							}
 
-							// add dummy osm wayid
-							item_bin_add_attr_longlong(item_bin_tri, attr_osm_wayid, current_id);
+							// first add coords
 							coord_tri.x = transform_from_geo_lon(pt1->c.x);
 							coord_tri.y = transform_from_geo_lat(pt1->c.y);
 							item_bin_add_coord(item_bin_tri, &coord_tri, 1);
@@ -3247,8 +3669,16 @@ void osm_end_relation(struct maptool_osm *osm)
 							coord_tri.x = transform_from_geo_lon(pt3->c.x);
 							coord_tri.y = transform_from_geo_lat(pt3->c.y);
 							item_bin_add_coord(item_bin_tri, &coord_tri, 1);
+							// now add dummy osm wayid
+							item_bin_add_attr_longlong(item_bin_tri, attr_osm_wayid, current_id);
 
+							// DEBUG -- DEBUG -- DEBUG --
+							// DEBUG -- DEBUG -- DEBUG --
+							// dump_itembin(item_bin_tri);
+							// DEBUG -- DEBUG -- DEBUG --
+							// DEBUG -- DEBUG -- DEBUG --
 							item_bin_write(item_bin_tri, osm->ways_with_coords);
+
 							// make item and write it to ways file -------------------
 							// make item and write it to ways file -------------------
 
@@ -3280,14 +3710,14 @@ void osm_end_relation(struct maptool_osm *osm)
 					}
 					CATCH( MAPTOOL_00001_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got Exception 3!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got Exception 3!\n");
 						exception = 1;
 					}
 					CATCH( MAPTOOL_00002_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got segv Exception 3!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got segv Exception 3!\n");
 						exception = 1;
 					}
 					FINALLY
@@ -3307,14 +3737,14 @@ void osm_end_relation(struct maptool_osm *osm)
 					}
 					CATCH( MAPTOOL_00001_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got Exception 4!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got Exception 4!\n");
 						exception = 1;
 					}
 					CATCH( MAPTOOL_00002_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got segv Exception 4!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got segv Exception 4!\n");
 						exception = 1;
 					}
 					FINALLY
@@ -3332,14 +3762,14 @@ void osm_end_relation(struct maptool_osm *osm)
 					}
 					CATCH( MAPTOOL_00001_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got Exception 5!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got Exception 5!\n");
 						exception = 1;
 					}
 					CATCH( MAPTOOL_00002_EXCEPTION )
 					{
-						fprintf(stderr, "relation id=%lld\n", current_id);
-						fprintf(stderr, "Got segv Exception 5!\n");
+						fprintf_(stderr, "relation id=%lld\n", current_id);
+						fprintf_(stderr, "Got segv Exception 5!\n");
 						exception = 1;
 					}
 					FINALLY
@@ -3539,6 +3969,8 @@ void osm_end_relation(struct maptool_osm *osm)
 	{
 		int found_town_rel = 0;
 
+		fprintf_(stderr, "town to relation 00: r:%lld\n", current_id);
+
 		if ((found_town_rel == 0) && (admin_level >= TOWN_ADMIN_LEVEL_START))
 		{
 			// save relation id for towns into DB
@@ -3549,11 +3981,11 @@ void osm_end_relation(struct maptool_osm *osm)
 				{
 					if (memb.type == 1) 
 					{
-						//fprintf(stderr, "role=%s\n", memb.role);
+						fprintf_(stderr, "role=%s\n", memb.role);
 
 						if (!strcmp(memb.role, "label"))
 						{
-							fprintf(stderr, "town to relation 1: rel-name:%s r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), current_id, memb.id);
+							fprintf_(stderr, "town to relation 1: rel-name:%s r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), current_id, memb.id);
 							sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
 							// fprintf(stderr, "ret=%d\n", rr);
 							sqlite3_bind_int64(stmt_town_sel008, 1, current_id);
@@ -3565,6 +3997,14 @@ void osm_end_relation(struct maptool_osm *osm)
 							//fprintf(stderr, "ret=%d\n", rr);
 
 							add_boundary_to_db(current_id, admin_level, item_bin_2, &memb);
+
+							lat_lon_c = get_first_coord_of_boundary(item_bin_2, &memb);
+							if (lat_lon_c)
+							{
+								sqlite3_bind_double(stmt_town, 6, lat_lon_c->lat);
+								sqlite3_bind_double(stmt_town, 7, lat_lon_c->lon);
+								g_free(lat_lon_c);
+							}
 
 							sqlite3_bind_int64(stmt_town, 1, dummy_town_id);
 							sqlite3_bind_int(stmt_town, 2, 999);
@@ -3598,11 +4038,11 @@ void osm_end_relation(struct maptool_osm *osm)
 				{
 					if (memb.type == 1) 
 					{
-						//fprintf(stderr, "role=%s\n", memb.role);
+						fprintf_(stderr, "role=%s\n", memb.role);
 
 						if (!strcmp(memb.role, "admin_centre"))
 						{
-							fprintf(stderr, "town to relation 2: rel-name:%s r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), current_id, memb.id);
+							fprintf_(stderr, "town to relation 2: rel-name:%s r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), current_id, memb.id);
 							sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
 							// fprintf(stderr, "ret=%d\n", rr);
 							sqlite3_bind_int64(stmt_town_sel008, 1, current_id);
@@ -3614,6 +4054,14 @@ void osm_end_relation(struct maptool_osm *osm)
 							//fprintf(stderr, "ret=%d\n", rr);
 
 							add_boundary_to_db(current_id, admin_level, item_bin_2, &memb);
+
+							lat_lon_c = get_first_coord_of_boundary(item_bin_2, &memb);
+							if (lat_lon_c)
+							{
+								sqlite3_bind_double(stmt_town, 6, lat_lon_c->lat);
+								sqlite3_bind_double(stmt_town, 7, lat_lon_c->lon);
+								g_free(lat_lon_c);
+							}
 
 							sqlite3_bind_int64(stmt_town, 1, dummy_town_id);
 							sqlite3_bind_int(stmt_town, 2, 999);
@@ -3649,7 +4097,7 @@ void osm_end_relation(struct maptool_osm *osm)
 
 						if (!strcmp(memb.role, "admin_center"))
 						{
-							fprintf(stderr, "town to relation 3: rel-name:%s r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), current_id, memb.id);
+							fprintf_(stderr, "town to relation 3: rel-name:%s r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), current_id, memb.id);
 							sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
 							// fprintf(stderr, "ret=%d\n", rr);
 							sqlite3_bind_int64(stmt_town_sel008, 1, current_id);
@@ -3661,6 +4109,14 @@ void osm_end_relation(struct maptool_osm *osm)
 							//fprintf(stderr, "ret=%d\n", rr);
 
 							add_boundary_to_db(current_id, admin_level, item_bin_2, &memb);
+
+							lat_lon_c = get_first_coord_of_boundary(item_bin_2, &memb);
+							if (lat_lon_c)
+							{
+								sqlite3_bind_double(stmt_town, 6, lat_lon_c->lat);
+								sqlite3_bind_double(stmt_town, 7, lat_lon_c->lon);
+								g_free(lat_lon_c);
+							}
 
 							sqlite3_bind_int64(stmt_town, 1, dummy_town_id);
 							sqlite3_bind_int(stmt_town, 2, 999);
@@ -3687,7 +4143,7 @@ void osm_end_relation(struct maptool_osm *osm)
 		if ((found_town_rel == 0) && (admin_level >= TOWN_ADMIN_LEVEL_START))
 		{
 			// save relation id for towns into DB (use dummy town data)
-			fprintf(stderr, "town to relation(*): rel-name:%s admlevel:%d r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), admin_level, current_id, dummy_town_id);
+			fprintf_(stderr, "town to relation(*): rel-name:%s admlevel:%d r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), admin_level, current_id, dummy_town_id);
 			sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
 			// fprintf(stderr, "ret=%d\n", rr);
 			sqlite3_bind_int64(stmt_town_sel008, 1, current_id);
@@ -3698,36 +4154,56 @@ void osm_end_relation(struct maptool_osm *osm)
 			sqlite3_reset(stmt_town_sel008);
 			//fprintf(stderr, "ret=%d\n", rr);
 
-
+			int did_write_boundary_to_db = 0;
 			str = NULL;
 			while ((str = item_bin_get_attr(item_bin_2, attr_osm_member, str)))
 			{
 				if (get_relation_member(str, &memb))
 				{
-					if ((memb.type == 2) && (!strcmp(memb.role, "outer")))
+					if ((memb.type == 2) && (strcmp(memb.role, "inner")))
 					{
 						// way-id is "memb.id"
 						// use the first nodes coords
-						get_lat_lon_way_first_node(memb.id, &node_coords);
-						if (node_coords.valid == 1)
-						{
-							sqlite3_bind_double(stmt_town, 6, node_coords.lat);
-							sqlite3_bind_double(stmt_town, 7, node_coords.lon);
-						}
+						//get_lat_lon_way_first_node(memb.id, &node_coords);
+						//if (node_coords.valid == 1)
+						//{
+						//	sqlite3_bind_double(stmt_town, 6, node_coords.lat);
+						//	sqlite3_bind_double(stmt_town, 7, node_coords.lon);
+						//}
 
 						add_boundary_to_db(current_id, admin_level, item_bin_2, &memb);
+						did_write_boundary_to_db = 1;
 
 						break;
 					}
 				}
 			}
 
+			lat_lon_c = get_first_coord_of_boundary(item_bin_2, &memb);
+			if (lat_lon_c)
+			{
+				sqlite3_bind_double(stmt_town, 6, lat_lon_c->lat);
+				sqlite3_bind_double(stmt_town, 7, lat_lon_c->lon);
+				fprintf_(stderr, "town to relation(*):coords %f %f\n", lat_lon_c->lat, lat_lon_c->lon);
+				g_free(lat_lon_c);
+			}
+
+
 			sqlite3_bind_int64(stmt_town, 1, dummy_town_id);
 			sqlite3_bind_int(stmt_town, 2, 999);
 			sqlite3_bind_int(stmt_town, 4, (TOWN_ADMIN_LEVEL_CORR_BASE + admin_level) * TOWN_BY_BOUNDARY_SIZE_FACTOR);
 			sqlite3_bind_text(stmt_town, 3, osm_tag_value(item_bin_2, "name"), -1, SQLITE_STATIC);
 			sqlite3_bind_text(stmt_town, 5, NULL, -1, SQLITE_STATIC);
-			sqlite3_bind_int64(stmt_town, 8, current_id);
+
+			if (did_write_boundary_to_db == 1)
+			{
+				sqlite3_bind_int64(stmt_town, 8, current_id);
+			}
+			else
+			{
+				// boundary not in DB
+				// ----- what? i have no idea what to do here -----
+			}
 			sqlite3_step(stmt_town);
 			sqlite3_reset(stmt_town);
 
@@ -3751,7 +4227,7 @@ void osm_end_relation(struct maptool_osm *osm)
 				{
 					if ((memb.type == 2) && (!strcmp(memb.role, "outer")))
 					{
-						fprintf(stderr, "town to relation(+): rel-name:%s admlevel:%d r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), admin_level, current_id, 9797979797);
+						fprintf_(stderr, "town to relation(+): rel-name:%s admlevel:%d r:%lld t:%lld\n",osm_tag_value(item_bin_2, "name"), admin_level, current_id, 9797979797);
 
 						add_boundary_to_db(current_id, admin_level, item_bin_2, &memb);
 						break;
@@ -3785,6 +4261,8 @@ void osm_end_relation(struct maptool_osm *osm)
 }
 
 
+// #define DEBUG_CORRECT_BOUNDARY_REF_POINT 1
+
 void correct_boundary_ref_point(GList *bl)
 {
 	long long rid;
@@ -3798,73 +4276,144 @@ void correct_boundary_ref_point(GList *bl)
 	GList *l = NULL;
 	GList *l2 = NULL;
 	GList *match = NULL;
-	struct boundary *b;
+	struct boundary *b = NULL;
 	int admin_l_boundary;
 	int max_admin_l;
+
+	//fprintf(stderr, "BRP:001\n");
 
 	// loop thru all the boundaries
 	do
 	{
+
+		//fprintf(stderr, "BRP:002\n");
+
 		rc = sqlite3_step(stmt_bd_002);
+
+		//fprintf(stderr, "BRP:003\n");
+
 		switch (rc)
 		{
 			case SQLITE_DONE:
 				break;
 			case SQLITE_ROW:
 
+				//fprintf(stderr, "BRP:004\n");
 				//  select rel_id, admin_level, lat, lon, name from boundary where done = 0;
 				rid = sqlite3_column_int64(stmt_bd_002, 0);
+				//fprintf(stderr, "BRP:005\n");
 				admin_l = sqlite3_column_int(stmt_bd_002, 1);
+				//fprintf(stderr, "BRP:006\n");
 				lat = sqlite3_column_double(stmt_bd_002, 2);
+				//fprintf(stderr, "BRP:007\n");
 				lon = sqlite3_column_double(stmt_bd_002, 3);
+				//fprintf(stderr, "BRP:008\n");
 				c.x = transform_from_geo_lon(lon);
+				//fprintf(stderr, "BRP:009\n");
 				c.y = transform_from_geo_lat(lat);
+				//fprintf(stderr, "BRP:010\n");
 
-				//fprintf(stderr, "correct_boundary_ref_point: relid:%lld(%d) x=%d y=%d\n", rid, admin_l, c.x, c.y);
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+				fprintf(stderr, "correct_boundary_ref_point: relid:%lld(%d) x=%d y=%d\n", rid, admin_l, c.x, c.y);
+#endif
 
 				// find this boundary in list
 				l = bl;
 				match = NULL;
+
+				//fprintf(stderr, "BRP:011\n");
+
 				while (l)
 				{
+					// fprintf(stderr, "BRP:012 l=%p l->data=%p\n", l, l->data);
+
 					b = l->data;
-					//fprintf(stderr, "correct_boundary_ref_point: %lld %lld\n", item_bin_get_relationid(b->ib), rid);
-					if (item_bin_get_relationid(b->ib) == rid)
+
+					// fprintf(stderr, "BRP:012a b=%p\n", b);
+
+					if (b)
 					{
-						match = l;
-						break;
+						// fprintf(stderr, "BRP:012b\n");
+						if (b->ib)
+						{
+							// fprintf(stderr, "BRP:012c\n");
+
+							// fprintf(stderr, "BRP:013a %p\n", b);
+							// fprintf(stderr, "BRP:013b %p\n", b->ib);
+							// fprintf(stderr, "BRP:013c %lld\n", (long long)rid);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+							fprintf(stderr, "correct_boundary_ref_point: %lld %lld\n", item_bin_get_relationid(b->ib), rid);
+#endif
+							if (item_bin_get_relationid(b->ib) == rid)
+							{
+								// fprintf(stderr, "BRP:014\n");
+								match = l;
+								break;
+							}
+							// fprintf(stderr, "BRP:015\n");
+
+						}
 					}
+
 					l = g_list_next(l);
+
+					// fprintf(stderr, "BRP:016\n");
+
 				}
+
+				//fprintf(stderr, "BRP:017\n");
 
 				if (match)
 				{
+					//fprintf(stderr, "BRP:018\n");
+
 					b = match->data;
-					//fprintf(stderr, "correct_boundary_ref_point: relid:%lld(%d) parentid:%lld(%d)\n", rid, admin_l, item_bin_get_relationid(b->ib), max_admin_l);
 
-					// -------------------------------------------
-					/*
-					GList *sl;
-					sl = b->sorted_segments;
-					if (sl)
+					if (b)
 					{
-						struct geom_poly_segment *gs = sl->data;
-						struct coord *c2 = gs->first;
-						fprintf(stderr, "1a c=%d y=%d\n", c2->x, c2->y);
-					}
-					*/
-					// -------------------------------------------
 
-					if (find_correct_point_in_boundary(match, &lat, &lon) == 1)
-					{
-						sqlite3_bind_double(stmt_bd_004, 1, lat);
-						sqlite3_bind_double(stmt_bd_004, 2, lon);
-						sqlite3_bind_int64(stmt_bd_004, 3, rid);
-						sqlite3_step(stmt_bd_004);
-						sqlite3_reset(stmt_bd_004);
+						//fprintf(stderr, "BRP:019\n");
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+						fprintf(stderr, "correct_boundary_ref_point: relid:%lld(%d) parentid:%lld(%d)\n", rid, admin_l, item_bin_get_relationid(b->ib), max_admin_l);
+#endif
+						// -------------------------------------------
+						/*
+						GList *sl;
+						sl = b->sorted_segments;
+						if (sl)
+						{
+							struct geom_poly_segment *gs = sl->data;
+							struct coord *c2 = gs->first;
+							fprintf(stderr, "1a c=%d y=%d\n", c2->x, c2->y);
+						}
+						*/
+						// -------------------------------------------
+
+						if (find_correct_point_in_boundary(match, &lat, &lon) == 1)
+						{
+
+							//fprintf(stderr, "BRP:020\n");
+							sqlite3_bind_double(stmt_bd_004, 1, lat);
+							//fprintf(stderr, "BRP:021\n");
+							sqlite3_bind_double(stmt_bd_004, 2, lon);
+							//fprintf(stderr, "BRP:022\n");
+							sqlite3_bind_int64(stmt_bd_004, 3, rid);
+							//fprintf(stderr, "BRP:023\n");
+							sqlite3_step(stmt_bd_004);
+							//fprintf(stderr, "BRP:024\n");
+							sqlite3_reset(stmt_bd_004);
+							//fprintf(stderr, "BRP:025\n");
+						}
+
+						//fprintf(stderr, "BRP:026\n");
+
 					}
+
 				}
 
+				//fprintf(stderr, "BRP:027\n");
 
 				if (count == 0)
 				{
@@ -3872,11 +4421,15 @@ void correct_boundary_ref_point(GList *bl)
 				}
 				count++;
 
+				//fprintf(stderr, "BRP:028\n");
+
 				if (count > commit_after)
 				{
 					sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
 					count = 0;
 				}
+
+				//fprintf(stderr, "BRP:029\n");
 
 				break;
 			default:
@@ -3885,9 +4438,16 @@ void correct_boundary_ref_point(GList *bl)
 		}
 	}
 	while (rc == SQLITE_ROW);
+
+	//fprintf(stderr, "BRP:091\n");
+
 	sqlite3_reset(stmt_bd_002);
 
+	//fprintf(stderr, "BRP:092\n");
+
 	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+	//fprintf(stderr, "BRP:093\n");
 
 }
 
@@ -3906,7 +4466,11 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2 + lon_d);
 	c.y = transform_from_geo_lat(lat2 + lat_d);
-	//fprintf(stderr, "2 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "2 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -3918,7 +4482,11 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2 + lon_d);
 	c.y = transform_from_geo_lat(lat2 - lat_d);
-	//fprintf(stderr, "3 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "3 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -3930,7 +4498,11 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2 - lon_d);
 	c.y = transform_from_geo_lat(lat2 + lat_d);
-	//fprintf(stderr, "4 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "4 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -3942,7 +4514,11 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2 - lon_d);
 	c.y = transform_from_geo_lat(lat2 - lat_d);
-	//fprintf(stderr, "5 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "5 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -3955,19 +4531,27 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2 + lon_d);
 	c.y = transform_from_geo_lat(lat2);
-	//fprintf(stderr, "6 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "6 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
 	{
-		*lon = lon2 - lon_d;
+		*lon = lon2 + lon_d;
 		*lat = lat2;
 		return 1;
 	}
 
 	c.x = transform_from_geo_lon(lon2 - lon_d);
 	c.y = transform_from_geo_lat(lat2);
-	//fprintf(stderr, "7 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "7 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -3979,7 +4563,11 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2);
 	c.y = transform_from_geo_lat(lat2 + lat_d);
-	//fprintf(stderr, "8 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "8 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -3992,7 +4580,11 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 	c.x = transform_from_geo_lon(lon2);
 	c.y = transform_from_geo_lat(lat2 - lat_d);
-	//fprintf(stderr, "9 c=%d y=%d\n", c.x, c.y);
+
+#ifdef DEBUG_CORRECT_BOUNDARY_REF_POINT
+	fprintf(stderr, "9 c=%d y=%d\n", c.x, c.y);
+#endif
+
 	matches = NULL;
 	matches = boundary_find_matches_single(bl, &c);
 	if (g_list_length(matches) > 0)
@@ -4006,7 +4598,7 @@ int find_correct_point_in_boundary(GList *bl, double* lat, double* lon)
 
 }
 
-void build_boundary_tree(GList *bl)
+void build_boundary_tree(GList *bl, GList *man_bl)
 {
 	long long rid;
 	int retval;
@@ -4022,6 +4614,19 @@ void build_boundary_tree(GList *bl)
 	struct boundary *b;
 	int admin_l_boundary;
 	int max_admin_l;
+	long long b_count = 0;
+	long long b_max_count = 0;
+
+
+	sqlite3_stmt *stmt_mm_1;
+	int retval8 = sqlite3_prepare_v2(sql_handle, "select count(*) from boundary where done = 0;", -1, &stmt_mm_1, NULL);
+	fprintf_(stderr, "prep:%d\n", retval8);
+	sqlite3_step(stmt_mm_1);
+	b_max_count = sqlite3_column_int64(stmt_mm_1, 0);
+	fprintf_(stderr, "b_max_count:%lld\n", b_max_count);
+	sqlite3_reset(stmt_mm_1);
+	sqlite3_finalize(stmt_mm_1);
+
 
 	// loop thru all the boundaries
 	do
@@ -4041,7 +4646,12 @@ void build_boundary_tree(GList *bl)
 				c.x = transform_from_geo_lon(lon);
 				c.y = transform_from_geo_lat(lat);
 
-				//fprintf(stderr, "relid:%lld(%d) x=%d y=%d\n", rid, admin_l, c.x, c.y);
+				b_count++;
+				if ((b_count % 100) == 0)
+				{
+					fprintf_(stderr, "rel:%lld/%lld\n", b_count, b_max_count);
+					// fprintf(stderr, "relid:%lld(%d) x=%d y=%d\n", rid, admin_l, c.x, c.y);
+				}
 
 				max_admin_l = 0;
 				l2 = boundary_find_matches_level(bl, &c, 0, (admin_l - 1));
@@ -4106,15 +4716,144 @@ void build_boundary_tree(GList *bl)
 		}
 	}
 	while (rc == SQLITE_ROW);
+
 	sqlite3_reset(stmt_bd_002);
 
 	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+
+	// ------- enter manual countries into boundary DB ----------
+	GList *bl2 = man_bl;
+	struct boundary_manual *bb3;
+
+	struct country_table3
+	{
+		int countryid;
+		char *names;
+		char *admin_levels;
+		FILE *file;
+		int size;
+		struct rect r;
+	};
+
+
+	sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+	while (bl2)
+	{
+		bb3 = bl2->data;
+		if (bb3)
+		{
+			struct country_table3* cc3 = bb3->country;
+			sqlite3_bind_int64(stmt_bd_001, 1, bb3->town_id); // dummy id
+			sqlite3_bind_int(stmt_bd_001, 2, 2); // admin level
+			sqlite3_bind_text(stmt_bd_001, 5, cc3->names, -1, SQLITE_STATIC); // name
+			sqlite3_step(stmt_bd_001);
+			sqlite3_reset(stmt_bd_001);
+		}
+		bl2 = g_list_next(bl2);
+	}
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+	count = 0;
+
+
+	// ------- now assign all the left overs towns/boundaries to countries ----------
+	long long dummy_town_id2 = 0;
+	count = 0;
+	admin_l = 99;
+	rc = 0;
+
+	// loop thru all the boundaries
+	do
+	{
+		rc = sqlite3_step(stmt_bd_002);
+		switch (rc)
+		{
+			case SQLITE_DONE:
+				break;
+			case SQLITE_ROW:
+
+				//  select rel_id, admin_level, lat, lon, name from boundary where done = 0;
+				rid = sqlite3_column_int64(stmt_bd_002, 0);
+				admin_l = sqlite3_column_int(stmt_bd_002, 1);
+				lat = sqlite3_column_double(stmt_bd_002, 2);
+				lon = sqlite3_column_double(stmt_bd_002, 3);
+				c.x = transform_from_geo_lon(lon);
+				c.y = transform_from_geo_lat(lat);
+
+				//fprintf(stderr, "relid:%lld(%d) x=%d y=%d\n", rid, admin_l, c.x, c.y);
+				if (admin_l > 2)
+				{
+
+					// check if c is inside manual country border
+					dummy_town_id2 = osm_process_street_by_manual_country_borders(man_bl, &c);
+
+					if (dummy_town_id2 != -1)
+					{
+						sqlite3_bind_int64(stmt_bd_003, 1, dummy_town_id2); // parent rel_id
+						sqlite3_bind_int64(stmt_bd_003, 2, rid); // rel_id
+						sqlite3_step(stmt_bd_003);
+						sqlite3_reset(stmt_bd_003);
+					}
+
+
+					if (count == 0)
+					{
+						sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+					}
+					count++;
+
+					if (count > commit_after)
+					{
+						sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+						count = 0;
+					}
+
+				}
+				break;
+			default:
+				fprintf(stderr, "SQL Error: %d\n", rc);
+				break;
+		}
+	}
+	while (rc == SQLITE_ROW);
+	sqlite3_reset(stmt_bd_002);
+
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+}
+
+struct node_lat_lon* get_first_coord_of_boundary(struct item_bin *item_bin_3, struct relation_member *memb)
+{
+	char *str = NULL;
+	struct node_lat_lon* node_coords=g_new0(struct node_lat_lon, 1);
+
+	while ((str = item_bin_get_attr(item_bin_3, attr_osm_member, str)))
+	{
+		if (get_relation_member(str, memb))
+		{
+			if (memb->type == 2) 
+			{
+				// way-id is "memb.id"
+				// use the first nodes coords
+				get_lat_lon_way_first_node(memb->id, node_coords);
+				if (node_coords->valid == 1)
+				{
+					return node_coords;
+				}
+				break;
+			}
+		}
+	}
+
+	return NULL;
 }
 
 void add_boundary_to_db(long long current_id, int admin_level, struct item_bin *item_bin_3, struct relation_member *memb)
 {
 	char *str = NULL;
 	struct node_lat_lon node_coords;
+
+	// fprintf(stderr, "add_boundary_to_db:bid:%lld admin_level:%d\n", current_id, admin_level);
 
 	sqlite3_bind_int64(stmt_bd_001, 1, current_id);
 
@@ -4302,6 +5041,309 @@ char* get_index_for_string(const char *in)
 	return sub;
 }
 
+
+
+static int tab_atan[]=
+{	0,262,524,787,1051,1317,1584,1853,2126,2401,2679,2962,3249,3541,3839,4142,4452,4770,5095,5430,5774,6128,6494,6873,7265,7673,8098,8541,9004,9490,10000,10538};
+
+static int
+atan2_int_lookup(int val)
+{
+	int len=sizeof(tab_atan)/sizeof(int);
+	int i=len/2;
+	int p=i-1;
+
+	for (;;)
+	{
+		i>>=1;
+		if (val < tab_atan[p])
+		{
+			p-=i;
+		}
+		else
+		{
+			if (val < tab_atan[p+1])
+			{
+				return p+(p>>1);
+			}
+			else
+			{
+				p+=i;
+			}
+		}
+	}
+}
+
+
+inline double my_atan2_double(double x, double y)
+{
+	double result;
+
+	asm (
+	"fpatan\n\t"
+	: "=t" (result) // outputs; t = top of fpu stack
+	: "0" (x), // inputs; 0 = same as result
+	  "u" (y) // u = 2nd floating point register
+	);
+
+	return result;
+}
+
+
+static int
+atan2_int(int dx, int dy)
+{
+	int mul=1,add=0,ret;
+
+	if (! dx)
+	{
+		return dy < 0 ? 180 : 0;
+	}
+
+	if (! dy)
+	{
+		return dx < 0 ? -90 : 90;
+	}
+
+	if (dx < 0)
+	{
+		dx=-dx;
+		mul=-1;
+	}
+
+	if (dy < 0)
+	{
+		dy=-dy;
+		add=180*mul;
+		mul*=-1;
+	}
+
+	while (dx > 20000 || dy > 20000)
+	{
+		dx/=10;
+		dy/=10;
+	}
+
+	if (dx > dy)
+	{
+		ret=90-atan2_int_lookup(dy*10000/dx);
+	}
+	else
+	{
+		ret=atan2_int_lookup(dx*10000/dy);
+	}
+
+	return ret*mul+add;
+}
+
+
+
+static int maptool_get_angle_delta(struct coord *c1, struct coord *c2, int dir)
+{
+	int dx = c2->x - c1->x;
+	int dy = c2->y - c1->y;
+
+	// fprintf(stderr, "angle: %d %d %d %d\n", c1->x, c1->y, c2->x, c2->y);
+
+#if 0
+	double angle;
+	angle = my_atan2_double(dy, dx);
+	angle *= 57.29577952019129709110; // ( 180/ M_PI ) = 57.29577952019129709110
+	//fprintf(stderr, "1 angle=%lf\n", angle);
+#endif
+
+#if 0
+	double angle;
+	angle = atan2(dx, dy);
+	angle *= 57.29577952019129709110; // ( 180/ M_PI ) = 57.29577952019129709110
+	fprintf(stderr, "2 angle=%lf\n", angle);
+#endif
+
+#if 1
+	int angle;
+	angle=atan2_int(dx,dy);
+	//fprintf(stderr, "3 angle=%d\n", (int)(angle));
+#endif
+
+	if (dir == -1)
+	{
+		angle = angle - 180;
+	}
+
+	if (angle < 0)
+	{
+		angle += 360;
+	}
+
+	return angle;
+}
+
+
+/**
+ * @brief Calculates the delta between two angles
+ * @param angle1 The first angle
+ * @param angle2 The second angle
+ * @return The difference between the angles: -179..-1=angle2 is left of angle1,0=same,1..179=angle2 is right of angle1,180=angle1 is opposite of angle2
+ */
+static int maptool_delta_angle(int angle1, int angle2)
+{
+	int delta = angle2 - angle1;
+
+	if (delta <= -180)
+	{
+		delta += 360;
+	}
+
+	if (delta > 180)
+	{
+		delta -= 360;
+	}
+
+	return delta;
+}
+
+
+clock_t maptool_debug_measure_start(void)
+{
+	clock_t start = clock();
+	return start;
+}
+
+clock_t maptool_debug_measure_end(clock_t start_time)
+{
+	clock_t diff_time = clock() - start_time;
+	return diff_time;
+}
+
+int maptool_debug_measure_end_tsecs(clock_t start_time)
+{
+	clock_t diff_time = clock() - start_time;
+	return (int) (((double) diff_time / (double) CLOCKS_PER_SEC) * 1000);
+}
+
+void maptool_debug_measure_result_str(clock_t diff, char *buffer)
+{
+	sprintf(buffer, "elapsed: %fs\n", (diff / CLOCKS_PER_SEC));
+}
+
+void maptool_debug_mrp(clock_t diff)
+{
+	fprintf(stderr, "angle el:%fs\n", (double) ((double) diff / (double) CLOCKS_PER_SEC));
+}
+
+
+
+static int maptool_get_node_x_y(long long way_id, int node_num_in_way, struct coord *c_ret)
+{
+	int ret = 0;
+	struct node_lat_lon node_coords2;
+
+	// fprintf(stderr, "angle way id=%lld\n", way_id);
+
+	long long way_node = get_waynode_num_have_seekpos(way_id, node_num_in_way, 0, (off_t)seekpos1);
+
+	if (way_node > 0)
+	{
+		// fprintf(stderr, "angle way node id=%lld\n", way_node);
+
+		get_lat_lon_for_node(way_node, &node_coords2);
+		if (node_coords2.valid == 1)
+		{
+			//c_ret->x = transform_from_geo_lon(node_coords2.lon);
+			c_ret->x = (int)(node_coords2.lon * 100000.0);
+
+			//c_ret->y = transform_from_geo_lat(node_coords2.lat);
+			c_ret->y = (int)(node_coords2.lat * 100000.0);
+
+			// save coord of way_node
+			// coord_buffer_3[node_num_in_way].x = c_ret->x;
+			// coord_buffer_3[node_num_in_way].y = c_ret->y;
+
+			// fprintf(stderr, "angle node_num=%d x=%d y=%d lon=%f lat=%f\n", node_num_in_way, c_ret->x, c_ret->y, node_coords2.lon, node_coords2.lat);
+			ret = 1;
+		}
+	}
+
+	return ret;
+}
+
+
+static void osm_write_cycle_way(FILE *ways_file, int i, int type, struct coord *coord_buffer_2, int start_node_num_in_way, int node_count, int part_num)
+{
+	int *def_flags, add_flags;
+	struct item_bin *item_bin;
+
+	item_bin = init_item(type, 0);
+	def_flags = item_get_default_flags(type);
+
+	// struct coord *coord_buffer_4 = &coord_buffer_3[start_node_num_in_way];
+	struct coord *coord_buffer_4 = &coord_buffer[start_node_num_in_way];
+	item_bin_add_coord(item_bin, coord_buffer_4, node_count);
+
+	// fprintf(stderr, "Xangle node_num=%d count=%d wayid=%lld\n", start_node_num_in_way, node_count, osmid_attr_value);
+	//int ii;
+	//for (ii=0;ii<node_count;ii++)
+	//{
+	//	fprintf(stderr, "Yangle node_num=%d x=%d y=%d\n", ii, coord_buffer_4[ii].x, coord_buffer_4[ii].y);
+	//}
+
+	if (def_flags)
+	{
+		flags_attr_value = (*def_flags | flags[0] | flags[1]) & ~flags[2];
+		// only add flags if they differ from the default flags!!
+		if (flags_attr_value != *def_flags)
+		{
+			add_flags = 1;
+		}
+	}
+	else // maybe should explicitly specify which "types" to consider? now its all "types"
+	{
+		def_flags = 0;
+		flags_attr_value = (flags[0] | flags[1]) & ~flags[2];
+
+		// only add flags if we really have a value
+		if (flags_attr_value != 0)
+		{
+			add_flags = 1;
+		}
+	}
+
+	item_bin_add_attr_string(item_bin, def_flags ? attr_street_name : attr_label, attr_strings[attr_string_label]);
+
+	item_bin_add_attr_longlong(item_bin, attr_osm_wayid, osmid_attr_value);
+
+	if (add_flags)
+	{
+		item_bin_add_attr_int(item_bin, attr_flags, flags_attr_value);
+	}
+
+	// ------- add DEBUG ATTR --------
+	item_bin_add_attr_int(item_bin, attr_debugsplitway, start_node_num_in_way);
+	// ------- add DEBUG ATTR --------
+
+	if (maxspeed_attr_value)
+	{
+		item_bin_add_attr_int(item_bin, attr_maxspeed, maxspeed_attr_value);
+	}
+
+	// custom color attribute
+	if (attr_strings[attr_string_colour_])
+	{
+		unsigned int cc = color_int_value_from_string(attr_strings[attr_string_colour_]);
+		//fprintf(stderr, "col:ret=%d\n", cc);
+		if (cc != 0)
+		{
+			cc = (cc >> 8);
+			//fprintf(stderr, "col:in map=%d\n", (int)cc);
+			item_bin_add_attr_int(item_bin, attr_colour2, (int)cc);
+		}
+	}
+
+	item_bin_write(item_bin, ways_file);
+}
+
+long long cycle_w_processed_count = 0;
+
 void osm_end_way(struct maptool_osm *osm)
 {
 	int i, count;
@@ -4316,6 +5358,8 @@ void osm_end_way(struct maptool_osm *osm)
 	char *name_folded2 = NULL;
 	struct node_lat_lon node_coords;
 	osmid w_node;
+	int write_this_item_to_binfile;
+	off_t seek_posx = 0;
 
 	in_way = 0;
 
@@ -4326,6 +5370,8 @@ void osm_end_way(struct maptool_osm *osm)
 
 	ways_processed_count++;
 
+	write_this_item_to_binfile = 1;
+
 	count = attr_longest_match(attr_mapping_way, attr_mapping_way_count, types, sizeof(types) / sizeof(enum item_type));
 	if (!count)
 	{
@@ -4335,7 +5381,7 @@ void osm_end_way(struct maptool_osm *osm)
 
 	if (count >= 10)
 	{
-		fprintf(stderr, "way id %lld\n", osmid_attr_value);
+		fprintf_(stderr, "way id %lld\n", osmid_attr_value);
 		dbg_assert(count < 10);
 	}
 
@@ -4344,15 +5390,72 @@ void osm_end_way(struct maptool_osm *osm)
 		if (strlen(attr_strings[attr_string_label]) > 0)
 		{
 			dont_save_to_db = 0;
+
+			// check if "alt name" is same as normal name
+			if (attr_strings[attr_string_label_alt] != NULL)
+			{
+				if (!strcmp(attr_strings[attr_string_label], attr_strings[attr_string_label_alt]))
+				{
+					// strings are the same, clear "alt name"
+					attr_strings[attr_string_label_alt] = NULL;
+				}
+			}
 		}
 	}
 
 	// required for fread to work!
 	fseeko(ways_ref_file, 0L, SEEK_CUR);
 
+
+	// correct bicycle flags ------------------------------------------------------------------------
+	if ((flags[0] & NAVIT_AF_ONEWAY) || (flags[0] & NAVIT_AF_ONEWAYREV)) // it's a one way road
+	{
+		if (flags[0] & NAVIT_AF_ONEWAY_BICYCLE_NO) // bike against oneway
+		{
+			flags[0] = (flags[0] & ~NAVIT_AF_BICYCLE_LANE); // remove the lane flag
+			flags[0] = (flags[0] & ~NAVIT_AF_BICYCLE_TRACK); // remove the track flag
+		}
+		flags[0] = (flags[0] & ~NAVIT_AF_ONEWAY_BICYCLE_YES); // its already oneway, so remove additional oneway-bike flag
+	}
+	else // no oneway
+	{
+		flags[0] = (flags[0] & ~NAVIT_AF_ONEWAY_BICYCLE_NO); // remove the bike against-oneway-road flag, if no oneway road
+	}
+	// correct bicycle flags ------------------------------------------------------------------------
+
+
+
+
+
+	// check if its a bicycle way and also a footway, remove footway then!! -------------------------
+	int is_cycleway = -1;
+	int is_footway = -1;
+	for (i = 0; i < count; i++)
+	{
+		// cycleway
+		// footway
+		if (types[i] == type_cycleway)
+		{
+			is_cycleway = i;
+		}
+		else if (types[i] == type_footway)
+		{
+			is_footway = i;
+		}
+	}
+
+	if ((is_footway > -1) && (is_cycleway > -1))
+	{
+		types[is_footway] = type_none; // remove the footway
+	}
+	// check if its a bicycle way and also a footway, remove footway then!! -------------------------
+
+
+
 	for (i = 0; i < count; i++) // loop thru all the attributes of this way (and add a way for every attribute known -> so ways get duplicated here!!)
 	{
 		add_flags = 0;
+		write_this_item_to_binfile = 1;
 		if (types[i] == type_none)
 		{
 			continue;
@@ -4366,6 +5469,100 @@ void osm_end_way(struct maptool_osm *osm)
 		{
 			continue;
 		}
+
+
+		if (types[i] == type_cycleway)
+		{
+
+			// fprintf(stderr, "C=%lld W=%lld\n", cycle_w_processed_count, ways_processed_count);
+
+			// check if we have a turn inside this way with angle greater than ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE
+			int i_coord;
+			int i_coord_prev = 0;
+			struct coord c1_;
+			struct coord c2_;
+			struct coord c3_;
+			int angle_way_1;
+			int angle_way_2;
+			int angle_way_delta;
+			osmid way_node;
+			int is_valid_;
+			int fff = 1;
+			int split_part_num;
+			struct coord *coord_buffer_2 = NULL;
+
+			if (coord_count > 2)
+			{
+				if (osmid_attr_value > 0)
+				{
+					cycle_w_processed_count++;
+
+					coord_buffer_2 = &coord_buffer[0]; // point to first real coordinate of way
+					split_part_num = 1;
+
+					for (i_coord = 1; i_coord < (coord_count - 1); i_coord++)
+					{
+						is_valid_ = 0;
+
+						//fprintf(stderr, "angle i_coord=%d\n", i_coord);
+
+						if (fff == 1)
+						{
+							is_valid_ = is_valid_ + (maptool_get_node_x_y(osmid_attr_value, (i_coord - 1), &c1_));
+							is_valid_ = is_valid_ + (maptool_get_node_x_y(osmid_attr_value, i_coord, &c2_));
+							fff = 0;
+						}
+						else
+						{
+							c1_.x = c2_.x;
+							c1_.y = c2_.y;
+							c2_.x = c3_.x;
+							c2_.y = c3_.y;
+							is_valid_++;
+							is_valid_++;
+						}
+
+						if (is_valid_ == 2)
+						{
+							angle_way_1 = maptool_get_angle_delta(&c1_, &c2_, 1);
+							//fprintf(stderr, "angle1=%d\n", angle_way_1);
+						}
+
+						is_valid_++;
+						is_valid_ = is_valid_ + (maptool_get_node_x_y(osmid_attr_value, (i_coord + 1), &c3_));
+
+						if (is_valid_ == 4)
+						{
+							angle_way_2 = maptool_get_angle_delta(&c2_, &c3_, 1);
+							//fprintf(stderr, "angle2=%d\n", angle_way_2);
+
+							angle_way_delta = abs(maptool_delta_angle(angle_way_1, angle_way_2));
+							//fprintf(stderr, "angle_way_delta=%d\n", angle_way_delta);
+
+							if (angle_way_delta >= ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE)
+							{
+									// dont write this item to binfile in the normal way
+									write_this_item_to_binfile = 0;
+
+									//fprintf(stderr, "angle cut at node:%d prevnode:%d\n", i_coord, i_coord_prev);
+									osm_write_cycle_way(osm->ways, i, types[i], coord_buffer_2, i_coord_prev, (i_coord - i_coord_prev + 1), split_part_num);
+									i_coord_prev = i_coord;
+									coord_buffer_2 = coord_buffer_2 + (i_coord - i_coord_prev); // move pointer to next starting coord of split-way
+									split_part_num++;
+							}
+						}
+					}
+
+					if (write_this_item_to_binfile == 0)
+					{
+						//fprintf(stderr, "angle: write last part node:%d prevnode:%d\n", i_coord, i_coord_prev);
+						// write last part of split-way
+						osm_write_cycle_way(osm->ways, i, types[i], coord_buffer_2, i_coord_prev, (i_coord - i_coord_prev + 1), split_part_num);
+					}
+				}
+			}
+		}
+
 
 		if (types[i] != type_street_unkn)
 		{
@@ -4384,6 +5581,12 @@ void osm_end_way(struct maptool_osm *osm)
 
 		// save nodes of way -----------------
 		// save nodes of way -----------------
+
+		if (coastline_only_map == 1)
+		{
+			first = 0;
+		}
+
 		if (first == 1)
 		{
 			first = 0;
@@ -4407,7 +5610,13 @@ void osm_end_way(struct maptool_osm *osm)
 							retval = sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
 							if ((retval > 0) && (retval < 100))
 							{
-								fprintf(stderr, "begin: ways code:%d\n", retval);
+								fprintf_(stderr, "==================================\n");
+								fprintf_(stderr, "begin: ways code:%d\n", retval);
+								retval = sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+								fprintf_(stderr, "begin:(commit) ways code:%d\n", retval);
+								retval = sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+								fprintf_(stderr, "begin:(begin) ways code:%d\n", retval);
+								fprintf_(stderr, "==================================\n");
 							}
 							else
 							{
@@ -4415,8 +5624,15 @@ void osm_end_way(struct maptool_osm *osm)
 							}
 						}
 
+
+						// only save this way info to way table (used for index search) if its not a nonsearch way (like river, or some district outline)
+
+						if (!item_not_for_search_index(types[i]))
+						{
+
 						sql_counter++;
 
+						// save ORIG name to DB -------------------------------------
 						sqlite3_bind_int64(stmt_way, 1, osmid_attr_value);
 						sqlite3_bind_text(stmt_way, 2, attr_strings[attr_string_label], -1, SQLITE_STATIC);
 
@@ -4465,6 +5681,17 @@ void osm_end_way(struct maptool_osm *osm)
 							sqlite3_bind_double(stmt_way, 5, node_coords.lon);
 						}
 
+						// waytype
+						if (types[i] != type_street_unkn)
+						{
+							sqlite3_bind_int(stmt_way, 8, 1);
+						}
+						else
+						{
+							// type -> POI
+							sqlite3_bind_int(stmt_way, 8, 40);
+						}
+
 						// retval = 
 						sqlite3_step(stmt_way);
 						//if ((retval > 0) && (retval < 100))
@@ -4487,6 +5714,189 @@ void osm_end_way(struct maptool_osm *osm)
 						{
 								g_free(sub);
 						}
+						// save ORIG name to DB -------------------------------------
+
+						// save alternate name to DB aswell -------------------------------------
+						if (attr_strings[attr_string_label_real_alt])
+						{
+							sqlite3_bind_int64(stmt_way, 1, osmid_attr_value);
+							sqlite3_bind_text(stmt_way, 2, attr_strings[attr_string_label_real_alt], -1, SQLITE_STATIC);
+
+
+							// streetname folded for later sort/search
+							char *sub = NULL;
+							name_folded = linguistics_casefold(attr_strings[attr_string_label_real_alt]);
+							if (name_folded)
+							{
+								name_folded2 = linguistics_remove_all_specials(name_folded);
+								if (name_folded2)
+								{
+									g_free(name_folded);
+									name_folded = name_folded2;
+								}
+
+								name_folded2 = linguistics_expand_special(name_folded, 1);
+								if (name_folded2)
+								{
+									sqlite3_bind_text(stmt_way, 6, name_folded2, -1, SQLITE_STATIC);
+									sub = get_index_for_string(name_folded2);
+									sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+								}
+								else
+								{
+									sqlite3_bind_text(stmt_way, 6, name_folded, -1, SQLITE_STATIC);
+									sub = get_index_for_string(name_folded);
+									sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+								}
+							}
+							else
+							{
+								// use original string
+								sqlite3_bind_text(stmt_way, 6, attr_strings[attr_string_label_real_alt], -1, SQLITE_STATIC);
+								sub = get_index_for_string(attr_strings[attr_string_label_real_alt]);
+								sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+							}
+
+							// town id
+							sqlite3_bind_int(stmt_way, 3, -1);
+
+							if (node_coords.valid == 1)
+							{
+								// lat
+								sqlite3_bind_double(stmt_way, 4, node_coords.lat);
+								// lon
+								sqlite3_bind_double(stmt_way, 5, node_coords.lon);
+							}
+
+							// waytype
+							if (types[i] != type_street_unkn)
+							{
+								sqlite3_bind_int(stmt_way, 8, 3);
+							}
+							else
+							{
+								// type -> POI
+								sqlite3_bind_int(stmt_way, 8, 40);
+							}
+
+							// retval = 
+							sqlite3_step(stmt_way);
+							//if ((retval > 0) && (retval < 100))
+							//{
+							//	fprintf(stderr, "ways step: code:%d wid:%lld\n", retval, osmid_attr_value);
+							//}
+							sqlite3_reset(stmt_way);
+
+							if (name_folded)
+							{
+								g_free(name_folded);
+							}
+
+							if (name_folded2)
+							{
+								g_free(name_folded2);
+							}
+
+							if (sub)
+							{
+									g_free(sub);
+							}
+
+						}
+						// save alternate name to DB aswell -------------------------------------
+
+
+						// save english name to DB aswell -------------------------------------
+						if (attr_strings[attr_string_label_alt])
+						{
+							sqlite3_bind_int64(stmt_way, 1, osmid_attr_value);
+							sqlite3_bind_text(stmt_way, 2, attr_strings[attr_string_label_alt], -1, SQLITE_STATIC);
+
+
+							// streetname folded for later sort/search
+							char *sub = NULL;
+							name_folded = linguistics_casefold(attr_strings[attr_string_label_alt]);
+							if (name_folded)
+							{
+								name_folded2 = linguistics_remove_all_specials(name_folded);
+								if (name_folded2)
+								{
+									g_free(name_folded);
+									name_folded = name_folded2;
+								}
+
+								name_folded2 = linguistics_expand_special(name_folded, 1);
+								if (name_folded2)
+								{
+									sqlite3_bind_text(stmt_way, 6, name_folded2, -1, SQLITE_STATIC);
+									sub = get_index_for_string(name_folded2);
+									sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+								}
+								else
+								{
+									sqlite3_bind_text(stmt_way, 6, name_folded, -1, SQLITE_STATIC);
+									sub = get_index_for_string(name_folded);
+									sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+								}
+							}
+							else
+							{
+								// use original string
+								sqlite3_bind_text(stmt_way, 6, attr_strings[attr_string_label_alt], -1, SQLITE_STATIC);
+								sub = get_index_for_string(attr_strings[attr_string_label_alt]);
+								sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+							}
+
+							// town id
+							sqlite3_bind_int(stmt_way, 3, -1);
+
+							if (node_coords.valid == 1)
+							{
+								// lat
+								sqlite3_bind_double(stmt_way, 4, node_coords.lat);
+								// lon
+								sqlite3_bind_double(stmt_way, 5, node_coords.lon);
+							}
+
+							// waytype
+							if (types[i] != type_street_unkn)
+							{
+								sqlite3_bind_int(stmt_way, 8, 2);
+							}
+							else
+							{
+								// type -> POI
+								sqlite3_bind_int(stmt_way, 8, 40);
+							}
+
+							// retval = 
+							sqlite3_step(stmt_way);
+							//if ((retval > 0) && (retval < 100))
+							//{
+							//	fprintf(stderr, "ways step: code:%d wid:%lld\n", retval, osmid_attr_value);
+							//}
+							sqlite3_reset(stmt_way);
+
+							if (name_folded)
+							{
+								g_free(name_folded);
+							}
+
+							if (name_folded2)
+							{
+								g_free(name_folded2);
+							}
+
+							if (sub)
+							{
+									g_free(sub);
+							}
+
+						}
+						// save english name to DB aswell -------------------------------------
+
+						}
+
 
 						if (sql_counter > MAX_ROWS_WO_COMMIT_3)
 						{
@@ -4494,7 +5904,7 @@ void osm_end_way(struct maptool_osm *osm)
 							retval = sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
 							if ((retval > 0) && (retval < 100))
 							{
-								fprintf(stderr, "ways: %lld code:%d\n", ways_processed_count, retval);
+								fprintf_(stderr, "ways: %lld code:%d\n", ways_processed_count, retval);
 							}
 							else
 							{
@@ -4504,7 +5914,11 @@ void osm_end_way(struct maptool_osm *osm)
 #endif
 						// set ref file to start of waynodes of current way
 						// fprintf(stderr, "w seek1 pos=%lld\n", seekpos1);
-						fseeko(ways_ref_file, (off_t)seekpos1, SEEK_SET);
+						seek_posx = ftello(ways_ref_file);
+						if ((off_t)seek_posx != (off_t)seekpos1)
+						{
+							fseeko(ways_ref_file, (off_t)seekpos1, SEEK_SET);
+						}
 					}
 					// save all the way nodes for streets
 					int fret = (int)fread(&w_node, sizeof(osmid), 1, ways_ref_file);
@@ -4517,16 +5931,21 @@ void osm_end_way(struct maptool_osm *osm)
 						fprintf(stderr, "**ERROR** at fread 001b: wayid:%lld count=%d w_node=%lld\n", osmid_attr_value, (int)i788, (osmid)w_node);
 					}
 					// fprintf(stderr, "at fread: w_node:%lld\n", (osmid)w_node);
+					// save first node of WAYS with name/label into db
 					add_waynode_to_db((osmid)w_node, (int)i788);
 				}
-				else
+				else // rest of ways
 				{
 					// save all the waynodes to db
 					if (i788 == 0)
 					{
 						// set ref file to start of waynodes of current way
 						// fprintf(stderr, "w seek1.1 pos=%lld\n", seekpos1);
-						fseeko(ways_ref_file, (off_t)seekpos1, SEEK_SET);
+						seek_posx = ftello(ways_ref_file);
+						if ((off_t)seek_posx != (off_t)seekpos1)
+						{
+							fseeko(ways_ref_file, (off_t)seekpos1, SEEK_SET);
+						}
 					}
 
 					int fret = (int)fread(&w_node, sizeof(osmid), 1, ways_ref_file);
@@ -4538,6 +5957,7 @@ void osm_end_way(struct maptool_osm *osm)
 					{
 						fprintf(stderr, "**ERROR** at fread 001.1b: wayid:%lld count=%d w_node=%lld\n", osmid_attr_value, (int)i788, (osmid)w_node);
 					}
+					// save first node of ALL WAYS into db
 					add_waynode_to_db((osmid)w_node, (int)i788);
 				}
 			}
@@ -4600,14 +6020,31 @@ void osm_end_way(struct maptool_osm *osm)
 		}
 		item_bin_add_attr_string(item_bin, attr_street_name_systematic, attr_strings[attr_string_street_name_systematic]);
 
-		item_bin_add_attr_longlong(item_bin, attr_osm_wayid, osmid_attr_value);
-		if (debug_attr_buffer[0])
-			item_bin_add_attr_string(item_bin, attr_debug, debug_attr_buffer);
-		if (add_flags)
-			item_bin_add_attr_int(item_bin, attr_flags, flags_attr_value);
-		if (maxspeed_attr_value)
-			item_bin_add_attr_int(item_bin, attr_maxspeed, maxspeed_attr_value);
+		// -- NEW 001 --
+		item_bin_add_attr_string(item_bin, attr_street_name_systematic_nat, attr_strings[attr_string_street_name_systematic_nat]);
+		item_bin_add_attr_string(item_bin, attr_street_lanes, attr_strings[attr_string_street_lanes]);
+		item_bin_add_attr_string(item_bin, attr_street_lanes_forward, attr_strings[attr_string_street_lanes_forward]);
+		item_bin_add_attr_string(item_bin, attr_street_turn_lanes, attr_strings[attr_string_street_turn_lanes]);
+		item_bin_add_attr_string(item_bin, attr_street_destination, attr_strings[attr_string_street_destination]);
+		item_bin_add_attr_string(item_bin, attr_street_destination_lanes, attr_strings[attr_string_street_destination_lanes]);
+		// -- NEW 001 --
 
+		item_bin_add_attr_longlong(item_bin, attr_osm_wayid, osmid_attr_value);
+
+		if (debug_attr_buffer[0])
+		{
+			item_bin_add_attr_string(item_bin, attr_debug, debug_attr_buffer);
+		}
+
+		if (add_flags)
+		{
+			item_bin_add_attr_int(item_bin, attr_flags, flags_attr_value);
+		}
+
+		if (maxspeed_attr_value)
+		{
+			item_bin_add_attr_int(item_bin, attr_maxspeed, maxspeed_attr_value);
+		}
 
 		// custom color attribute
 		if (attr_strings[attr_string_colour_])
@@ -4629,7 +6066,10 @@ void osm_end_way(struct maptool_osm *osm)
 			//fprintf(stderr, "attr_duplicate_way:1: dup=true wayid=%lld\n", item_bin_get_wayid(item_bin));
 		}
 
-		item_bin_write(item_bin, osm->ways);
+		if (write_this_item_to_binfile == 1)
+		{
+			item_bin_write(item_bin, osm->ways);
+		}
 
 		if (border_only_map_as_xml == 1)
 		{
@@ -4831,11 +6271,15 @@ unsigned int color_int_value_from_string(char* color_str)
 
 void osm_append_housenumber_node(FILE *out, struct coord *c, char *house_number, char *street_name)
 {
+
+	// c is inside the same buffer as the new item will be. so make a copy of c now!
+	struct coord *c_cpy = coord_new(c->x, c->y);
+
 	struct item_bin *item_bin;
 	item_bin = init_item(type_house_number, 0);
 	// item_bin->type = type_house_number;
 
-	item_bin_add_coord(item_bin, c, 1);
+	item_bin_add_coord(item_bin, c_cpy, 1);
 	item_bin_add_attr_string(item_bin, attr_house_number, house_number);
 	item_bin_add_attr_string(item_bin, attr_street_name, street_name);
 
@@ -4846,7 +6290,112 @@ void osm_append_housenumber_node(FILE *out, struct coord *c, char *house_number,
 	// DEBUG -- DEBUG -- DEBUG --
 
 	item_bin_write(item_bin, out);
+
+	g_free(c_cpy);
 }
+
+
+void add_point_as_way_to_db(char *label, osmid id, int waytype, double lat, double lon)
+{
+	char *sub = NULL;
+	char *name_folded2 = NULL;
+	char *name_folded = NULL;
+	int retval;
+
+	if (label)
+	{
+		if (sql_counter == 0)
+		{
+			sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+		}
+
+
+		sqlite3_bind_int64(stmt_way, 1, id);
+		sqlite3_bind_text(stmt_way, 2, label, -1, SQLITE_STATIC);
+
+
+		// streetname folded for later sort/search
+		name_folded = linguistics_casefold(label);
+		if (name_folded)
+		{
+			name_folded2 = linguistics_remove_all_specials(name_folded);
+			if (name_folded2)
+			{
+				g_free(name_folded);
+				name_folded = name_folded2;
+			}
+
+			name_folded2 = linguistics_expand_special(name_folded, 1);
+			if (name_folded2)
+			{
+				sqlite3_bind_text(stmt_way, 6, name_folded2, -1, SQLITE_STATIC);
+				sub = get_index_for_string(name_folded2);
+				sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+			}
+			else
+			{
+				sqlite3_bind_text(stmt_way, 6, name_folded, -1, SQLITE_STATIC);
+				sub = get_index_for_string(name_folded);
+				sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+			}
+		}
+		else
+		{
+			// use original string
+			sqlite3_bind_text(stmt_way, 6, label, -1, SQLITE_STATIC);
+			sub = get_index_for_string(label);
+			sqlite3_bind_text(stmt_way, 7, sub, -1, SQLITE_STATIC);
+		}
+
+		// town id
+		sqlite3_bind_int(stmt_way, 3, -1);
+
+		// lat
+		sqlite3_bind_double(stmt_way, 4, lat);
+		// lon
+		sqlite3_bind_double(stmt_way, 5, lon);
+
+		// waytype
+		sqlite3_bind_int(stmt_way, 8, waytype);
+
+		// retval = 
+		sqlite3_step(stmt_way);
+		//if ((retval > 0) && (retval < 100))
+		//{
+		//	fprintf(stderr, "ways step: code:%d wid:%lld\n", retval, osmid_attr_value);
+		//}
+		sqlite3_reset(stmt_way);
+
+		if (name_folded)
+		{
+			g_free(name_folded);
+		}
+
+		if (name_folded2)
+		{
+			g_free(name_folded2);
+		}
+
+		if (sub)
+		{
+			g_free(sub);
+		}
+
+		sql_counter++;
+		if (sql_counter > MAX_ROWS_WO_COMMIT_3)
+		{
+			sql_counter = 0;
+			retval = sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+			if ((retval > 0) && (retval < 100))
+			{
+				fprintf_(stderr, "add_point_as_way_to_db:code:%d\n", retval);
+			}
+		}
+
+	}
+
+}
+
 
 void osm_end_node(struct maptool_osm *osm)
 {
@@ -4857,7 +6406,9 @@ void osm_end_node(struct maptool_osm *osm)
 	in_node = 0;
 
 	if (!osm->nodes || !node_is_tagged || !nodeid)
+	{
 		return;
+	}
 
 	count = attr_longest_match(attr_mapping_node, attr_mapping_node_count, types, sizeof(types) / sizeof(enum item_type));
 
@@ -4868,6 +6419,21 @@ void osm_end_node(struct maptool_osm *osm)
 	}
 
 	dbg_assert(count < 10);
+
+
+	if (attr_strings[attr_string_label] != NULL)
+	{
+		// check if "alt name" is same as normal name
+		if (attr_strings[attr_string_label_alt] != NULL)
+		{
+			if (!strcmp(attr_strings[attr_string_label], attr_strings[attr_string_label_alt]))
+			{
+				// strings are the same, clear "alt name"
+				attr_strings[attr_string_label_alt] = NULL;
+			}
+		}
+	}
+
 
 	for (i = 0; i < count; i++)
 	{
@@ -4914,7 +6480,25 @@ void osm_end_node(struct maptool_osm *osm)
 		}
 
 		item_bin_add_coord(item_bin, &ni->c, 1);
-		item_bin_add_attr_string(item_bin, item_is_town(*item_bin) ? attr_town_name : attr_label, attr_strings[attr_string_label]);
+		if (((types[i] == type_poi_bicycle_parking) || (types[i] == type_poi_bicycle_rental)) && (attr_strings[attr_string_capacity] != NULL) && (strlen(attr_strings[attr_string_capacity]) > 0))
+		{
+			char *label_new;
+			if ((attr_strings[attr_string_label] != NULL) && (strlen(attr_strings[attr_string_label]) > 1))
+			{
+				// fprintf(stderr, "XXX1:%s:%s\n", attr_strings[attr_string_label], attr_strings[attr_string_capacity]);
+				label_new = g_strdup_printf("%s:%s", attr_strings[attr_string_label], attr_strings[attr_string_capacity]);
+			}
+			else
+			{
+				label_new = g_strdup_printf("%s", attr_strings[attr_string_capacity]);
+			}
+			item_bin_add_attr_string(item_bin, attr_label, label_new);
+			g_free(label_new);
+		}
+		else
+		{
+			item_bin_add_attr_string(item_bin, item_is_town(*item_bin) ? attr_town_name : attr_label, attr_strings[attr_string_label]);
+		}
 		item_bin_add_attr_string(item_bin, attr_house_number, attr_strings[attr_string_house_number]);
 		item_bin_add_attr_string(item_bin, attr_street_name, attr_strings[attr_string_street_name]);
 		item_bin_add_attr_string(item_bin, attr_phone, attr_strings[attr_string_phone]);
@@ -4922,8 +6506,40 @@ void osm_end_node(struct maptool_osm *osm)
 		item_bin_add_attr_string(item_bin, attr_email, attr_strings[attr_string_email]);
 		item_bin_add_attr_string(item_bin, attr_county_name, attr_strings[attr_string_county_name]);
 		item_bin_add_attr_string(item_bin, attr_url, attr_strings[attr_string_url]);
+
+		// -- NEW 001 --
+		item_bin_add_attr_string(item_bin, attr_ref, attr_strings[attr_string_ref]);
+		item_bin_add_attr_string(item_bin, attr_exit_to, attr_strings[attr_string_exit_to]);
+		// -- NEW 001 --
+
+		if ((types[i] == type_poi_bicycle_parking) || (types[i] == type_poi_bicycle_rental))
+		{
+			int capacity = 0;
+			if (attr_strings[attr_string_capacity] != NULL)
+			{
+				if (strlen(attr_strings[attr_string_capacity]) > 0)
+				{
+					capacity = atoi(attr_strings[attr_string_capacity]);
+					item_bin_add_attr_int(item_bin, attr_capacity, attr_strings[attr_string_capacity]);
+				}
+			}
+		}
+
 		item_bin_add_attr_longlong(item_bin, attr_osm_nodeid, osmid_attr_value);
 		item_bin_add_attr_string(item_bin, attr_debug, debug_attr_buffer);
+
+		if ((item_is_town(*item_bin)) || (item_is_district(*item_bin)))
+		{
+			if (attr_strings[attr_string_label_alt])
+			{
+				item_bin_add_attr_string(item_bin, attr_town_name_match, attr_strings[attr_string_label_alt]);
+				// if (debug_itembin(item_bin))
+				// {
+				//	fprintf(stderr, "town name    : %s\n", attr_strings[attr_string_label]);
+				//	fprintf(stderr, "town name alt: %s\n", attr_strings[attr_string_label_alt]);
+				// }
+			}
+		}
 
 		postal = attr_strings[attr_string_postal];
 		if (postal)
@@ -4938,6 +6554,44 @@ void osm_end_node(struct maptool_osm *osm)
 
 		item_bin_write(item_bin, osm->nodes);
 
+
+
+
+		// town waytype = 4
+		if ((item_is_town(*item_bin)) || (item_is_district(*item_bin)))
+		{
+			if (attr_strings[attr_string_label])
+			{
+				add_point_as_way_to_db(attr_strings[attr_string_label], osmid_attr_value, 4, save_node_lat, save_node_lon);
+			}
+			
+			if (attr_strings[attr_string_label_alt])
+			{
+				add_point_as_way_to_db(attr_strings[attr_string_label_alt], osmid_attr_value, 4, save_node_lat, save_node_lon);
+			}
+		}
+
+		// POI waytype = 40
+		if (item_is_poi(types[i]))
+		{
+
+			if (!item_not_for_search_index(types[i]))
+			{
+				if (attr_strings[attr_string_label])
+				{
+					add_point_as_way_to_db(attr_strings[attr_string_label], osmid_attr_value, 40, save_node_lat, save_node_lon);
+					// fprintf(stderr, "POI name    : %s id=%lld\n", attr_strings[attr_string_label], osmid_attr_value);
+				}
+		
+				if (attr_strings[attr_string_label_alt])
+				{
+					add_point_as_way_to_db(attr_strings[attr_string_label_alt], osmid_attr_value, 40, save_node_lat, save_node_lon);
+				}
+			}
+		}
+
+
+
 		if (item_is_town(*item_bin) && attr_strings[attr_string_label] && osm->towns)
 		{
 			item_bin = init_item(item_bin->type, 0);
@@ -4948,18 +6602,24 @@ void osm_end_node(struct maptool_osm *osm)
 			item_bin_add_attr_string(item_bin, attr_county_name, attr_strings[attr_string_county_name]);
 			item_bin_add_attr_string(item_bin, attr_town_name, attr_strings[attr_string_label]);
 
-			if (attr_strings[attr_string_label_alt])
-			{
-				item_bin_add_attr_string(item_bin, attr_town_name_match, attr_strings[attr_string_label_alt]);
-				if (debug_itembin(item_bin))
-				{
-					fprintf(stderr, "town name    : %s\n", attr_strings[attr_string_label]);
-					fprintf(stderr, "town name alt: %s\n", attr_strings[attr_string_label_alt]);
-				}
-			}
+			//if (attr_strings[attr_string_label_alt])
+			//{
+			//	item_bin_add_attr_string(item_bin, attr_town_name_match, attr_strings[attr_string_label_alt]);
+			//	if (debug_itembin(item_bin))
+			//	{
+			//		fprintf(stderr, "town name    : %s\n", attr_strings[attr_string_label]);
+			//		fprintf(stderr, "town name alt: %s\n", attr_strings[attr_string_label_alt]);
+			//	}
+			//}
 
 			item_bin_write(item_bin, osm->towns);
 		}
+
+		// put POI into DB for index search
+		// put town into DB for index search
+		// put district into DB for index search
+		// ****** retval = sqlite3_prepare_v2(sql_handle, "INSERT INTO way (id, name, town_id, lat, lon, name_fold, ind, name_fold_idx, waytype) VALUES (?,?,?,?,?,?,0,?,?);", -1, &stmt_way, NULL);
+
 
 		//fprintf(stderr,"********DUMP nd1***********\n");
 		//if (types[i] == type_house_number)
@@ -4979,6 +6639,14 @@ osm_process_town_unknown_country(void)
 	static struct country_table *unknown;
 	unknown = country_from_countryid(999);
 	return unknown;
+}
+
+static struct country_table *
+osm_process_item_by_country_id(int id)
+{
+	static struct country_table *ct;
+	ct = country_from_countryid(id);
+	return ct;
 }
 
 static struct country_table *
@@ -5032,6 +6700,137 @@ static int osm_process_street_by_boundary(GList *bl, long long town_osm_id, long
 	return 0;
 }
 
+
+static struct country_table* osm_process_town_by_manual_country_borders(GList *bl_manual, struct coord *c)
+{
+	GList *l = bl_manual;
+	while (l)
+	{
+		if (l)
+		{
+			struct boundary_manual *b = l->data;
+			if (b)
+			{
+				if (bbox_contains_coord(&b->r, c) == 1)
+				{
+					if (geom_poly_point_inside(b->c, b->coord_count, c) == 1)
+					{
+						// ok, now check all innery polys of this country id
+						if (osm_check_all_inner_polys_of_country_id(b->countryid, c) == 1)
+						{
+							return b->country;
+						}
+					}
+				}
+			}
+			l = g_list_next(l);
+		}
+	}
+
+	return NULL;
+}
+
+// return: 1 -> coord is not in ANY inner of this country id
+//         0 -> coord is at least in 1 inner of this country id
+static int osm_check_all_inner_polys_of_country_id(int country_id, struct coord *c)
+{
+	GList *l = boundary_list_inner_manual;
+
+	while (l)
+	{
+		if (l)
+		{
+			struct boundary_manual *b = l->data;
+			if (b)
+			{
+				if (b->countryid == country_id)
+				{
+					if (bbox_contains_coord(&b->r, c) == 1)
+					{
+						if (geom_poly_point_inside(b->c, b->coord_count, c) == 1)
+						{
+							// c is inside 1 inner poly
+							return 0;
+						}
+					}
+				}
+			}
+			l = g_list_next(l);
+		}
+	}
+
+	return 1;
+}
+
+
+static long long osm_process_street_by_manual_country_borders(GList *bl_manual, struct coord *c)
+{
+	GList *l = bl_manual;
+
+	while (l)
+	{
+		if (l)
+		{
+			struct boundary_manual *b = l->data;
+			if (b)
+			{
+				if (bbox_contains_coord(&b->r, c) == 1)
+				{
+					if (geom_poly_point_inside(b->c, b->coord_count, c) == 1)
+					{
+						// ok, now check all innery polys of this country id
+						if (osm_check_all_inner_polys_of_country_id(b->countryid, c) == 1)
+						{
+							return b->town_id;
+						}
+					}
+				}
+			}
+			l = g_list_next(l);
+		}
+	}
+
+	return -1;
+}
+
+static long long osm_process_town_by_manual_country_id(GList *bl_manual, int country_id)
+{
+	struct country_table4
+	{
+		int countryid;
+		char *names;
+		char *admin_levels;
+		FILE *file;
+		int size;
+		struct rect r;
+	};
+
+	struct country_table4 *c4; 
+	struct boundary_manual *b;
+
+	GList *l = bl_manual;
+	while (l)
+	{
+		if (l)
+		{
+			b = l->data;
+			if (b)
+			{
+				c4 = b->country;
+				if (c4)
+				{
+					if (c4->countryid == country_id)
+					{
+						return b->town_id;
+					}
+				}
+			}
+			l = g_list_next(l);
+		}
+	}
+
+	return -1;
+}
 
 static struct country_table *
 osm_process_town_by_boundary(GList *bl, struct item_bin *ib, struct coord *c, struct attr *attrs)
@@ -5118,11 +6917,13 @@ osm_process_town_by_boundary(GList *bl, struct item_bin *ib, struct coord *c, st
 				l = g_list_next(l);
 			}
 		}
+		g_list_free(matches);
 		return match->country;
 	}
 	else
 	{
 		//fprintf(stderr,"town_by_boundary:099\n");
+		g_list_free(matches);
 		return NULL;
 	}
 }
@@ -5153,13 +6954,13 @@ int town_size_estimate(int type)
 			break;
 		case type_town_label_1e3:
 		case type_town_label_5e2:
-		// case type_town_label_2e2:
+		case type_town_label_2e2:
 		case type_town_label_1e2:
 		case type_town_label_5e1:
 		case type_town_label_2e1:
 		case type_town_label_1e1:
 		case type_town_label_5e0:
-		// case type_town_label_2e0:
+		case type_town_label_2e0:
 		case type_town_label_1e0:
 		case type_town_label_0e0:
 			size = 660;
@@ -5186,19 +6987,330 @@ int town_size_estimate(int type)
 }
 
 void assign_town_to_streets_v1();
-void assign_town_to_streets_by_boundary(GList *bl);
+void assign_town_to_streets_by_boundary(GList *bl, GList *man_borders);
+void assign_town_to_country_by_manual_borders(GList *bl, GList *man_borders);
 void copy_town_border_data();
+void assign_streets_to_towns_by_manual_country_borders(GList *man_borders);
 
-void assign_town_to_streets(GList *bl)
+void assign_town_to_streets(GList *bl, GList *man_borders)
 {
 	int skipped = 0;
 
 	copy_town_border_data();
-	assign_town_to_streets_by_boundary(bl);
+	assign_town_to_country_by_manual_borders(bl, man_borders);
+	assign_town_to_streets_by_boundary(bl, man_borders);
 
 	// now process all the left over towns
 	assign_town_to_streets_v1(1);
 	assign_town_to_streets_v1(2); // make townsize double on second pass
+
+	assign_streets_to_towns_by_manual_country_borders(man_borders);
+}
+
+void purge_unused_towns()
+{
+	int retval8;
+	sqlite3_stmt *stmt_mm_1;
+
+	sql_counter = 0;
+	retval8 = sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+	fprintf_(stderr, "prep:%d (error here is ok!)\n", retval8);
+
+	retval8 = sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+	fprintf_(stderr, "prep:%d\n", retval8);
+
+	retval8 = sqlite3_prepare_v2(sql_handle, "select count(*) from town where id not in (select town_id from way);", -1, &stmt_mm_1, NULL);
+	fprintf_(stderr, "prep:%d\n", retval8);
+	sqlite3_step(stmt_mm_1);
+	fprintf(stderr, "purge_unused_towns:%lld\n", sqlite3_column_int64(stmt_mm_1, 0));
+	sqlite3_reset(stmt_mm_1);
+
+	// SQL:fin:
+	retval8 = sqlite3_finalize(stmt_mm_1);
+	fprintf_(stderr, "fin:%d\n", retval8);
+
+	retval8 = sqlite3_exec(sql_handle, "delete from town where id not in (select town_id from way);", 0, 0, 0);
+	fprintf_(stderr, "prep:%d\n", retval8);
+
+	sql_counter = 0;
+	retval8 = sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+	fprintf_(stderr, "prep:%d\n", retval8);
+}
+
+void assign_town_to_country_by_manual_borders(GList *bl, GList *man_borders)
+{
+	long long nd;
+	long long wid;
+	long long town_rel_id;
+	int size;
+	double lat;
+	double lon;
+	double temp;
+	double lat_min;
+	double lat_max;
+	double lon_min;
+	double lon_max;
+	int rc;
+	int rc2;
+	long long town_count;
+	long long town_processed_count;
+	int town_steps = 1;
+	int result = 0;
+	struct boundary *bound_temp;
+	int retval8;
+	sqlite3_stmt *stmt_mm_2;
+	struct coord c;
+	long long dummy_town_id2 = 0;
+	int commit_after = 20000;
+	int count = 0;
+
+
+	sql_counter = 0;
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+	// number of towns in DB
+	sqlite3_reset(stmt_town_sel002);
+	sqlite3_step(stmt_town_sel002);
+	town_count = sqlite3_column_int64(stmt_town_sel002, 0);
+	town_processed_count = 0;
+
+	fprintf(stderr, "towns0a: %lld/%lld\n", town_processed_count, town_count);
+
+	if (town_count == 0)
+	{
+		sqlite3_reset(stmt_town_sel002);
+		return;
+	}
+
+	retval8 = sqlite3_prepare_v2(sql_handle, "update town set border_id = ? where id = ?;", -1, &stmt_mm_2, NULL);
+	fprintf_(stderr, "prep:%d\n", retval8);
+
+
+	sql_counter = 0;
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+	if (town_count > 1000000)
+	{
+		town_steps = 500;
+	}
+	else if (town_count > 100000)
+	{
+		town_steps = 100;
+	}
+	else if (town_count > 10000)
+	{
+		town_steps = 10;
+	}
+
+	// DEBUG
+	// town_steps = 1;
+	// DEBUG
+
+	// loop thru all the towns
+	do
+	{
+		rc = sqlite3_step(stmt_town_sel001);
+		switch (rc)
+		{
+			case SQLITE_DONE:
+				break;
+			case SQLITE_ROW:
+				nd = sqlite3_column_int64(stmt_town_sel001, 0);
+				town_rel_id = sqlite3_column_int64(stmt_town_sel001, 5);
+				lat = sqlite3_column_double(stmt_town_sel001, 2);
+				lon = sqlite3_column_double(stmt_town_sel001, 3);
+
+				if (town_rel_id == -1)
+				{
+					if ((lat != 999) && (lon != 999))
+					{
+						c.x = transform_from_geo_lon(lon);
+						c.y = transform_from_geo_lat(lat);
+						// check if c is inside manual country border
+						dummy_town_id2 = osm_process_street_by_manual_country_borders(man_borders, &c);
+
+						if (dummy_town_id2 != -1)
+						{
+							//fprintf(stderr, "== town_to_country_by_manual_borders: townid=%lld\n", nd);
+							sqlite3_bind_int64(stmt_mm_2, 1, dummy_town_id2); // parent country rel id
+							sqlite3_bind_int64(stmt_mm_2, 2, nd); // town id
+							sqlite3_step(stmt_mm_2);
+							sqlite3_reset(stmt_mm_2);
+						}
+
+						if (count == 0)
+						{
+							sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+						}
+						count++;
+
+						if (count > commit_after)
+						{
+							sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+							count = 0;
+						}
+					}
+				}
+				break;
+			default:
+				fprintf(stderr, "SQL Error: %d\n", rc);
+				break;
+		}
+	}
+	while (rc == SQLITE_ROW);
+	sqlite3_reset(stmt_town_sel001);
+
+	// SQL:fin:
+	rc = sqlite3_finalize(stmt_mm_2);
+	fprintf_(stderr, "fin:%d\n", rc);
+
+	sql_counter = 0;
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+
+}
+
+
+void save_manual_country_borders_to_db(GList *man_borders)
+{
+	GList *l = man_borders;
+	while (l)
+	{
+		struct boundary_manual *b = l->data;
+
+		// also save dummy id to border list, to be able to compare it later
+		b->town_id = dummy_town_id;
+
+		sqlite3_bind_int64(stmt_town, 1, dummy_town_id); // town id
+		sqlite3_bind_int(stmt_town, 2, b->country->countryid); // country id
+		sqlite3_bind_text(stmt_town, 3, b->country->names, -1, SQLITE_STATIC); // name
+		sqlite3_bind_int(stmt_town, 4, (TOWN_ADMIN_LEVEL_CORR_BASE + 2) * TOWN_BY_BOUNDARY_SIZE_FACTOR); // town size
+		sqlite3_bind_text(stmt_town, 5, NULL, -1, SQLITE_STATIC); // postal
+
+		sqlite3_bind_double(stmt_town, 6, 999); // lat -> 999:exclude
+		sqlite3_bind_double(stmt_town, 7, 999); // lon -> 999:exclude
+
+		sqlite3_bind_int64(stmt_town, 8, -1); // border relation id
+		sqlite3_step(stmt_town);
+		sqlite3_reset(stmt_town);
+		dummy_town_id--;
+
+		sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+		l = g_list_next(l);
+	}
+}
+
+void assign_streets_to_towns_by_manual_country_borders(GList *man_borders)
+{
+	long long nd;
+	int size;
+	double lat;
+	double lon;
+	double lat_min;
+	double lat_max;
+	double lon_min;
+	double lon_max;
+	double temp;
+	int rc;
+	sqlite3_stmt *stmt_mm_1;
+	sqlite3_stmt *stmt_mm_2;
+	int retval9;
+	int retval8;
+	int street_steps;
+	long long streets_processed_count;
+	long long wid;
+	struct coord c;
+	char *wname;
+
+	sql_counter = 0;
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+
+	retval9 = sqlite3_prepare_v2(sql_handle, "select w.lat, w.lon, w.id, w.name from way w where w.town_id='-1';", -1, &stmt_mm_1, NULL);
+	fprintf_(stderr, "prep:%d\n", retval9);
+
+	retval8 = sqlite3_prepare_v2(sql_handle, "update way set town_id = ? where id = ?;", -1, &stmt_mm_2, NULL);
+	fprintf_(stderr, "prep:%d\n", retval8);
+
+	street_steps = 1000; // set to better value!!
+	streets_processed_count = 0;
+
+	sql_counter = 0;
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
+	// loop thru all the ways
+	do
+	{
+		rc = sqlite3_step(stmt_mm_1);
+		switch (rc)
+		{
+			case SQLITE_DONE:
+				break;
+			case SQLITE_ROW:
+				lat = sqlite3_column_double(stmt_mm_1, 0);
+				lon = sqlite3_column_double(stmt_mm_1, 1);
+				wid = sqlite3_column_int64(stmt_mm_1, 2);
+				wname = g_strdup_printf("%s", sqlite3_column_text(stmt_mm_1, 3));
+
+				// now update the ways
+				if (sql_counter == 0)
+				{
+					sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+				}
+
+				c.x = transform_from_geo_lon(lon);
+				c.y = transform_from_geo_lat(lat);
+				nd = osm_process_street_by_manual_country_borders(man_borders, &c);
+
+				streets_processed_count++;
+				if ((streets_processed_count % street_steps) == 0)
+				{
+					fprintf_(stderr, "streets0: %lld\n", streets_processed_count);
+				}
+
+				if (nd != -1)
+				{
+					// fprintf(stderr, "== streets by manual_country_borders: way=%s townid=%lld\n", wname, nd);
+
+					sqlite3_bind_int64(stmt_mm_2, 1, nd);
+					sqlite3_bind_int64(stmt_mm_2, 2, wid);
+					sqlite3_step(stmt_mm_2);
+					sqlite3_reset(stmt_mm_2);
+
+					sql_counter++;
+					if (sql_counter > MAX_ROWS_WO_COMMIT_2a)
+					{
+						sql_counter = 0;
+						sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+					}
+				}
+
+				if (wname)
+				{
+					g_free(wname);
+				}
+
+				break;
+			default:
+				fprintf(stderr, "SQL Error: %d\n", rc);
+				break;
+		}
+	}
+	while (rc == SQLITE_ROW);
+	sqlite3_reset(stmt_mm_1);
+
+	// SQL:fin:
+	rc = sqlite3_finalize(stmt_mm_1);
+	fprintf_(stderr, "fin:%d\n", rc);
+
+	// SQL:fin:
+	rc = sqlite3_finalize(stmt_mm_2);
+	fprintf_(stderr, "fin:%d\n", rc);
+
+	sql_counter = 0;
+	sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+
 }
 
 
@@ -5270,7 +7382,7 @@ void copy_town_border_data()
 
 }
 
-void assign_town_to_streets_by_boundary(GList *bl)
+void assign_town_to_streets_by_boundary(GList *bl, GList *man_borders)
 {
 	long long nd;
 	long long wid;
@@ -5300,7 +7412,7 @@ void assign_town_to_streets_by_boundary(GList *bl)
 	town_count = sqlite3_column_int64(stmt_town_sel002, 0);
 	town_processed_count = 0;
 
-	fprintf(stderr, "towns0: %lld/%lld\n", town_processed_count, town_count);
+	fprintf(stderr, "towns0b: %lld/%lld\n", town_processed_count, town_count);
 
 	if (town_count == 0)
 	{
@@ -5348,9 +7460,9 @@ void assign_town_to_streets_by_boundary(GList *bl)
 				GList *l = bl;
 				int has_found = 0;
 
-				if (town_rel_id != 0)
+				if ((town_rel_id != 0) && (town_rel_id != -1))
 				{
-					// fprintf(stderr ,"processing town name:%s id:%lld border_id:%lld\n", sqlite3_column_text(stmt_town_sel001, 4), nd, town_rel_id);
+					//fprintf(stderr ,"processing town name:%s id:%lld border_id:%lld\n", sqlite3_column_text(stmt_town_sel001, 4), nd, town_rel_id);
 
 					while (l)
 					{
@@ -5401,12 +7513,12 @@ void assign_town_to_streets_by_boundary(GList *bl)
 								c.x = transform_from_geo_lon(lon);
 								c.y = transform_from_geo_lat(lat);
 
-								//fprintf(stderr,"== street by boundary == x:%d y:%d ==\n", c.x, c.y);
+								//fprintf(stderr,"== street by boundary == x:%d y:%d name:%s ==\n", c.x, c.y, sqlite3_column_text(stmt_way3a, 3));
 
 								if (town_rel_id != 0)
 								{
-									// fprintf(stderr, "town:%lld\n", nd);
-									// fprintf(stderr,"== street by boundary == x:%d y:%d ==\n", c.x, c.y);
+									//fprintf(stderr, "town:%lld\n", nd);
+									//fprintf(stderr,"== street by boundary == x:%d y:%d ==\n", c.x, c.y);
 									result = osm_process_street_by_boundary(match_town, nd, town_rel_id, &c);
 									if (result == 1)
 									{
@@ -5459,7 +7571,7 @@ void assign_town_to_streets_by_boundary(GList *bl)
 				town_processed_count++;
 				if ((town_processed_count % town_steps) == 0)
 				{
-					fprintf(stderr, "towns0: %lld/%lld\n", town_processed_count, town_count);
+					fprintf_(stderr, "towns0b: %lld/%lld\n", town_processed_count, town_count);
 				}
 
 				break;
@@ -5543,46 +7655,54 @@ void assign_town_to_streets_v1(int pass_num)
 				size = sqlite3_column_int(stmt_town_sel001, 1);
 				lat = sqlite3_column_double(stmt_town_sel001, 2);
 				lon = sqlite3_column_double(stmt_town_sel001, 3);
-				//fprintf(stderr ,"processing (size:%d) town name:%s id:%lld\n", size, sqlite3_column_text(stmt_town_sel001, 4), nd);
 
-				// now update the ways
-				if (sql_counter == 0)
+				if ((lat == 999) && (lon == 999))
 				{
-					sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+					// this should be excluded!!
 				}
-
-				sqlite3_bind_int64(stmt_way3, 1, nd);
-
-				if ((pass_num == 2) && (size > 0))
+				else
 				{
-					size = size * 3;
-				}
+					//fprintf(stderr ,"processing (size:%d) town name:%s id:%lld\n", size, sqlite3_column_text(stmt_town_sel001, 4), nd);
 
-				temp = ((double) size) / 100000;
-				lat_min = lat - temp;
-				lat_max = lat + temp;
-				lon_min = lon - temp;
-				lon_max = lon + temp;
-				sqlite3_bind_double(stmt_way3, 2, lat_min);
-				sqlite3_bind_double(stmt_way3, 3, lat_max);
-				sqlite3_bind_double(stmt_way3, 4, lon_min);
-				sqlite3_bind_double(stmt_way3, 5, lon_max);
-				//fprintf(stderr, "size korr:%f %f %f %f %f\n", temp, lat_min, lat_max, lon_min, lon_max);
+					// now update the ways
+					if (sql_counter == 0)
+					{
+						sqlite3_exec(sql_handle, "BEGIN", 0, 0, 0);
+					}
 
-				sqlite3_step(stmt_way3);
-				sqlite3_reset(stmt_way3);
+					sqlite3_bind_int64(stmt_way3, 1, nd);
 
-				sql_counter++;
-				if (sql_counter > MAX_ROWS_WO_COMMIT_2a)
-				{
-					sql_counter = 0;
-					sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
-				}
-				town_processed_count++;
+					if ((pass_num == 2) && (size > 0))
+					{
+						size = size * 3;
+					}
 
-				if ((town_processed_count % town_steps) == 0)
-				{
-					fprintf(stderr, "towns1-%d: %lld/%lld\n", pass_num, town_processed_count, town_count);
+					temp = ((double) size) / 100000;
+					lat_min = lat - temp;
+					lat_max = lat + temp;
+					lon_min = lon - temp;
+					lon_max = lon + temp;
+					sqlite3_bind_double(stmt_way3, 2, lat_min);
+					sqlite3_bind_double(stmt_way3, 3, lat_max);
+					sqlite3_bind_double(stmt_way3, 4, lon_min);
+					sqlite3_bind_double(stmt_way3, 5, lon_max);
+					//fprintf(stderr, "size korr:%f %f %f %f %f\n", temp, lat_min, lat_max, lon_min, lon_max);
+
+					sqlite3_step(stmt_way3);
+					sqlite3_reset(stmt_way3);
+
+					sql_counter++;
+					if (sql_counter > MAX_ROWS_WO_COMMIT_2a)
+					{
+						sql_counter = 0;
+						sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
+					}
+					town_processed_count++;
+
+					if ((town_processed_count % town_steps) == 0)
+					{
+						fprintf_(stderr, "towns1-%d: %lld/%lld\n", pass_num, town_processed_count, town_count);
+					}
 				}
 
 				break;
@@ -5610,9 +7730,9 @@ int lat_lon_inside_rect(struct node_lat_lon *n, struct rect_lat_lon *r)
 	return 0;
 }
 
-GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
+GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways, GList *bl_manual)
 {
-	struct item_bin *ib;
+	struct item_bin *ib = NULL;
 	GList *bl = NULL;
 	struct attr attrs[10];
 	time_t start_tt, end_tt;
@@ -5621,10 +7741,27 @@ GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
 	long long size_in;
 	long long pos_in;
 	struct node_lat_lon node_coords;
+	FILE *file_coords_for_map = NULL;
+	FILE *file_coords_for_map2 = NULL;
 
 	if (debug_itembin(1))
 	{
 		fprintf(stderr, "osm_process_towns == START ==\n");
+	}
+
+	if (!global_less_verbose)
+	{
+		file_coords_for_map = fopen("towns_no_country.coords.txt", "wb");
+		fprintf(file_coords_for_map, "-175.0|85.0|-175_85\n");
+		fprintf(file_coords_for_map, "175|85.0|175_85\n");
+		fprintf(file_coords_for_map, "-175.0|-85.0|-175_-85\n");
+		fprintf(file_coords_for_map, "175.0|-85.0|175_-85\n");
+
+		file_coords_for_map2 = fopen("towns_no_country.coords_names.txt", "wb");
+		fprintf(file_coords_for_map2, "-175.0|85.0|-175_85\n");
+		fprintf(file_coords_for_map2, "175|85.0|175_85\n");
+		fprintf(file_coords_for_map2, "-175.0|-85.0|-175_-85\n");
+		fprintf(file_coords_for_map2, "175.0|-85.0|175_-85\n");
 	}
 
 	//fprintf(stderr,"osm_process_towns == PB 001 %p,%p ==\n", boundaries, ways);
@@ -5693,13 +7830,15 @@ GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
 
 		if (!result)
 		{
-			//char *name=item_bin_get_attr(ib, attr_town_name, NULL);
-			//fprintf(stderr,"== town by boundary == t:%s ==\n", name);
-
 			result = osm_process_town_by_boundary(bl, ib, c, attrs);
 			if (result) // DEBUG
 			{
-				//fprintf(stderr,"== town by boundary == country_id:%d country_name:%s ==\n", result->countryid, result->names);
+				if (debug_itembin(ib))
+				{
+					char *name=item_bin_get_attr(ib, attr_town_name, NULL);
+					//fprintf(stderr,"== town by boundary == t:%s ==\n", name);
+					//fprintf(stderr,"== town by boundary == country_id:%d country_name:%s townname:%s ==\n", result->countryid, result->names, name);
+				}
 			}
 		}
 
@@ -5713,6 +7852,21 @@ GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
 			if (result) // DEBUG
 			{
 				// fprintf(stderr,"== town by is_in == country_id:%d country_name:%s ==\n", result->countryid, result->names);
+			}
+		}
+
+
+		// ok as a last resort check in manual country borders
+		if (!result)
+		{
+			result = osm_process_town_by_manual_country_borders(bl_manual, c);
+			if (result)
+			{
+				if (debug_itembin(ib))
+				{
+					char *name=item_bin_get_attr(ib, attr_town_name, NULL);
+					fprintf(stderr,"== town by manual_country_borders == country_id:%d country_name:%s town_name=%s ==\n", result->countryid, result->names, name);
+				}
 			}
 		}
 
@@ -5739,6 +7893,20 @@ GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
 
 				g_free(name);
 			}
+
+			// generate file to plot coords on world map -------------------
+			if (result->countryid == 999)
+			{
+				if (!global_less_verbose)
+				{
+					// format: lon|lat|[townname]\n
+					fprintf(file_coords_for_map, "%lf|%lf|\n", transform_to_geo_lon(c->x), transform_to_geo_lat(c->y));
+
+					char *town_name_tmp = item_bin_get_attr(ib, attr_town_name, NULL);
+					fprintf(file_coords_for_map2, "%lf|%lf|%s\n", transform_to_geo_lon(c->x), transform_to_geo_lat(c->y), town_name_tmp);
+				}
+			}
+			// generate file to plot coords on world map -------------------
 
 			if (result->file)
 			{
@@ -5863,12 +8031,12 @@ GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
 			convert_to_human_time(diff_tt, outstring);
 			convert_to_human_bytes(pos_in, outstring2);
 			convert_to_human_bytes(size_in, outstring3);
-			fprintf(stderr, "-RUNTIME-LOOP-TOWN: %s elapsed (POS:%s of %s)\n", outstring, outstring2, outstring3);
+			fprintf_(stderr, "-RUNTIME-LOOP-TOWN: %s elapsed (POS:%s of %s)\n", outstring, outstring2, outstring3);
 			if (pos_in > 0)
 			{
 				double eta_time = ((diff_tt / (pos_in)) * (size_in)) - diff_tt;
 				convert_to_human_time(eta_time, outstring);
-				fprintf(stderr, "-RUNTIME-LOOP-TOWN: %s left\n", outstring);
+				fprintf_(stderr, "-RUNTIME-LOOP-TOWN: %s left\n", outstring);
 			}
 		}
 	}
@@ -5876,6 +8044,12 @@ GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways)
 	if (debug_itembin(1))
 	{
 		fprintf(stderr, "osm_process_towns == END ==\n");
+	}
+
+	if (!global_less_verbose)
+	{
+		fclose(file_coords_for_map);
+		fclose(file_coords_for_map2);
 	}
 
 	return bl;
@@ -5955,7 +8129,7 @@ static int seek_to_way(FILE *way, FILE *ways_index, long long wayid)
 	int rr;
 	size_t data_size2 = sizeof(int);
 
-	fprintf(stderr, "seek_to_way ---\n");
+	fprintf_(stderr, "seek_to_way ---\n");
 
 	if (way_hash_cfu)
 	{
@@ -6101,8 +8275,11 @@ static void process_turn_restrictions_member(void *func_priv, void *relation_pri
 	else
 	{
 		count = 2;
-	}turn_restriction->c[type]=g_renew(struct coord, turn_restriction->c[type], turn_restriction->c_count[type]+count);
+	}
+
+	turn_restriction->c[type]=g_renew(struct coord, turn_restriction->c[type], turn_restriction->c_count[type]+count);
 	turn_restriction->c[type][turn_restriction->c_count[type]++] = c[0];
+
 	if (count > 1)
 	{
 		turn_restriction->c[type][turn_restriction->c_count[type]++] = c[ccount - 1];
@@ -6313,8 +8490,10 @@ static void node_ref_way(osmid node, int local_thread_num)
 {
 	struct node_item *ni;
 	ni = node_item_get_fast(node, local_thread_num);
+
 	if (ni)
 	{
+		// fprintf(stderr, "node id=%lld ref=%d\n", node, (ni->ref_way + 1));
 		ni->ref_way++;
 	}
 }
@@ -6322,19 +8501,32 @@ static void node_ref_way(osmid node, int local_thread_num)
 static void nodes_ref_item_bin(struct item_bin *ib, int local_thread_num, osmid this_way_id)
 {
 	int i;
+	int *node_num_offset;
+	int offset = 0;
 	osmid way_node;
 	struct coord *c = (struct coord *) (ib + 1); // set pointer to coord struct of this item
+
 	for (i = 0; i < ib->clen / 2; i++)
 	{
-		way_node = get_waynode_num(this_way_id, i, local_thread_num);
+		// fprintf(stderr, "1     i=%d this_way_id=%lld\n", i, this_way_id);
+
+		// offset for split cycleways!
+		node_num_offset = item_bin_get_attr(ib, attr_debugsplitway, NULL);
+
+		if (node_num_offset)
+		{
+			offset = (int)*node_num_offset;
+		}
+
+		way_node = get_waynode_num(this_way_id, (i + offset), local_thread_num);
+		// fprintf(stderr, "2 ref2=%lld this_way_id=%lld offset=%d\n", way_node, this_way_id, offset);
 		node_ref_way(way_node, local_thread_num);
-		//fprintf(stderr, "ref2=%lld this_way_id=%lld\n", way_node, this_way_id);
+		// fprintf(stderr, "3 ref2=%lld this_way_id=%lld\n", way_node, this_way_id);
 	}
 
 	//fprintf(stderr,"********DUMP rw ***********\n");
-	//dump_itembin(ib);
+	// dump_itembin(ib);
 	//fprintf(stderr,"********DUMP rw ***********\n");
-
 }
 
 osmid get_waynode_num(osmid way_id, int coord_num, int local_thread_num)
@@ -6352,14 +8544,14 @@ osmid get_waynode_num(osmid way_id, int coord_num, int local_thread_num)
 
 		last_seek_wayid[local_thread_num] = way_id;
 
-	#ifdef MAPTOOL_SPLIT_WAYNODE_DB
+#ifdef MAPTOOL_SPLIT_WAYNODE_DB
 		if ((way_id & MAPTOOL_SPLIT_WAYNODE_BIT) > 0)
 		{
 			if ((way_id & MAPTOOL_SPLIT_WAYNODE_BIT2) > 0)
 			{
-	#endif
+#endif
 				st = stmt_sel0012_tt[local_thread_num];
-	#ifdef MAPTOOL_SPLIT_WAYNODE_DB
+#ifdef MAPTOOL_SPLIT_WAYNODE_DB
 			}
 			else
 			{
@@ -6377,13 +8569,14 @@ osmid get_waynode_num(osmid way_id, int coord_num, int local_thread_num)
 				st = stmt_sel0012__2b_tt[local_thread_num];
 			}
 		}
-	#endif
+#endif
 
 		sqlite3_bind_int64(st, 1, way_id);
 		sqlite3_bind_int(st, 2, (int)1);
 
 		// execute the statement
 		rc2 = sqlite3_step(st);
+
 		switch (rc2)
 		{
 			case SQLITE_DONE:
@@ -6420,12 +8613,58 @@ osmid get_waynode_num(osmid way_id, int coord_num, int local_thread_num)
 		fprintf(stderr, "**ERROR** at fread 002b: wayid:%lld count=%d w_node=%lld\n", way_id, coord_num, (osmid)nd);
 	}
 
+	last_seekpos_waynode[local_thread_num] = seekpos_waynode2 + sizeof(osmid);
+	//fprintf(stderr, "get_waynode_num:result node=%lld last_seekpos_waynode=%lld\n", nd, last_seekpos_waynode[local_thread_num]);
+
+	return nd;
+}
+
+
+osmid get_waynode_num_have_seekpos(osmid way_id, int coord_num, int local_thread_num, off_t seek_pos)
+{
+	int rc2;
+	sqlite3_stmt *st;
+	osmid nd;
+	long long seekpos_waynode2;
+	#define __USE_WAYNODEFILE_CACHE__ 1
+
+	//fprintf(stderr, "get_waynode_num:w=%lld cnum=%d\n", way_id, (coord_num + 1));
+
+	if (last_seek_wayid[local_thread_num] != way_id)
+	{
+		last_seek_wayid[local_thread_num] = way_id;
+	}
+
+	seekpos_waynode[local_thread_num] = seek_pos;
+	seekpos_waynode2 = seekpos_waynode[local_thread_num] + (sizeof(osmid) * coord_num); // seek to coord in way
+
+	if ((! __USE_WAYNODEFILE_CACHE__) || (seekpos_waynode2 != last_seekpos_waynode[local_thread_num]))
+	{
+		//fprintf(stderr, "w seek3 seekpos_waynode=%lld last_seekpos_waynode=%lld\n", seekpos_waynode[local_thread_num], last_seekpos_waynode[local_thread_num]);
+		fseeko(ways_ref_file_thread[local_thread_num], (off_t)seekpos_waynode2, SEEK_SET);
+	}
+	//else
+	//{
+	//	fprintf(stderr, "w seek3:NO SEEK\n");
+	//}
+
+	int fret = (int)fread(&nd, sizeof(osmid), 1, ways_ref_file_thread[local_thread_num]);
+	if (fret == 0)
+	{
+		fprintf(stderr, "**ERROR** at fread 002b: wayid:%lld count=%d\n", way_id, coord_num);
+	}
+	else if ((osmid)nd > 4994968164L)
+	{
+		fprintf(stderr, "**ERROR** at fread 002b: wayid:%lld count=%d w_node=%lld\n", way_id, coord_num, (osmid)nd);
+	}
+
 
 	last_seekpos_waynode[local_thread_num] = seekpos_waynode2 + sizeof(osmid);
 	// fprintf(stderr, "get_waynode_num:result node=%lld last_seekpos_waynode=%lld\n", nd, last_seekpos_waynode[local_thread_num]);
 
 	return nd;
 }
+
 
 void add_waynode_to_db(osmid ref, int c_count)
 {
@@ -6502,8 +8741,6 @@ void add_waynode_to_db(osmid ref, int c_count)
 #endif
 	// ------- save way node to SQL db ------------
 
-
-	// fprintf(stderr, "osm_add_nd:FIN\n");
 
 }
 
@@ -6603,11 +8840,11 @@ void ref_ways(FILE *in, int local_thread_num)
 	fseeko(ways_ref_file_thread[local_thread_num], (off_t)0, SEEK_SET);
 	// ---------- reset the cached values ----------
 
-
 	fseek(in, 0, SEEK_SET);
 	while ((ib = read_item(in, local_thread_num))) // loop all "ways" from file "in"
 	{
 		this_way_id = item_bin_get_attr(ib, attr_osm_wayid, NULL);
+
 		if (this_way_id)
 		{
 			nodes_ref_item_bin(ib, local_thread_num, *this_way_id);
@@ -6621,7 +8858,7 @@ void ref_ways(FILE *in, int local_thread_num)
 
 		if ((ways_count % 1000000) == 0)
 		{
-			fprintf(stderr, "[THREAD] #%d ways: %lld\n", local_thread_num, ways_count);
+			fprintf_(stderr, "[THREAD] #%d ways: %lld\n", local_thread_num, ways_count);
 		}
 	}
 }
@@ -6882,869 +9119,15 @@ void filecopy(FILE *ifp, FILE *ofp)
 	}
 }
 
-#ifdef MAPTOOL_USE_STRINDEX_COMPRESSION
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint;
 
-#define MZ_MIN(a,b) (((a)<(b))?(a):(b))
-#define my_min(a,b) (((a) < (b)) ? (a) : (b))
 
+#include "osm_s_index.h"
 
 
 
-// -------------------------------
-// -------------------------------
 
-int IN_BUF_SIZE;
-static uint8* s_inbuf;
-int OUT_BUF_SIZE;
-static uint8* s_outbuf;
-int COMP_OUT_BUF_SIZE;
 
-int s_IN_BUF_SIZE = sizeof(struct streets_index_data_block) * 1024;
-int t_IN_BUF_SIZE = sizeof(struct town_index_data_block) * 1024;
-static uint8 s_s_inbuf[(sizeof(struct streets_index_data_block) * 1024)];
-static uint8 t_s_inbuf[(sizeof(struct town_index_data_block) * 1024)];
 
-int s_OUT_BUF_SIZE = sizeof(struct streets_index_data_block) * 1024;
-int t_OUT_BUF_SIZE = sizeof(struct town_index_data_block) * 1024;
-static uint8 s_s_outbuf[(sizeof(struct streets_index_data_block) * 1024)];
-static uint8 t_s_outbuf[(sizeof(struct town_index_data_block) * 1024)];
-
-int s_COMP_OUT_BUF_SIZE;
-int t_COMP_OUT_BUF_SIZE;
-
-// IN_BUF_SIZE is the size of the file read buffer.
-// IN_BUF_SIZE must be >= 1
-//**#define IN_BUF_SIZE (1024*512)
-//**static uint8 s_inbuf[IN_BUF_SIZE];
-
-// COMP_OUT_BUF_SIZE is the size of the output buffer used during compression.
-// COMP_OUT_BUF_SIZE must be >= 1 and <= OUT_BUF_SIZE
-//**#define COMP_OUT_BUF_SIZE (1024*512)
-
-// OUT_BUF_SIZE is the size of the output buffer used during decompression.
-// OUT_BUF_SIZE must be a power of 2 >= TINFL_LZ_DICT_SIZE (because the low-level decompressor not only writes, but reads from the output buffer as it decompresses)
-//#define OUT_BUF_SIZE (TINFL_LZ_DICT_SIZE)
-//*#define OUT_BUF_SIZE (1024*512)
-//*static uint8 s_outbuf[OUT_BUF_SIZE];
-
-// -------------------------------
-// -------------------------------
-
-
-// compression level
-int street_index_compress_level = 9; // = MZ_BEST_COMPRESSION
-
-long long compress_file(char *in, char *out, int keep_tempfile)
-{
-	long long out_size = 0;
-	// compress structure
-	tdefl_compressor *g_deflator;
-	g_deflator = g_new0(tdefl_compressor, 1);
-	// compress structure
-
-	// ok now compress the block (file) -------------------------------
-	const void *next_in = s_inbuf;
-	size_t avail_in = 0;
-	void *next_out = s_outbuf;
-	size_t avail_out = OUT_BUF_SIZE;
-	size_t total_in = 0, total_out = 0;
-
-	FILE *in_uncompr = tempfile("", in, 0);
-	FILE *out_compr = NULL;
-	out_compr = tempfile("", out, 1);
-
-	// Determine input file's size.
-	fseek(in_uncompr, 0, SEEK_END);
-	long file_loc = ftell(in_uncompr);
-	fseek(in_uncompr, 0, SEEK_SET);
-	uint infile_size = (uint)file_loc;
-
-	// The number of dictionary probes to use at each compression level (0-10). 0=implies fastest/minimal possible probing.
-	static const mz_uint s_tdefl_num_probes[11] =
-	{	0, 1, 6, 32, 16, 32, 128, 256, 512, 768, 1500};
-
-	tdefl_status status;
-	uint infile_remaining = infile_size;
-
-	// create tdefl() compatible flags (we have to compose the low-level flags ourselves, or use tdefl_create_comp_flags_from_zip_params() but that means MINIZ_NO_ZLIB_APIS can't be defined).
-	mz_uint comp_flags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[MZ_MIN(10, street_index_compress_level)] | ((street_index_compress_level <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
-	if (!street_index_compress_level)
-	{
-		comp_flags |= TDEFL_FORCE_ALL_RAW_BLOCKS;
-	}
-
-	// Initialize the low-level compressor.
-	status = tdefl_init(g_deflator, NULL, NULL, comp_flags);
-	if (status != TDEFL_STATUS_OKAY)
-	{
-		fprintf(stderr, "tdefl_init() failed!\n");
-		g_free(g_deflator);
-		return 0;
-	}
-	avail_out = COMP_OUT_BUF_SIZE;
-
-	// Compression.
-	for (;; )
-	{
-		size_t in_bytes, out_bytes;
-
-		if (!avail_in)
-		{
-			// Input buffer is empty, so read more bytes from input file.
-			uint n = my_min(IN_BUF_SIZE, infile_remaining);
-
-			if (fread(s_inbuf, 1, n, in_uncompr) != n)
-			{
-				fprintf(stderr, "Failed reading from input file!\n");
-				g_free(g_deflator);
-				return 0;
-			}
-
-			next_in = s_inbuf;
-			avail_in = n;
-
-			infile_remaining -= n;
-			//printf("Input bytes remaining: %u\n", infile_remaining);
-		}
-
-		in_bytes = avail_in;
-		out_bytes = avail_out;
-		// Compress as much of the input as possible (or all of it) to the output buffer.
-		status = tdefl_compress(g_deflator, next_in, &in_bytes, next_out, &out_bytes, infile_remaining ? TDEFL_NO_FLUSH : TDEFL_FINISH);
-
-		next_in = (const char *)next_in + in_bytes;
-		avail_in -= in_bytes;
-		total_in += in_bytes;
-
-		next_out = (char *)next_out + out_bytes;
-		avail_out -= out_bytes;
-		total_out += out_bytes;
-
-		if ((status != TDEFL_STATUS_OKAY) || (!avail_out))
-		{
-			// Output buffer is full, or compression is done or failed, so write buffer to output file.
-			uint n = COMP_OUT_BUF_SIZE - (uint)avail_out;
-			if (fwrite(s_outbuf, 1, n, out_compr) != n)
-			{
-				fprintf(stderr, "Failed writing to output file!\n");
-				g_free(g_deflator);
-				return 0;
-			}
-			next_out = s_outbuf;
-			avail_out = COMP_OUT_BUF_SIZE;
-		}
-
-		if (status == TDEFL_STATUS_DONE)
-		{
-			// Compression completed successfully.
-			break;
-		}
-		else if (status != TDEFL_STATUS_OKAY)
-		{
-			// Compression somehow failed.
-			fprintf(stderr, "tdefl_compress() failed with status %i!\n", status);
-			g_free(g_deflator);
-			return 0;
-		}
-	}
-
-	fprintf(stderr, "Total input bytes: %u\n", (mz_uint32)total_in);
-	fprintf(stderr, "Total output bytes: %u\n", (mz_uint32)total_out);
-
-	out_size = (long long)total_out;
-
-	fclose(in_uncompr);
-	fclose(out_compr);
-
-	if (keep_tempfile == 1)
-	{
-		char *in2;
-		in2 = g_strdup_printf("%s.tmptmp", in);
-		tempfile_rename("", in, in2);
-		g_free(in2);
-		tempfile_rename("", out, in);
-	}
-	else
-	{
-		tempfile_unlink("", in);
-		tempfile_rename("", out, in);
-	}
-
-	g_free(g_deflator);
-
-	return out_size;
-}
-#endif
-
-void generate_combined_index_file(FILE *towni, FILE *streeti, FILE *out)
-{
-#ifdef MAPTOOL_USE_SQL
-	fseek(towni, 0, SEEK_END);
-	fseek(streeti, 0, SEEK_END);
-	long long towni_size = (long long)ftello(towni);
-	long long streeti_size = (long long)ftello(streeti);
-	fprintf(stderr, "ftell towns=%lld\n", towni_size);
-	fprintf(stderr, "ftell streets=%lld\n", streeti_size);
-
-	fseek(towni, 0, SEEK_SET);
-	fseek(streeti, 0, SEEK_SET);
-
-	// size
-	fwrite(&streeti_size, sizeof(long long), 1, out);
-	// append street index file
-	filecopy(streeti, out);
-	// append town index file
-	filecopy(towni, out);
-
-#endif
-}
-
-char* get_town_name_recursive(long long border_id, int level)
-{
-	char *ret = NULL;
-	char *ret2 = NULL;
-	char *str2 = NULL;
-	int rc = 0;
-	long long parent_rel_id = 0;
-
-	//fprintf(stderr, "get town name:bid:%lld level:%d\n", border_id, level);
-
-	// select this boundary
-	sqlite3_bind_int64(stmt_bd_005, 1, border_id);
-	rc = sqlite3_step(stmt_bd_005);
-	switch (rc)
-	{
-		case SQLITE_DONE:
-			break;
-		case SQLITE_ROW:
-			// rel_id, parent_rel_id, name
-			parent_rel_id = sqlite3_column_int(stmt_bd_005, 1);
-			ret = g_strdup_printf("%s", sqlite3_column_text(stmt_bd_005, 2));
-			sqlite3_reset(stmt_bd_005);
-
-			//fprintf(stderr, "get town name:ret=%s\n", ret);
-
-			if (level < 12)
-			{
-				str2 = get_town_name_recursive(parent_rel_id, (level + 1));
-				if (str2)
-				{
-					ret2 = g_strdup_printf("%s, %s", ret, str2);
-					g_free(ret);
-					g_free(str2);
-					ret = ret2;
-				}
-			}
-			break;
-		default:
-			fprintf(stderr, "SQL Error: %d\n", rc);
-			break;
-	}
-
-	if (level == 0)
-	{
-		sqlite3_reset(stmt_bd_005);
-	}
-
-	return ret;
-}
-
-void generate_town_index_file(FILE *out)
-{
-#ifdef MAPTOOL_USE_SQL
-
-	struct town_index_data_block db;
-	struct town_index_index_block_start is;
-	struct town_index_index_block ib;
-	char *townname = NULL;
-	char *townname2 = NULL;
-	long long last_len = 0;
-	long long border_id = 0;
-	int town_count = 0;
-	int index_blocks;
-	int index_block_towns;
-	int i;
-	int first;
-	int rc = 0;
-	int current_index_block;
-	int current_index_block_old;
-	char tmp_letter[TOWN_INDEX_TOWN_NAME_SIZE];
-	char *newfilename = NULL;
-	char *newfilename_compr = NULL;
-
-	int chunkSize;
-	int stringLength;
-	int ii22;
-
-	FILE *town_index_index = NULL;
-	FILE *town_index_index_data_block = NULL;
-
-
-	// init compression for towns
-	// init compression for towns
-	IN_BUF_SIZE = t_IN_BUF_SIZE;
-	s_inbuf = t_s_inbuf;
-	OUT_BUF_SIZE = t_OUT_BUF_SIZE;
-	s_outbuf = t_s_outbuf;
-	COMP_OUT_BUF_SIZE = t_OUT_BUF_SIZE;
-	// init compression for towns
-	// init compression for towns
-
-
-	sqlite3_step(stmt_town_sel006);
-	town_count = sqlite3_column_int(stmt_town_sel006, 0);
-	sqlite3_reset(stmt_town_sel006);
-
-	// calculate number of index blocks
-	index_blocks = 2;
-	if (town_count > 1000000)
-	{
-		index_blocks = 100;
-	}
-	else if (town_count > 100000)
-	{
-		index_blocks = 50;
-	}
-	else if (town_count > 10000)
-	{
-		index_blocks = 10;
-	}
-	else if (town_count > 2000)
-	{
-		index_blocks = 5;
-	}
-
-	is.count_of_index_blocks = index_blocks;
-	ib.offset = sizeof (is.count_of_index_blocks) + is.count_of_index_blocks * sizeof(struct town_index_index_block); // start offset = index size
-	town_index_index = tempfile("", "town_index_index", 1);
-
-	index_block_towns = (town_count / index_blocks);
-	if ((index_block_towns * index_blocks) < town_count)
-	{
-		index_block_towns++;
-	}
-
-	fprintf(stderr, "towns per block=%d\n", index_block_towns);
-
-	fprintf(stderr, "index size=%d\n", ib.offset);
-
-	fprintf(stderr, "ftell=%d\n", ftell(town_index_index));
-	fwrite(&is, sizeof(struct town_index_index_block_start), 1, town_index_index);
-	fprintf(stderr, "ftell=%d\n", ftell(town_index_index));
-
-	current_index_block = 1;
-	current_index_block_old = 0;
-	ib.len = 0;
-	i = -1;
-	first = 1;
-
-	// loop thru all the towns
-	do
-	{
-		rc = sqlite3_step(stmt_town_sel005);
-		switch (rc)
-		{
-			case SQLITE_DONE:
-			break;
-			case SQLITE_ROW:
-			i++;
-			townname2 = NULL;
-			db.town_id = sqlite3_column_int64(stmt_town_sel005, 0);
-			db.country_id = sqlite3_column_int(stmt_town_sel005, 1);
-			border_id = sqlite3_column_int64(stmt_town_sel005, 3);
-
-			townname = get_town_name_recursive(border_id, 0);
-
-			if (townname == NULL)
-			{
-				townname2 = g_strdup_printf("%s", sqlite3_column_text(stmt_town_sel005, 2));
-			}
-			else
-			{
-				townname2 = townname;
-				// townname2 = g_strdup_printf("%s", townname); // dont use the column result here, or string will be double!
-				// g_free(townname);
-			}
-			//fprintf(stderr, "indextown:%s\n", townname2);
-
-			//fprintf(stderr, "i=%d\n", i);
-			//fprintf(stderr, "block=%d\n", current_index_block);
-			if ((i + 1) > index_block_towns)
-			{
-				// start new index data block
-				i = 0;
-				current_index_block++;
-				//fprintf(stderr, "incr block=%d\n", current_index_block);
-			}
-
-			if (current_index_block != current_index_block_old)
-			{
-
-				if (first != 1)
-				{
-					// close old datafile
-					fclose(town_index_index_data_block);
-					town_index_index_data_block = NULL;
-
-					if (USE_STREET_INDEX_COMPRESSION == 1)
-					{
-#ifdef MAPTOOL_USE_STRINDEX_COMPRESSION
-						ib.len = compress_file(newfilename, newfilename_compr, 0);
-#endif
-					}
-
-					// append to indexfile
-					fprintf(stderr, "first_id=%lld offset=%lld len=%lld\n", ib.first_id, ib.offset, ib.len);
-					fwrite(&ib, sizeof(struct town_index_index_block), 1, town_index_index);
-
-					if (newfilename)
-					{
-						g_free(newfilename);
-						newfilename = NULL;
-					}
-
-					if (newfilename_compr)
-					{
-						g_free(newfilename_compr);
-						newfilename_compr = NULL;
-					}
-				}
-
-				current_index_block_old = current_index_block;
-				ib.first_id = db.town_id;
-				ib.offset = ib.offset + ib.len;
-
-				// open new datafile
-				newfilename = g_strdup_printf("town_index_index_%d", current_index_block);
-				fprintf(stderr, "new data file: %s first_id=%lld\n", newfilename, ib.first_id);
-				newfilename_compr = g_strdup_printf("town_index_index_compr_%d", current_index_block);
-				town_index_index_data_block = tempfile("", newfilename, 1);
-				fprintf(stderr, "town index file %d\n", current_index_block);
-
-				ib.len = 0;
-			}
-
-
-			// now check if we need to split the string into parts
-			if ((strlen(townname2) + 1) > TOWN_INDEX_TOWN_NAME_SIZE)
-			{
-				//fprintf(stderr, " block-split: START\n");
-				chunkSize = TOWN_INDEX_TOWN_NAME_SIZE - 1;
-				stringLength = strlen(townname2);
-				for (ii22 = 0; ii22 < stringLength ; ii22 += chunkSize)
-				{
-					if (ii22 + chunkSize > stringLength)
-					{
-						chunkSize = stringLength - ii22;
-						db.town_name[chunkSize] = '\0'; // make sure string is terminated
-					}
-					strncpy(&db.town_name, (townname2 + ii22), chunkSize);
-					db.town_name[TOWN_INDEX_TOWN_NAME_SIZE - 1] = '\0'; // make sure string is terminated
-					if (ii22 > 0)
-					{
-						// set "split"-marker
-						db.town_id = 0;
-						db.country_id = 0; // setting this to zero is actually not needed
-					}
-					ib.len = ib.len + sizeof(struct town_index_data_block);
-					//fprintf(stderr, "->block-split: town_id=%lld country_id=%d town_name=%s\n", db.town_id, db.country_id, db.town_name);
-					fwrite(&db, sizeof(struct town_index_data_block), 1, town_index_index_data_block);
-				}
-				//fprintf(stderr, " block-split: END\n");
-				g_free(townname2);
-			}
-			else
-			{
-				strncpy(&db.town_name, townname2, TOWN_INDEX_TOWN_NAME_SIZE);
-				g_free(townname2);
-				db.town_name[TOWN_INDEX_TOWN_NAME_SIZE - 1]= '\0'; // make sure string is terminated
-
-				ib.len = ib.len + sizeof(struct town_index_data_block);
-				fwrite(&db, sizeof(struct town_index_data_block), 1, town_index_index_data_block);
-			}
-
-			if (first == 1)
-			{
-				first = 0;
-			}
-
-			break;
-			default:
-			fprintf(stderr, "SQL Error: %d\n", rc);
-			break;
-		}
-	}
-	while (rc == SQLITE_ROW);
-
-	sqlite3_reset(stmt_town_sel005);
-
-	// rest of the towns
-	if (i > 0)
-	{
-		if (town_index_index_data_block)
-		{
-			fclose(town_index_index_data_block);
-			town_index_index_data_block = NULL;
-		}
-
-		if (USE_STREET_INDEX_COMPRESSION == 1)
-		{
-#ifdef MAPTOOL_USE_STRINDEX_COMPRESSION
-			ib.len = compress_file(newfilename, newfilename_compr, 0);
-#endif
-		}
-
-		// append to indexfile
-		fprintf(stderr, "(last)first_id=%lld offset=%lld len=%lld\n", ib.first_id, ib.offset, ib.len);
-		fwrite(&ib, sizeof(struct town_index_index_block), 1, town_index_index);
-	}
-
-	if (town_index_index != NULL)
-	{
-		fclose(town_index_index);
-	}
-
-	if (town_index_index_data_block != NULL)
-	{
-		fclose(town_index_index_data_block);
-	}
-
-	if (newfilename)
-	{
-		g_free(newfilename);
-		newfilename = NULL;
-	}
-
-	if (newfilename_compr)
-	{
-		g_free(newfilename_compr);
-		newfilename_compr = NULL;
-	}
-
-
-
-
-
-	// put all parts together
-	town_index_index = tempfile("", "town_index_index", 0);
-	filecopy(town_index_index, out);
-	fclose(town_index_index);
-	tempfile_unlink("", "town_index_index");
-
-	for (i=1;i < (current_index_block + 2);i++)
-	{
-		fprintf(stderr, "index block #%d\n", i);
-		newfilename = g_strdup_printf("town_index_index_%d", i);
-		town_index_index_data_block = tempfile("", newfilename, 0);
-
-		if (town_index_index_data_block)
-		{
-			fprintf(stderr, "using: index block #%d in %s\n", i, newfilename);
-			filecopy(town_index_index_data_block, out);
-			fclose(town_index_index_data_block);
-			tempfile_unlink("", newfilename);
-		}
-
-		if (newfilename)
-		{
-			g_free(newfilename);
-			newfilename = NULL;
-		}
-	}
-
-
-
-#endif
-}
-
-void generate_street_index_file(FILE *out)
-{
-#ifdef MAPTOOL_USE_SQL
-	int rc = 0;
-	int i;
-	struct streets_index_data_block db;
-	struct streets_index_index_block_start is;
-	struct streets_index_index_block ib;
-	long long last_len = 0;
-	static const char *alpha = "abcdefghijklmnopqrstuvwxyz";
-	char tmp_letter[STREET_INDEX_STREET_NAME_SIZE];
-	char *newfilename = NULL;
-	char *newfilename_compr = NULL;
-	int count_of_blocks;
-	int do_rest;
-	int num1;
-	int num2;
-
-	FILE *street_index_index;
-	FILE *street_index_index_data_block;
-
-	// init compression for streets
-	// init compression for streets
-	IN_BUF_SIZE = s_IN_BUF_SIZE;
-	s_inbuf = s_s_inbuf;
-	OUT_BUF_SIZE = s_OUT_BUF_SIZE;
-	s_outbuf = s_s_outbuf;
-	COMP_OUT_BUF_SIZE = s_OUT_BUF_SIZE;
-	// init compression for streets
-	// init compression for streets
-
-
-	is.count_of_index_blocks = 703; // 26+1 letters ((26+1)*26 + 1) = 703
-	ib.offset = sizeof (is.count_of_index_blocks) + is.count_of_index_blocks * sizeof(struct streets_index_index_block); // start offset = index size
-	street_index_index = tempfile("", "street_index_index", 1);
-	fprintf(stderr, "index size=%d\n", ib.offset);
-
-	fprintf(stderr, "ftell=%d\n", ftell(street_index_index));
-	fwrite(&is, sizeof(struct streets_index_index_block_start), 1, street_index_index);
-	fprintf(stderr, "ftell=%d\n", ftell(street_index_index));
-
-	// fprintf(stderr, "len=%d\n", strlen(alpha));
-
-	count_of_blocks = 702;
-	do_rest = 0;
-	num1 = 1;
-	num2 = 0;
-	for (i=0; i < count_of_blocks; i++)
-	{
-		num2++;
-		do_rest = 0;
-		if (num2 == 27)
-		{
-			do_rest = 1;
-		}
-		else if (num2 > 27)
-		{
-			num2 = 1;
-			num1++;
-		}
-
-		fprintf(stderr, "i=%d num1=%d num2=%d\n", i, num1, num2);
-
-		if (do_rest)
-		{
-			sprintf(tmp_letter, "%c", alpha[num1 - 1]);
-		}
-		else
-		{
-			sprintf(tmp_letter, "%c%c", alpha[num1 - 1], alpha[num2 - 1]);
-		}
-		fprintf(stderr, "letter=%s\n", tmp_letter);
-
-		ib.first_letter = alpha[num1 - 1];
-		ib.len = 0;
-
-		newfilename = g_strdup_printf("street_index_index_%d", i);
-		newfilename_compr = g_strdup_printf("street_index_index_compr_%d", i);
-		street_index_index_data_block = tempfile("", newfilename, 1);
-
-
-		// ------ TIMER -------
-		time_t start_tt_4, end_tt_4;
-		double diff_tt_4;
-		char outstring_4[200];
-		// ------ TIMER -------
-
-		// ------ TIMER -------
-		time(&start_tt_4);
-		// ------ TIMER -------
-
-		// loop thru all the streets that match '<letter>...'
-		sqlite3_bind_text(stmt_sel003, 1, tmp_letter, -1, SQLITE_STATIC);
-		do
-		{
-			rc = sqlite3_step(stmt_sel003);
-			switch (rc)
-			{
-				case SQLITE_DONE:
-				break;
-				case SQLITE_ROW:
-				db.town_id = sqlite3_column_int64(stmt_sel003, 0);
-				db.lat = transform_from_geo_lat(sqlite3_column_double(stmt_sel003, 1));
-				db.lon = transform_from_geo_lon(sqlite3_column_double(stmt_sel003, 2));
-				strncpy(&db.street_name, sqlite3_column_text(stmt_sel003, 3), STREET_INDEX_STREET_NAME_SIZE);
-				db.street_name[STREET_INDEX_STREET_NAME_SIZE - 1]= '\0'; // make sure string is terminated
-
-				ib.len = ib.len + sizeof(struct streets_index_data_block);
-
-				// fprintf(stderr ,"gen_street_index id:%lld lat:%d lon:%d name:%s\n", db.town_id, db.lat, db.lon, db.street_name);
-				fwrite(&db, sizeof(struct streets_index_data_block), 1, street_index_index_data_block);
-
-				break;
-				default:
-				fprintf(stderr, "SQL Error: %d\n", rc);
-				break;
-			}
-		}
-		while (rc == SQLITE_ROW);
-
-		sqlite3_reset(stmt_sel003);
-		fclose(street_index_index_data_block);
-
-		// ------ TIMER -------
-		time(&end_tt_4);
-		diff_tt_4 = difftime(end_tt_4, start_tt_4);
-		convert_to_human_time(diff_tt_4, outstring_4);
-		fprintf(stderr, "-TIME-IND-001: %s\n", outstring_4);
-		// ------ TIMER -------
-
-
-		// ------ TIMER -------
-		time(&start_tt_4);
-		// ------ TIMER -------
-
-		sqlite3_bind_int(stmt_sel003u, 1, (i + 1));
-		sqlite3_bind_text(stmt_sel003u, 2, tmp_letter, -1, SQLITE_STATIC);
-		sqlite3_step(stmt_sel003u);
-		sqlite3_reset(stmt_sel003u);
-		// sqlite3_exec(sql_handle, "COMMIT", 0, 0, 0);
-
-
-		// ------ TIMER -------
-		time(&end_tt_4);
-		diff_tt_4 = difftime(end_tt_4, start_tt_4);
-		convert_to_human_time(diff_tt_4, outstring_4);
-		fprintf(stderr, "-TIME-IND-002: %s\n", outstring_4);
-		// ------ TIMER -------
-
-
-		// ------ TIMER -------
-		time(&start_tt_4);
-		// ------ TIMER -------
-
-
-		if (USE_STREET_INDEX_COMPRESSION == 1)
-		{
-#ifdef MAPTOOL_USE_STRINDEX_COMPRESSION
-			ib.len = compress_file(newfilename, newfilename_compr, 0);
-#endif
-		}
-
-		// ------ TIMER -------
-		time(&end_tt_4);
-		diff_tt_4 = difftime(end_tt_4, start_tt_4);
-		convert_to_human_time(diff_tt_4, outstring_4);
-		fprintf(stderr, "-TIME-IND-COMPR: %s\n", outstring_4);
-		// ------ TIMER -------
-
-
-		last_len = ib.len;
-		fprintf(stderr ,"letter=%c offset=%lld len=%lld\n", ib.first_letter, ib.offset, ib.len);
-		fprintf(stderr, "ftell=%d\n", ftell(street_index_index));
-		fwrite(&ib, sizeof(struct streets_index_index_block), 1, street_index_index);
-		fprintf(stderr, "ftell=%d\n", ftell(street_index_index));
-		ib.offset = ib.offset + last_len;
-
-		if (newfilename)
-		{
-			g_free(newfilename);
-			newfilename = NULL;
-		}
-
-		if (newfilename_compr)
-		{
-			g_free(newfilename_compr);
-			newfilename_compr = NULL;
-		}
-	}
-
-	// rest of the streets
-	fprintf(stderr, "rest of letters\n");
-
-	ib.first_letter = 65; // dummy "A"
-	ib.len = 0;
-
-	newfilename = g_strdup_printf("street_index_index_%d", i);
-	newfilename_compr = g_strdup_printf("street_index_index_compr_%d", i);
-	street_index_index_data_block = tempfile("", newfilename, 1);
-
-	do
-	{
-		rc = sqlite3_step(stmt_sel004);
-		switch (rc)
-		{
-			case SQLITE_DONE:
-			break;
-			case SQLITE_ROW:
-			db.town_id = sqlite3_column_int64(stmt_sel004, 0);
-			db.lat = transform_from_geo_lat(sqlite3_column_double(stmt_sel004, 1));
-			db.lon = transform_from_geo_lon(sqlite3_column_double(stmt_sel004, 2));
-			strncpy(&db.street_name, sqlite3_column_text(stmt_sel004, 3), STREET_INDEX_STREET_NAME_SIZE);
-			db.street_name[STREET_INDEX_STREET_NAME_SIZE - 1]= '\0'; // make sure string is terminated
-
-			ib.len = ib.len + sizeof(struct streets_index_data_block);
-
-			//fprintf(stderr ,"id:%lld lat:%d lon:%d name:%s\n", db.town_id, db.lat, db.lon, db.street_name);
-			fwrite(&db, sizeof(struct streets_index_data_block), 1, street_index_index_data_block);
-
-			break;
-			default:
-			fprintf(stderr, "SQL Error: %d\n", rc);
-			break;
-		}
-	}
-	while (rc == SQLITE_ROW);
-	sqlite3_reset(stmt_sel004);
-	fclose(street_index_index_data_block);
-
-	if (USE_STREET_INDEX_COMPRESSION == 1)
-	{
-#ifdef MAPTOOL_USE_STRINDEX_COMPRESSION
-		ib.len = compress_file(newfilename, newfilename_compr, 0);
-#endif
-	}
-
-	last_len = ib.len;
-	fprintf(stderr ,"letter=%c offset=%lld len=%lld\n", ib.first_letter, ib.offset, ib.len);
-	fprintf(stderr, "ftell=%d\n", ftell(street_index_index));
-	fwrite(&ib, sizeof(struct streets_index_index_block), 1, street_index_index);
-	fprintf(stderr, "ftell=%d\n", ftell(street_index_index));
-	// ib.offset = ib.offset + last_len;
-
-
-	fclose(street_index_index);
-
-	if (newfilename)
-	{
-		g_free(newfilename);
-		newfilename = NULL;
-	}
-
-	if (newfilename_compr)
-	{
-		g_free(newfilename_compr);
-		newfilename_compr = NULL;
-	}
-
-	// put all parts together
-	street_index_index = tempfile("", "street_index_index", 0);
-	filecopy(street_index_index, out);
-	fclose(street_index_index);
-	tempfile_unlink("", "street_index_index");
-
-	for (i=0;i < (is.count_of_index_blocks + 1);i++)
-	{
-		fprintf(stderr, "cat #%d\n", i);
-		newfilename = g_strdup_printf("street_index_index_%d", i);
-		street_index_index_data_block = tempfile("", newfilename, 0);
-
-		if (street_index_index_data_block)
-		{
-			filecopy(street_index_index_data_block, out);
-			fclose(street_index_index_data_block);
-			tempfile_unlink("", newfilename);
-		}
-
-		if (newfilename)
-		{
-			g_free(newfilename);
-			newfilename = NULL;
-		}
-	}
-#endif
-}
 
 void remove_attr_str(struct item_bin *ib, int attr_type)
 {
@@ -7752,6 +9135,22 @@ void remove_attr_str(struct item_bin *ib, int attr_type)
 	if (attr_str)
 	{
 		item_bin_remove_attr(ib, attr_str);
+	}
+}
+
+int remove_useless_ways(FILE *in, FILE *out)
+{
+	struct item_bin *ib;
+	long long *wayid;
+	int *dup;
+
+	while ((ib = read_item(in, 0))) // loop thru all "ways" from file "in"
+	{
+		if (ib->type != type_street_unkn) // remove unknown streets here
+		{
+			// write way to outfile
+			item_bin_write(ib, out);
+		}
 	}
 }
 
@@ -7824,7 +9223,7 @@ void map_find_housenumbers_interpolation(FILE *in, FILE *out)
 		ways_count++;
 		if ((ways_count % 10000000) == 0)
 		{
-			fprintf(stderr, "ways: %lld\n", ways_count);
+			fprintf_(stderr, "ways: %lld\n", ways_count);
 		}
 
 		// we need at least 2 points in way
@@ -7873,7 +9272,12 @@ int map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph
 	osmid this_way_id_real;
 	int i_real = -1;
 
-	processed_nodes = processed_nodes_out = processed_ways = processed_relations = processed_tiles = 0;
+	processed_nodes = 0;
+	processed_nodes_out = 0;
+	processed_ways = 0;
+	processed_relations = 0;
+	processed_tiles = 0;
+
 
 	// ---------- reset the cached values ----------
 	seekpos_waynode[0] = -1;
@@ -7908,7 +9312,7 @@ int map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph
 		ways_count++;
 		if ((ways_count % 10000000) == 0)
 		{
-			fprintf(stderr, "ways: %lld\n", ways_count);
+			fprintf_(stderr, "ways: %lld\n", ways_count);
 		}
 
 		c = (struct coord *) (ib + 1);
@@ -7991,6 +9395,108 @@ int map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph
 	return 0;
 }
 
+int map_find_intersections__quick__for__debug(FILE *in, FILE *out, FILE *out_index, FILE *out_graph, FILE *out_coastline, int final)
+{
+	struct coord *c;
+	int i, ccount, last, remaining;
+	osmid ndref;
+	struct item_bin *ib;
+	struct node_item *ni;
+	long long last_id = 0;
+	long long ways_count = 0;
+	osmid *this_way_id;
+	osmid this_way_id_real;
+	int i_real = -1;
+
+	fprintf(stderr, "DEBUG:map_find_intersections__quick__for__debug\n");
+
+	processed_nodes = 0;
+	processed_nodes_out = 0;
+	processed_ways = 0;
+	processed_relations = 0;
+	processed_tiles = 0;
+
+
+	// ---------- reset the cached values ----------
+	seekpos_waynode[0] = -1;
+	last_seekpos_waynode[0] = -1;
+	last_seek_wayid[0] = -1;
+	fseeko(ways_ref_file_thread[0], (off_t)0, SEEK_SET);
+	// ---------- reset the cached values ----------
+
+
+	while ((ib = read_item(in, 0))) // loop thru all "ways" from file "in"
+	{
+
+		this_way_id = item_bin_get_attr(ib, attr_osm_wayid, NULL);
+		if (this_way_id)
+		{
+			this_way_id_real = *this_way_id;
+		//	fprintf(stderr,"wayid:%lld type:0x%x len:%d clen:%d\n", *this_way_id, ib->type, ib->len, (ib->clen / 2));
+		}
+
+		ccount = ib->clen / 2;
+
+		if (ccount <= 1)
+		{
+			continue;
+		}
+
+		//fprintf(stderr,"********DUMP ww1***********\n");
+		//dump_itembin(ib);
+		//fprintf(stderr,"********DUMP ww1***********\n");
+
+
+		ways_count++;
+		if ((ways_count % 10000000) == 0)
+		{
+			fprintf_(stderr, "ways: %lld\n", ways_count);
+		}
+
+		c = (struct coord *) (ib + 1);
+		last = 0;
+		i_real = -1;
+		for (i = 0; i < ccount; i++) // loop thru all the coordinates (nodes) of this way
+		{
+			//if (this_way_id_real != 0)
+			//{
+			//	fprintf(stderr, "this_way_id_real=%lld this_way_id=%lld i=%d ccount=%d\n", this_way_id_real, *this_way_id, i, ccount);
+			//}
+
+			if (IS_REF(c[i]))
+			{
+				//fprintf(stderr, "is ref\n");
+				if (this_way_id_real != 0)
+				{
+					i_real = c[i].y; // number of this node in the way (starting at zero)
+					ndref = get_waynode_num(this_way_id_real, i_real, 0);
+					//fprintf(stderr, "wayid:%lld wid(p)=%p i_real=%d i=%d ndref(1)=%lld\n", this_way_id_real, this_way_id, i_real, i, ndref);
+					ni = node_item_get_fast(ndref, 0);
+					//fprintf(stderr, "ni(1)=%p\n", ni);
+				}
+				else
+				{
+					ni = NULL;
+				}
+
+				//fprintf(stderr, "ndref(2)=%lld\n", ndref);
+
+				if (ni)
+				{
+					//fprintf(stderr, "ni TRUE\n");
+
+					c[i] = ni->c; // write "lat,long" from node into way !!
+				}
+			}
+		}
+		item_bin_write(ib, out);
+
+	}
+
+	return 0;
+}
+
+
 static void index_country_add(struct zip_info *info, int country_id, int zipnum)
 {
 	struct item_bin *item_bin = init_item(type_countryindex, 0);
@@ -8023,7 +9529,7 @@ void write_countrydir(struct zip_info *zip_info)
 				sprintf(filename, "country_%d.tmp", co->countryid);
 				if (debug_itembin(4))
 				{
-					fprintf(stderr, "write_countrydir: tilename=%s country_%d.tmp\n", tilename, co->countryid);
+					fprintf_(stderr, "write_countrydir: tilename=%s country_%d.tmp\n", tilename, co->countryid);
 				}
 				zipnum = add_aux_tile(zip_info, tilename, filename, co->size);
 			}
@@ -8046,7 +9552,7 @@ void load_countries(void)
 		sprintf(filename, "country_%d.tmp", co->countryid);
 		if (debug_itembin(4))
 		{
-			fprintf(stderr, "load_countries: country_%d.tmp\n", co->countryid);
+			fprintf_(stderr, "load_countries: country_%d.tmp\n", co->countryid);
 		}
 
 		f = fopen(filename, "rb");

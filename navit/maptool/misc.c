@@ -36,6 +36,8 @@
  * Boston, MA  02110-1301, USA.
  */
 
+#define NO_GTYPES_ 1
+
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
 #define _LARGEFILE64_SOURCE
@@ -233,7 +235,8 @@ static void phase34_process_file(struct tile_info *info, FILE *in, FILE *referen
 				case type_street_n_lanes:
 				case type_highway_city:
 				case type_highway_land:
-				case type_ramp:
+				//case type_ramp:
+				case type_ramp_highway_land:
 					max = 8;
 					break;
 				case type_town_label_5e4:
@@ -246,6 +249,7 @@ static void phase34_process_file(struct tile_info *info, FILE *in, FILE *referen
 					break;
 				case type_street_4_land:
 				case type_street_4_city:
+				case type_ramp_street_4_city:
 					max = 10;
 					break;
 				case type_town_label_5e3:
@@ -256,6 +260,7 @@ static void phase34_process_file(struct tile_info *info, FILE *in, FILE *referen
 				case type_district_label_1e3:
 				case type_street_3_city:
 				case type_street_3_land:
+				case type_ramp_street_3_city:
 					max = 12;
 					break;
 				default:
@@ -437,12 +442,12 @@ int phase5(FILE **in, FILE **references, int in_count, int with_range, char *suf
 	th = tile_head_root;
 	size = 0;
 	slices = 0;
-	fprintf(stderr, "Maximum slice size "LONGLONG_FMT"\n", slice_size);
+	fprintf_(stderr, "Maximum slice size "LONGLONG_FMT"\n", slice_size);
 	while (th)
 	{
 		if (size + th->total_size > slice_size)
 		{
-			fprintf(stderr,"Slice %d is of size "LONGLONG_FMT"\n", slices, size);
+			fprintf_(stderr,"Slice %d is of size "LONGLONG_FMT"\n", slices, size);
 			size = 0;
 			slices++;
 		}
@@ -452,7 +457,7 @@ int phase5(FILE **in, FILE **references, int in_count, int with_range, char *suf
 
 	if (size)
 	{
-		fprintf(stderr,"Slice %d is of size "LONGLONG_FMT"\n", slices, size);
+		fprintf_(stderr,"Slice %d is of size "LONGLONG_FMT"\n", slices, size);
 	}
 
 	int max_slices_ = slices;
@@ -464,7 +469,7 @@ int phase5(FILE **in, FILE **references, int in_count, int with_range, char *suf
 	{
 		time(&start_tt);
 
-		fprintf(stderr,"Slice #%d of %d\n", (slices + 1), (max_slices_ + 1));
+		fprintf_(stderr,"Slice #%d of %d\n", (slices + 1), (max_slices_ + 1));
 
 		th2 = tile_head_root;
 		while (th2)
@@ -490,13 +495,13 @@ int phase5(FILE **in, FILE **references, int in_count, int with_range, char *suf
 		diff_tt = difftime(end_tt,start_tt);
 		char outstring[200];
 		convert_to_human_time(diff_tt, outstring);
-		fprintf(stderr, "-RUNTIME-LOOP-PHASE5: %s this loop run\n", outstring);
+		fprintf_(stderr, "-RUNTIME-LOOP-PHASE5: %s this loop run\n", outstring);
 		diff2_tt = diff2_tt + diff_tt;
 		if ((slices + 1) > 0)
 		{
 			double eta_time = (diff2_tt / (slices + 1)) * (max_slices_ + 1 - (slices + 1));
 			convert_to_human_time(eta_time, outstring);
-			fprintf(stderr, "-RUNTIME-LOOP-PHASE5: %s left\n", outstring);
+			fprintf_(stderr, "-RUNTIME-LOOP-PHASE5: %s left\n", outstring);
 		}
 
 		slices++;

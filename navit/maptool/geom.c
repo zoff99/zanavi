@@ -212,34 +212,49 @@ geom_poly_closest_point(struct coord *pl, int count, struct coord *p, struct coo
 {
 	int i,vertex=0;
 	long long x, y, xi, xj, yi, yj, u, d, dmin=0;
-	if(count<2) {
+
+	if (count<2)
+	{
 		c->x=pl->x;
 		c->y=pl->y;
 		return 0;
 	}
-	for(i=0;i<count-1;i++) {
+
+	for (i=0;i<count-1;i++)
+	{
 		xi=pl[i].x;
 		yi=pl[i].y;
 		xj=pl[i+1].x;
 		yj=pl[i+1].y;
 		u=(xj-xi)*(xj-xi)+(yj-yi)*(yj-yi);
-		if(u!=0) {
+
+		if(u!=0)
+		{
 			u=((p->x-xi)*(xj-xi)+(p->y-yi)*(yj-yi))*1000/u;
 		}
-		if(u<0) 
+
+		if(u<0)
+		{
 			u=0;
-		else if (u>1000) 
+		}
+		else if (u>1000)
+		{
 			u=1000;
+		}
+
 		x=xi+u*(xj-xi)/1000;
 		y=yi+u*(yj-yi)/1000;
 		d=(p->x-x)*(p->x-x)+(p->y-y)*(p->y-y);
-		if(i==0 || d<dmin) {
+
+		if (i==0 || d<dmin)
+		{
 			dmin=d;
 			c->x=x;
 			c->y=y;
 			vertex=i;
 		}
 	}
+
 	return vertex;
 }
 
@@ -283,12 +298,15 @@ geom_poly_segments_insert(GList *list, struct geom_poly_segment *first, struct g
 
 	if (!second)
 		return NULL; ret=g_new(struct geom_poly_segment, 1);
+
 	ret->type = second->type;
 	count = (second->last - second->first) + 1;
 	if (first)
 		count += (first->last - first->first);
+
 	if (third)
 		count += (third->last - third->first);
+
 #if 0
 	fprintf(stderr,"count=%d first=%p second=%p third=%p\n",count,first,second,third);
 	if (first)
@@ -300,15 +318,18 @@ geom_poly_segments_insert(GList *list, struct geom_poly_segment *first, struct g
 #endif
 	ret->first=g_new(struct coord, count);
 	pos = ret->first;
+
 	if (first)
 	{
 		count = (first->last - first->first) + 1;
 		geom_coord_copy(first->first, pos, count, coord_is_equal(*first->first, *second->first));
 		pos += count - 1;
 	}
+
 	count = (second->last - second->first) + 1;
 	geom_coord_copy(second->first, pos, count, 0);
 	pos += count;
+
 	if (third)
 	{
 		pos--;
@@ -316,6 +337,7 @@ geom_poly_segments_insert(GList *list, struct geom_poly_segment *first, struct g
 		geom_coord_copy(third->first, pos, count, coord_is_equal(*third->last, *second->last));
 		pos += count;
 	}
+
 	ret->last = pos - 1;
 #if 0
 	fprintf(stderr,"result:0x%x,0x%x-0x%x,0x%x (%d)\n",ret->first->x,ret->first->y,ret->last->x,ret->last->y, ret->last-ret->first+1);
@@ -324,6 +346,7 @@ geom_poly_segments_insert(GList *list, struct geom_poly_segment *first, struct g
 #if 0
 	fprintf(stderr,"List=%p\n",list);
 #endif
+
 	return list;
 }
 
@@ -349,6 +372,7 @@ int geom_poly_segment_compatible(struct geom_poly_segment *s1, struct geom_poly_
 	int same = 0, opposite = 0;
 	if (s1->type == geom_poly_segment_type_none || s2->type == geom_poly_segment_type_none)
 		return 0;
+
 	if (s1->type == s2->type)
 	{
 		same = 1;
@@ -357,25 +381,32 @@ int geom_poly_segment_compatible(struct geom_poly_segment *s1, struct geom_poly_
 			opposite = 1;
 		}
 	}
+
 	if (s1->type == geom_poly_segment_type_way_left_side && s2->type == geom_poly_segment_type_way_right_side)
 		opposite = 1;
+
 	if (s1->type == geom_poly_segment_type_way_right_side && s2->type == geom_poly_segment_type_way_left_side)
 		opposite = 1;
+
 	if (s1->type == geom_poly_segment_type_way_unknown || s2->type == geom_poly_segment_type_way_unknown)
 	{
 		same = 1;
 		opposite = 1;
 	}
+
 	if (dir < 0)
 	{
 		if ((opposite && coord_is_equal(*s1->first, *s2->first)) || (same && coord_is_equal(*s1->first, *s2->last)))
 			return 1;
+
 	}
 	else
 	{
 		if ((opposite && coord_is_equal(*s1->last, *s2->last)) || (same && coord_is_equal(*s1->last, *s2->first)))
 			return 1;
+
 	}
+
 	return 0;
 }
 
@@ -388,15 +419,20 @@ geom_poly_segments_sort(GList *in, enum geom_poly_segment_type type)
 		struct geom_poly_segment *seg = in->data;
 		GList *tmp = ret;
 		struct geom_poly_segment *merge_first = NULL, *merge_last = NULL;
+
 		while (tmp)
 		{
 			struct geom_poly_segment *cseg = tmp->data;
+
 			if (geom_poly_segment_compatible(seg, cseg, -1))
 				merge_first = cseg;
+
 			if (geom_poly_segment_compatible(seg, cseg, 1))
 				merge_last = cseg;
+
 			tmp = g_list_next(tmp);
 		}
+
 		if (merge_first == merge_last)
 		{
 			merge_last = NULL;
@@ -471,6 +507,7 @@ int geom_poly_segments_point_inside(GList *in, struct coord *c)
 		else
 			return 0;
 	}
+
 	if (open_matches)
 	{
 		if (open_matches & 1)
@@ -488,7 +525,8 @@ item_bin_is_closed_poly(struct item_bin *ib)
 
 	int i;
 	int count = ib->clen / 2;
-        if (count <= 1)
+
+	if (count <= 1)
 	{
 		return 0;
 	}
@@ -545,6 +583,7 @@ item_bin_to_poly_segment(struct item_bin *ib, int type)
 static int clipcode(struct coord *p, struct rect *r)
 {
 	int code = 0;
+
 	if (p->x < r->l.x)
 		code = 1;
 	if (p->x > r->h.x)
@@ -553,6 +592,7 @@ static int clipcode(struct coord *p, struct rect *r)
 		code |= 4;
 	if (p->y > r->h.y)
 		code |= 8;
+
 	return code;
 }
 
@@ -561,17 +601,23 @@ static int clip_line_code(struct coord *p1, struct coord *p2, struct rect *r)
 	int code1, code2, ret = 1;
 	long long dx, dy;
 	code1 = clipcode(p1, r);
+
 	if (code1)
 		ret |= 2;
+
 	code2 = clipcode(p2, r);
+
 	if (code2)
 		ret |= 4;
+
 	dx = p2->x - p1->x;
 	dy = p2->y - p1->y;
+
 	while (code1 || code2)
 	{
 		if (code1 & code2)
 			return 0;
+
 		if (code1 & 1)
 		{
 			p1->y += (r->l.x - p1->x) * dy / dx;
@@ -592,9 +638,12 @@ static int clip_line_code(struct coord *p1, struct coord *p2, struct rect *r)
 			p1->x += (r->h.y - p1->y) * dx / dy;
 			p1->y = r->h.y;
 		}
+
 		code1 = clipcode(p1, r);
+
 		if (code1 & code2)
 			return 0;
+
 		if (code2 & 1)
 		{
 			p2->y += (r->l.x - p2->x) * dy / dx;
@@ -615,10 +664,14 @@ static int clip_line_code(struct coord *p1, struct coord *p2, struct rect *r)
 			p2->x += (r->h.y - p2->y) * dx / dy;
 			p2->y = r->h.y;
 		}
+
 		code2 = clipcode(p2, r);
+
 	}
+
 	if (p1->x == p2->x && p1->y == p2->y)
 		ret = 0;
+
 	return ret;
 }
 
@@ -631,6 +684,7 @@ void clip_line(struct item_bin *ib, struct rect *r, struct tile_parameter *param
 	struct coord p1, p2;
 	int i, code;
 	item_bin_init(ib_new, ib->type);
+
 	for (i = 0; i < count; i++)
 	{
 		if (i)
@@ -646,14 +700,17 @@ void clip_line(struct item_bin *ib, struct rect *r, struct tile_parameter *param
 			{
 				item_bin_add_coord(ib_new, &p1, 1);
 			}
+
 			if (code)
 			{
 				item_bin_add_coord(ib_new, &p2, 1);
 			}
+
 			if (i == count - 1 || (code & 4))
 			{
 				if (ib_new->clen)
 					item_bin_write_clipped(ib_new, param, out);
+
 				item_bin_init(ib_new, ib->type);
 			}
 #else
@@ -766,4 +823,5 @@ void clip_polygon(struct item_bin *ib, struct rect *r, struct tile_parameter *pa
 	if (ib_in->clen)
 		item_bin_write_clipped(ib_in, param, out);
 }
+
 

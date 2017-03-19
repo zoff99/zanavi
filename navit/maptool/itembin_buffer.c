@@ -63,7 +63,7 @@ read_item(FILE *in, int local_thread_num)
 			case 0:
 				return NULL;
 			case 2:
-				dbg_assert((ib->len + 1) * 4 < sizeof(ib_buffer_array[local_thread_num]));
+				// dbg_assert((ib->len + 1) * 4 < sizeof(ib_buffer_array[local_thread_num]));
 				bytes_read += (ib->len + 1) * sizeof(int);
 				return ib;
 			default:
@@ -92,3 +92,5 @@ init_item(enum item_type type, int local_thread_num)
 	item_bin_init(ib, type);
 	return ib;
 }
+
+

@@ -947,7 +947,7 @@ p2t_sweep_flip_edge_event (P2tSweep *THIS, P2tSweepContext *tcx, P2tPoint* ep, P
        * With current implementation we should never get here
        *throw new RuntimeException( "[BUG:FIXME] FLIP failed due to missing triangle");
        */
-		fprintf(stderr, "EE002\n");
+		fprintf_(stderr, "EE002\n");
 		THROW( MAPTOOL_00001_EXCEPTION );
 
 		assert (0);

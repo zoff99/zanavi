@@ -40,12 +40,37 @@
 #include "coord.h"
 #include "item.h"
 #include "attr.h"
+#include "trans_lat_lon_geo.h"
 #include <setjmp.h>
 #ifdef HAVE_LIBCRYPTO
 #include <openssl/md5.h>
 #endif
 
 #define MAX_THREADS 8
+
+#define MIN_SLICE_SIZE_BYTES 32768
+
+#define NO_GTYPES_ 1
+
+#define NAVIT_TRANS_LAT_LON_GEO_NOFUNCS 1
+
+// --------------------------------------------
+// --
+// which binfilemap version this maptool will generate
+#define GENERATE_BINFILE_MAPVERSION 4
+// --
+// --------------------------------------------
+
+
+// --------------------------------------------
+// --
+// if the turn angle is greater than this (in degrees) in bicycle mode, then speak a turn command
+#define ROAD_ANGLE_MIN_FOR_TURN_BICYCLEMODE 30
+// --
+// --------------------------------------------
+
+
+extern int MAPTOOL_QUICK_RUN; // only set this to 1 for testing !!!!!!
 
 
 #define MAPTOOL_SQL_INPUT_TOO_SMALL 0 // only set this to 1 for testing very small input files!!!!!!
@@ -65,19 +90,27 @@
 // cfu hash
 #include "cfuhash.h"
 
-#define CFUHASH_BUCKETS_NODES 16777216 
-#define CFUHASH_BUCKETS_WAYS 16777216
-#define CFUHASH_BUCKETS_OTHER 16777216 // also nodes!?
+#define CFUHASH_BUCKETS_NODES 8388608 // 2100000 // 4194304 // 8388608 // for planet and 2GB ram, we get about 80million nodes to cache 
+#define CFUHASH_BUCKETS_WAYS 65536 // normally unused now
+#define CFUHASH_BUCKETS_OTHER 65536 // also nodes!? ---> unused now
 
 // sqlite 3
 #ifdef MAPTOOL_USE_SQL
 
 #define SQLITE_ENABLE_STAT3
+#define SQLITE_ENABLE_STAT4
 #define SQLITE_OMIT_AUTOVACUUM
 #define SQLITE_OMIT_AUTOMATIC_INDEX
+#define SQLITE_ENABLE_API_ARMOR
+#define SQLITE_DEFAULT_TEMP_CACHE_SIZE 1000
+#define SQLITE_DEFAULT_WORKER_THREADS 2
+#define SQLITE_MAX_WORKER_THREADS 2
+//#define SQLITE_DEFAULT_WORKER_THREADS 0
+//#define SQLITE_MAX_WORKER_THREADS 0
+
 
 #include "sqlite3.h"
-#include "sqlite3async.h"
+/* #include "sqlite3async.h" */
 
 extern sqlite3 *sql_handle;
 extern sqlite3 *sql_handle002a;
@@ -265,6 +298,96 @@ int sqlite3_bind_text(void*, int, char*, int, int);
 #define TOWN_ADMIN_LEVEL_START 8
 
 long long ways_processed_count;
+extern int global_keep_tmpfiles;
+extern int global_use_runtime_db;
+extern char *runtime_db_filename_with_path;
+
+
+void fprintf_(FILE *f, const char *fmt, ...);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// quick_hash.c -------------------
+
+
+
+
+//-----------------------------------------------------------------------------
+// MurmurHash2 was written by Austin Appleby, and is placed in the public
+// domain. The author hereby disclaims copyright to this source code.
+
+#ifndef _MURMURHASH2_H_
+#define _MURMURHASH2_H_
+
+//-----------------------------------------------------------------------------
+// Platform-specific functions and macros
+
+// typedef unsigned char uint8_t;
+// typedef unsigned long uint32_t;
+// typedef unsigned __int64 uint64_t;
+
+#include <stdint.h>
+
+//-----------------------------------------------------------------------------
+
+//uint32_t MurmurHash2        ( const void * key, int len, uint32_t seed );
+//uint64_t MurmurHash64A      ( const void * key, int len, uint64_t seed );
+uint64_t MurmurHash64B      ( const void * key, int len, uint64_t seed );
+//uint32_t MurmurHash2A       ( const void * key, int len, uint32_t seed );
+//uint32_t MurmurHashNeutral2 ( const void * key, int len, uint32_t seed );
+//uint32_t MurmurHashAligned2 ( const void * key, int len, uint32_t seed );
+
+unsigned int MurmurHash1Aligned ( const void * key, int len, unsigned int seed );
+
+//-----------------------------------------------------------------------------
+
+
+struct quickhash_table* quick_hash_init(int num_buckets);
+void quick_hash_destroy(struct quickhash_table* table);
+int quick_hash_lookup(struct quickhash_table* table, long long key);
+void quick_hash_add_entry(struct quickhash_table* table, long long key, int value_ptr);
+void* quick_hash_print_stats(struct quickhash_table* table);
+
+#define HASH_SIMPLE 1 // for simple hash algo
+
+#endif // _MURMURHASH2_H_
+
+
+// quick_hash.c -------------------
+
+
+
+
+
+
+
+
+// 24 MBytes for item buffer
+#define MAX_ITEMBIN_BYTES_ 24000000
+
+
+
+
+
+
+
+
+
 
 struct rect
 {
@@ -374,7 +497,9 @@ struct relation_member
 };
 
 struct zip_info;
+
 struct country_table;
+
 
 /* boundaries.c */
 struct boundary
@@ -384,17 +509,34 @@ struct boundary
 	char *iso2;
 	GList *segments, *sorted_segments;
 	GList *children;
-	struct rect r;
+	struct rect r; // bbox
 };
+
+struct boundary_manual
+{
+//	struct item_bin *ib;
+	struct coord *c;
+	int coord_count;
+	int countryid;
+	struct country_table *country;
+	struct rect r; // bbox
+	long long town_id;
+};
+
+GList *boundary_list_inner_manual;
+
 
 char *osm_tag_value(struct item_bin *ib, char *key);
 long long *boundary_relid(struct boundary *b);
 GList *process_boundaries(FILE *boundaries, FILE *coords, FILE *ways);
-void build_boundary_tree(GList *bl);
+void build_boundary_tree(GList *bl, GList *man_bl);
 GList *boundary_find_matches(GList *bl, struct coord *c);
 GList *boundary_find_matches_level(GList *l, struct coord *c, int min_admin_level, int max_admin_level);
 GList *boundary_find_matches_single(GList *bl, struct coord *c);
 void correct_boundary_ref_point(GList *bl);
+void free_boundaries(GList *l);
+GList *load_manual_country_borders();
+void save_manual_country_borders(GList *borders);
 
 /* buffer.c */
 struct buffer
@@ -501,12 +643,23 @@ extern FILE *ways_ref_file_thread[MAX_THREADS];
 extern struct buffer node_buffer[MAX_THREADS];
 extern struct buffer waytag_buffer;
 extern GHashTable *node_hash[MAX_THREADS];
-extern 
-cfuhash_table_t *node_hash_cfu[MAX_THREADS];
 
-extern char ib_buffer_array[MAX_THREADS][2400000]; // 2.4 MB max size for 1 item
+#if 0
+extern cfuhash_table_t *node_hash_cfu[MAX_THREADS];
+#endif
+extern struct quickhash_table *node_hash_cfu[MAX_THREADS];
 
-extern int processed_nodes, processed_nodes_out, processed_ways, processed_relations, processed_tiles;
+extern char *ib_buffer_array[MAX_THREADS]; // [2400000]; // 24 MB max size for 1 item
+
+extern int processed_nodes_out, processed_tiles;
+extern long long processed_nodes;
+extern long long processed_ways;
+extern long long processed_relations;
+
+extern long long processed_nodes_sum;
+extern long long processed_ways_sum;
+extern long long processed_relations_sum;
+
 extern struct item_bin *item_bin;
 extern int bytes_read;
 extern int overlap;
@@ -521,6 +674,10 @@ extern int coastline_only_map;
 extern int border_only_map_as_xml;
 extern int verbose_mode;
 extern long long dummy_town_id;
+extern char* manual_country_border_dir;
+
+extern int global_less_verbose;
+
 
 void convert_to_human_time(long long seconds, char *outstring);
 void convert_to_human_bytes(long long bytes, char *outstring);
@@ -554,11 +711,10 @@ struct streets_index_index_block
 struct streets_index_data_block
 {
 	long long town_id;
-	int lat;	// if (lat equals REF_X) --> then lon is a flag field:
-				// 				lon -> 1 --> item is TOWN
-				//				lon -> ... for future use
+	int lat;
 	int lon;
-	char street_name[STREET_INDEX_STREET_NAME_SIZE];
+	char street_type;
+	char street_name[STREET_INDEX_STREET_NAME_SIZE - 1];
 }__attribute__ ((packed));
 // ------ STREET INDEX FILE ------
 
@@ -623,6 +779,7 @@ struct maptool_osm
 	FILE *ways_with_coords;
 };
 
+struct country_table *country_from_countryid(int id);
 void append_pre_resolved_ways(FILE *out, struct maptool_osm *osm2);
 void osm_warning(char *type, long long id, int cont, char *fmt, ...);
 void osm_add_tag(char *k, char *v);
@@ -647,15 +804,25 @@ long long item_bin_get_relationid(struct item_bin *ib);
 FILE *resolve_ways_file(FILE *in, char *suffix, char *filename);
 void process_way2poi(FILE *in, FILE *out, int type);
 int map_find_intersections(FILE *in, FILE *out, FILE *out_index, FILE *out_graph, FILE *out_coastline, int final);
+int map_find_intersections__quick__for__debug(FILE *in, FILE *out, FILE *out_index, FILE *out_graph, FILE *out_coastline, int final);
 int copy_tags_to_ways(FILE *in, FILE *out, FILE *tags_in);
 void write_countrydir(struct zip_info *zip_info);
-GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways);
+GList* osm_process_towns(FILE *in, FILE *coords, FILE *boundaries, FILE *ways, GList *bl_manual);
 void load_countries(void);
 void remove_countryfiles(void);
 struct country_table * country_from_iso2(char *iso);
 void osm_init(FILE*);
 osmid get_waynode_num(osmid way_id, int coord_num, int local_thread_num);
 void map_find_housenumbers_interpolation(FILE *in, FILE *out);
+void add_point_as_way_to_db(char *label, osmid id, int waytype, double lat, double lon);
+int transform_from_geo_lat(double lat);
+int transform_from_geo_lon(double lon);
+double transform_to_geo_lat(int y);
+double transform_to_geo_lon(int x);
+void save_manual_country_borders_to_db(GList *man_borders);
+int string_endswith2(const char* ending, const char* instring);
+struct node_lat_lon* get_first_coord_of_boundary(struct item_bin *item_bin_3, struct relation_member *memb);
+void purge_unused_towns();
 
 extern struct item_bin *item_bin_2;
 
@@ -671,6 +838,7 @@ struct relations * relations_new(void);
 struct relations_func *relations_func_new(void(*func)(void *func_priv, void *relation_priv, struct item_bin *member, void *member_priv), void *func_priv);
 void relations_add_func(struct relations *rel, struct relations_func *func, void *relation_priv, void *member_priv, int type, osmid id);
 void relations_process(struct relations *rel, FILE *nodes, FILE *ways, FILE *relations);
+void relations_destroy(struct relations *rel);
 
 /* osm_xml.c */
 int osm_xml_get_attribute(char *xml, char *attribute, char *buffer, int buffer_size);
@@ -699,6 +867,7 @@ char *tempfile_name(char *suffix, char *name);
 FILE *tempfile(char *suffix, char *name, int mode);
 void tempfile_unlink(char *suffix, char *name);
 void tempfile_rename(char *suffix, char *from, char *to);
+void tempfile_copyrename(char *suffix, char *from, char *to);
 
 /* tile.c */
 extern GHashTable *tile_hash, *tile_hash2;
@@ -911,5 +1080,10 @@ r=r << 8;
 #define _css_whitesmoke 0xf5f5f5
 #define _css_yellow 0xffff00
 #define _css_yellowgreen 0x9acd32
+
+
+
+// #define dbg(level,...) { fprintf(stderr , __VA_ARGS__); }
+
 
 

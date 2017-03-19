@@ -116,8 +116,10 @@ static int road_speed(enum item_type type)
 			return 120;
 		case type_highway_land:
 			return 120;
+#if 0
 		case type_ramp:
 			return 40;
+#endif
 		case type_roundabout:
 			return 10;
 		case type_ferry:
@@ -177,6 +179,10 @@ static gboolean edge_hash_equal(gconstpointer a, gconstpointer b)
 }
 
 static void ch_generate_ddsg(FILE *in, FILE *ref, FILE *idx, FILE *ddsg)
+{
+}
+
+static void ch_generate_ddsg_XX(FILE *in, FILE *ref, FILE *idx, FILE *ddsg)
 {
 	GHashTable *hash = coord_hash_new();
 	struct item_bin *ib;
@@ -494,6 +500,8 @@ void ch_assemble_map(char *map_suffix, char *suffix, struct zip_info *zip_info)
 	FILE *ref;
 	struct item_id id;
 	int nodeid = 0;
+
+	fprintf(stderr, "-----:ch_assemble_map:-----\n");
 
 	info.write = 1;
 	info.maxlen = zip_get_maxnamelen(zip_info);

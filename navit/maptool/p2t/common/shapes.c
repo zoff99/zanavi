@@ -110,13 +110,13 @@ p2t_edge_init (P2tEdge* THIS, P2tPoint* p1, P2tPoint* p2)
         {
           /* Repeat points */
 
-			fprintf(stderr, "Repeat points:shapes.c: p1->x %f p1->y %f p2->x %f p2->y %f", p1->x, p1->y, p2->x, p2->y);
+			fprintf_(stderr, "Repeat points:shapes.c: p1->x %f p1->y %f p2->x %f p2->y %f\n", p1->x, p1->y, p2->x, p2->y);
 
 		  // try to recover !!!!!
           THROW( MAPTOOL_00001_EXCEPTION );
 
           // assert is not called!!
-          assert (FALSE);
+          // assert (FALSE);
         }
     }
 
@@ -177,7 +177,7 @@ p2t_triangle_mark_neighbor_pt_pt_tr (P2tTriangle* THIS, P2tPoint* p1, P2tPoint* 
   else
 	{
 THROW( MAPTOOL_00001_EXCEPTION );
-    assert (0);
+    // assert (0);
 	}
 }
 
@@ -260,7 +260,7 @@ p2t_triangle_opposite_point (P2tTriangle* THIS, P2tTriangle* t, P2tPoint* p)
 
 	if (THIS == NULL)
 	{
-		fprintf(stderr, "P2tTriangle* THIS is NULL!\n");
+		fprintf_(stderr, "P2tTriangle* THIS is NULL!\n");
 		THROW( MAPTOOL_00001_EXCEPTION );
 	}
 
@@ -309,7 +309,7 @@ p2t_triangle_legalize_pt_pt (P2tTriangle* THIS, P2tPoint *opoint, P2tPoint *npoi
   else
     {
 THROW( MAPTOOL_00001_EXCEPTION );
-      assert (0);
+      // assert (0);
     }
 }
 
@@ -329,7 +329,7 @@ p2t_triangle_index (P2tTriangle* THIS, const P2tPoint* p)
       return 2;
     }
 THROW( MAPTOOL_00001_EXCEPTION );
-  assert (0);
+  // assert (0);
 }
 
 int
@@ -410,7 +410,7 @@ p2t_triangle_point_cw (P2tTriangle* THIS, P2tPoint* point)
 
 	if (point == NULL)
 	{
-		fprintf(stderr, "P2tPoint* point is NULL!\n");
+		fprintf_(stderr, "P2tPoint* point is NULL!\n");
 		THROW( MAPTOOL_00001_EXCEPTION );
 	}
 
@@ -430,16 +430,16 @@ p2t_triangle_point_cw (P2tTriangle* THIS, P2tPoint* point)
 
 	double x = point->x;
 	double y = point->y;
-	fprintf(stderr, "x=%f, y=%f\n", x, y);
+	fprintf_(stderr, "x=%f, y=%f\n", x, y);
 	x = THIS->points_[0]->x;
 	y = THIS->points_[0]->y;
-	fprintf(stderr, "tp[0] x=%f, y=%f\n", x, y);
+	fprintf_(stderr, "tp[0] x=%f, y=%f\n", x, y);
 	x = THIS->points_[1]->x;
 	y = THIS->points_[1]->y;
-	fprintf(stderr, "tp[1] x=%f, y=%f\n", x, y);
+	fprintf_(stderr, "tp[1] x=%f, y=%f\n", x, y);
 	x = THIS->points_[2]->x;
 	y = THIS->points_[2]->y;
-	fprintf(stderr, "tp[2] x=%f, y=%f\n", x, y);
+	fprintf_(stderr, "tp[2] x=%f, y=%f\n", x, y);
 
 
 	THROW( MAPTOOL_00001_EXCEPTION );
@@ -469,7 +469,7 @@ p2t_triangle_point_ccw (P2tTriangle* THIS, P2tPoint* point)
 
 
 THROW( MAPTOOL_00001_EXCEPTION );
-  assert (0);
+  // assert (0);
 }
 
 /* The neighbor clockwise to given point */
@@ -507,6 +507,13 @@ p2t_triangle_neighbor_ccw (P2tTriangle* THIS, P2tPoint* point)
 gboolean
 p2t_triangle_get_constrained_edge_ccw (P2tTriangle* THIS, P2tPoint* p)
 {
+
+	if (THIS == NULL)
+	{
+		fprintf_(stderr, "P2tTriangle* 11 THIS is NULL!\n");
+		THROW( MAPTOOL_00001_EXCEPTION );
+	}
+
   if (p == THIS->points_[0])
     {
       return THIS->constrained_edge[2];
@@ -521,6 +528,15 @@ p2t_triangle_get_constrained_edge_ccw (P2tTriangle* THIS, P2tPoint* p)
 gboolean
 p2t_triangle_get_constrained_edge_cw (P2tTriangle* THIS, P2tPoint* p)
 {
+
+        if (THIS == NULL)
+        {
+                fprintf_(stderr, "P2tTriangle* 22 THIS is NULL!\n");
+                THROW( MAPTOOL_00001_EXCEPTION );
+        }
+
+
+
   if (p == THIS->points_[0])
     {
       return THIS->constrained_edge[1];

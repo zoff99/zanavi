@@ -740,37 +740,47 @@ int item_bin_sort_file(char *in_file, char *out_file, struct rect *r, int *size)
 	struct item_bin *ib;
 	FILE *f;
 	unsigned char *p, **idx, *buffer;
+
 	if (file_get_contents(in_file, &buffer, size))
 	{
 		ib = (struct item_bin *) buffer;
 		p = buffer;
 		count = 0;
+
 		while (p < buffer + *size)
 		{
 			count++;
 			p += (*((int *) p) + 1) * 4;
 		}
-		idx = malloc(count * sizeof(void *));
+
+		// idx = malloc(count * sizeof(void *));
+		idx = g_malloc(count * sizeof(void *));
 		dbg_assert(idx != NULL);
+
 		p = buffer;
 		for (j = 0; j < count; j++)
 		{
 			idx[j] = p;
 			p += (*((int *) p) + 1) * 4;
 		}
+
 		qsort(idx, count, sizeof(void *), item_bin_sort_compare);
 		f = fopen(out_file, "wb");
+
 		for (j = 0; j < count; j++)
 		{
 			ib = (struct item_bin *) (idx[j]);
 			c = (struct coord *) (ib + 1);
 			fwrite(ib, (ib->len + 1) * 4, 1, f);
+
 			if (r)
 			{
 				for (k = 0; k < ib->clen / 2; k++)
 				{
 					if (rc)
+					{
 						bbox_extend(&c[k], r);
+					}
 					else
 					{
 						r->l = c[k];
@@ -781,6 +791,14 @@ int item_bin_sort_file(char *in_file, char *out_file, struct rect *r, int *size)
 			}
 		}
 		fclose(f);
+		g_free(idx);
+
+
+		// not sure about this one ???????????? --------------
+		g_free(buffer);
+		// not sure about this one ???????????? --------------
+
+
 		return 1;
 	}
 	return 0;

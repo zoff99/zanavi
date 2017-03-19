@@ -53,6 +53,7 @@
 extern jmp_buf ex_buf__;
 extern void (*func_global)(int);
 long long stack_pt;
+void fprintf_(FILE *f, const char *fmt, ...);
 
 #define STACKPTMAX 12000
 

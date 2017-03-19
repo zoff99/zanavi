@@ -132,8 +132,12 @@ static int parse_node(char *p)
 static int parse_way(char *p)
 {
 	char id_buffer[BUFFER_SIZE];
+
 	if (!osm_xml_get_attribute(p, "id", id_buffer, BUFFER_SIZE))
+	{
 		return 0;
+	}
+
 	osm_add_way(atoll(id_buffer));
 	return 1;
 }
@@ -205,6 +209,11 @@ int map_collect_data_osm(FILE *in, struct maptool_osm *osm)
 	int first_way = 1;
 	int line_length = 0;
 
+	int percent_int_1 = 0;
+	int percent_int_2 = 0;
+	int percent_int_3 = 0;
+	int phase = 0; // 0:nodes 1:ways 2:relations
+
 	buffer_ptr = malloc(size);
 
 	//sig_alrm(0);
@@ -266,6 +275,8 @@ int map_collect_data_osm(FILE *in, struct maptool_osm *osm)
 			{
 				first_way = 0;
 
+				phase = 1;
+
 				flush_nodes(1, 0); // flush remaining nodes to "coords.tmp" from "osm_end_node"
 				free_buffer("dummy", &node_buffer[0]); // and free the memory
 
@@ -326,6 +337,8 @@ int map_collect_data_osm(FILE *in, struct maptool_osm *osm)
 			if (first_rel == 1)
 			{
 				first_rel = 0;
+
+				phase = 2;
 
 				sql_counter = 0;
 				sql_counter2 = 0;
@@ -413,12 +426,40 @@ int map_collect_data_osm(FILE *in, struct maptool_osm *osm)
 			char outstring2[200];
 			convert_to_human_time(diff2_tt, outstring);
 			convert_to_human_bytes(pos_in, outstring2);
-			fprintf(stderr, "-RUNTIME-LOOP-COLLECT-DATA: %s elapsed (%s read)\n", outstring, outstring2);
+			fprintf_(stderr, "-RUNTIME-LOOP-COLLECT-DATA: %s elapsed (%s read)\n", outstring, outstring2);
 			convert_to_human_bytes((pos_in / diff2_tt), outstring2);
-			fprintf(stderr, "-RUNTIME-LOOP-COLLECT-DATA: %s/s read\n", outstring2);
+			// fprintf_(stderr, "-RUNTIME-LOOP-COLLECT-DATA: %s/s read\n", outstring2);
 
 			convert_to_human_bytes((pos_in_local / diff_tt), outstring2);
-			fprintf(stderr, "-RUNTIME-LOOP-COLLECT-DATA (local loop): %s/s read\n", outstring2);
+			fprintf_(stderr, "-RUNTIME-LOOP-COLLECT-DATA (local loop): %s/s read\n", outstring2);
+
+			if (phase == 0)
+			{
+				if (processed_nodes_sum > 0)
+				{
+					percent_int_1 = (int)((processed_nodes * 100) / processed_nodes_sum);
+				}
+
+				// fprintf_(stderr, "sum=%d nodes=%d\n", (int)processed_nodes_sum, (int)processed_nodes);
+			}
+			else if (phase == 1)
+			{
+				percent_int_1 = 100;
+				if (processed_ways_sum > 0)
+				{
+					percent_int_2 = (int)((processed_ways * 100) / processed_ways_sum);
+				}
+			}
+			else if (phase == 2)
+			{
+				percent_int_2 = 100;
+				if (processed_relations_sum > 0)
+				{
+					percent_int_3 = (int)((processed_relations * 100) / processed_relations_sum);
+				}
+			}
+
+			fprintf_(stderr, "-RUNTIME-LOOP-COLLECT-DATA: [%d% | %d% | %d%] read\n", percent_int_1, percent_int_2, percent_int_3);
 		}
 	}
 
@@ -445,6 +486,11 @@ int map_collect_data_osm(FILE *in, struct maptool_osm *osm)
 
 	//sig_alrm(0);
 	//sig_alrm_end();
+
+	processed_relations_sum = processed_relations;
+	processed_ways_sum = processed_ways;
+	processed_nodes_sum = processed_nodes;
+	
 
 	free(buffer_ptr);
 

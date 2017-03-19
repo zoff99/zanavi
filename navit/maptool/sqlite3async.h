@@ -221,4 +221,3 @@ int sqlite3async_control(int op, ...);
 #endif
 #endif        /* ifndef __SQLITEASYNC_H_ */
 
-
