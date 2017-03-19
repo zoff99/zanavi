@@ -1,0 +1,148 @@
+/**
+ * ZANavi, Zoff Android Navigation system.
+ * Copyright (C) 2015 Zoff <zoff@zoff.cc>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
+ */
+
+
+#define MAX_INDEXSEARCH_TOWNNAME 1
+
+int IN_BUF_SIZE2 = sizeof(struct streets_index_data_block) * 2;
+int t_IN_BUF_SIZE2 = sizeof(struct town_index_data_block) * 2;
+uint8 *s_inbuf;
+uint8 *t_s_inbuf;
+
+
+int OUT_BUF_SIZE2 =   (sizeof(struct streets_index_data_block) * 1);
+int t_OUT_BUF_SIZE2 = (sizeof(struct town_index_data_block) * 1);
+uint8 *s_outbuf;
+uint8 *t_s_outbuf;
+
+static long long street_index_size = 0;
+
+#define my_min(a,b) (((a) < (b)) ? (a) : (b))
+#define NUMBER_OF_TOWNS_TO_CACHE 1
+
+static struct town_index_data_block_c *town_lookup_cache = NULL;
+static struct town_index_data_block_c *town_lookup_cache_cur = NULL;
+static struct town_index_data_block_c *town_lookup_cache_found = NULL;
+static int town_lookup_cache_items = 0;
+static int town_lookup_cache_cur_item = 0;
+
+
+static int ascii_cmp_local_faster(char *name, char *match, int partial);
+static int ascii_cmp_local_faster_DEBUG(char *name, char *match, int partial);
+
+
+static int search_address_housenumber_for_street(char *hn_name_match, char *street_name_match, char *town_string, struct coord *c, int partial, struct jni_object *jni);
+
+
+
+void town_index_init_cache()
+{
+}
+
+void town_index_insert_cache(struct town_index_data_block* t, char* townname_long)
+{
+}
+
+int town_index_lookup_cache(long long townid)
+{
+	return 0;
+}
+
+char* town_index_lookup(struct street_index_head *sih, long long townid)
+{
+	char *townname = NULL;
+	return townname;
+}
+
+
+
+struct street_index_head* street_index_init(const char* idxfile_name)
+{
+	struct street_index_head *ret=g_new0(struct street_index_head, 1);
+	return ret;
+}
+
+void town_index_setpos(struct street_index_head *sih, int town_data_block_num)
+{
+}
+
+void street_index_setpos(struct street_index_head *sih, int data_block_num)
+{
+}
+
+int street_index_read_data(struct street_index_head *sih)
+{
+	return 1;
+}
+
+int town_index_read_data(struct street_index_head *sih)
+{
+	return 1;
+}
+
+void street_index_close_compr(struct street_index_head *sih)
+{
+}
+
+void town_index_close_compr(struct street_index_head *sih)
+{
+}
+
+void street_index_init_compr(struct street_index_head *sih, long long size)
+{
+}
+
+void town_index_init_compr(struct street_index_head *sih, long long size)
+{
+}
+
+int street_index_decompress_data_block(struct street_index_head *sih)
+{
+	return -3;
+}
+
+
+int town_index_decompress_data_block(struct street_index_head *sih)
+{
+	return -3;
+}
+
+void street_index_close(struct street_index_head *sih)
+{
+}
+
+
+#include <sys/types.h>
+#include <dirent.h>
+
+void spill_index()
+{
+}
+
+void search_v2(char *addr, char *town, char* hn, int partial, struct jni_object *jni)
+{
+
+}
+
+int search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_object *jni, const char* idxfile_name)
+{
+	return 0;
+}
+
+

@@ -2088,7 +2088,7 @@ static navigation_select_announced_destinations(struct navigation_command *curre
 	if ((current_nav_way) && (current_nav_way->street_dest_text))
 	{
 		// already have set a destination --> return
-		return;
+		return NULL;
 	}
 	current_nav_way->street_dest_text = NULL; // set default to "no value"
 	// put text into way struct later -----------------
@@ -2175,7 +2175,7 @@ static navigation_select_announced_destinations(struct navigation_command *curre
 			dbg(0, "put exit_label into nav way (C) %s\n", current_command->itm->way.exit_label);
 #endif
 
-			return;
+			return NULL;
 		}
 	}
 	else if (current_command->itm->way.exit_label)
@@ -2190,7 +2190,7 @@ static navigation_select_announced_destinations(struct navigation_command *curre
 		dbg(0, "put exit_label into nav way (A) %s\n", current_command->itm->way.exit_label);
 #endif
 
-		return;
+		return NULL;
 	}
 
 
@@ -3246,8 +3246,11 @@ static int is_way_allowed(struct navigation *nav, struct navigation_way *way, in
  * @param reason A text string explaining how the return value resulted
  * @return True if navit should guide the user, false otherwise
  */
+
+//UNIT_TESTS_001_PATTERN_START
 static int maneuver_required2(struct navigation *nav, struct navigation_itm *old, struct navigation_itm *new, int *delta, int *delta_real, char **reason)
 {
+
 	int ret = 0, d, dw, dlim;
 	char *r = NULL;
 	struct navigation_way *w = NULL;
@@ -4126,8 +4129,11 @@ static int maneuver_required2(struct navigation *nav, struct navigation_itm *old
 
 	tests_dbg(0, "=== maneuver_required2 [Exit] ===");
 
+
 	return ret;
 }
+//UNIT_TESTS_001_PATTERN_END
+
 
 static struct navigation_command *command_new(struct navigation *this_, struct navigation_itm *itm, int delta, int delta_real)
 {

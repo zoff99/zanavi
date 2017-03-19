@@ -5891,12 +5891,16 @@ static int rm_coord_get(void *priv_data, struct coord *c, int count)
 	enum projection pro = route_projection(r);
 
 	if (pro == projection_none)
+	{
 		return 0;
+	}
 
 	if (mr->item.type == type_route_start || mr->item.type == type_route_start_reverse || mr->item.type == type_route_end)
 	{
 		if (!count || mr->last_coord)
+		{
 			return 0;
+		}
 
 		mr->last_coord = 1;
 
@@ -5912,15 +5916,21 @@ static int rm_coord_get(void *priv_data, struct coord *c, int count)
 	}
 
 	if (!seg)
+	{
 		return 0;
+	}
 
 	for (i = 0; i < count; i++)
 	{
 		if (mr->last_coord >= seg->ncoords)
+		{
 			break;
+		}
 
 		if (i >= seg->ncoords)
+		{
 			break;
+		}
 
 		if (pro != projection_mg)
 		{
@@ -5964,7 +5974,9 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 			{
 				//dbg(0, "querying %s\n", attr_to_name(mr->attr_next));
 				if (rp_attr_get(priv_data, mr->attr_next, attr))
+				{
 					return 1;
+				}
 			}
 			return 0;
 
@@ -5986,6 +5998,85 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 				return 0;
 			}
 
+#if 1
+// jandegr version ----------
+		case attr_label:
+			mr->attr_next = attr_street_item;
+			attr->type = attr_label;
+
+			if (mr->str)
+			{
+				g_free(mr->str);
+			}
+
+			if (mr->item.type == type_rg_point)
+			{
+				int lowest_cost = INT_MAX;
+
+				if (p->start && p->start->seg_start_out_cost  < lowest_cost)
+				{
+					lowest_cost = p->start->seg_start_out_cost;
+				}
+				if (p->end && p->end->seg_end_out_cost < lowest_cost)
+				{
+					lowest_cost = p->end->seg_end_out_cost;
+				}
+
+				if (lowest_cost < INT_MAX)
+				{
+					mr->str = g_strdup_printf("%d", lowest_cost);
+				}
+				else
+				{
+					mr->str = g_strdup("-");
+				}
+			}
+			else
+			{
+				int len = seg->data.len;
+				int speed = route_seg_speed(route->vehicleprofile, &seg->data, NULL);
+				int time = route_time_seg(route->vehicleprofile, &seg->data, NULL);
+
+				// system_log(0, "rp_attr_get:attr_label:002a:%d %d %d", len, speed, time);
+
+				if (speed)
+				{
+					mr->str = g_strdup_printf("%dm %dkm/h %d.%ds", len, speed, (time / 10), (time % 10));
+				}
+				else if (len)
+				{
+					mr->str = g_strdup_printf("%dm",len);
+				}
+				else
+				{
+					mr->str = NULL;
+					return 0;
+				}
+			}
+			attr->u.str = mr->str;
+			return 1;
+
+		case attr_street_item:
+			mr->attr_next = attr_flags;
+			if (mr->item.type != type_rg_segment)
+			{
+				return 0;
+			}
+
+			if (seg && seg->data.item.map)
+			{
+				attr->u.item = &seg->data.item;
+			}
+			else
+			{
+				return 0;
+			}
+			return 1;
+// jandegr version ----------
+#endif
+
+#if 0
+// zoff version ----------
 		case attr_label:
 			mr->attr_next = attr_street_item;
 			if ((mr->item.type != type_rg_point) && (mr->item.type != type_rg_segment))
@@ -6055,17 +6146,28 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 		case attr_street_item:
 			mr->attr_next = attr_flags;
 			if (mr->item.type != type_rg_segment)
+			{
 				return 0;
-			if (seg && seg->data.item.map)
-				attr->u.item = &seg->data.item;
-			else
-				return 0;
-			return 1;
+			}
 
+			if (seg && seg->data.item.map)
+			{
+				attr->u.item = &seg->data.item;
+			}
+			else
+			{
+				return 0;
+			}
+			return 1;
+// zoff version ----------
+#endif
 		case attr_flags:
 			mr->attr_next = attr_direction;
 			if (mr->item.type != type_rg_segment)
+			{
 				return 0;
+			}
+
 			if (seg)
 			{
 				attr->u.num = seg->data.flags;
@@ -6081,7 +6183,9 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 			// This only works if the map has been opened at a single point, and in that case indicates if the
 			// segment returned last is connected to this point via its start (1) or its end (-1)
 			if (!mr->coord_sel || (mr->item.type != type_rg_segment))
+			{
 				return 0;
+			}
 
 			if (seg->start == mr->point)
 			{
@@ -6102,37 +6206,44 @@ static int rp_attr_get(void *priv_data, enum attr_type attr_type, struct attr *a
 			mr->attr_next = attr_none;
 
 			if (mr->str)
+			{
 				g_free(mr->str);
+			}
+			mr->str=NULL;
 
 			switch (mr->item.type)
 			{
 				case type_rg_point:
-				{
-					struct route_graph_segment *tmp;
-					int start = 0;
-					int end = 0;
-					tmp = p->start;
-					while (tmp)
 					{
-						start++;
-						tmp = tmp->start_next;
+						struct route_graph_segment *tmp;
+						int start = 0;
+						int end = 0;
+						tmp = p->start;
+						while (tmp)
+						{
+							start++;
+							tmp = tmp->start_next;
+						}
+						tmp = p->end;
+						while (tmp)
+						{
+							end++;
+							tmp = tmp->end_next;
+						}
+						mr->str = g_strdup_printf("%d %d %p (0x%x,0x%x)", start, end, p, p->c.x, p->c.y);
+						attr->u.str = mr->str;
 					}
-					tmp = p->end;
-					while (tmp)
-					{
-						end++;
-						tmp = tmp->end_next;
-					}
-					mr->str = g_strdup_printf("%d %d %p (0x%x,0x%x)", start, end, p, p->c.x, p->c.y);
-					attr->u.str = mr->str;
-				}
 					return 1;
+
 				case type_rg_segment:
 					if (!seg)
+					{
 						return 0;
+					}
 					mr->str = g_strdup_printf("len %d time %d start %p end %p", seg->data.len, route_time_seg(route->vehicleprofile, &seg->data, NULL), seg->start, seg->end);
 					attr->u.str = mr->str;
 					return 1;
+
 				default:
 					return 0;
 			}
@@ -6158,7 +6269,9 @@ static int rp_coord_get(void *priv_data, struct coord *c, int count)
 	struct map_rect_priv *mr = priv_data;
 	struct route_graph_point *p = mr->point;
 	struct route_graph_segment *seg = mr->rseg;
-	int rc = 0, i, dir;
+	int rc = 0;
+	int i;
+	int dir;
 	struct route *r = mr->mpriv->route;
 	enum projection pro = route_projection(r);
 
@@ -6172,46 +6285,65 @@ static int rp_coord_get(void *priv_data, struct coord *c, int count)
 		if (mr->item.type == type_rg_point)
 		{
 			if (mr->last_coord >= 1)
+			{
 				break;
+			}
 
 			if (pro != projection_mg)
-				transform_from_to(&p->c, pro, &c[i], projection_mg);
-			else
-				c[i] = p->c;
-		}
-		else
-		{
-			if (mr->last_coord >= 2)
-				break;
-
-			dir = 0;
-
-	// FIXME !!
-
-	//		if (seg->end->seg == seg)
-	//			dir = 1;
-
-			if (mr->last_coord)
-				dir = 1 - dir;
-
-	//		if (dir)
-	//		{
-	//			if (pro != projection_mg)
-	//				transform_from_to(&seg->end->c, pro, &c[i], projection_mg);
-	//			else
-	//				c[i] = seg->end->c;
-	//		}
-	//		else
 			{
-				if (pro != projection_mg)
-					transform_from_to(&seg->start->c, pro, &c[i], projection_mg);
-				else
-					c[i] = seg->start->c;
+				transform_from_to(&p->c, pro, &c[i], projection_mg);
+			}
+			else
+			{
+				c[i] = p->c;
 			}
 		}
+		else // mr->item.type == type_rg_segment
+		{
+			if (mr->last_coord >= 2)
+			{
+				break;
+			}
+
+			dir = 0;
+			// if (seg->end->seg == seg)
+			// dir=1;
+
+			if (mr->last_coord)
+			{
+				dir = ( 1 - dir );
+			}
+
+
+			if (dir)
+			{
+				if (pro != projection_mg)
+				{
+					transform_from_to(&seg->end->c, pro, &c[i], projection_mg);
+				}
+				else
+				{
+					c[i] = seg->end->c;
+				}
+			}
+			else
+			{
+				if (pro != projection_mg)
+				{
+					transform_from_to(&seg->start->c, pro, &c[i], projection_mg);
+				}
+				else
+				{
+					c[i] = seg->start->c;
+				}
+			}
+		}
+
 		mr->last_coord++;
 		rc++;
+
 	}
+
 	return rc;
 }
 

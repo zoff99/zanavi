@@ -40,6 +40,8 @@
 #include <stdlib.h>
 #include <glib.h>
 #include "config.h"
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
@@ -69,7 +71,8 @@
 #include <winbase.h>
 #endif
 
-char *version=PACKAGE_VERSION" "SVN_VERSION""NAVIT_VARIANT;
+//char *version=PACKAGE_VERSION" "SVN_VERSION""NAVIT_VARIANT;
+char *version="xxx";
 int main_argc;
 char **main_argv;
 
@@ -281,3 +284,5 @@ int main_real(int argc, char **argv)
 
 	return 0;
 }
+
+#pragma clang diagnostic pop

@@ -40,7 +40,7 @@ machine:
 #   2 -> build + run
 #   3 -> build + run + tests
 #
-    _BUILD_TYPE_: 1
+    _BUILD_TYPE_: 3
 ###############################
 
 ###############################
@@ -126,14 +126,14 @@ dependencies:
     - sudo apt-get install libmagickcore5 ; exit 0
     - sudo apt-get install perlmagick ; exit 0
     - sudo apt-get install liblwp-useragent-determined-perl #> /dev/null 2> /dev/null
-    - sudo apt-get install xvfb #> /dev/null 2> /dev/null
-    - sudo apt-get install xdotool #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install xvfb #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install xdotool #> /dev/null 2> /dev/null
     - sudo apt-get install autoconf #> /dev/null 2> /dev/null
     - sudo apt-get install telnet #> /dev/null 2> /dev/null
-    - sudo apt-get install x11-utils #> /dev/null 2> /dev/null
-    - sudo apt-get install xvkbd #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install x11-utils #> /dev/null 2> /dev/null
+    - . ~/_bt3;sudo apt-get install xvkbd #> /dev/null 2> /dev/null
     - sudo apt-get install qrencode #> /dev/null 2> /dev/null
-    - sudo apt-get install firefox
+    - . ~/_bt3;sudo apt-get install firefox
 
     - sudo apt-get install libav-tools #> /dev/null 2> /dev/null
 
@@ -811,6 +811,8 @@ test:
       url3=`cat "$i"|grep 'URL3'|cut -d":" -f2-`'/am=t/data=!3m1!4b1!4m2!4m1!3e0' ; echo "$url3" ;
       url3_orig=`cat "$i"|grep 'URL3'|cut -d":" -f2-` ;
       url3_orig="" ; echo "google url crashes firefox, arrgh" ;
+      url3=`cat "$i"|grep 'URL4'|cut -d":" -f2-` ; echo "$url3_orig" ;
+      url3_orig="$url3";
       if [ "$url1""x" != "x" ]; then
       firefox -silent -setDefaultBrowser "$url1";
       sleep 10;

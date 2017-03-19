@@ -383,6 +383,28 @@ void debug_for_tests_vprintf(int level, const char *fmt, va_list ap)
 }
 
 
+void debug_for_tests2_vprintf(int level, const char *fmt, va_list ap)
+{
+#ifdef HAVE_API_ANDROID
+	char *xbuffer = g_malloc(40960);
+	xbuffer[0] = '\0';
+	vsprintf(xbuffer, fmt, ap);
+	android_send_generic_text(33, xbuffer);
+	g_free(xbuffer);
+#endif
+}
+
+void debug_for_tests2_printf(int level, const char *fmt, ...)
+{
+#ifdef HAVE_API_ANDROID
+	va_list ap;
+	va_start(ap, fmt);
+	debug_for_tests2_vprintf(level, fmt, ap);
+	va_end(ap);
+#endif
+}
+
+
 void debug_for_tests_printf(int level, const char *fmt, ...)
 {
 #ifdef _CIDEBUG_BUILD_

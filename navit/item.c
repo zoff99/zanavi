@@ -92,7 +92,9 @@ item_get_default_flags(enum item_type type)
 void item_cleanup(void)
 {
 	if (default_flags_hash)
+	{
 		g_hash_table_destroy(default_flags_hash);
+	}
 }
 
 void item_coord_rewind(struct item *it)
@@ -120,29 +122,42 @@ int item_coord_get_within_selection(struct item *it, struct coord *c, int count,
 	int i, ret = it->meth->item_coord_get(it->priv_data, c, count);
 	struct coord_rect r;
 	struct map_selection *curr;
+
 	if (ret <= 0 || !sel)
+	{
 		return ret;
+	}
+
 	r.lu = c[0];
 	r.rl = c[0];
+
 	for (i = 1; i < ret; i++)
 	{
 		if (r.lu.x > c[i].x)
 			r.lu.x = c[i].x;
+
 		if (r.rl.x < c[i].x)
 			r.rl.x = c[i].x;
+
 		if (r.rl.y > c[i].y)
 			r.rl.y = c[i].y;
+
 		if (r.lu.y < c[i].y)
 			r.lu.y = c[i].y;
 	}
+
 	curr = sel;
+
 	while (curr)
 	{
 		struct coord_rect *sr = &curr->u.c_rect;
 		if (r.lu.x <= sr->rl.x && r.rl.x >= sr->lu.x && r.lu.y >= sr->rl.y && r.rl.y <= sr->lu.y)
+		{
 			return ret;
+		}
 		curr = curr->next;
 	}
+
 	return 0;
 }
 
@@ -151,16 +166,21 @@ int item_coord_get_pro(struct item *it, struct coord *c, int count, enum project
 	int ret = item_coord_get(it, c, count);
 	int i;
 	enum projection from = map_projection(it->map);
+
 	if (from != to)
 		for (i = 0; i < count; i++)
 			transform_from_to(c + i, from, c + i, to);
+
 	return ret;
 }
 
 int item_coord_is_node(struct item *it)
 {
 	if (it->meth->item_coord_is_node)
+	{
 		return it->meth->item_coord_is_node(it->priv_data);
+	}
+
 	return 0;
 }
 
@@ -185,7 +205,10 @@ int item_attr_get(struct item *it, enum attr_type attr_type, struct attr *attr)
 int item_attr_set(struct item *it, struct attr *attr, enum change_mode mode)
 {
 	if (!it->meth->item_attr_set)
+	{
 		return 0;
+	}
+
 	return it->meth->item_attr_set(it->priv_data, attr, mode);
 }
 

@@ -5,8 +5,8 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - _JAVA_OPTIONS="-Xms512m -Xmx1024m"
-  - GRADLE_OPTS='-Xmx512m -Dorg.gradle.jvmargs="-Xmx1700m -XX:+HeapDumpOnOutOfMemoryError -XX:MaxPermSize=1700m"'
+  - _JAVA_OPTIONS="-Xms512m -Xmx2048m"
+  - GRADLE_OPTS='-Xmx512m -Dorg.gradle.jvmargs="-Xmx2200m -XX:+HeapDumpOnOutOfMemoryError -XX:MaxPermSize=2200m"'
 android:
   components:
     - tools # to get the new `repository-11.xml`
@@ -38,13 +38,12 @@ script:
    - _reponame=$(echo $TRAVIS_REPO_SLUG | cut -d'/' -f2) ; echo $_reponame
    - _repouser=$(echo $TRAVIS_REPO_SLUG | cut -d'/' -f1) ; echo $_repouser
    - _branch_from=$( if [ "$TRAVIS_PULL_REQUEST_BRANCH""x" == "x" ]; then echo "$TRAVIS_BRANCH" ; else echo "$TRAVIS_PULL_REQUEST_BRANCH" ; fi ) ; echo $_branch_from
-   - mkdir build_
-   - pwd;cd build_;pwd
-   - ls -al
-   - chmod a+rx ../download-androidstudio-files.sh
-   - ../download-androidstudio-files.sh
-   - ls -al
-   - gradle wrapper --no-daemon --info
-   - ./gradlew assembleRelease -x lint --stacktrace
-   - pwd; cd .. ; pwd
+   - chmod a+rx ./download-androidstudio-files.sh
+   - ./download-androidstudio-files.sh
+   - cd navit
+   - pwd
+   - cat gradle.properties
+   - chmod a+rx ./gradlew
+   - ./gradlew assembleRelease --stacktrace
+   - pwd
    - find . -name '*.apk' -exec ls -al {} \;

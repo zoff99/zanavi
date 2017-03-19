@@ -2555,6 +2555,8 @@
 					<arrows color="#FF089C" width="3"/>
 					<text text_size="17"/>
 				</itemgra>
+
+
 				<itemgra item_types="rg_point" order="13-">
 					<circle color="#FF089C" radius="10" text_size="13"/>
 				</itemgra>

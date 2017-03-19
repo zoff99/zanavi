@@ -189,6 +189,11 @@ char *stristr(const char *String, const char *Pattern)
  * @return Number of characters read (not including
    the null terminator), or -1 on error or EOF.
 */
+
+
+// TODO: android studio ---------
+// TODO: android studio ---------
+#if 1
 int
 getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
 {
@@ -269,6 +274,10 @@ getline (char **lineptr, size_t *n, FILE *stream)
 {
   return getdelim (lineptr, n, '\n', stream);
 }
+#endif
+// TODO: android studio ---------
+// TODO: android studio ---------
+
 
 #endif
 #endif

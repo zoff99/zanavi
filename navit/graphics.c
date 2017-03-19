@@ -1260,6 +1260,7 @@ static void display_draw_arrow(struct point *p, int dx, int dy, int l, struct gr
 
 static void display_draw_arrows(struct graphics *gra, struct graphics_gc *gc, struct point *pnt, int count)
 {
+
 	int i, dx, dy, l;
 	struct point p;
 	for (i = 0; i < count - 1; i++)
@@ -2528,6 +2529,10 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 		//dbg(0,"**dc->type=%s count=%d\n", item_to_name(dc->type), count);
 		//dbg(0,"** e->type=%s\n", item_to_name(e->type));
 
+
+		// system_log(0,"**dc->type=%s count=%d\n", item_to_name(dc->type), count);
+		// system_log(0,"** e->type=%s int=%d\n", item_to_name(e->type), e->type);
+
 		switch (e->type)
 		{
 			case element_polygon:
@@ -2945,8 +2950,10 @@ static void displayitem_draw(struct displayitem *di, void *dummy, struct display
 			case element_arrows:
 				display_draw_arrows(gra, gc, pa, count);
 				break;
-				//default:
+			//default:
+				// dbg(0, "Unhandled element type %d\n", e->type);
 				// printf("Unhandled element type %d\n", e->type);
+				// system_log(0, "Unhandled element type %d\n", e->type);
 		}
 		di = di->next;
 	}
@@ -2999,6 +3006,7 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 
 			dc->type = GPOINTER_TO_INT(types->data);
 			// dbg(0,"**type=%s\n", item_to_name(dc->type));
+			// system_log(0,"**type=%s\n", item_to_name(dc->type));
 
 			if (global_draw_multipolygons == 0)
 			{
@@ -3031,6 +3039,9 @@ static void xdisplay_draw_elements(struct graphics *gra, struct displaylist *dis
 				if (entry && entry->di)
 				{
 					//dbg(0,"++type=%s\n", item_to_name(dc->type));
+
+					// system_log(0,"++type=%s\n", item_to_name(dc->type));
+
 					//dbg(0, "is_first_item=%d run_type=%d\n", is_first_item, run_type);
 					//if (!strcmp(item_to_name(dc->type), "border_country"))
 					//{
@@ -3156,6 +3167,7 @@ static void xdisplay_draw_layer(struct displaylist *display_list, struct graphic
 	}
 
 	// dbg(0,"layer name=%s\n", lay->name);
+	// system_log(0,"layer name=%s\n", lay->name);
 
 	// reset max drawing counters ----------------------
 	poi_on_map_count = 0;
@@ -4616,6 +4628,14 @@ __F_START__
 			if (mapset_need_draw == 1)
 			{
 				//dbg(0,"MAP:002:map=%s\n", ttt22);
+				//if (ttt22)
+				//{
+				//	system_log(0, "MAP:map=%s\n", ttt22);
+				//}
+				//else
+				//{
+				//	system_log(0, "MAP:map=NULL\n");
+				//}
 
 				//// dbg(0, "XXXXXYYYYYYY Draw: A.01\n");
 
@@ -4688,6 +4708,11 @@ __F_START__
 					// DEBUG -------- zoffzoff
 					// DEBUG -------- zoffzoff
 					// DEBUG -------- zoffzoff
+
+					//if (item->type == type_rg_segment)
+					//{
+					//	system_log(0, "type_rg_segment:001");
+					//}
 
 					if (!entry)
 					{
@@ -4918,7 +4943,9 @@ __F_START__
 					{
 						labels[1] = map_convert_string(displaylist->m, labels[1]);
 					}
+
 					display_add(entry, item, count, ca, labels, label_count, 1, col_int_value);
+
 					if (label_count > 0)
 					{
 						map_convert_free(labels[0]);
@@ -5641,11 +5668,16 @@ static void graphics_process_selection_item(struct displaylist *dl, struct item 
 			return;
 		}
 	}
+
 	mr=map_rect_new(item->map, NULL);
 	item=map_rect_get_item_byid(mr, item->id_hi, item->id_lo);
 	count=item_coord_get(item, ca, item->type < type_line ? 1: max);
+
 	if (!item_attr_get(item, attr_label, &attr))
+	{
 	attr.u.str=NULL;
+	}
+
 	if (dl->conv && attr.u.str && attr.u.str[0])
 	{
 		char *str=map_convert_string(item->map, attr.u.str);

@@ -1,8 +1,7 @@
-
 buildscript {
-   repositories {
-       jcenter()
-   }
+    repositories {
+        jcenter()
+    }
 }
 
 apply plugin: 'com.android.application'
@@ -35,17 +34,45 @@ dependencies {
 
 }
 
+task deleteStuff(type: Delete) {
+    logging.captureStandardOutput LogLevel.INFO
 
-tasks.withType(Test) {
-    // increased logging for tests
-    testLogging {
-        events "passed", "skipped", "failed"
+    def sysprops = System.getProperties()
+    if (sysprops['idea.platform.prefix'] != null) {
+
+        println 'deleteStuff on Android Studio Build'
+        println new File(".").absolutePath
+
+        FileTree tree1 = fileTree(dir: "nativelibs/armeabi");
+        tree1.each {
+            File file ->
+                delete(file)
+        }
+
+        FileTree tree2 = fileTree(dir: "nativelibs/armeabi-v7a");
+        tree2.each {
+            File file ->
+                delete(file)
+        }
+
+        FileTree tree3 = fileTree(dir: "nativelibs/x86");
+        tree3.each {
+            File file ->
+                delete(file)
+        }
+
+    }
+    else
+    {
+        println 'not on Android Studio'
     }
 }
 
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
+
+    compileOptions.encoding = 'UTF-8'
 
     defaultConfig {
         minSdkVersion 9
@@ -58,15 +85,33 @@ android {
         vectorDrawables.useSupportLibrary = true
         // generatedDensities = []
 
+        externalNativeBuild {
+            def sysprops = System.getProperties()
+            if (sysprops['idea.platform.prefix'] != null) {
+                cmake {
+                    abiFilters 'armeabi' //,'x86'
+                }
+            }
+        }
+
+        ndk {
+            def sysprops = System.getProperties()
+            if (sysprops['idea.platform.prefix'] != null) {
+                // Specifies the ABI configurations of your native
+                // libraries Gradle should build and package with your APK.
+                abiFilters 'armeabi' //, 'x86'
+            }
+        }
+
     }
 
     aaptOptions {
-          additionalParameters "--no-version-vectors"
+        additionalParameters "--no-version-vectors"
     }
 
 
     dexOptions {
-          javaMaxHeapSize "1.6g"
+        javaMaxHeapSize "2.2g"
     }
 
     sourceSets {
@@ -74,13 +119,12 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = ['src']
             resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
+            aidl.srcDirs = ['src', 'aidl']
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['nativelibs']
         }
-
     }
 
     compileOptions {
@@ -92,6 +136,20 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    externalNativeBuild {
+
+        def sysprops = System.getProperties()
+        if (sysprops['idea.platform.prefix'] != null) {
+            // Built from AndroidStudio
+            cmake {
+                path '../../CMakeLists.txt'
+            }
+        } else {
+            // Built from command line
+        }
+    }
+
 
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'

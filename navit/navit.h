@@ -50,6 +50,7 @@ struct _GList;
 typedef struct _GList GList;
 #endif
 
+#include <stdlib.h>
 
 // color codes for colour attribute in OS;
 #define __c_black	"000000"

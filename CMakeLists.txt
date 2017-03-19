@@ -1,0 +1,704 @@
+
+
+# cmake command:
+#U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -HD:\_ready\git_repos\zanavi -BD:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\armeabi "-GAndroid Gradle - Ninja" -DANDROID_ABI=armeabi -DANDROID_NDK=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\_ready\git_repos\zanavi\navit\android\build\intermediates\cmake\debug\obj\armeabi -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\ninja.exe -DCMAKE_TOOLCHAIN_FILE=U:\_Projekte\android\sdk\android-sdk-windows\ndk-bundle\build\cmake\android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=9
+
+# compile command:
+#cmd.exe /C "cd /D D:\_ready\git_repos\zanavi\navit\android\.externalNativeBuild\cmake\debug\mips64\navit && U:\_Projekte\android\sdk\android-sdk-windows\cmake\3.6.3155560\bin\cmake.exe -D SRC=D:/_ready/git_repos/zanavi/navit/version.h.in -D DST=D:/_ready/git_repos/zanavi/navit/android/.externalNativeBuild/cmake/debug/mips64/navit/version.h -D NAME="GIT_VERSION" -P D:/_ready/git_repos/zanavi/cmake/version.cmake"
+
+
+message(STATUS "Building with CMake V${CMAKE_VERSION}")
+project(zanavi C)
+
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
+
+# Workaround for CMake issue 8345 / 9220, see http://trac.navit-project.org/ticket/1041
+if(DEFINED CMAKE_CXX_COMPILER AND CMAKE_CXX_COMPILER MATCHES "^$")
+  set(CMAKE_CXX_COMPILER CMAKE_CXX_COMPILER-NOTFOUND)
+endif(DEFINED CMAKE_CXX_COMPILER AND CMAKE_CXX_COMPILER MATCHES "^$")
+if (NOT DISABLE_CXX)
+  enable_language(CXX OPTIONAL)
+endif(NOT DISABLE_CXX)
+
+
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+set(NAVIT_VERSION_MAJOR "0")
+set(NAVIT_VERSION_MINOR "5")
+set(NAVIT_VERSION_PATCH "1")
+set(PACKAGE_VERSION "${NAVIT_VERSION_MAJOR}.${NAVIT_VERSION_MINOR}.${NAVIT_VERSION_PATCH}")
+
+set(PACKAGE_NAME "zanavi-git")
+set(PACKAGE "zanavi")
+set(PACKAGE_STRING "${PACKAGE} ${PACKAGE_VERSION}")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+include("${PROJECT_SOURCE_DIR}/cmake/navit_macros.cmake")
+
+IF(NOT CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+# install path
+set(BIN_DIR bin)
+set(SHARE_DIR share/navit)
+set(LOCALE_DIR share/locale)
+set(IMAGE_DIR share/navit/xpm)
+set(MAN_DIR share/man/man1)
+# LIB_DIR
+IF(UNIX AND NOT ANDROID AND NOT APPLE)
+    IF (NOT LIBDIR)
+        MESSAGE(STATUS "LIBDIR variable is not defined. It will be autodetected now.")
+        MESSAGE(STATUS "You can set it manually with -DLIBDIR=<value>")
+        # check 64 bit
+        IF (CMAKE_SIZEOF_VOID_P EQUAL 4)
+            SET(LIB_DIR lib)
+            MESSAGE(STATUS "   LIB_DIR (highest subdirectory if LIBDIR) is set to '${LIB_DIR}'")
+        ELSE (CMAKE_SIZEOF_VOID_P EQUAL 4)
+            SET(LIB_DIR lib64)
+            MESSAGE(STATUS "   LIB_DIR (highest subdirectory if LIBDIR) is set to '${LIB_DIR}'")
+        ENDIF (CMAKE_SIZEOF_VOID_P EQUAL 4)
+    ELSE (NOT LIBDIR)
+        GET_FILENAME_COMPONENT (LIB_DIR ${LIBDIR} NAME)
+        MESSAGE(STATUS "   LIB_DIR (highest subdirectory if LIBDIR) is set to '${LIB_DIR}'")
+    ENDIF (NOT LIBDIR)
+ELSE (UNIX AND NOT ANDROID AND NOT APPLE)
+    SET(LIB_DIR lib)
+ENDIF (UNIX AND NOT ANDROID AND NOT APPLE)
+
+foreach(EXTRA_MODULE ${EXTRA_MODULES})
+   add_module(${EXTRA_MODULE} "extra module specified" TRUE)
+endforeach()
+
+if (EXTRA_LIBS)
+	list(APPEND NAVIT_LIBS ${EXTRA_LIBS})
+endif(EXTRA_LIBS)
+
+if (EXTRA_INCLUDES)
+    include_directories(${EXTRA_INCLUDES})
+endif(EXTRA_INCLUDES)
+
+if (EXTRA_LIBDIR)
+    link_directories(${EXTRA_LIBDIR})
+endif(EXTRA_LIBDIR)
+
+### Detect environment
+
+add_plugin(support/ezxml "native Glib found" FALSE)
+add_plugin(support/glib "native Glib found" FALSE)
+add_plugin(support/zlib "native zlib found" FALSE)
+#add_plugin(support/libpng "native libpng found" FALSE)
+add_plugin(support/wordexp "native wordexp found" FALSE)
+#add_plugin(../intl "native libintl found" FALSE)
+#add_subdirectory (./intl ./intl)
+add_module(font/freetype "freetype not found" FALSE)
+add_module(graphics/android "FreeType library not found" FALSE)
+add_module(graphics/gd "FreeType library not found" FALSE)
+add_module(graphics/gtk_drawing_area "FreeType library not found" FALSE)
+add_module(graphics/opengl "FreeType library not found" FALSE)
+add_module(graphics/sdl "Required library not found" FALSE)
+add_module(graphics/egl "Required library not found" FALSE)
+add_module(graphics/qt_qpainter "Qt libraries not found" FALSE)
+add_module(graphics/qt5 "Qt5 libraries not found" FALSE)
+add_module(gui/qml "Qt Declarative not found" FALSE)
+add_module(gui/gtk "GTK libs not found" FALSE)
+add_module(vehicle/gpsd "gpsd lib not found" FALSE)
+add_module(vehicle/gypsy "gypsy lib not found" FALSE)
+add_module(vehicle/maemo "Default" FALSE)
+add_module(binding/win32 "Default" FALSE)
+add_module(binding/dbus "dbus-glib-1 not found" FALSE)
+add_module(binding/python "python libraries not found" FALSE)
+add_module(speech/dbus "dbus-glib-1 not found" FALSE)
+# add_module(speech/cmdline "neither system() nor CreateProcess() found" FALSE)
+add_module(speech/cmdline "disabled" FALSE)
+add_module(vehicle/gpsd_dbus "dbus-glib-1 not found" FALSE)
+add_module(vehicle/qt5 "Qt5 libraries not found" FALSE)
+add_module(speech/speech_dispatcher "speech_dispatcher lib not found" FALSE)
+add_module(autoload/osso "Default" FALSE)
+add_module(map/garmin "Garmin library not found" FALSE)
+add_feature(USE_NATIVE_LANGUAGE_SUPPORT "Gettext not found and not on Windows" FALSE)
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/cpack.cmake")
+set(CPACK_PACKAGE_VENDOR "Navit team")
+set(CPACK_PACKAGE_VERSION_MAJOR ${NAVIT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${NAVIT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH "${NAVIT_VERSION_PATCH}")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/GPL-2")
+set(CPACK_NSIS_PACKAGE_NAME "Navit ${PACKAGE_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME ${PACKAGE})
+set(CPACK_PACKAGE_EXECUTABLES "navit;Navit")
+set(CPACK_NSIS_HELP_LINK "http://www.navit-project.org/?page=contact")
+set(CPACK_NSIS_URL_INFO_ABOUT "http://www.navit-project.org")
+if(WIN32)
+    add_feature(USE_NSIS "makensis not found" FALSE)
+    FIND_PROGRAM(NSIS_EXECUTABLE NAMES makensis makensis.exe)
+    if(NSIS_EXECUTABLE)
+        set_with_reason(USE_NSIS "makensis found" TRUE)
+    endif(NSIS_EXECUTABLE)
+
+    set(CPACK_GENERATOR ZIP)
+    if(USE_NSIS)
+        list(APPEND CPACK_GENERATOR NSIS)
+    endif(USE_NSIS)
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY Navit)
+endif(WIN32)
+INCLUDE (CPack)
+
+INCLUDE (CheckIncludeFiles)
+INCLUDE (CheckLibraryExists)
+INCLUDE (CheckFunctionExists)
+INCLUDE (CheckSymbolExists)
+find_package(Glib)
+find_package(Gmodule)
+find_package(ZLIB)
+find_package(Freetype)
+find_library(SDL2MAIN SDL2)
+find_library(SDL2IMAGE SDL2_image)
+find_library(GLES2 GLESv2)
+find_package(SDL)
+find_package(SDL_ttf)
+find_package(SDL_image)
+find_package(OpenGL)
+find_package(GLUT)
+find_package(GTK2 2.6 COMPONENTS gtk)
+find_package(Gettext)
+find_package(PNG)
+find_package(DBusGLib)
+find_package(PythonLibs)
+find_package(OpenSSL)
+find_package(Threads)
+libfind_pkg_check_modules(FONTCONFIG fontconfig)
+
+#pkg-config based detection
+find_package(PkgConfig)
+
+#Simple checks
+CHECK_INCLUDE_FILES(wordexp.h HAVE_WORDEXP)
+CHECK_INCLUDE_FILES(endian.h HAVE_ENDIAN_H)
+CHECK_INCLUDE_FILES(stdint.h HAVE_STDINT_H)
+CHECK_INCLUDE_FILES(byteswap.h HAVE_BYTESWAP_H)
+CHECK_LIBRARY_EXISTS(gypsy gypsy_control_get_default "" GYPSY_FOUND)
+CHECK_INCLUDE_FILES(libspeechd.h HAVE_LIBSPEECHD)
+CHECK_INCLUDE_FILES(sys/socket.h HAVE_SOCKET)
+CHECK_INCLUDE_FILES(sys/shm.h HAVE_SHMEM)
+CHECK_FUNCTION_EXISTS(snprintf   HAVE_SNPRINTF)
+if (NOT HAVE_SNPRINTF)
+   CHECK_FUNCTION_EXISTS(_snprintf  HAVE_DECL__SNPRINTF)
+   if (HAVE_DECL__SNPRINTF)
+      set(HAVE_SNPRINTF 1)
+   endif(HAVE_DECL__SNPRINTF)
+endif(NOT HAVE_SNPRINTF)
+CHECK_INCLUDE_FILES(locale.h HAVE_LC_MESSAGES)
+#CHECK_INCLUDE_FILES(libintl.h HAVE_LIBINTL)
+CHECK_INCLUDE_FILES(sys/time.h HAVE_SYS_TIME_H)
+CHECK_INCLUDE_FILES(getopt.h HAVE_GETOPT_H)
+CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
+CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
+CHECK_SYMBOL_EXISTS(system stdlib.h HAVE_SYSTEM)
+CHECK_SYMBOL_EXISTS(CreateProcess windows.h HAVE_CREATEPROCESS)
+CHECK_SYMBOL_EXISTS(stpcpy string.h HAVE_STPCPY)
+CHECK_FUNCTION_EXISTS(sbrk HAVE_SBRK)
+CHECK_FUNCTION_EXISTS(getdelim HAVE_GETDELIM)
+CHECK_FUNCTION_EXISTS(getline HAVE_GETLINE)
+CHECK_FUNCTION_EXISTS(fsync HAVE_FSYNC)
+
+
+### Configure build
+
+if (Glib_FOUND)
+   set(HAVE_GLIB 1)
+   include_directories(${Glib_INCLUDE_DIRS})
+   list(APPEND NAVIT_LIBS ${Glib_LIBRARIES})
+else(Glib_FOUND)
+   set_with_reason(support/glib "Glib not found" TRUE ${INTL_LIBS})
+endif(Glib_FOUND)
+if (Gmodule_FOUND)
+   set(HAVE_GMODULE 1)
+   include_directories(${Gmodule_INCLUDE_DIRS})
+   list(APPEND NAVIT_LIBS ${Gmodule_LIBRARIES})
+endif(Gmodule_FOUND)
+if(ZLIB_FOUND)
+   set(HAVE_ZLIB 1)
+   include_directories(${ZLIB_INCLUDE_DIRS})
+   list(APPEND NAVIT_LIBS ${ZLIB_LIBRARIES})
+else(ZLIB_FOUND)
+   message(STATUS "using internal zlib")
+   set_with_reason(support/zlib "native zlib missing" TRUE)
+endif(ZLIB_FOUND)
+if(OPENSSL_CRYPTO_LIBRARIES)
+   set(HAVE_LIBCRYPTO 1)
+   include_directories(${OPENSSL_INCLUDE_DIR})
+   list(APPEND NAVIT_LIBS ${OPENSSL_CRYPTO_LIBRARIES})
+endif()
+if(PNG_FOUND)
+   set(HAVE_PNG 1)
+   include_directories(${PNG_INCLUDE_DIR})
+   list(APPEND NAVIT_LIBS ${PNG_LIBRARIES})
+else(PNG_FOUND)
+   message(STATUS "using internal libpng")
+   #set_with_reason(support/libpng "native libpng missing" TRUE)
+endif(PNG_FOUND)
+if (NOT HAVE_WORDEXP)
+   message(STATUS "wordexp.h not found. use internal wordexp")
+   set_with_reason(support/wordexp "native wordexp missing" TRUE)
+endif()
+if (NOT Glib_FOUND)
+   set_with_reason(support/ezxml "Glib not found" TRUE)
+endif()
+
+if(FREETYPE_FOUND)
+   pkg_check_modules(FRIBIDI fribidi)
+   pkg_check_modules(FRIBIDI2 fribidi>=0.19.0)
+   include_directories(${FREETYPE_INCLUDE_DIRS})
+   set_with_reason(font/freetype "freetype found" TRUE "${FREETYPE_LIBRARY};${FONTCONFIG_LDFLAGS};${FRIBIDI_LIBRARIES}")
+else(FREETYPE_FOUND)
+   MESSAGE("No freetype library found, graphics modules may not be available")
+   set_with_reason(graphics/android "FreeType library not found" FALSE)
+   set_with_reason(graphics/gd "FreeType library not found" FALSE)
+   set_with_reason(graphics/gtk_drawing_area "FreeType library not found" FALSE)
+   set_with_reason(graphics/opengl "FreeType library not found" FALSE)
+   set_with_reason(graphics/sdl "FreeType library not found" FALSE)
+   set_with_reason(graphics/egl "FreeType library not found" FALSE)
+endif(FREETYPE_FOUND)
+
+if(FONTCONFIG_FOUND)
+   set(HAVE_FONTCONFIG 1)
+endif(FONTCONFIG_FOUND)
+
+
+
+CHECK_LIBRARY_EXISTS(freeimage FreeImage_Load "" HAVE_FREEIMAGE)
+
+if (GETTEXT_FOUND)
+    set_with_reason(USE_NATIVE_LANGUAGE_SUPPORT "Gettext found" TRUE)
+endif(GETTEXT_FOUND)
+
+#Independent modules
+#add_module(graphics/null "Default" FALSE)
+add_module(osd/core "Default" TRUE)
+add_module(vehicle/demo "Default" TRUE)
+add_module(vehicle/file "Default" FALSE)
+#add_module(vehicle/null "Default" FALSE)
+add_module(gui/internal "Default" TRUE)
+add_module(map/binfile "Default" TRUE)
+#add_module(map/filter "Default" FALSE)
+#if(NOT MSVC)
+#add_module(map/mg "Default" FALSE)
+#endif(NOT MSVC)
+add_module_plugin(support/shapefile "Default" FALSE)
+set(map_shapefile_INCLUDES "${CMAKE_SOURCE_DIR}/navit/support/shapefile")
+#set(map_shapefile_LIBRARY_DIRS "${CMAKE_BINARY_DIR}/navit/support/shapefile")
+set(map_shapefile_LIBS "support_shapefile")
+add_module(map/shapefile "Default" FALSE)
+add_module(map/textfile "Default" TRUE)
+add_module(map/csv "Default" TRUE)
+
+#Modules without test yet
+add_module(plugin/pedestrian "Default" FALSE)
+add_module(plugin/j1850 "Default" FALSE)
+add_module(speech/android "Default" FALSE)
+add_module(speech/espeak "Default" FALSE)
+add_module(speech/iphone "Default" FALSE)
+add_plugin(support/espeak "Default" FALSE)
+add_module(vehicle/android "Default" FALSE)
+add_module(vehicle/iphone "Default" FALSE)
+add_module(vehicle/wince "Default" FALSE)
+add_module(graphics/cocoa "Default" FALSE)
+
+# other features
+add_feature(USE_PLUGINS "default" TRUE)
+add_feature(USE_ROUTING "default" TRUE)
+add_feature(USE_SVG "default" TRUE)
+add_feature(SVG2PNG "default" TRUE)
+add_feature(SAMPLE_MAP "default" FALSE)
+
+IF(NOT svg2png_scaling)
+   IF(NOT ANDROID)
+      set(svg2png_scaling 0 16 32 48 64 96)
+   ELSE()
+      set(svg2png_scaling -1 24 32 48 64 96 128)
+   ENDIF()
+ENDIF()
+IF(NOT svg2png_scaling_flag)
+   IF(NOT ANDROID)
+     set(svg2png_scaling_flag 32)
+   ELSE()
+     set(svg2png_scaling_flag -1 24 32 64 96)
+   ENDIF()
+ENDIF()
+IF(NOT svg2png_scaling_nav)
+   IF(NOT ANDROID)
+     set(svg2png_scaling_nav 64)
+   ELSE()
+     set(svg2png_scaling_nav -1 24 32 48 64 96 128)
+   ENDIF()
+ENDIF()
+
+add_feature(DBUS_USE_SYSTEM_BUS "default" FALSE)
+add_feature(BUILD_MAPTOOL "default" TRUE)
+add_feature(XSL_PROCESSING "default" FALSE)
+
+set(SUPPORTED_XSLT_PROCESSORS "saxonb-xslt;saxon;saxon8;saxon-xslt;xsltproc;transform.exe")
+find_program(XSLT_PROCESSOR NAMES ${SUPPORTED_XSLT_PROCESSORS})
+if(XSLT_PROCESSOR)
+   message(STATUS "Found XSLT processor: ${XSLT_PROCESSOR}")
+   execute_process(COMMAND ${XSLT_PROCESSOR} -snone ${CMAKE_CURRENT_SOURCE_DIR}/cmake/test.xml ${CMAKE_CURRENT_SOURCE_DIR}/cmake/test.xslt
+      RESULT_VARIABLE SAXON_ERROR OUTPUT_QUIET ERROR_QUIET)
+   if (NOT SAXON_ERROR)
+      set (XSLT_PROCESSOR_OPTIONS -snone)
+   endif()
+   # additional parameter is passed to the stylesheet processor as transformation parameter
+   macro(compose_xslt_transform_command CMDVAR XSLT_FILE SRC_XML DEST_XML)
+      if(${XSLT_PROCESSOR} MATCHES "xsltproc")
+         set(${CMDVAR} COMMAND ${XSLT_PROCESSOR} ${XSLT_PROCESSOR_OPTIONS} ${XSLT_FILE} ${SRC_XML} >${DEST_XML})
+      else()
+         set(${CMDVAR} COMMAND ${XSLT_PROCESSOR} ${XSLT_PROCESSOR_OPTIONS} ${SRC_XML} ${XSLT_FILE} ${ARGN} >${DEST_XML})
+      endif()
+   endmacro()
+else()
+   cfg_feature(XSL_PROCESSING "Saxon missing" FALSE)
+endif(XSLT_PROCESSOR)
+
+if (NOT XSL_PROCESSING)
+   message(WARNING "No XSLT processor available. You have to configure "
+"navit.xml yourself, or install an XSLT processor (supported: "
+"${SUPPORTED_XSLT_PROCESSORS}).")
+endif()
+
+### Platform specific settings
+if(NOT CACHE_SIZE)
+   SET(CACHE_SIZE 1048576)
+endif(NOT CACHE_SIZE)
+
+if(WIN32 OR WINCE)
+   SET(CMAKE_EXECUTABLE_SUFFIX ".exe")
+   add_module(graphics/win32 "Windows detected" TRUE)
+   add_plugin(support/win32 "Windows detected" TRUE)
+
+   SET(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> -O coff -I ${CMAKE_CURRENT_SOURCE_DIR}/navit/gui/win32/resources <DEFINES> -i <SOURCE> -o <OBJECT>")
+   set_with_reason(support/ezxml "Windows detected" TRUE)
+   set_with_reason(speech/espeak "Windows detected" TRUE)
+   set_with_reason(support/espeak "Windows detected" TRUE)
+   set_with_reason(binding/win32 "Windows detected" TRUE)
+
+   # vehicle_file is broken for windows. use vehicle_wince instead
+   # whicle_wince isn't buildable on non-CE windows ssytems
+
+   # plugins currently not supported on windows
+   set_with_reason(USE_PLUGINS "win32: currently not supported" FALSE)
+
+   set(HAVE_API_WIN32_BASE 1)
+   set(EZXML_NOMMAP 1)
+
+   # Image stuff
+   if(NOT graphics/qt_qpainter)
+      set_with_reason(USE_SVG "win32: SVGs currently not supported" FALSE)
+   else(NOT graphics/qt_qpainter)
+      MESSAGE(STATUS "win32: SVGs may not be supported by every available graphics")
+   endif(NOT graphics/qt_qpainter)
+
+   set(BIN_DIR bin)
+   set(SHARE_DIR ./)
+   set(LOCALE_DIR locale)
+   set(IMAGE_DIR xpm)
+
+
+   if(HAVE_GTK2 AND NOT MSVC)
+      #GTK requires special compile flags
+      add_definitions("-mms-bitfields")
+   endif(HAVE_GTK2 AND NOT MSVC)
+   if(MSVC AND support/espeak)
+      add_definitions(-DPLATFORM_WINDOWS)
+   endif(MSVC AND support/espeak)
+   CHECK_LIBRARY_EXISTS(ws2_32 WSAStartup "" HAVE_WINSOCK)
+   if(HAVE_WINSOCK)
+      list(APPEND NAVIT_LIBS ws2_32)
+   else()
+      CHECK_LIBRARY_EXISTS(ws2 WSAStartup "" HAVE_WINSOCK_2)
+      if(HAVE_WINSOCK_2)
+         set(HAVE_WINSOCK 1)
+         list(APPEND NAVIT_LIBS ws2)
+      endif()
+   endif(HAVE_WINSOCK)
+
+   if(MSVC)
+       set(HAVE_PRAGMA_PACK 1)
+       add_plugin(support/xgetopt "Windows detected" TRUE)
+   endif(MSVC)
+   set_with_reason(USE_NATIVE_LANGUAGE_SUPPORT "Windows detected" TRUE)
+   enable_language(RC)
+
+   set(XSLTS "windows;${XSLTS}" CACHE STRING "define a semicolon seperated list of XSLTs to process")
+endif()
+if (WIN32 AND NOT WINCE)
+   set(HAVE_API_WIN32 1)
+   set(HAVE_STDINT_H 1)
+   list(APPEND NAVIT_LIBS winmm)
+endif()
+if(WINCE)
+   add_plugin(support/libc "wince detected" TRUE)
+   set(HAVE_API_WIN32_CE 1)
+   set(BUILD_MAPTOOL FALSE)
+   # mingw32ce since gcc 4.7.0 needs HAVE_PRAGMA_PACK as __attribute__((packed)) is broken, see gcc bug 52991
+   set(HAVE_PRAGMA_PACK 1)
+   set_with_reason(vehicle/file "wince: currently broken" FALSE)
+   set_with_reason(vehicle/wince "wince detected" TRUE)
+endif()
+
+if(CMAKE_SIZEOF_VOID_P LESS 8)
+   set_with_reason(BUILD_MAPTOOL "maptool works only on 64 bit architectures" FALSE)
+endif()
+
+set(LOCALEDIR "${LOCALE_DIR}/locale")
+
+find_program(BZCAT NAMES bzcat)
+if (SAMPLE_MAP)
+   if(CMAKE_CROSSCOMPILING)
+      cfg_feature(SAMPLE_MAP "downloading binary map because of cross compiling" TRUE)
+      set(DOWNLOAD_SAMPLE_MAP TRUE)
+   elseif(NOT BZCAT)
+      cfg_feature(SAMPLE_MAP "downloading binary map because of missing bzcat" TRUE)
+      set(DOWNLOAD_SAMPLE_MAP TRUE)
+   elseif(NOT BUILD_MAPTOOL)
+      cfg_feature(SAMPLE_MAP "downloading binary map because maptool compilation is disabled" TRUE)
+      set(DOWNLOAD_SAMPLE_MAP TRUE)
+   endif(CMAKE_CROSSCOMPILING)
+endif(SAMPLE_MAP)
+
+if(ANDROID)
+   list(APPEND NAVIT_LIBS log)
+   set(HAVE_API_ANDROID 1)
+   set_with_reason(graphics/android "Android detected" TRUE)
+   set_with_reason(speech/android "Android detected" TRUE)
+   set_with_reason(vehicle/android "Android detected" TRUE)
+   set(SHARED_LIBNAVIT TRUE)
+
+   add_feature(XPM2PNG "Android detected" TRUE)
+   set(NAVIT_COMPILE_FLAGS "${NAVIT_COMPILE_FLAGS} -fPIC")
+endif(ANDROID)
+
+# Image conversion
+find_program(IMAGE_CONVERTER NAMES convert)
+execute_process(COMMAND ${IMAGE_CONVERTER} -list format OUTPUT_VARIABLE CONVERT_FORMATS)
+if(CONVERT_FORMATS MATCHES ".*XPM[ *][ ]*XPM[ ]*r[w-].*")
+   set(IMAGE_CONVERTER_XPM ${IMAGE_CONVERTER})
+endif()
+
+set(CMAKE_APPBUNDLE_PATH "")
+if (SVG2PNG)
+   if (NOT IMAGE_CONVERTER_SVGZ)
+      set (SVG_CONVERTER_PROGS rsvg-convert ksvgtopng ksvgtopng4 inkscape)
+      set (CMAKE_FIND_APPBUNDLE "NEVER")
+      find_program(IMAGE_CONVERTER_SVGZ NAMES ${SVG_CONVERTER_PROGS} PATHS /Applications/Inkscape.app/Contents/Resources/bin)
+      if (NOT IMAGE_CONVERTER_SVGZ)
+         if(CONVERT_FORMATS MATCHES ".*[ ]*SVG[ ]*r[w-].*")
+            set(IMAGE_CONVERTER_SVGZ ${IMAGE_CONVERTER})
+         endif()
+      endif()
+   endif(NOT IMAGE_CONVERTER_SVGZ)
+   if (NOT IMAGE_CONVERTER_SVG)
+      set(IMAGE_CONVERTER_SVG ${IMAGE_CONVERTER_SVGZ})
+   endif(NOT IMAGE_CONVERTER_SVG)
+
+   message(STATUS "SVG2PNG-Converter: ${IMAGE_CONVERTER_SVGZ}")
+   if (NOT IMAGE_CONVERTER_SVGZ)
+      message(WARNING "No SVG2PNG converter found. Please install one of the following tools: ${SVG_CONVERTER_PROGS}, or imagemagick with svg support")
+      set_with_reason(SVG2PNG "no converter found" FALSE)
+   endif(NOT IMAGE_CONVERTER_SVGZ)
+endif(SVG2PNG)
+
+if (XPM2PNG)
+   message(STATUS "XPM2PNG-Converter: ${IMAGE_CONVERTER_XPM}")
+   if (NOT IMAGE_CONVERTER_XPM)
+      message(WARNING "No XPM2PNG converter found. Please install imagemagick with xpm support")
+      set_with_reason(XPM2PNG "no converter found" FALSE)
+   endif(NOT IMAGE_CONVERTER_XPM)
+endif(XPM2PNG)
+
+set(XSLTS ${XSLTS} CACHE STRING "define a semicolon seperated list of XSLTs to process")
+
+# Plugins
+if(USE_PLUGINS)
+   set(MODULE_BUILD_TYPE "MODULE")
+   add_definitions("-fPIC")
+   list(APPEND NAVIT_LIBS dl)
+else()
+   set(MODULE_BUILD_TYPE "STATIC")
+endif(USE_PLUGINS)
+message(STATUS "Use plugins: ${MODULE_BUILD_TYPE}")
+
+CHECK_INCLUDE_FILES (malloc.h HAVE_MALLOC_H)
+CHECK_INCLUDE_FILES ("sys/param.h;sys/mount.h" HAVE_SYS_MOUNT_H)
+CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
+CHECK_FUNCTION_EXISTS (getcwd HAVE_GETCWD)
+CHECK_FUNCTION_EXISTS (memalign HAVE_MEMALIGN)
+CHECK_FUNCTION_EXISTS (valloc HAVE_VALLOC)
+CHECK_FUNCTION_EXISTS (posix_memalign HAVE_POSIX_MEMALIGN)
+CHECK_FUNCTION_EXISTS (popen HAVE_POPEN)
+CHECK_FUNCTION_EXISTS (_atoi64 HAVE__ATOI64)
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+# Compile with -Wall -Wextra. We need all the help we can get from the compiler :-).
+# Disabled warnings:
+# -Wno-missing-field-initializers: Used a lot, does not seem problematic.
+# -Wno-unused-parameter: Unfortunately occurs frequently because of
+#                        functions implementing the interface of a plugin.
+# -Wno-sign-compare: We currently just use int almost everywhere.
+#                    Unclear if it's really worth correcting.
+if(CMAKE_COMPILER_IS_GNUCC OR CCMAKE_COMPILER_IS_GNUCXX)
+   set(COMMON_COMPILER_FLAGS "-Wall -Wundef -Wcast-align -Wpointer-arith -Wno-unused-parameter -Wno-sign-compare")
+   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${COMMON_COMPILER_FLAGS}")
+   set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${COMMON_COMPILER_FLAGS}")
+   # flags not available in old GCC versions, or not for both C and C++
+   #add_compiler_flag_if_available("-Wno-missing-field-initializers")
+   #add_compiler_flag_if_available("-Wextra")
+   # -Wreturn-type
+   #add_compiler_flag_if_available("-Wmissing-prototypes")
+   #add_compiler_flag_if_available("-Wstrict-prototypes ")
+
+# ---------------------------
+MESSAGE( STATUS "0 CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "0 CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "0 CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "0 CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "0 COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+
+
+   #remove_compiler_flag("-Wall")
+   #remove_compiler_flag("-Werror")
+   #remove_compiler_flag("-Wreturn-type")
+
+   string (REPLACE "-Wall" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+   #string (REPLACE "-Werror" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+   string (REPLACE "-Wreturn-type" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+
+   string (REPLACE "-Wall" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+   #string (REPLACE "-Werror" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+   string (REPLACE "-Wreturn-type" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+
+   string (REPLACE "-Wall" "" COMMON_COMPILER_FLAGS ${COMMON_COMPILER_FLAGS})
+   #string (REPLACE "-Werror" "" COMMON_COMPILER_FLAGS ${COMMON_COMPILER_FLAGS})
+   string (REPLACE "-Wreturn-type" "" COMMON_COMPILER_FLAGS ${COMMON_COMPILER_FLAGS})
+
+endif()
+
+
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -lgcc -ljnigraphics -lm")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -lgcc -ljnigraphics -lm")
+
+
+if (EXTRA_DEFINES)
+	add_definitions("${EXTRA_DEFINES}")
+endif(EXTRA_DEFINES)
+
+remove_definitions(-Werror)
+remove_definitions(-Wreturn-type)
+
+# ---------------------------
+MESSAGE( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+
+
+# ---------------------------
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS: " ${ANDROID_COMPILER_FLAGS} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_CXX: " ${ANDROID_COMPILER_FLAGS_CXX} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_DEBUG: " ${ANDROID_COMPILER_FLAGS_DEBUG} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_RELEASE: " ${ANDROID_COMPILER_FLAGS_RELEASE} )
+# ---------------------------
+
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS         "${ANDROID_COMPILER_FLAGS}")
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS_CXX     "${ANDROID_COMPILER_FLAGS_CXX}")
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS_DEBUG   "${ANDROID_COMPILER_FLAGS_DEBUG}")
+#string(REPLACE "-Werror" "" ANDROID_COMPILER_FLAGS_RELEASE "${ANDROID_COMPILER_FLAGS_RELEASE}")
+
+# ---------------------------
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS: " ${ANDROID_COMPILER_FLAGS} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_CXX: " ${ANDROID_COMPILER_FLAGS_CXX} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_DEBUG: " ${ANDROID_COMPILER_FLAGS_DEBUG} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_RELEASE: " ${ANDROID_COMPILER_FLAGS_RELEASE} )
+# ---------------------------
+
+
+
+
+if (NOT NAVIT_DEPENDENCY_ERROR)
+   message("\nSummary:\n")
+
+   set(SUMMARY_COMPONENTS ${ALL_PLUGINS} ${ALL_MODULE_PLUGINS} ${ALL_MODULES})
+   list(SORT SUMMARY_COMPONENTS)
+
+   set(LAST_TYPE NONE)
+   foreach ( SUMMARY_COMP ${SUMMARY_COMPONENTS})
+      # split path to type and name
+      string(REPLACE "/" ";" SUMMARY_COMP_LIST ${SUMMARY_COMP})
+      list(GET SUMMARY_COMP_LIST 0 SUMMARY_COMP_TYPE)
+      list(LENGTH SUMMARY_COMP_LIST SUMMARY_COMP_LIST_LENGTH)
+      if ( SUMMARY_COMP_LIST_LENGTH GREATER 1 )
+         list(GET SUMMARY_COMP_LIST 1 SUMMARY_COMP_NAME)
+      else()
+         set(SUMMARY_COMP_NAME ${SUMMARY_COMP})
+      endif()
+      if ( NOT ${LAST_TYPE} STREQUAL ${SUMMARY_COMP_TYPE})
+         message("\n--->>> ${SUMMARY_COMP_TYPE}")
+         set(LAST_TYPE ${SUMMARY_COMP_TYPE})
+      endif()
+      if (${SUMMARY_COMP})
+         message("Enabled   ${SUMMARY_COMP_NAME} ( ${${SUMMARY_COMP}_REASON} )")
+      else()
+         message("Disabled  ${SUMMARY_COMP_NAME} ( ${${SUMMARY_COMP}_REASON} )")
+      endif()
+   endforeach()
+
+   list(SORT ALL_FEATURES)
+   message("\n--->>> Features")
+   foreach ( FEATURE ${ALL_FEATURES})
+      if ( ${FEATURE} )
+         message("Enabled   ${FEATURE} ( ${${FEATURE}_REASON} )")
+      else()
+         message("Disabled  ${FEATURE} ( ${${FEATURE}_REASON} )")
+      endif()
+   endforeach()
+
+   if (XSL_PROCESSING)
+      if (XSLTS)
+         message("\nProcessing XSLT files: ${XSLTS}")
+      else()
+         message("\nProcessing XSLT files: NONE")
+      endif(XSLTS)
+      message("See navit/xslt for available XSLT files, and put them into "
+	      "cache variable 'XSLTS' (without extension .xslt).")
+   endif(XSL_PROCESSING)
+
+   message("\nTo configure your build use 'cmake -L' to find changeable variables and run cmake again with 'cmake -D <var-name>=<your value> ...'.")
+endif(NOT NAVIT_DEPENDENCY_ERROR)
+
+
+
+# ---------------------------
+MESSAGE( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+MESSAGE( STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER} )
+MESSAGE( STATUS "CMAKE_C_FLAGS: " ${CMAKE_C_FLAGS} )
+MESSAGE( STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "COMMON_COMPILER_FLAGS: " ${COMMON_COMPILER_FLAGS} )
+# ---------------------------
+
+
+# ---------------------------
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS: " ${ANDROID_COMPILER_FLAGS} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_CXX: " ${ANDROID_COMPILER_FLAGS_CXX} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_DEBUG: " ${ANDROID_COMPILER_FLAGS_DEBUG} )
+MESSAGE( STATUS "ANDROID_COMPILER_FLAGS_RELEASE: " ${ANDROID_COMPILER_FLAGS_RELEASE} )
+
+MESSAGE( STATUS "CMAKE_C_FLAGS_DEBUG: " ${CMAKE_C_FLAGS_DEBUG} )
+MESSAGE( STATUS "CMAKE_CXX_FLAGS_DEBUG: " ${CMAKE_CXX_FLAGS_DEBUG} )
+# ---------------------------
+
+add_subdirectory (navit)
+
+

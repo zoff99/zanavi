@@ -155,7 +155,11 @@ extern int debug_level;
 #endif
 
 
+// ---- only use this line for debugging ----
+// ---- only use this line for debugging ----
 // #define _CIDEBUG_BUILD_ 1
+// ---- only use this line for debugging ----
+// ---- only use this line for debugging ----
 
 
 #ifdef _CIDEBUG_BUILD_
@@ -164,6 +168,11 @@ extern int debug_level;
 #define tests_dbg(level,...) #level
 #endif
 
+#if 1
+#define system_log(level,...) debug_for_tests2_printf(level,__VA_ARGS__);
+#else
+#define system_log(level,...) #level
+#endif
 
 
 
@@ -201,7 +210,9 @@ void debug_vprintf(int level, const char *module, const int mlen, const char *fu
 void debug_vprintf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, va_list ap);
 void debug_printf(int level, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...);
 void debug_for_tests_vprintf(int level, const char *fmt, va_list ap);
+void debug_for_tests2_vprintf(int level, const char *fmt, va_list ap);
 void debug_for_tests_printf(int level, const char *fmt, ...);
+void debug_for_tests2_printf(int level, const char *fmt, ...);
 void debug_printf_func(int level, int indent, const char *module, const int mlen, const char *function, const int flen, int prefix, const char *fmt, ...);
 void debug_assert_fail(const char *module, const int mlen, const char *function, const int flen, const char *file, int line, const char *expr);
 void debug_destroy(void);

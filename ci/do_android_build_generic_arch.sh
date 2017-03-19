@@ -98,12 +98,27 @@ fi
 pushd ./
 if [ "$FULL_LOG""x" == "1x" ]; then
         make
+        ex_code=$?
 else
-        make 2>&1 | grep -i error
+        make > "/tmp/make_$$.log" 2>&1 ; ex_code=$?
+        cat "/tmp/make_$$.log" | grep -i error
+        rm -f "/tmp/make_$$.log"
 fi
 popd
 cd navit
 
+
+if [ $ex_code != 0 ]; then
+	echo "--BUILD ERROR--"
+	echo "--BUILD ERROR--"
+	echo "--BUILD ERROR--"
+	echo "--BUILD ERROR--"
+	echo "--BUILD ERROR--"
+	echo "--BUILD ERROR--"
+	echo "--BUILD ERROR--"
+	
+	exit $ex_code
+fi
 
 echo "+++++++++++++"
 pwd

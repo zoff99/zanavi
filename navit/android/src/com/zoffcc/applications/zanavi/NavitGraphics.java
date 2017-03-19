@@ -7301,6 +7301,10 @@ public class NavitGraphics
 		{
 			Navit.CI_TEST_CASE_TEXT = Navit.CI_TEST_CASE_TEXT + text + "\n";
 		}
+		else if (id == 33) // log to System
+		{
+			System.out.println("NDK:" + text);
+		}
 
 		// if (Navit.METHOD_DEBUG) Navit.my_func_name(1);
 	}
@@ -8670,7 +8674,7 @@ public class NavitGraphics
 		}
 		else
 		{
-			System.out.println("NavitGraphics:" + "generic-info:" + text);			
+			System.out.println("NavitGraphics:" + "generic-info:" + text);
 		}
 	}
 

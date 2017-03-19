@@ -1030,7 +1030,7 @@ int search_v2_work(char *addr, char *town, char* hn, int partial, struct jni_obj
 
 	if ((!addr) || (strlen(addr) < 1))
 	{
-		return;
+		return NULL;
 	}
 
 	// prepare search string

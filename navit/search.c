@@ -1099,12 +1099,12 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 
 	if (!street_name_fold)
 	{
-		return;
+		return NULL;
 	}
 
 	if (!hn_fold)
 	{
-		return;
+		return NULL;
 	}
 
 	if (strlen(street_name_fold) < 1)
@@ -1118,7 +1118,7 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 		{
 			g_free(street_name_fold);
 		}
-		return;
+		return NULL;
 	}
 
 	if (strlen(hn_fold) < 1)
@@ -1132,7 +1132,7 @@ static int search_address_housenumber_for_street(char *hn_name_match, char *stre
 		{
 			g_free(street_name_fold);
 		}
-		return;
+		return NULL;
 	}
 
 	//dbg(0, "SEARCH:HM:010a:townstr=%p", town_string);
