@@ -11,7 +11,7 @@ echo $REPO
 echo $REPOUSER
 
 # debug
-# https://circleci.com/api/v1/project/zoff99/zanavi/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch=and_stud
+# https://circleci.com/api/v1/project/zoff99/zanavi/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch=master
 
 wget 'https://circleci.com/api/v1/project/'"$REPOUSER"'/'"$REPO"'/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch='"$BRANCH" -O ./android-studio-project.zip
 unzip -o ./android-studio-project.zip
