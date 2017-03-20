@@ -12,10 +12,10 @@ COPY /Y navit\mvt_tiles_full_zvt.h navit\mvt_tiles.h
 COPY /Y navit\s_index.h_full navit\s_index.h
 
 REM debug
-REM https://circleci.com/api/v1/project/zoff99/zanavi/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch=and_stud
+REM https://circleci.com/api/v1/project/zoff99/zanavi/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch=master
 
 echo Downloading latest version ...
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://circleci.com/api/v1/project/zoff99/zanavi/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch=and_stud', 'android-studio-project.zip')"
+powershell -Command "(New-Object Net.WebClient).DownloadFile('https://circleci.com/api/v1/project/zoff99/zanavi/latest/artifacts/0/$CIRCLE_ARTIFACTS/android-studio-project.zip?filter=successful&branch=master', 'android-studio-project.zip')"
 
 echo unzipping
 unzip -o android-studio-project.zip
