@@ -38,6 +38,7 @@ script:
    - _repouser=$(echo $TRAVIS_REPO_SLUG | cut -d'/' -f1) ; echo $_repouser
    - _branch_from=$( if [ "$TRAVIS_PULL_REQUEST_BRANCH""x" == "x" ]; then echo "$TRAVIS_BRANCH" ; else echo "$TRAVIS_PULL_REQUEST_BRANCH" ; fi ) ; echo $_branch_from
    - chmod a+rx ./download-androidstudio-files.sh
+   - dos2unix download-androidstudio-files.sh download-androidstudio-files.sh ; echo dummy
    - ./download-androidstudio-files.sh
    - cd navit
    - pwd
