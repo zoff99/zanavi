@@ -3,6 +3,10 @@ cache: false
 sudo: false
 jdk:
   - oraclejdk8
+addons:
+  apt:
+    packages:
+      - dos2unix
 env:
   global:
   - _JAVA_OPTIONS="-Xms512m -Xmx2048m"
