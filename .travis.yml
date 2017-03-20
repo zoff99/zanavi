@@ -31,7 +31,6 @@ android:
   licenses:
     - '.+'
     - 'android-sdk-license-.+'
-
 script:
    - echo $TRAVIS_EVENT_TYPE
    - echo $TRAVIS_REPO_SLUG
