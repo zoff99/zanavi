@@ -46,3 +46,4 @@ script:
    - ./gradlew assembleRelease --stacktrace
    - pwd
    - find . -name '*.apk' -exec ls -al {} \;
+
