@@ -291,6 +291,7 @@ dependencies:
       pwd ;
       ls -al ;
       cp -av app-signed-aligned.apk $CIRCLE_ARTIFACTS/${CIRCLE_PROJECT_REPONAME}_circleci_$CIRCLE_SHA1.apk || exit 1
+      cp -av app-signed-aligned.apk $CIRCLE_ARTIFACTS/zanavi.apk ; exit 0
 ##### ------------ SIGN APP (again) and copy to ARTIFACTS DIR ------------
 
 
