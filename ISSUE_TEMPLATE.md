@@ -1,4 +1,4 @@
-#### Your system information:
+﻿#### Your system information:
 ZANavi Version:
 
 App from Google-Play / F-Droid / other:

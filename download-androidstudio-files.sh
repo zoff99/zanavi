@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # get values from git commandline ------------
 BRANCH=$(git rev-parse --abbrev-ref HEAD|sed -e 's# #%20#g'|sed -e 'sx#x%23xg'|sed -e 's#/#%2F#g'| grep -v HEAD || git name-rev --name-only HEAD|sed -e 's#^remotes/origin/##'|sed -e 's#^origin/##'|sed -e 's# #%20#g'|sed -e 'sx#x%23xg'|sed -e 's#/#%2F#g')

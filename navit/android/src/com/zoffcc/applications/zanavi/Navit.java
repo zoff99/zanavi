@@ -202,7 +202,7 @@ public class Navit extends AppCompatActivity implements Handler.Callback, Sensor
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 	}
 
-	public static final String VERSION_TEXT_LONG_INC_REV = "4530";
+	public static final String VERSION_TEXT_LONG_INC_REV = "4611";
 	static String ZANAVI_VERSION = "unknown";
 	public static String NavitAppVersion = "0";
 	public static String NavitAppVersion_prev = "-1";

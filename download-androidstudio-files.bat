@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 
 REM get directory of this script
 SET mypath=%~dp0

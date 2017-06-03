@@ -1,4 +1,4 @@
-language: android
+﻿language: android
 cache: false
 sudo: false
 jdk:
