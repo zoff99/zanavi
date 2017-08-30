@@ -27,7 +27,7 @@ cd zanavi
 git checkout master
 ./download-androidstudio-files.sh
 ```
-now start Android Studio and select "import Project" then select the **navit** subdirectory
+now start Android Studio and select "import Project" then select the **navit** subdirectory<BR>
 in Android Studio just press "play"
 
 ### Development Snapshot Version
